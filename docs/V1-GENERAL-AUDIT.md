@@ -30,10 +30,11 @@ Le contrat P0 confirme huit transformations Z visées, deux slots en série avec
 À fermer : noms exacts, domaine d'entrée/sortie, neutralité à zéro, paramètres, préservation fondamentale, compensation de gain, compatibilité audio-rate, comportement DC/Nyquist, ordre de composition et coûts/caches.
 **Gate :** aucune implémentation définitive du WT Engine avant réconciliation du catalogue d'origine.
 
-### AUD-P0-02 — Causalité FM/Cross
-Deux stratégies restent volontairement ouvertes : tous liens retardés vs retards ciblés sur cycles. La référence temporelle du feedback reste aussi à comparer : 1 sample hôte vs durée physique fixe.
-À démontrer : déterminisme, indépendance à la taille de bloc, transitions de routage, stabilité à haute profondeur, comportement selon SR/oversampling, coût CPU, absence de dépendance instantanée avec délai fractionnaire.
-**Gate : S0 obligatoire.** Le résultat devient un contrat interne unique, pas une option utilisateur.
+### AUD-P0-02 — Causalité FM/Cross — PARTIELLEMENT FERMÉ
+**Stratégie B validée** : retard ciblé uniquement sur les arêtes nécessaires pour casser un cycle. **Classification sticky validée** : les routes survivantes conservent leur classe Immediate/Delayed et cette classe est persistée.
+Reste ouvert : référence temporelle T1 vs T2, implémentation du délai fractionnaire, politique finale de transition topologique et benchmark M1.
+Si T2 est retenu : K≥2 obligatoire à 44.1 kHz dans le réseau récursif; T2 s'applique à toutes les arêtes causalement retardées FM/CROSS et seulement elles.
+**Gate : S0.1 obligatoire avant vertical slice.**
 
 ### AUD-P0-03 — Cycle de voix / Amp / Note Off — FERMÉ CONTRACTUELLEMENT
 Fermé par [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md) : Amp avant les générateurs de tails, Note Off sans reset des états DSP, Tail guidé par énergie, états autonomes armés explicitement, Drone via Gate normal, Panic avec rampe anti-click puis purge. Les seuils d'énergie et garde-fous temporels sont des valeurs d'implémentation à mesurer, pas des arbitrages produit.
@@ -129,8 +130,8 @@ Le projet est **sur-dimensionné pour une implémentation monolithique**, mais p
 AUD-P0-03/04/05/06/07 sont fermés par le Core Contract P0. AUD-P0-01 reste partiel uniquement pour les cinq transformations Z historiques manquantes. Ne pas inventer ces cinq algorithmes.
 ### Gate B — Architecture logicielle — FORMALISÉE
 [V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) formalise Core DSP indépendant du wrapper, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State, ownership RT/non-RT et télémétrie. Aucun code produit n'est encore validé.
-### Gate C — Spike S0 causalité — PRÊT À EXÉCUTER
-[V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md) définit harness minimal, stratégies A/B, références T1/T2, matrice SR/blocs, invariants, mesures et livrables.
+### Gate C — Spike S0 causalité — PARTIELLEMENT PASS
+S0 valide la stratégie B. La référence T1/T2 reste ouverte. La mission S0.1 doit étendre les tests aux modes FM supplémentaires, vrai wavetable minimal, resampling temps réel, transitions sticky et benchmark M1.
 ### Gate D — Spikes ciblés
 S1 Wavetable/XY/Z, S2 FM/PM, S3 ADAA/wavefolder, S4 Mod Matrix, S5 State/RNG, S6 performance cumulée, S7 prototype ergonomique.
 ### Gate E — Architecture gelée
@@ -141,4 +142,4 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-**Exécuter le spike S0 Causalité dans Claude.ai** selon [V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md). À réception du rapport, effectuer une revue indépendante des preuves avant de figer le contrat causal. Ensuite seulement préparer la vertical slice.
+**Exécuter S0.1** afin de départager B-T1 et B-T2 avec Linear FM, TZFM, Exponential FM, vraie wavetable minimale, resampling temps réel, classification sticky, sweep de transitions et benchmark M1. Vertical slice interdite avant clôture de S0.1.
