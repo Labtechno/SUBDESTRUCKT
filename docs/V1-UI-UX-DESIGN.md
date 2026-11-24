@@ -1,0 +1,73 @@
+# SUBDESTRUCKT — UI/UX Design V1
+Révision fonctionnelle 0.2 — 2026-11-24.
+Référence : [V1-DESIGN-BASELINE.md](V1-DESIGN-BASELINE.md). Ce chapitre actualise la proposition UI/UX de la section 12 du référentiel, sans modifier les autres décisions. Aucun développement ni test exécuté.
+
+## 1. Décisions utilisateur validées
+| ID | Choix | Décision |
+|---|---|---|
+| UX-D01 | D | Identité hybride industrielle et laboratoire expérimental |
+| UX-D02 | C | Commandes aspect hardware et lisibilité moderne |
+| UX-D03 | B | Trois niveaux Performance / Sound Design / Engineering |
+| UX-D04 | C | Afficheurs hybrides selon fonction |
+| UX-D05 | B | Couleurs distinctes WT, FM et modulation |
+| UX-D06 | C | Noyau Performance fixe + quatre macros assignables |
+| UX-D07 | B | Destination Inspector intégré et rétractable |
+| UX-D08 | B | Oscilloscope, spectre, espace XY et réseau FM |
+| UX-D09 | B | Redimensionnement et zoom global |
+| UX-D10 | B | Performance directement transposable au futur hardware |
+
+Les spécifications ci-dessous sont des propositions de mise en œuvre de ces choix, pas des arbitrages supplémentaires déjà validés. Le périmètre sonore V1 est gelé; aucune nouvelle fonction DSP implicitement autorisée. Les dix arbitrages complémentaires Preset & State restent ouverts.
+
+## 2. Direction artistique
+Nom de travail Industrial Research Instrument. Châssis graphite, sérigraphie claire, relief discret, instrumentation scientifique, afficheurs CRT/OLED stylisés quand pertinents, graphiques modernes pour données complexes. Pas de rouille décorative, néons omniprésents, faux vieillissement ni animation permanente. Sans-serif technique, chiffres tabulaires/monospace, hiérarchie claire; licences des polices et assets à vérifier.
+Palette candidate : chassis #121617, panels #242A2D, text #E1E5E6, WT #79C4AC, FM #D98439, CROSS/mod #7899CB, display #080E0C, controls #363D40, alert #C65D54. Couleurs sémantiques constantes, texte/icône en complément; rouge réservé à sécurité/erreur. Contraste à mesurer, cible 4.5:1 texte normal, 3:1 éléments essentiels; effets CRT ne dégradent pas les chiffres. Logo/typographie exacte et palette définitive à valider.
+Contrôles : knob continu avec valeur et unité, édition numérique, drag vertical, réglage fin, reset explicite, focus clavier, états actif/bypass/incompatible distincts. Afficher base et valeur effective sans écrire cette dernière dans automation. Un seul composant de contrôle et un registre de paramètres partagé entre vues; aucune duplication d'état. Labels stables, pas de couleur seule.
+
+## 3. Architecture commune
+Trois espaces de travail, un état sonore. Changer de vue, ouvrir/fermer Inspector, redimensionner, zoomer, changer de moniteur ne change pas le DSP, ses états, le routage ni les valeurs de base. Préférences UI locales séparées des presets. Barre persistante : preset, état modifié, save, navigation, sortie/mètre, Panic; Undo/Redo selon contrat State restant à finaliser. Drone/Freeze actifs ou armés explicitement identifiés, pas d'activation automatique par navigation. Conserver sélection et contexte; Inspector rétractable. Pas de fenêtres modales pour édition courante; erreurs et conflits explicites. Raccourcis ne capturent pas abusivement les commandes de l'hôte.
+### Performance
+Objectif jouer et transformer un preset en moins de 30 s (cible test, non résultat).
+Noyau fixe et 4 macros. Proposition 12 contrôles continus : X/Y/Z, FM INDEX, FM FEEDBACK, CROSS, WT/FM balance, M1–M4, OUTPUT. FM INDEX et FM FEEDBACK sont candidats à arbitrer : ne pas créer de macro DSP supplémentaire sans décision; préciser périmètre, interactions et neutralité, ou remplacer par commandes déjà existantes. Les Character WT/FM restent accessibles en Sound Design et assignables aux macros. Les quatre macros affichent leurs noms propres au preset et leurs affectations; celles-ci comptent dans 64 connexions globales. Ne pas confondre WT/FM balance et niveaux indépendants ou modes Cross Audio : sémantique à fixer avant validation. Moniteur commutable scope/spectre/XY/FM; données réelles uniquement. Panic toujours visible, preset et état dirty visibles. Drone, Freeze et sécurité lisibles. Contrôles événementiels distincts du budget des encodeurs; budget matériel total 8–12 à réconcilier.
+### Sound Design
+Deux panneaux équivalents WT et FM; CROSS au centre fonctionnel; traitements locaux WT/FM puis Cross Audio puis traitement global, conformément au contrat audio. Ne pas représenter l'ordre Filter/Destruction comme fixe : Pre/Post autorisé. Un filtre + deux slots destruction par emplacement. Vue module : algo, bypass, valeurs clés, Dry/Wet, entrée/sortie et état; paramètres détaillés dans Inspector. WT : banque, X/Y/Z, deux transformations, Character, phase/pitch/sync. FM : quatre opérateurs, mode modulation par destination, waveform, ratio/fixed/offset, modulation level distinct du gain/pan audio, feedback et Character. Cross : master, directions, bus, Sync, Cross Audio. Enveloppes 5, LFO 4, random/chaos accessibles sans créer générateurs supplémentaires. Afficher les chaînes et accès direct à matrice concernée; retour conserve sélection. Proposer onglets internes WT/FM/CROSS/PROCESS/MOD sur petite fenêtre plutôt que réduire texte.
+### Engineering
+Espaces spécialisés FM Network (4x4 interne + accès aux 4 WT->FM via Cross), Cross Network (39 connexions), Global Modulation (64 dont macros), Curve Editor commun Z/mod, Bank Laboratory, State/Assets, Randomizer, Diagnostics. List/Inspector/Overview du même modèle; pas de patcher libre, ni affichage obligatoire de 119 liens simultanés. Source/destination, profondeur bipolaire, mode/rate, Via, enable/lock, incompatibilité et raison; inspecter causalité sans exposer d'options de retard non validées. Édition du routage avec validation, refus sans modification partielle. Overview surtout lecture/navigation. Banques immuables COW, prévisualisation et préparation hors audio; Randomizer scope/locks/intensity/seed et transaction. Fonctions Evolve/Undo détaillées selon futur arbitrage State. Diagnostics CPU, SR, qualité, latence, capacités et protections; valeurs mesurées, pas inventées.
+
+## 4. Contrat Inspector
+Clic/sélection d'un paramètre ouvre ou met à jour le panneau selon préférence; ne pas déplacer automatiquement le focus pendant automation. Affiche nom, chemin, unité, base, effective ou plage/mesure clairement indiquée, limites, sources, contributions, profondeur, polarité, courbe, Via, rate, état et raison d'inactivité. Édition/assignation directe écrit la même matrice; capacité, cycles et compatibilité contrôlés. Navigation source/destination et destinations de macro; épinglage candidat. Enveloppe ou LFO accessible via lien, pas d'instance par paramètre. Pas de mise à jour audio->UI à chaque échantillon; télémétrie décimée, non bloquante, sans allocation ni verrou sur traitement audio. Valeurs rapides affichées comme échantillon/étendue, non comme exacte valeur instantanée continue.
+
+## 5. Visualisations
+Scope et spectre : point de prélèvement explicitement indiqué, sortie par défaut proposée, option WT/FM si validée; échelles et unités, clipping distinct de saturation intentionnelle. XY : carte de banque, position de base/effective, limites et morphing; pas fausse perspective 3D assimilant Z à une dimension stockée. FM : graphe réel, directions, niveaux et feedback, retard selon contrat S0; pas de lien décoratif. Ne pas ajouter de visualisation chaotique avancée en V1. Mesures et dessin hors thread audio; transfert borné, cadence candidate 30 Hz (60 si justifié), réduire cadence lorsque masqué, désactiver analyse coûteuse en vue cachée. Aucune modification DSP due au moniteur. Visualisation purement conceptuelle dans wireframes, étiquetée.
+
+## 6. Redimensionnement et accessibilité
+Candidats à tester : fenêtre de référence 1440x900 pixels logiques, minimum 960x640, zoom 75–150%; ne pas promettre compatibilité de toutes combinaisons taille/zoom, adapter layout, panneau Inspector rétractable et scroll local. Haute densité DPI, navigation clavier/focus visible, labels accessibles, valeurs numériques saisissables, infobulles non indispensables, contrastes et daltonisme, pas d'information couleur seule. Pas de réorganisation libre de panneaux. Tester hôtes VST3 et standalone Win/macOS/Linux, changement DPI, réouverture et persistance UI; aucun seuil validé à ce stade.
+
+## 7. Hardware
+Performance = référence fonctionnelle, pas copie graphique exacte. Objectif 8–12 commandes principales, mapping par identifiants stables et unités; quatre macros accessibles, Panic et sortie prioritaires, possibilité encodeurs et affichage contexte/shift à tester. Pas de décision de connectique, processeur, encombrement Eurorack ni nombre définitif de boutons. Si 12 réglages + navigation excèdent le budget total, tester variante 8–10 encodeurs + couche secondaire, sans supprimer fonctionnalités DSP. Éditeur avancé desktop possible, mêmes fonctions sonores. Compatibilité matérielle soumise aux benchmarks.
+
+## 8. Parcours et recette proposés
+| ID | Tâche / condition GO candidate |
+|---|---|
+| UX01 | Charger preset et modifier son caractère en <=30 s, sans ouvrir Engineering |
+| UX02 | Modifier X/Y/Z et retrouver valeurs dans Sound Design; aucune divergence |
+| UX03 | Accéder aux réglages FM et Cross depuis Performance en <=2 actions |
+| UX04 | Identifier une modulation de cutoff, sa source et sa profondeur en <=3 actions |
+| UX05 | Assigner macro à deux destinations et vérifier que deux liens comptent dans 64 |
+| UX06 | Distinguer gain audio, mute, disable et modulation d'opérateur |
+| UX07 | Modifier routage, détecter cycle invalide et conserver état précédent |
+| UX08 | Vérifier changement de vue/zoom/Inspector/monitor sans changement sonore ni paramètre |
+| UX09 | Panic accessible en une action depuis tous les espaces, même avec panneau ouvert |
+| UX10 | Drone/Freeze et états autonomes affichés, aucun armement par navigation |
+| UX11 | Affichage réel des graphes et points de mesure, cohérent avec DSP |
+| UX12 | Pas d'allocation/verrou RT ni surcharge audio hors budget lors des mises à jour UI |
+| UX13 | Redimensionnement/DPI sans recouvrement, texte lisible, commandes atteignables |
+| UX14 | Édition au clavier, focus, saisie précise, contraste et information non chromatique |
+| UX15 | Automation et état de base/effectif cohérents dans toutes les vues |
+| UX16 | Preset et édition dirty, erreurs, ressources absentes et sauvegarde explicites |
+| UX17 | Mapping Performance vers budget physique sans réduction du moteur |
+| UX18 | Test de tâches sur wireframe, puis prototype fonctionnel et intégration DAW |
+Les seuils temps/actions sont des cibles initiales. Tester utilisateurs novices et expérimentés, mesurer erreurs et temps, ajuster avant gel. Pas de PASS déclaré.
+
+## 9. Lots et prochains arbitrages
+P0 : wireframes et parcours, composants/registre, barre commune, Performance, panneaux WT/FM/Cross et traitements, Inspector, routages List, moniteurs essentiels, redimensionnement/accessibilité. P1 : Overview, banque/états/Randomizer avancés selon lots DSP, diagnostics et finition des moniteurs/graphisme. P0/P1 appartiennent à V1; aucun lot de développement autorisé ici.
+À arbitrer : noyau Performance exact (FM Index/Feedback éventuels, Character, balance), disposition et navigation Sound Design, mode d'accès Inspector, métriques et tailles de fenêtre, correspondance physique (budget total vs encodeurs), niveau de réalisme des afficheurs. Prototype UI sans DSP avant engagement graphique définitif. Les arbitrages State complémentaires, l'architecture logicielle et le plan de développement/recette restent ouverts.
