@@ -1,5 +1,5 @@
 # SUBDESTRUCKT — Revue indépendante du spike S0
-Date : 2026-11-24. Statut : **REVUE TECHNIQUE NON NORMATIVE — décisions finales encore à arbitrer**.
+Date : 2026-11-24. Statut : **REVUE TECHNIQUE + ARBITRAGES VALIDÉS**.
 Source examinée : branche `spike/s0-causality`, rapport `docs/V1-S0-REPORT.md`, données, harness et tests. `main` n'est pas fusionné avec le spike.
 
 ## 1. Verdict de revue
@@ -125,10 +125,9 @@ Si T2 n'apporte pas assez de bénéfice ou coûte trop cher, **GO-B-T1** reste u
 ## 9. État Git
 La branche `spike/s0-causality` est à un commit devant son merge-base mais derrière les derniers commits de `main`. Ne pas la fusionner telle quelle. Conserver le spike isolé, exécuter S0.1 sur cette branche ou une branche dérivée, puis seulement réconcilier avec `main` après décision.
 
-## 10. Décisions produit à valider
-Recommandations de la direction technique :
-1. **B** — causalité ciblée sur cycles : valider.
-2. **Sticky causal class** — conserver la classe des routes survivantes et la sérialiser : valider.
-3. **T2 44.1 kHz** — si T2 retenu, imposer K≥2 au réseau récursif : valider provisoirement sous benchmark.
-4. **Scope T2** — toutes les arêtes causalement retardées FM/CROSS, et seulement elles : valider.
-5. **T2 lui-même** — ne pas geler avant S0.1.
+## 10. Arbitrages VALIDÉS — 2026-11-24
+1. **B VALIDÉ** — causalité ciblée : seules les arêtes nécessaires pour casser un cycle sont retardées.
+2. **Sticky causal class VALIDÉ** — toute route survivante conserve sa classe Immediate/Delayed; cette classe fait partie de l'état persistant.
+3. **T2 à 44.1 kHz VALIDÉ CONDITIONNELLEMENT** — si T2 est retenu après S0.1, le réseau récursif FM/CROSS doit utiliser au minimum K≥2 à 44.1 kHz; aucun plancher silencieux à 22.676 µs.
+4. **Scope T2 VALIDÉ** — si T2 est retenu, il s'applique à toutes les arêtes causalement retardées des réseaux spécialisés FM/CROSS, et seulement elles.
+5. **T2 lui-même reste NON GELÉ** — décision finale après S0.1. B-T1 reste le repli officiel si T2 ne démontre pas un bénéfice suffisant face à son coût/complexité.
