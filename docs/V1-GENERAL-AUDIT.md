@@ -97,7 +97,7 @@ La décision UI est valide uniquement si ces commandes exposent des mécanismes 
 Evolve est une couche temporaire non persistante avant Commit. Cela protège le preset, mais peut surprendre si l'utilisateur fait Save alors que le son entendu contient une excursion Evolve.
 **À fermer UX/State :** Save doit avertir ou rendre explicite que l'excursion n'est pas intégrée; “Commit & Save” peut être un geste séparé. Ne jamais committer implicitement.
 
-### AUD-A08 — RNG interplateforme
+### AUD-A08 — RNG entre architectures / futur hardware
 Seed + Stream ID + version + compteur est correct, mais la reproductibilité peut diverger si les distributions utilisent des implémentations standard différentes ou des flottants non spécifiés.
 **Correction :** choisir aussi la conversion bits→distribution et la précision numérique canonique; tester golden vectors RNG.
 
@@ -108,6 +108,11 @@ Les captures créatives peuvent grossir fortement les states de plugin avec plus
 ### AUD-A10 — Hardware “mêmes fonctions”
 Le principe est cohérent comme exigence produit, mais il ne faut pas contraindre prématurément le DSP desktop à un processeur hardware inconnu.
 **Contrat :** parité du modèle sonore et du format logique; le hardware n'est choisi que s'il satisfait le manifest de capacités et les benchmarks. Pas de dégradation silencieuse.
+
+
+### AUD-A11 — Plateforme desktop V1 resserrée
+Décision produit validée le 2026-11-24 : macOS Apple Silicon natif uniquement comme cible desktop confirmée, **M1 minimum**. Windows est exclu. Linux n'est pas engagé dans la V1 et ne doit pas augmenter la matrice de CI, de QA ou d'architecture sans décision ultérieure explicite. Intel Mac et Rosetta ne constituent pas des cibles supportées.
+**Impact positif :** matrice de tests fortement réduite, possibilité d'optimiser et benchmarker sur une famille CPU cohérente, moindre dette de packaging/support. **Risque :** marché adressable plus petit; ne pas compenser cela en couplant le cœur DSP à macOS/Accelerate de manière irréversible si cela compromet le futur hardware.
 
 ## 5. Points solides à conserver sans réouverture
 1. Deux moteurs WT XYZ et FM/PM, pas de troisième moteur.
@@ -149,7 +154,7 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence, capacités 
 
 ## 8. Décision GO/NO-GO
 - **GO :** audit, fermeture des contrats manquants, architecture C++ et prototypes R&D isolés.
-- **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, choix hardware définitif, optimisation prématurée ou promesse de compatibilité sonore interplateforme avant benchmarks.
+- **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, choix hardware définitif, optimisation prématurée ou promesse d'identité sonore exacte entre Apple Silicon et futur hardware avant benchmarks.
 
 ## 9. Prochaine mission recommandée
 Créer un **Dossier de fermeture P0 — Core Contracts** qui tranche, sans code :
