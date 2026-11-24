@@ -23,7 +23,7 @@ Mesurer au minimum :
 - M1 base comme machine plancher;
 - une génération Apple Silicon plus récente comme référence recommandée;
 - VST3 uniquement;
-- 44.1 / 48 / 96 kHz au minimum, 192 kHz uniquement si conservé par le contrat final;
+- **44.1 / 48 / 88.2 / 96 kHz officiellement testés**; 192 kHz non garanti en V1;
 - buffers 32 / 64 / 128 / 256 / 512 échantillons selon support de l'environnement;
 - Quality Eco / Normal / High;
 - preset vide, preset courant représentatif, stress WT/FM/Cross, stress Filter/Destruction, stress Global Mod, état maximal cumulé;
