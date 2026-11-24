@@ -1,5 +1,5 @@
 # SUBDESTRUCKT — Core Contracts P0 — QCM de clôture
-Date : 2026-11-24. Statut : **DRAFT / NON VALIDÉ**. Aucun code.
+Date : 2026-11-24. Statut : **VALIDÉ / ARCHIVE DE DÉCISION**. Aucun code.
 But : fermer les contrats fondamentaux avant architecture C++ détaillée. La causalité FM/CROSS est exclue de ce QCM et reste réservée au spike S0.
 
 ## A. Voice / Amp / Note–Tail–Drone
@@ -192,4 +192,4 @@ D. Routage libre.
 **1B 2B 3B 4B 5B 6B 7B 8A 9B 10B 11B 12B 13B 14B 15B 16B 17B 18B 19B 20B 21B 22B 23B 24B 25B 26B 27B 28B 29B 30B**
 
 ## Effet de la validation
-Après validation, ce document devient le contrat P0 officiel. Le baseline et l'audit sont mis à jour. La causalité FM/CROSS reste ouverte et passe au spike S0. Aucun développement intégral n'est autorisé par cette validation seule.
+Validation utilisateur acquise le 2026-11-24 pour la recommandation complète. Le contrat normatif est désormais [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md). La causalité FM/CROSS reste ouverte et passe au spike S0. Ce fichier est conservé comme trace du QCM.
