@@ -40,10 +40,10 @@ Clic/sélection d'un paramètre ouvre ou met à jour le panneau intégré et ré
 Scope et spectre : point de prélèvement explicitement indiqué, sortie par défaut proposée, option WT/FM si validée; échelles et unités, clipping distinct de saturation intentionnelle. XY : carte de banque, position de base/effective, limites et morphing; pas fausse perspective 3D assimilant Z à une dimension stockée. FM : graphe réel, directions, niveaux et feedback, retard selon contrat S0; pas de lien décoratif. Ne pas ajouter de visualisation chaotique avancée en V1. Mesures et dessin hors thread audio; transfert borné, cadence candidate 30 Hz (60 si justifié), réduire cadence lorsque masqué, désactiver analyse coûteuse en vue cachée. Aucune modification DSP due au moniteur. Visualisation purement conceptuelle dans wireframes, étiquetée.
 
 ## 6. Redimensionnement et accessibilité
-Principe VALIDÉ : layout adaptatif, redimensionnement et zoom global. Les valeurs 1440x900 de référence, 960x640 minimum et 75–150% restent des candidats à tester; ne pas promettre compatibilité de toutes combinaisons taille/zoom, adapter layout, panneau Inspector rétractable et scroll local. Haute densité DPI, navigation clavier/focus visible, labels accessibles, valeurs numériques saisissables, infobulles non indispensables, contrastes et daltonisme, pas d'information couleur seule. Pas de réorganisation libre de panneaux. Tester VST3 et standalone **sur macOS Apple Silicon natif uniquement pour la V1**, avec changement DPI/échelle, réouverture et persistance UI; aucun seuil validé à ce stade. Windows est hors périmètre. Linux n'est pas une cible V1 engagée.
+Principe VALIDÉ : layout adaptatif, redimensionnement et zoom global. Les valeurs 1440x900 de référence, 960x640 minimum et 75–150% restent des candidats à tester; ne pas promettre compatibilité de toutes combinaisons taille/zoom, adapter layout, panneau Inspector rétractable et scroll local. Haute densité DPI, navigation clavier/focus visible, labels accessibles, valeurs numériques saisissables, infobulles non indispensables, contrastes et daltonisme, pas d'information couleur seule. Pas de réorganisation libre de panneaux. Tester le **VST3 sur macOS Apple Silicon natif uniquement pour la V1**, avec changement DPI/échelle, réouverture et persistance UI; aucun seuil validé à ce stade. Windows est hors périmètre. Linux n'est pas une cible V1 engagée.
 
 ## 7. Hardware
-Performance = référence fonctionnelle directement transposable au futur hardware 8–12 commandes principales, pas copie graphique exacte. Le logiciel peut exposer des vues Sound Design et Engineering plus profondes sans réduire la parité du moteur sonore. Objectif 8–12 commandes principales, mapping par identifiants stables et unités; quatre macros accessibles, Panic et sortie prioritaires, possibilité encodeurs et affichage contexte/shift à tester. Pas de décision de connectique, processeur, encombrement Eurorack ni nombre définitif de boutons. Si 12 réglages + navigation excèdent le budget total, tester variante 8–10 encodeurs + couche secondaire, sans supprimer fonctionnalités DSP. Éditeur avancé desktop possible, mêmes fonctions sonores. Compatibilité matérielle soumise aux benchmarks.
+La couche Performance reste une façade compacte et immédiatement jouable, mais **aucune contrainte de transposition vers un hardware n'est active dans la phase VSTi actuelle**. L'inspiration hardware demeure purement ergonomique et visuelle. Le logiciel peut exploiter pleinement l'écran, la souris, le clavier et les vues Sound Design / Engineering sans budget physique de 8–12 commandes. Toute reprise d'un projet hardware nécessitera un chapitre séparé et ne modifiera pas rétroactivement les exigences VSTi.
 
 ## 8. Parcours et recette proposés
 | ID | Tâche / condition GO candidate |
@@ -64,7 +64,7 @@ Performance = référence fonctionnelle directement transposable au futur hardwa
 | UX14 | Édition au clavier, focus, saisie précise, contraste et information non chromatique |
 | UX15 | Automation et état de base/effectif cohérents dans toutes les vues |
 | UX16 | Preset et édition dirty, erreurs, ressources absentes et sauvegarde explicites |
-| UX17 | Mapping Performance vers budget physique sans réduction du moteur |
+| UX17 | Performance reste immédiatement jouable sans dépendre d'une contrainte matérielle future |
 | UX18 | Test de tâches sur wireframe, puis prototype fonctionnel et intégration DAW |
 Les seuils temps/actions sont des cibles initiales. Tester utilisateurs novices et expérimentés, mesurer erreurs et temps, ajuster avant gel. Pas de PASS déclaré.
 
@@ -78,7 +78,7 @@ P0 : wireframes et parcours, composants/registre, barre commune, Performance, pa
 4. B — Modulation Overview principalement destiné à comprendre, filtrer et naviguer; édition détaillée dans List/Inspector.
 5. B — Esthétique CRT/laboratoire pour l'identité, mais données modernes, nettes et prioritaires sur l'effet visuel.
 6. B — Layout adaptatif, redimensionnement et zoom global, avec minimum ergonomique déterminé par tests.
-7. B — Couche Performance directement transposable aux 8–12 commandes principales du futur hardware, tandis que le logiciel conserve des niveaux d'édition plus profonds.
+7. B — Décision historique désormais **supersédée** pour la phase actuelle : la couche Performance reste compacte, mais sa transposition hardware est différée et ne constitue plus une contrainte V1 active.
 8. B — Processus obligatoire avant graphisme final : wireframes → tâches mesurées → prototype fonctionnel sans DSP complet → validation → design graphique final.
 
-Ces décisions clôturent les arbitrages fonctionnels UI/UX V1. Restent à mesurer et non à arbitrer : dimensions exactes, seuils de temps/actions, budget graphique, mapping physique final et libellés des deux commandes FM contextuelles. L'architecture logicielle et le plan de développement/recette restent ouverts.
+Ces décisions clôturent les arbitrages fonctionnels UI/UX V1. Restent à mesurer et non à arbitrer : dimensions exactes, seuils de temps/actions, budget graphique, libellés des deux commandes FM contextuelles. L'architecture logicielle et le plan de développement/recette restent ouverts.
