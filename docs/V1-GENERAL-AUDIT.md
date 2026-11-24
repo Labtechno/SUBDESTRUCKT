@@ -127,10 +127,10 @@ Le projet est **sur-dimensionné pour une implémentation monolithique**, mais p
 ## 7. Ordre recommandé après audit
 ### Gate A — Fermeture documentaire ciblée — MAJORITAIREMENT FERMÉE
 AUD-P0-03/04/05/06/07 sont fermés par le Core Contract P0. AUD-P0-01 reste partiel uniquement pour les cinq transformations Z historiques manquantes. Ne pas inventer ces cinq algorithmes.
-### Gate B — Architecture logicielle
-Définir Core DSP indépendant JUCE, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State model, RT/non-RT ownership, telemetry UI.
-### Gate C — Spike S0 causalité
-WT simplifié + 4 sinusoïdes, stratégies A/B, références de délai, SR/oversampling, changement de routage, feedback et déterminisme.
+### Gate B — Architecture logicielle — FORMALISÉE
+[V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) formalise Core DSP indépendant du wrapper, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State, ownership RT/non-RT et télémétrie. Aucun code produit n'est encore validé.
+### Gate C — Spike S0 causalité — PRÊT À EXÉCUTER
+[V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md) définit harness minimal, stratégies A/B, références T1/T2, matrice SR/blocs, invariants, mesures et livrables.
 ### Gate D — Spikes ciblés
 S1 Wavetable/XY/Z, S2 FM/PM, S3 ADAA/wavefolder, S4 Mod Matrix, S5 State/RNG, S6 performance cumulée, S7 prototype ergonomique.
 ### Gate E — Architecture gelée
@@ -141,5 +141,4 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-**Architecture logicielle VST3 — dossier sans code**, puis spike S0.
-Le Core Contract P0 est validé. Il faut maintenant formaliser Core DSP, Voice/Engine state, Event Timeline, Parameter Registry concret, Modulation Graph, State/Asset ownership, frontières RT/non-RT et télémétrie UI. La causalité FM/CROSS reste volontairement un résultat du spike S0 et ne doit pas être décidée sur papier.
+**Exécuter le spike S0 Causalité dans Claude.ai** selon [V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md). À réception du rapport, effectuer une revue indépendante des preuves avant de figer le contrat causal. Ensuite seulement préparer la vertical slice.
