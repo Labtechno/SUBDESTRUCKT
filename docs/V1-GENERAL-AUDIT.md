@@ -21,7 +21,6 @@ La V1 est cohérente artistiquement et techniquement plausible, mais très ambit
 | UI/UX | VERT | Architecture fonctionnelle clôturée; métriques à tester |
 | Temps réel / latence | ROUGE | Politique globale encore incomplète |
 | MIDI / cycle de voix | ROUGE | Plusieurs règles fondamentales restent ouvertes |
-| Portabilité hardware | ORANGE | Bonne stratégie, capacités non benchmarkées |
 | Recette / performance | ORANGE | Critères nombreux, budgets chiffrés manquants |
 
 ## 3. Blocages P0 avant implémentation complète
@@ -97,7 +96,7 @@ La décision UI est valide uniquement si ces commandes exposent des mécanismes 
 Evolve est une couche temporaire non persistante avant Commit. Cela protège le preset, mais peut surprendre si l'utilisateur fait Save alors que le son entendu contient une excursion Evolve.
 **À fermer UX/State :** Save doit avertir ou rendre explicite que l'excursion n'est pas intégrée; “Commit & Save” peut être un geste séparé. Ne jamais committer implicitement.
 
-### AUD-A08 — RNG entre architectures / futur hardware
+### AUD-A08 — RNG reproductible dans le VSTi
 Seed + Stream ID + version + compteur est correct, mais la reproductibilité peut diverger si les distributions utilisent des implémentations standard différentes ou des flottants non spécifiés.
 **Correction :** choisir aussi la conversion bits→distribution et la précision numérique canonique; tester golden vectors RNG.
 
@@ -105,14 +104,12 @@ Seed + Stream ID + version + compteur est correct, mais la reproductibilité peu
 Les captures créatives peuvent grossir fortement les states de plugin avec plusieurs instances.
 **À mesurer :** tailles réelles, compression, limites/pratiques des hôtes, temps de sauvegarde/rappel. Ne pas supposer que la bibliothèque dédupliquée déduplique les états entre instances du DAW.
 
-### AUD-A10 — Hardware “mêmes fonctions”
-Le principe est cohérent comme exigence produit, mais il ne faut pas contraindre prématurément le DSP desktop à un processeur hardware inconnu.
-**Contrat :** parité du modèle sonore et du format logique; le hardware n'est choisi que s'il satisfait le manifest de capacités et les benchmarks. Pas de dégradation silencieuse.
-
+### AUD-A10 — Hardware — périmètre différé
+Décision supersédante du 2026-11-24 : **aucun développement hardware n'est traité dans la phase actuelle**. Les anciennes exigences de parité matérielle ne doivent plus influencer le périmètre, les performances minimales, l'UI, le format de preset ni l'architecture de release du VSTi. Le sujet pourra être rouvert ultérieurement comme projet séparé.
 
 ### AUD-A11 — Plateforme desktop V1 resserrée
 Décision produit validée le 2026-11-24 : macOS Apple Silicon natif uniquement comme cible desktop confirmée, **M1 minimum**. Windows est exclu. Linux n'est pas engagé dans la V1 et ne doit pas augmenter la matrice de CI, de QA ou d'architecture sans décision ultérieure explicite. Intel Mac et Rosetta ne constituent pas des cibles supportées.
-**Impact positif :** matrice de tests fortement réduite, possibilité d'optimiser et benchmarker sur une famille CPU cohérente, moindre dette de packaging/support. **Risque :** marché adressable plus petit; ne pas compenser cela en couplant le cœur DSP à macOS/Accelerate de manière irréversible si cela compromet le futur hardware.
+**Impact positif :** matrice de tests fortement réduite, possibilité d'optimiser et benchmarker sur une famille CPU cohérente, moindre dette de packaging/support. **Risque :** marché adressable plus petit; garder néanmoins une séparation saine entre DSP, host et UI afin de préserver la testabilité et la maintenabilité du VSTi.
 
 ## 5. Points solides à conserver sans réouverture
 1. Deux moteurs WT XYZ et FM/PM, pas de troisième moteur.
@@ -150,11 +147,11 @@ WT simplifié + 4 sinusoïdes, stratégies A/B, références de délai, SR/overs
 ### Gate D — Spikes ciblés
 S1 Wavetable/XY/Z, S2 FM/PM, S3 ADAA/wavefolder, S4 Mod Matrix, S5 State/RNG, S6 performance cumulée, S7 prototype ergonomique.
 ### Gate E — Architecture gelée
-Seulement après mesures : contrats finaux, budgets CPU/RAM/latence, capacités hardware et plan de développement par lots.
+Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de développement VSTi par lots.
 
 ## 8. Décision GO/NO-GO
 - **GO :** audit, fermeture des contrats manquants, architecture C++ et prototypes R&D isolés.
-- **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, choix hardware définitif, optimisation prématurée ou promesse d'identité sonore exacte entre Apple Silicon et futur hardware avant benchmarks.
+- **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
 Créer un **Dossier de fermeture P0 — Core Contracts** qui tranche, sans code :
