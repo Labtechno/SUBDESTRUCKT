@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — Platform & Hardware Requirements V1
+# SUBDESTRUCKT — VSTi Platform Requirements V1
 Date : 2026-11-24. Statut : décisions produit + exigences de benchmark. Aucun benchmark exécuté.
 
 ## 1. Décisions validées
@@ -8,8 +8,8 @@ Date : 2026-11-24. Statut : décisions produit + exigences de benchmark. Aucun b
 - **Windows est hors périmètre produit.**
 - Intel Mac et Rosetta ne sont pas des cibles de compatibilité.
 - Linux n'est pas engagé dans le périmètre V1; toute prise en charge future nécessitera une décision produit explicite et une nouvelle matrice de QA.
-- Formats logiciels actuels : VST3 + standalone macOS. Tout format supplémentaire devra être explicitement arbitré.
-- Le cœur DSP reste portable et indépendant de JUCE et des API macOS afin de préserver la cible hardware future; l'optimisation Apple Silicon peut utiliser des backends spécialisés derrière des interfaces isolées, sans devenir une dépendance du modèle sonore.
+- **Format logiciel actuel : VST3 instrument uniquement. Le standalone est hors périmètre actuel.** Tout format supplémentaire devra être explicitement arbitré.
+- **Le hardware est hors périmètre de la phase actuelle.** Aucun budget de commandes physiques, manifest de capacités hardware, processeur embarqué, Eurorack/Desktop ni portage ne doit être traité ou utilisé comme contrainte. Le DSP reste séparé proprement de l'UI et de l'hôte pour la maintenabilité du VSTi.
 
 ## 2. Philosophie performance
 Le minimum M1 n'est pas une simple condition de lancement. Une machine officiellement supportée doit satisfaire une recette de performance définie.
@@ -22,7 +22,7 @@ Eco reste un mode d'économie CPU / live; il ne doit pas être obligatoire pour 
 Mesurer au minimum :
 - M1 base comme machine plancher;
 - une génération Apple Silicon plus récente comme référence recommandée;
-- VST3 et standalone;
+- VST3 uniquement;
 - 44.1 / 48 / 96 kHz au minimum, 192 kHz uniquement si conservé par le contrat final;
 - buffers 32 / 64 / 128 / 256 / 512 échantillons selon support de l'environnement;
 - Quality Eco / Normal / High;
@@ -45,9 +45,9 @@ Ces valeurs restent candidates et ne sont PAS des décisions utilisateur :
 2. Pas de code conditionnel Windows dans le chemin produit V1.
 3. L'architecture ne doit toutefois pas utiliser macOS comme modèle DSP : filesystem, UI, audio host et accélérations natives restent aux frontières de plateforme.
 4. Les résultats de calcul ne doivent pas dépendre d'une API graphique ou de l'UI.
-5. Les optimisations SIMD Apple Silicon/NEON sont autorisées si une voie de référence portable existe ou si le contrat hardware futur reste possible.
+5. Les optimisations SIMD Apple Silicon/NEON sont autorisées si elles préservent le comportement validé du VSTi et restent testables.
 6. Pas de compatibilité Intel/Rosetta à maintenir ni tester.
-7. Le futur hardware est une seconde cible d'exécution du même modèle sonore, pas une justification pour limiter le desktop avant benchmark.
+7. Aucun travail hardware n'entre dans les critères V1 actuels.
 
 ## 6. Risque produit assumé
-Le choix macOS Apple Silicon réduit volontairement le marché adressable. En contrepartie, il réduit fortement la matrice de support et permet de concentrer le travail sur la qualité DSP, la stabilité, l'UX et le futur hardware. Cette restriction doit rester une décision produit consciente, pas une conséquence accidentelle de code non portable.
+Le choix macOS Apple Silicon réduit volontairement le marché adressable. En contrepartie, il réduit fortement la matrice de support et permet de concentrer le travail sur la qualité DSP, la stabilité et l'UX du VSTi. Cette restriction doit rester une décision produit consciente, pas une conséquence accidentelle de code non portable.
