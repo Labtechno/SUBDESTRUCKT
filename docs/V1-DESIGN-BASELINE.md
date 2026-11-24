@@ -78,3 +78,10 @@ Restent à mesurer : dimensions exactes, seuils d'actions/temps, budget graphiqu
 
 ## 13. Core Contracts P0 — VALIDÉ
 Le contrat normatif [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md) a été validé le 2026-11-24. Il ferme 30 décisions concernant Voice/Amp/Note–Tail–Drone, MIDI/Aftertouch, Quality/Clean-Raw/Oversampling/latence, protection de sortie, Parameter Registry et règles de l'axe Z. La causalité FM/CROSS reste volontairement exclue et doit être résolue par le spike S0. Les cinq transformations Z historiques manquantes restent bloquées, sans invention.
+
+
+## 14. Architecture logicielle VST3 — FORMALISÉE
+Le dossier [V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) définit l'architecture cible sans code : couches Host Adapter / Application / Real-Time Engine / DSP Primitives, Parameter Registry, Event Timeline, VoiceEngine, WT/FM/CROSS, ModulationGraph, State/Asset/Quality/Safety/Telemetry, ownership et frontières RT/non-RT. Cette architecture autorise les spikes R&D et la future vertical slice, mais pas le développement monolithique complet.
+
+## 15. Spike S0 Causalité — MISSION PRÉPARÉE
+Le dossier [V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md) définit le prototype expérimental obligatoire pour comparer stratégie A (retard systématique) et B (retard ciblé sur cycles), croisées avec T1 (1 sample hôte) et T2 (20.833333 µs physique). Le résultat attendu est GO-A-T1, GO-A-T2, GO-B-T1, GO-B-T2 ou NO-GO. Aucun contrat causal final n'est encore validé.
