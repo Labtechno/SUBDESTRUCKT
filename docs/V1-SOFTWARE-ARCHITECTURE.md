@@ -185,7 +185,7 @@ Responsable de :
 - Cross Audio Mix/Crossfade/Ring/AM;
 - Cross Reset.
 
-Le CrossEngine expose une interface abstraite de résolution causale afin que S0 puisse comparer les stratégies sans réécrire tout le moteur.
+**Contrat causal validé : stratégie B.** Le graphe spécialisé FM/CROSS compile uniquement les arêtes nécessaires pour casser les cycles en classe Delayed; les autres restent Immediate. La classe causale d'une route est sticky et persistante : une route survivante conserve sa classe lors d'une transaction ultérieure. Les objets de configuration doivent donc sérialiser au minimum StableRouteID + CausalClass, avec validation que le sous-graphe Immediate reste acyclique.
 
 ### 3.8 ProcessingChain
 Trois emplacements logiques :
@@ -537,8 +537,8 @@ Cette structure peut évoluer; ce qui est normatif est la séparation des respon
 - worst-case stress configurations.
 
 ## 13. Décisions explicitement NON prises ici
-- stratégie causale FM/CROSS;
-- délai de feedback hôte vs durée physique;
+- référence temporelle finale des arêtes retardées : T1 vs T2;
+- implémentation finale du délai fractionnaire si T2 est retenu;
 - choix PCG32 vs xoshiro;
 - modèle chaos;
 - cinq transformations Z manquantes;
@@ -557,8 +557,8 @@ Core Contracts P0 validés. **PASS documentaire.**
 ### ARCH-G1 — Architecture
 Ce document doit être accepté comme architecture cible avant code produit.
 
-### ARCH-G2 — S0 Causality
-Obligatoire avant figer FmEngine/CrossEngine runtime.
+### ARCH-G2 — S0 Causality — PARTIELLEMENT PASS
+Stratégie B + classification sticky validées. La référence T1/T2 reste ouverte et nécessite S0.1 avant gel complet du runtime FM/CROSS.
 
 ### ARCH-G3 — Vertical Slice
 MIDI mono → WT simple → 2 OP FM → CROSS → Amp → Output → preset minimal → UI diagnostic.
@@ -569,4 +569,4 @@ Seulement après vertical slice et tests.
 ## 15. Verdict
 Cette architecture réduit le risque principal du projet : que l'UI, le host, les presets et les algorithmes DSP deviennent mutuellement dépendants.
 
-**Recommandation : GO pour le spike S0 et pour la préparation de la vertical slice après S0. NO-GO pour l'implémentation complète des moteurs tant que S0 n'a pas sélectionné le contrat causal.**
+**Recommandation : GO pour S0.1. NO-GO pour la vertical slice tant que T1/T2 et la politique de transition topologique ne sont pas closes.**
