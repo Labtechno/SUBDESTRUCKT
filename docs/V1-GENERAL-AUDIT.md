@@ -19,14 +19,14 @@ La V1 est cohérente artistiquement et techniquement plausible, mais très ambit
 | Global Modulation | VERT-ORANGE | Contrat solide, budget audio-rate non mesuré |
 | Preset / State | VERT | Modèle logique cohérent; format physique et budgets ouverts |
 | UI/UX | VERT | Architecture fonctionnelle clôturée; métriques à tester |
-| Temps réel / latence | ROUGE | Politique globale encore incomplète |
-| MIDI / cycle de voix | ROUGE | Plusieurs règles fondamentales restent ouvertes |
+| Temps réel / latence | ORANGE | Contrat P0 fermé; budgets et résultats de benchmark encore ouverts |
+| MIDI / cycle de voix | VERT | Contrat P0 fermé; implémentation et tests à venir |
 | Recette / performance | ORANGE | Critères nombreux, budgets chiffrés manquants |
 
 ## 3. Blocages P0 avant implémentation complète
 
 ### AUD-P0-01 — Catalogue Z exact et contrat de chaque transformation
-Le référentiel valide huit transformations Z, deux simultanées, mais seuls Harmonic Fold, Phase Warp et Spectral Mutation sont attestés dans la documentation consolidée. Les cinq autres ne doivent pas être inventées.
+Le contrat P0 confirme huit transformations Z visées, deux slots en série avec ordre A→B ou B→A. Harmonic Fold, Phase Warp et Spectral Mutation sont verrouillées; cinq transformations historiques restent introuvables et ne doivent pas être inventées.
 À fermer : noms exacts, domaine d'entrée/sortie, neutralité à zéro, paramètres, préservation fondamentale, compensation de gain, compatibilité audio-rate, comportement DC/Nyquist, ordre de composition et coûts/caches.
 **Gate :** aucune implémentation définitive du WT Engine avant réconciliation du catalogue d'origine.
 
@@ -35,33 +35,20 @@ Deux stratégies restent volontairement ouvertes : tous liens retardés vs retar
 À démontrer : déterminisme, indépendance à la taille de bloc, transitions de routage, stabilité à haute profondeur, comportement selon SR/oversampling, coût CPU, absence de dépendance instantanée avec délai fractionnaire.
 **Gate : S0 obligatoire.** Le résultat devient un contrat interne unique, pas une option utilisateur.
 
-### AUD-P0-03 — Cycle de voix / Amp / Note Off
-Le placement exact de l'enveloppe Amp et les règles de Note/Tail/Drone ne sont pas complètement définis.
-À fermer : ordre Amp par rapport aux traitements locaux/Cross/global, ce qui continue après Note Off, durée/condition de Tail, interaction avec Freeze/selfosc/résonateurs, legato/retrigger et comportement de Panic.
-**Risque :** son, presets et queues incompatibles selon les modules.
+### AUD-P0-03 — Cycle de voix / Amp / Note Off — FERMÉ CONTRACTUELLEMENT
+Fermé par [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md) : Amp avant les générateurs de tails, Note Off sans reset des états DSP, Tail guidé par énergie, états autonomes armés explicitement, Drone via Gate normal, Panic avec rampe anti-click puis purge. Les seuils d'énergie et garde-fous temporels sont des valeurs d'implémentation à mesurer, pas des arbitrages produit.
 
-### AUD-P0-04 — Contrat MIDI et expressivité
-Pitch bend, velocity, principaux CC et microtuning sont définis, mais l'Aftertouch reste contradictoire dans l'historique consolidé. MPE n'est pas validé par le cahier des charges.
-À fermer : Aftertouch oui/non, Channel vs Poly Pressure si oui, plage pitch bend et politique preset/application, sample offsets MIDI, priorité et ordre des événements simultanés, comportement MIDI Learn.
-**Règle :** ne pas ajouter MPE par extrapolation.
+### AUD-P0-04 — Contrat MIDI et expressivité — FERMÉ CONTRACTUELLEMENT
+Channel Pressure global validé; MPE exclu V1; Pitch Bend Up/Down par preset, défaut ±2 demi-tons; événements sample-accurate; ordre déterministe au même sample; MIDI Learn global/utilisateur séparé des presets.
 
-### AUD-P0-05 — Latence, qualité et oversampling
-Trois notions doivent être séparées :
-1. **Quality** = précision/coût du moteur.
-2. **Clean/Raw ou Controlled/Raw** = choix artistique d'aliasing/caractère.
-3. **Oversampling local** = nécessité algorithmique.
-Le cahier contient une horloge WT/FM commune candidate 1x/2x/4x et des facteurs locaux différents pour certains processeurs. Il manque un contrat global de conversion, alignement, latence hôte et changement de qualité.
-À fermer : latence maximale, déclaration VST3, compensation des voies dry/wet et WT/FM, changement de qualité pendant lecture, processors FFT, fréquence de contrôle, politique de resampling.
+### AUD-P0-05 — Latence, qualité et oversampling — FERMÉ CONTRACTUELLEMENT
+Quality = préférence d'instance/projet; Clean/Raw = paramètre artistique du preset; oversampling = politique interne par moteur/algorithme. Les changements de Quality sont préparés hors RT avec transition contrôlée. La latence VST3 suit la configuration active avec alignement interne. 44.1/48/88.2/96 kHz sont les rates officiellement testés; 192 kHz n'est pas garanti. **Reste à mesurer :** facteurs réels, latence maximale, coût CPU et stratégies de resampling.
 
-### AUD-P0-06 — Protection de sortie et headroom
-Les protections numériques internes sont validées, mais la protection finale de sortie reste ouverte.
-À fermer : headroom nominal, gestion DC, denormals, saturation de sécurité éventuelle, limiter musical optionnel vs protection hard non désactivable, comportement Panic et overflow.
-**Principe :** une protection de sûreté ne doit pas devenir un effet sonore caché.
+### AUD-P0-06 — Protection de sortie et headroom — FERMÉ CONTRACTUELLEMENT
+Headroom nominal cible ~-12 dBFS; protection denormals et garde DC transparents là où nécessaire; >0 dBFS autorisé en float avec alerte/mètre; le garde-fou obligatoire ne traite que les états numériques dangereux; limiteur musical optionnel et distinct. Les seuils exacts restent à tester.
 
-### AUD-P0-07 — Registre canonique des paramètres
-Le projet dépend d'identifiants stables pour modulation, presets, automation, hardware, UI et migration. Le registre est spécifié conceptuellement mais pas encore figé.
-Chaque paramètre doit déclarer au minimum : StableID, type, unité, domaine de sommation, plage de base, plage artistique, borne DSP, valeur défaut, rate capabilities, smoothing, automation, randomization, preset scope, version, disponibilité conditionnelle.
-**Gate :** créer le registre avant l'implémentation définitive des moteurs, sinon dette de migration quasi certaine.
+### AUD-P0-07 — Registre canonique des paramètres — FERMÉ AU NIVEAU DU SCHÉMA
+StableID explicites/immuables; host automatise Base Value; Effective Value calculée; paramètres structurels événementiels/transactionnels; métadonnées complètes obligatoires; routes incompatibles conservées inactives avec raison. **Gate maintenu :** produire le registre concret avant l'implémentation définitive des moteurs.
 
 ## 4. Incohérences / ambiguïtés à corriger
 
@@ -138,8 +125,8 @@ Le projet est **sur-dimensionné pour une implémentation monolithique**, mais p
 - Les algorithmes P1 ne doivent jamais bloquer la validation du noyau P0.
 
 ## 7. Ordre recommandé après audit
-### Gate A — Fermeture documentaire ciblée
-Résoudre seulement AUD-P0-01, 03, 04, 05, 06 et 07. Ne pas ouvrir de nouveaux moteurs.
+### Gate A — Fermeture documentaire ciblée — MAJORITAIREMENT FERMÉE
+AUD-P0-03/04/05/06/07 sont fermés par le Core Contract P0. AUD-P0-01 reste partiel uniquement pour les cinq transformations Z historiques manquantes. Ne pas inventer ces cinq algorithmes.
 ### Gate B — Architecture logicielle
 Définir Core DSP indépendant JUCE, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State model, RT/non-RT ownership, telemetry UI.
 ### Gate C — Spike S0 causalité
@@ -154,11 +141,5 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-Créer un **Dossier de fermeture P0 — Core Contracts** qui tranche, sans code :
-1. cycle de voix / Amp / Note-Tail-Drone;
-2. contrat MIDI/Aftertouch;
-3. qualité / Clean-Raw / oversampling / latence;
-4. protection de sortie;
-5. schéma canonique du Parameter Registry;
-6. réconciliation exacte du catalogue Z.
-La causalité FM/Cross reste volontairement un résultat du spike S0 et ne doit pas être “décidée sur papier”.
+**Architecture logicielle VST3 — dossier sans code**, puis spike S0.
+Le Core Contract P0 est validé. Il faut maintenant formaliser Core DSP, Voice/Engine state, Event Timeline, Parameter Registry concret, Modulation Graph, State/Asset ownership, frontières RT/non-RT et télémétrie UI. La causalité FM/CROSS reste volontairement un résultat du spike S0 et ne doit pas être décidée sur papier.
