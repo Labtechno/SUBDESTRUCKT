@@ -18,6 +18,9 @@ $(BIN)/s01_cli: src/s01_cli.cpp $(HDR)
 $(BIN)/s01_bench: bench/s01_bench.cpp $(HDR)
 	@mkdir -p $(BIN)
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
+$(BIN)/s01_bench_matrix: bench/s01_bench_matrix.cpp $(HDR)
+	@mkdir -p $(BIN)
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
 
 test: $(BIN)/s01_tests
 	./$(BIN)/s01_tests
@@ -27,6 +30,12 @@ bench-m1:
 	$(MAKE) clean
 	$(MAKE) $(BIN)/s01_bench CXX=clang++ ARCHFLAGS=-mcpu=apple-m1
 	./$(BIN)/s01_bench data/bench_m1.csv
+
+# Benchmark matriciel T1/T2 (bench/THRESHOLDS.md), Release ARM64 natif. Utilisé par .github/workflows/s01-bench-m1.yml.
+RELFLAGS = -std=c++17 -O3 -DNDEBUG -Wall -Wextra -ffp-contract=off -mcpu=apple-m1 -Iinclude -I../s0/include
+release-arm64:
+	$(MAKE) clean
+	$(MAKE) $(BIN)/s01_tests $(BIN)/s01_bench_matrix CXX=clang++ CXXFLAGS="$(RELFLAGS)"
 
 clean:
 	rm -rf $(BIN)
