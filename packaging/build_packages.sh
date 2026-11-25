@@ -60,10 +60,13 @@ done
 echo "== etape 3 : paquets composants"
 pkgbuild --analyze --root "$ROOT" "$WORK/component.plist"
 plutil -p "$WORK/component.plist"
-/usr/libexec/PlistBuddy -c "Set :0:BundleIsRelocatable false" "$WORK/component.plist"   # jamais relocalisé ailleurs
-/usr/libexec/PlistBuddy -c "Set :0:BundleIsVersionChecked false" "$WORK/component.plist" # le retour arrière est averti par la Distribution
-/usr/libexec/PlistBuddy -c "Set :0:BundleOverwriteAction upgrade" "$WORK/component.plist"
-/usr/libexec/PlistBuddy -c "Set :0:BundleHasStrictIdentifier true" "$WORK/component.plist"
+# plutil -replace crée ou remplace la clé (pkgbuild --analyze n'écrit pas toujours BundleIsRelocatable)
+plutil -replace 0.BundleIsRelocatable -bool NO "$WORK/component.plist"        # jamais relocalisé vers une autre copie
+plutil -replace 0.BundleIsVersionChecked -bool NO "$WORK/component.plist"     # retour arrière averti par la Distribution
+plutil -replace 0.BundleOverwriteAction -string upgrade "$WORK/component.plist"
+plutil -replace 0.BundleHasStrictIdentifier -bool YES "$WORK/component.plist"
+plutil -p "$WORK/component.plist"
+[ "$(plutil -extract 0.BundleIsRelocatable raw "$WORK/component.plist")" = "false" ] || { echo "ECHEC BundleIsRelocatable"; exit 1; }
 mkdir -p "$WORK/pkgs"
 pkgbuild --root "$ROOT" --component-plist "$WORK/component.plist" --identifier com.labtechno.subdestruckt.vst3 \
   --version "$PKG_VERSION" --install-location / --scripts "$OUT/scripts/installer" \
