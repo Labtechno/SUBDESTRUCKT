@@ -1,0 +1,29 @@
+#!/bin/bash
+# SUBDESTRUCKT — Installer.pkg — preinstall : précontrôles et sauvegarde de l'installation antérieure.
+# Arguments de l'Installer macOS : $1 paquet, $2 emplacement d'installation, $3 volume cible.
+set -u
+SBD_SCRIPT=preinstall
+. "$(dirname "$0")/common.sh"
+sbd_init_paths "${3:-/}"
+
+if [ "$(uname -m)" != "arm64" ]; then sbd_log "refus : architecture $(uname -m) (arm64 natif exige)"; exit 11; fi
+if [ "$(sbd_vercmp "$(sw_vers -productVersion)" "$SBD_MIN_MACOS")" = "-1" ]; then
+  sbd_log "refus : macOS $(sw_vers -productVersion) < $SBD_MIN_MACOS (version declaree, non validee)"; exit 12
+fi
+
+sbd_identify; state=$?
+case $state in
+  0) sbd_log "installation initiale de $SBD_BUILD_ID" ;;
+  1)
+    if sbd_in_use; then sbd_log "refus : le plugin est charge par un processus (fermez la DAW puis relancez l'installation)"; exit 13; fi
+    prev="$(sbd_plist "$SBD_BUNDLE" CFBundleShortVersionString) (build $(sbd_plist "$SBD_BUNDLE" CFBundleVersion))"
+    if sbd_installed_is_newer; then sbd_log "avertissement : retour a une version plus ancienne ($prev -> $SBD_BUILD_ID)"; fi
+    mkdir -p "$(dirname "$SBD_BACKUP")" || { sbd_log "echec : creation du dossier de sauvegarde"; exit 14; }
+    rm -rf "$SBD_BACKUP"
+    if ! cp -Rp "$SBD_BUNDLE" "$SBD_BACKUP"; then sbd_log "echec : sauvegarde de l'installation anterieure impossible"; exit 15; fi
+    sbd_log "mise a jour / reinstallation depuis $prev ; sauvegarde : $SBD_BACKUP"
+    ;;
+  2) sbd_log "refus : $SBD_BUNDLE est un lien symbolique (aucun lien suivi, rien modifie)"; exit 16 ;;
+  *) sbd_log "refus : $SBD_BUNDLE est un element non identifie ou d'un tiers (rien modifie)"; exit 17 ;;
+esac
+exit 0

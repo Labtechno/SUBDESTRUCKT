@@ -25,6 +25,15 @@
 #include "Telemetry.h"
 #include "TopologyExchange.h"
 
+// Annotation RealtimeSanitizer (LLVM >= 20, -fsanitize=realtime) : process() est un contexte temps réel ; toute
+// allocation, libération, prise de verrou ou I/O dans son étendue dynamique est signalée. Active seulement dans le job
+// CI dédié (-DSBD_RTSAN) pour ne pas bruiter la compilation normale.
+#if defined(SBD_RTSAN) && defined(__clang__)
+#define SBD_NONBLOCKING [[clang::nonblocking]]
+#else
+#define SBD_NONBLOCKING
+#endif
+
 namespace sbd {
 
 struct EngineSetup {
@@ -57,7 +66,7 @@ class Engine {
   // ---- RT
   void setParameters(const ParamValues& base) noexcept;  // valeurs Base -> cibles des rampes
   void process(float* outL, float* outR, int numSamples, const MidiEvent* events, int numEvents,
-               double* preDcTap = nullptr) noexcept;
+               double* preDcTap = nullptr) noexcept SBD_NONBLOCKING;
 
   // ---- crochets de test (sans effet en usage normal)
   void testSetPoison(bool on) noexcept { poison_ = on; }

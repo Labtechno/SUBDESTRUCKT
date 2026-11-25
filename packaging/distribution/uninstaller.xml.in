@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SUBDESTRUCKT — Distribution du désinstallateur (paquet sans charge utile). Champs @...@ remplacés à la construction. -->
+<installer-gui-script minSpecVersion="2">
+  <title>Désinstallation de SUBDESTRUCKT (désinstallateur @BUILD_ID@)</title>
+  <organization>com.labtechno</organization>
+  <welcome file="uninstaller_welcome.html" mime-type="text/html"/>
+  <conclusion file="uninstaller_conclusion.html" mime-type="text/html"/>
+  <options customize="never" require-scripts="true" hostArchitectures="arm64" rootVolumeOnly="true"/>
+  <domains enable_localSystem="true" enable_currentUserHome="false" enable_anywhere="false"/>
+  <installation-check script="sbdUninstallCheck()"/>
+  <script><![CDATA[
+var SBD_PATH = '/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3';
+var SBD_ID = 'com.labtechno.subdestruckt';
+var SBD_VERSION = '@VERSION@';
+var SBD_BUILD = '@BUILD@';
+function sbdUninstallCheck() {
+  if (!system.files.fileExistsAtPath(SBD_PATH)) {
+    my.result.title = 'SUBDESTRUCKT n\'est pas installé';
+    my.result.message = 'Aucun plugin SUBDESTRUCKT n\'a été trouvé dans ' + SBD_PATH + '. Rien n\'a été supprimé.';
+    my.result.type = 'Fatal';
+    return false;
+  }
+  var b = system.files.bundleAtPath(SBD_PATH);
+  if (!b || b.CFBundleIdentifier != SBD_ID) {
+    my.result.title = 'Élément non identifié';
+    my.result.message = 'L\'élément présent dans ' + SBD_PATH + ' n\'est pas le plugin SUBDESTRUCKT. Rien n\'a été supprimé.';
+    my.result.type = 'Fatal';
+    return false;
+  }
+  var cmp = system.compareVersions(b.CFBundleShortVersionString, SBD_VERSION);
+  if (cmp > 0 || (cmp == 0 && system.compareVersions(b.CFBundleVersion, SBD_BUILD) > 0)) {
+    my.result.title = 'Version installée plus récente';
+    my.result.message = 'La version installée (' + b.CFBundleShortVersionString + ', build ' + b.CFBundleVersion + ') est plus récente que ce désinstallateur. Utilisez le désinstallateur livré avec la version installée. Rien n\'a été supprimé.';
+    my.result.type = 'Fatal';
+    return false;
+  }
+  return true;
+}
+]]></script>
+  <choices-outline>
+    <line choice="default"/>
+  </choices-outline>
+  <choice id="default" title="Désinstaller SUBDESTRUCKT">
+    <pkg-ref id="com.labtechno.subdestruckt.uninstaller"/>
+  </choice>
+  <pkg-ref id="com.labtechno.subdestruckt.uninstaller" version="@PKG_VERSION@" onConclusion="none">subdestruckt-uninstall-component.pkg</pkg-ref>
+</installer-gui-script>

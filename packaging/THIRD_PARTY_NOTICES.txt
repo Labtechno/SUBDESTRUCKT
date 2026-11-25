@@ -1,0 +1,14 @@
+SUBDESTRUCKT — mentions des composants tiers (build interne ARCH-G3)
+=====================================================================
+
+JUCE 9.0.6 (commit 654bdbc7a9db0dae90849b44abe91f339e9f0768)
+  Raw Material Software Limited. Cadre d'intégration (wrapper VST3, UI).
+  Double licence : AGPLv3 (https://www.gnu.org/licenses/agpl-3.0.en.html) ou licence commerciale JUCE 9
+  (https://juce.com/legal/juce-9-licence/). Le choix de licence pour SUBDESTRUCKT n'est PAS encore arbitré :
+  cette build est réservée à la recette interne et ne doit pas être distribuée publiquement.
+
+Steinberg VST 3 SDK 3.8.0 (fourni avec JUCE)
+  Copyright (c) Steinberg Media Technologies GmbH. Licence MIT.
+  VST est une marque déposée de Steinberg Media Technologies GmbH.
+
+Le code propre à SUBDESTRUCKT n'est accompagné d'aucune licence de diffusion à ce stade.

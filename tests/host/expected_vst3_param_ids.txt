@@ -1,0 +1,25 @@
+# SUBDESTRUCKT — identifiants VST3 attendus (G-22). StableID -> ParamID VST3.
+# Calcul indépendant de JUCE : h = 31*h + code du caractère (32 bits), puis masque 0x7fffffff
+# (wrapper JUCE 9.0.6, JUCE_USE_STUDIO_ONE_COMPATIBLE_PARAMETERS=1). Ne jamais modifier : identité persistante.
+amp.attack 1358452146
+amp.decay 1639422736
+amp.sustain 133294073
+amp.release 928296413
+amp.velocity 1397977543
+out.gain 8795679
+wt.level 379534643
+op1.level 820093574
+op2.level 1707597255
+op1.ratio 825513741
+op2.ratio 1713017422
+fm.op2_op1.depth 1833549968
+fm.op1_op2.depth 223037712
+fm.op1_op1.depth 1483017679
+fm.op2_op2.depth 573570001
+cross.wt_op1.depth 1358079441
+cross.wt_op2.depth 98099474
+cross.op1_wt.depth 1170417743
+cross.op2_wt.depth 973904238
+cross.master 959672272
+cross.fwd 1396240133
+cross.rev 1396251125

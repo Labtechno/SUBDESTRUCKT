@@ -1,0 +1,37 @@
+#!/bin/bash
+# SUBDESTRUCKT — Uninstaller.pkg (sans charge utile) — désinstallation ciblée et vérifiable.
+# Ne supprime que : le bundle /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 identifié, le manifeste d'installation
+# du produit, le dossier produit s'il est vide, et le reçu exact com.labtechno.subdestruckt.vst3.
+# Ne touche jamais : données personnelles, presets, projets DAW, préférences, autres plugins, dossiers partagés.
+set -u
+SBD_SCRIPT=uninstall
+. "$(dirname "$0")/common.sh"
+sbd_init_paths "${3:-/}"
+
+sbd_identify; state=$?
+case $state in
+  0) sbd_log "aucune installation de SUBDESTRUCKT detectee : rien n'a ete supprime"; exit 30 ;;
+  2) sbd_log "refus : $SBD_BUNDLE est un lien symbolique (non suivi, rien supprime)"; exit 31 ;;
+  3) sbd_log "refus : $SBD_BUNDLE n'est pas un bundle SUBDESTRUCKT identifie (rien supprime)"; exit 32 ;;
+esac
+if sbd_installed_is_newer; then
+  sbd_log "refus : version installee $(sbd_plist "$SBD_BUNDLE" CFBundleShortVersionString) (build $(sbd_plist "$SBD_BUNDLE" CFBundleVersion)) plus recente que ce desinstallateur ($SBD_BUILD_ID) : utilisez le desinstallateur de la version installee"
+  exit 33
+fi
+if sbd_in_use; then sbd_log "refus : le plugin est charge par un processus (fermez la DAW puis relancez)"; exit 34; fi
+
+removed=""
+rm -rf "$SBD_BUNDLE" || { sbd_log "echec : suppression du bundle"; exit 35; }
+[ -e "$SBD_BUNDLE" ] && { sbd_log "echec : le bundle est toujours present"; exit 36; }
+removed="$SBD_BUNDLE"
+if [ -f "$SBD_MANIFEST" ]; then rm -f "$SBD_MANIFEST" && removed="$removed, $SBD_MANIFEST"; fi
+rmdir "$SBD_SUPPORT" 2>/dev/null && removed="$removed, $SBD_SUPPORT (vide)"
+rmdir "$SBD_SUPPORT_PARENT" 2>/dev/null && removed="$removed, $SBD_SUPPORT_PARENT (vide)"
+# bac à sable de test (variable absente de l'environnement de l'Installer) : la base de reçus du système n'est pas touchée
+if [ "${SBD_TEST_SANDBOX:-0}" != "1" ]; then
+  if /usr/sbin/pkgutil --volume "${3:-/}" --pkg-info "$SBD_RECEIPT_ID" >/dev/null 2>&1; then
+    /usr/sbin/pkgutil --volume "${3:-/}" --forget "$SBD_RECEIPT_ID" >/dev/null 2>&1 && removed="$removed, recu $SBD_RECEIPT_ID"
+  fi
+fi
+sbd_log "desinstallation terminee ; supprime : $removed ; donnees personnelles conservees"
+exit 0

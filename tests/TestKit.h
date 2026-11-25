@@ -19,13 +19,14 @@ inline State& state() {
   return s;
 }
 
-// Compteur d'allocations (operator new global surchargé dans l'exécutable de test).
+// Compteur d'allocations (operator new global surchargé dans l'exécutable de test). Le comptage est propre au thread
+// qui l'active (le thread « audio » du test) : les allocations d'autres threads (minuteries JUCE, etc.) sont ignorées.
 inline std::atomic<bool>& countingAllocations() {
-  static std::atomic<bool> on{false};
+  static thread_local std::atomic<bool> on{false};
   return on;
 }
 inline std::atomic<long long>& allocationCount() {
-  static std::atomic<long long> n{0};
+  static thread_local std::atomic<long long> n{0};
   return n;
 }
 

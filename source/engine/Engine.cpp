@@ -136,7 +136,7 @@ void Engine::setParameters(const ParamValues& base) noexcept {
 }
 
 void Engine::process(float* outL, float* outR, int numSamples, const MidiEvent* events, int numEvents,
-                     double* preDcTap) noexcept {
+                     double* preDcTap) noexcept SBD_NONBLOCKING {
   if (numSamples <= 0) return;
   if (!setup_.supported) {
     for (int i = 0; i < numSamples; ++i) {

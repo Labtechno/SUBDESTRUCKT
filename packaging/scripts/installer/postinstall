@@ -1,0 +1,46 @@
+#!/bin/bash
+# SUBDESTRUCKT — Installer.pkg — postinstall : vérification de l'installation, manifeste, ou restauration.
+set -u
+SBD_SCRIPT=postinstall
+. "$(dirname "$0")/common.sh"
+sbd_init_paths "${3:-/}"
+
+fail_and_restore() {
+  sbd_log "ECHEC de verification : $1"
+  if [ -d "$SBD_BACKUP" ]; then
+    rm -rf "$SBD_BUNDLE" && mv "$SBD_BACKUP" "$SBD_BUNDLE" && sbd_log "installation anterieure restauree" \
+      || sbd_log "restauration impossible : reinstaller la version precedente (sauvegarde : $SBD_BACKUP)"
+  else
+    if [ -d "$SBD_BUNDLE" ] && [ "$(sbd_plist "$SBD_BUNDLE" CFBundleIdentifier)" = "$SBD_EXPECTED_ID" ]; then
+      rm -rf "$SBD_BUNDLE" && sbd_log "installation incomplete retiree (aucune installation anterieure)"
+    fi
+  fi
+  exit 20
+}
+
+sbd_identify; state=$?
+[ "$state" = "1" ] || fail_and_restore "bundle absent ou non identifie apres installation"
+[ "$(sbd_plist "$SBD_BUNDLE" CFBundleShortVersionString)" = "$SBD_VERSION" ] || fail_and_restore "version inattendue"
+[ "$(sbd_plist "$SBD_BUNDLE" CFBundleVersion)" = "$SBD_BUILD" ] || fail_and_restore "numero de build inattendu"
+[ -f "$SBD_BINARY" ] || fail_and_restore "binaire absent"
+[ "$(/usr/bin/lipo -archs "$SBD_BINARY" 2>/dev/null)" = "arm64" ] || fail_and_restore "binaire non arm64"
+/usr/bin/codesign --verify --strict "$SBD_BUNDLE" 2>/dev/null || fail_and_restore "signature (ad hoc) invalide"
+
+mkdir -p "$SBD_SUPPORT" || fail_and_restore "dossier du manifeste"
+{
+  echo "# SUBDESTRUCKT — manifeste d'installation (format 1). Utilise par le desinstallateur."
+  echo "manifest_format=1"
+  echo "product=SUBDESTRUCKT"
+  echo "version=$SBD_VERSION"
+  echo "build=$SBD_BUILD"
+  echo "build_id=$SBD_BUILD_ID"
+  echo "commit=$SBD_COMMIT"
+  echo "bundle_id=$SBD_EXPECTED_ID"
+  echo "receipt=$SBD_RECEIPT_ID"
+  echo "installed_path=/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3"
+  echo "binary_sha256=$(/usr/bin/shasum -a 256 "$SBD_BINARY" | cut -d' ' -f1)"
+  echo "installed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+} > "$SBD_MANIFEST" || fail_and_restore "ecriture du manifeste"
+rm -rf "$(dirname "$SBD_BACKUP")"
+sbd_log "installation verifiee : $SBD_BUILD_ID ($SBD_COMMIT), manifeste $SBD_MANIFEST"
+exit 0
