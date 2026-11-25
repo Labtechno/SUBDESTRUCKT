@@ -1,0 +1,116 @@
+<section class="chapter" id="ch-08">
+<header><p class="kicker">Chapitre 8</p><h1>CROSS : le cœur de SUBDESTRUCKT</h1>
+<p class="lead">Deux moteurs que l'on se contenterait de mélanger resteraient deux sons côte à côte. CROSS les fait réagir l'un sur l'autre : c'est là que naît le caractère de SUBDESTRUCKT.</p></header>
+
+<h2>Mélanger ou faire interagir</h2>
+<p>Mélanger, c'est additionner : WT + FM. Faire interagir, c'est laisser un moteur <em>déformer</em> l'autre en temps réel. Avec CROSS, la forme d'onde de la WT peut moduler la phase des opérateurs FM, et les opérateurs peuvent moduler la phase de la WT. Le résultat n'est ni la WT ni le FM : c'est un troisième son, souvent rugueux, métallique, vivant.</p>
+
+<figure>
+<svg class="diagram" viewBox="0 0 860 250" role="img" aria-labelledby="f8t f8d"><title id="f8t">CROSS bidirectionnel</title>
+<desc id="f8d">La WT et le moteur FM (OP1, OP2) sont reliés par deux familles de routes : WT vers FM (WT>OP1, WT>OP2), dosées par l'intensité CROSS WT>FM ; FM vers WT (OP1>WT, OP2>WT), dosées par CROSS FM>WT. CROSS Master multiplie les deux familles.</desc>
+<g font-size="14">
+<rect x="40" y="80" width="170" height="90" rx="8" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="125" y="120" text-anchor="middle">Wavetable</text><text x="125" y="142" text-anchor="middle" class="d" font-size="12">WT</text>
+<rect x="650" y="50" width="170" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="735" y="86" text-anchor="middle">OP1</text>
+<rect x="650" y="140" width="170" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="735" y="176" text-anchor="middle">OP2</text>
+<path d="M212 100 C380 60 480 60 646 78" fill="none" style="stroke:var(--cross)" stroke-width="2.5" marker-end="url(#a8)"/>
+<path d="M212 120 C380 150 480 170 646 168" fill="none" style="stroke:var(--cross)" stroke-width="2.5" marker-end="url(#a8)"/>
+<path d="M648 92 C480 105 380 110 214 132" fill="none" style="stroke:var(--wt)" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#a8)"/>
+<path d="M648 184 C480 210 360 200 214 156" fill="none" style="stroke:var(--wt)" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#a8)"/>
+<text x="430" y="40" text-anchor="middle" style="fill:var(--cross)">WT → FM : WT>OP1, WT>OP2 × « CROSS WT>FM »</text>
+<text x="430" y="240" text-anchor="middle" style="fill:var(--wt)">FM → WT : OP1>WT, OP2>WT × « CROSS FM>WT »</text>
+<text x="430" y="130" text-anchor="middle" font-size="13" class="d">× CROSS Master (les deux sens)</text>
+</g><defs><marker id="a8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Les quatre routes CROSS et leurs dosages.</figcaption></figure>
+
+<h2>Les commandes CROSS</h2>
+<div class="table-wrap"><table><thead><tr><th>Commande</th><th>Plage</th><th>Défaut</th><th>Rôle</th></tr></thead><tbody>
+<tr><td>CROSS WT>OP1, CROSS WT>OP2</td><td>0 à 8 rad</td><td>0,5 / 0</td><td>profondeur de chaque route WT → FM</td></tr>
+<tr><td>CROSS OP1>WT, CROSS OP2>WT</td><td>0 à 8 rad</td><td>0,5 / 0</td><td>profondeur de chaque route FM → WT</td></tr>
+<tr><td>CROSS WT>FM</td><td>0 à 1</td><td>1</td><td>intensité de la direction WT → FM (les deux routes à la fois)</td></tr>
+<tr><td>CROSS FM>WT</td><td>0 à 1</td><td>1</td><td>intensité de la direction FM → WT</td></tr>
+<tr><td>CROSS Master</td><td>0 à 1</td><td>1</td><td>dosage global de tout CROSS</td></tr></tbody></table></div>
+<p>La profondeur réellement appliquée (valeur <strong>Effective</strong>, affichée « Eff » dans la table des routes) vaut : <strong>profondeur × CROSS Master × intensité de la direction</strong>. CROSS Master et les intensités n'agissent que sur les routes CROSS, jamais sur les routes FM internes (OP2>OP1, etc.). Une route doit être présente (bouton +) pour agir.</p>
+
+<h2>Progression pratique</h2>
+<h3>Étape 1 — Entendre chaque moteur seul</h3>
+<p>Refaites les étapes 5 et 6 du chapitre 3 (WT seule, puis FM seul, avec CROSS Master à 0).</p>
+
+<h3>Étape 2 — WT vers FM uniquement</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0</code> ; OP1 Level <code>0.8</code> ; FM OP2>OP1 <code>0</code> ; CROSS FM>WT <code>0</code> ; CROSS WT>OP1 <code>2</code> ; faites varier CROSS WT>FM de 0 à 1.</p>
+<p><strong>À entendre :</strong> on n'entend qu'OP1. À 0, une sinusoïde pure ; à 1, elle est déformée par la dent de scie de la WT et devient riche. La WT agit sans être entendue.</p>
+{{AB:e08_op1_sans_cross|e09_cross_wt_vers_fm|OP1 seul / OP1 modulé par la WT}}
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e08_op1_sans_cross.svg" alt="Spectre d'OP1 sans CROSS : une raie"><figcaption><span class="figlabel meas">Mesure</span>Sans CROSS.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e09_cross_wt_vers_fm.svg" alt="Spectre d'OP1 modulé par la WT : nombreuses raies"><figcaption><span class="figlabel meas">Mesure</span>WT → OP1, 2 rad.</figcaption></figure>
+</div>
+
+<h3>Étape 3 — FM vers WT uniquement</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0.8</code> ; OP1 Level <code>0</code> ; CROSS WT>FM <code>0</code> ; OP1 Ratio <code>1.5</code> ; CROSS OP1>WT <code>2</code> ; faites varier CROSS FM>WT de 0 à 1.</p>
+<p><strong>À entendre :</strong> on n'entend que la WT. OP1, muet, la déforme : la dent de scie devient grinçante, inharmonique avec un ratio 1,5.</p>
+{{AB:e10_wt_sans_cross|e11_cross_fm_vers_wt|WT seule / WT modulée par OP1}}
+
+<h3>Étape 4 — Les deux directions</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0.5</code> ; OP1 Level <code>0.5</code> ; CROSS WT>OP1 <code>1.5</code> ; CROSS OP1>WT <code>1.5</code>.</p>
+<p><strong>À entendre :</strong> les deux moteurs se déforment mutuellement : une boucle de modulation. Le son devient dense et rugueux.</p>
+{{AUDIO:e12_bidirectionnel}}
+
+<h3>Étape 5 — CROSS Master</h3>
+<p>En tenant une note, descendez lentement CROSS Master de 1 à 0. L'interaction diminue progressivement ; à 0, il ne reste que le mélange des moteurs (et les routes FM internes). Le son n'est <strong>jamais coupé</strong> et la note n'est pas relancée : les oscillateurs continuent leur course. Un test automatisé vérifie qu'après le passage à 0 la sortie est identique, échantillon pour échantillon, à celle d'un réglage qui n'aurait jamais eu de CROSS (critère G-13).</p>
+<p>L'exemple ci-dessous est une note tenue pendant laquelle CROSS Master est automatisé de 0 à 1 en 6 secondes :</p>
+{{AUDIO:e15_texture}}
+
+<h3>Étape 6 — Manipuler la topologie</h3>
+<p>La <strong>topologie</strong> est l'ensemble des routes présentes. Dans la table de droite, chaque ligne est une route possible ; « absente » signifie qu'elle n'existe pas. Le bouton + l'ajoute, le bouton − la retire.</p>
+<ol class="steps">
+<li>Preset init : OP2>OP1 « id 1 classe I », WT>OP1 « id 2 classe I », OP1>WT « id 3 classe D ».</li>
+<li>Retirez WT>OP1 (−) : elle devient « absente ». OP1>WT garde sa « classe D ».</li>
+<li>Ajoutez de nouveau WT>OP1 (+) : elle reçoit l'identifiant 4 et la classe I.</li>
+<li>Ajoutez OP1>OP2 : elle referme une boucle avec OP2>OP1 et reçoit la classe D.</li>
+</ol>
+<p>La section « Approfondir » ci-dessous explique ces classes. Retenez : <strong>I</strong> = Immediate (lecture instantanée), <strong>D</strong> = Delayed (lecture avec un retard infime qui rend la boucle calculable).</p>
+<div class="box warn"><span class="tag">Clics</span><p>Ajouter ou retirer une route en jouant passe par un fondu d'environ 2 × 128 échantillons. Aucune absence de clic n'est garantie : notez tout clic perçu pendant la recette (test R-07).</p></div>
+
+<details class="adv"><summary>Graphe, cycle et dépendance instantanée</summary>
+<p>Les oscillateurs et les routes forment un <strong>graphe</strong> : des nœuds (WT, OP1, OP2) reliés par des flèches (routes). À chaque échantillon, le moteur calcule les nœuds dans un ordre tel que chaque source soit calculée avant sa destination.</p>
+<p>Un <strong>cycle</strong> (ou <em>feedback</em>) apparaît lorsque les flèches forment une boucle : WT>OP1 puis OP1>WT. Si toutes les routes de la boucle étaient lues instantanément, chaque nœud aurait besoin du résultat de l'autre au même instant : c'est une <strong>dépendance instantanée</strong>, impossible à calculer.</p></details>
+
+<details class="adv"><summary>Routes Immediate et Delayed</summary>
+<figure>
+<svg class="diagram" viewBox="0 0 860 200" role="img" aria-labelledby="f8bt f8bd"><title id="f8bt">Route Immediate et route Delayed</title>
+<desc id="f8bd">WT envoie sa sortie à OP1 par une route Immediate, lue au même instant. OP1 renvoie sa sortie à WT par une route Delayed, lue avec un retard de 1/48000 de seconde, ce qui casse la dépendance instantanée.</desc>
+<g font-size="14">
+<rect x="120" y="70" width="140" height="60" rx="8" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="190" y="106" text-anchor="middle">WT</text>
+<rect x="600" y="70" width="140" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="670" y="106" text-anchor="middle">OP1</text>
+<path d="M262 86 H596" style="stroke:var(--cross)" stroke-width="3" marker-end="url(#a8b)"/><text x="430" y="76" text-anchor="middle">WT>OP1 — Immediate (I) : même instant</text>
+<path d="M598 116 H264" style="stroke:var(--wt)" stroke-width="3" stroke-dasharray="8 5" marker-end="url(#a8b)"/><text x="430" y="146" text-anchor="middle">OP1>WT — Delayed (D) : retard de 1/48000 s</text>
+<text x="430" y="186" text-anchor="middle" class="d" font-size="12">la boucle reste audible, mais devient calculable</text>
+</g><defs><marker id="a8b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Le réglage initial : la boucle WT ↔ OP1 est rendue calculable par une route Delayed.</figcaption></figure>
+<p>Règle (stratégie « B ») : quand vous ajoutez une route, elle est <strong>Immediate</strong> sauf si elle referme une boucle de routes Immediate, ou si c'est une auto-modulation (OP1>OP1) : elle devient alors <strong>Delayed</strong>. Seules les routes qui en ont besoin sont retardées.</p>
+<p>Analogie : dans une conversation, deux personnes ne peuvent pas répondre chacune à ce que l'autre dit <em>au même instant</em> ; l'une réagit à ce que l'autre vient de dire. Le retard est minuscule (environ 21 microsecondes).</p></details>
+
+<details class="adv"><summary>Classification sticky et StableRouteID</summary>
+<p>Une fois attribuée, la classe d'une route ne change plus tant que la route existe : elle est <strong>sticky</strong> (« collante »). Ainsi, retirer une autre route ne change jamais en silence le son d'une route existante. Exemple : après le retrait de WT>OP1, OP1>WT reste D même si la boucle a disparu.</p>
+<p>Chaque route reçoit un <strong>identifiant stable</strong> (StableRouteID, « id » dans l'interface), strictement croissant, jamais réutilisé tant que l'état n'est pas rechargé. Modifier la source ou la destination d'une route revient à la retirer puis en ajouter une nouvelle (nouvel identifiant). Les identifiants et les classes sont sauvegardés dans le projet ; au chargement, un état incohérent (par exemple une boucle de routes Immediate) est refusé en bloc.</p></details>
+
+<details class="adv"><summary>Contrat causal B-T2, retard de 1/48000 s et Thiran1</summary>
+<p>Le retard des routes Delayed a une durée fixe de <strong>1/48000 s</strong> (≈ 20,83 µs), quelle que soit la fréquence d'échantillonnage : c'est le contrat « B-T2 ». Exprimé en échantillons du moteur, il vaut D = fréquence moteur / 48000 :</p>
+<ul><li>48 kHz : D = 1 échantillon, lecture exacte ;</li><li>96 kHz : D = 2, lecture exacte ;</li>
+<li>44,1 kHz (moteur à 88,2 kHz) et 88,2 kHz : D = 1,8375 : un retard « entre deux échantillons », calculé par un filtre <strong>Thiran1</strong> (passe-tout du premier ordre) qui conserve le niveau de toutes les fréquences ; son retard est exact dans le grave et augmente légèrement dans l'aigu (1,879 échantillon à 20 kHz).</li></ul>
+<p>Garder la même durée à toutes les fréquences d'échantillonnage permet que les boucles CROSS sonnent de la même façon d'un projet à l'autre. À 44,1 kHz, un retard de 1/48000 s serait plus court qu'un échantillon : c'est pourquoi le moteur y calcule en permanence à 88,2 kHz (oversampling 2×, chapitre 10).</p></details>
+
+<details class="adv"><summary>Transitions entre topologies</summary>
+<figure>
+<svg class="diagram" viewBox="0 0 860 170" role="img" aria-labelledby="f8ct f8cd"><title id="f8ct">Transition de topologie en trois temps</title>
+<desc id="f8cd">Lors d'un changement de routes, le moteur réduit d'abord à zéro les routes retirées sur 128 échantillons avec l'ancien graphe, bascule vers le nouveau graphe, puis augmente les routes ajoutées sur 128 échantillons. Les routes conservées restent à pleine intensité.</desc>
+<g font-size="13">
+<line x1="40" y1="140" x2="820" y2="140" style="stroke:var(--dim)"/>
+<path d="M40 50 H300 L420 120" fill="none" style="stroke:var(--bad)" stroke-width="3"/><text x="120" y="42" style="fill:var(--bad)">routes retirées</text>
+<path d="M420 120 L540 50 H820" fill="none" style="stroke:var(--ok)" stroke-width="3"/><text x="640" y="42" style="fill:var(--ok)">routes ajoutées</text>
+<path d="M40 30 H820" style="stroke:var(--wt)" stroke-width="2" stroke-dasharray="6 4"/><text x="760" y="24" style="fill:var(--wt)">routes conservées</text>
+<line x1="420" y1="30" x2="420" y2="150" style="stroke:var(--text)" stroke-width="1.5"/><text x="420" y="164" text-anchor="middle">bascule</text>
+<text x="360" y="160" text-anchor="middle" class="d">128 éch.</text><text x="480" y="160" text-anchor="middle" class="d">128 éch.</text>
+</g></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Les anciennes et les nouvelles routes ne sont jamais actives en même temps.</figcaption></figure>
+<p>Le nouveau graphe est préparé hors du traitement audio puis échangé sans blocage. Les routes conservées gardent leur état et leur classe. À 44,1 kHz, les 128 échantillons sont comptés au rythme du projet (≈ 2,9 ms chacun des deux fondus).</p></details>
+</section>

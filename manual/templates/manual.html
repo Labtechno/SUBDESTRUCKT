@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>SUBDESTRUCKT {{VERSION}} — Manuel utilisateur</title>
+<link rel="stylesheet" href="css/manual.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="topbar">
+  <button type="button" class="btn" id="tocToggle" aria-controls="toc" aria-expanded="false">Sommaire</button>
+  <div class="brand"><b>LABTECHNO</b><span>//</span>SUBDESTRUCKT <i>{{VERSION}}</i></div>
+  <div class="spacer"></div>
+  <a class="btn" href="recette.html">Recette</a>
+  <button type="button" class="btn" id="themeToggle" aria-pressed="false">Mode clair</button>
+</header>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Sommaire du manuel">
+    <div class="search" role="search">
+      <label for="searchInput">Rechercher dans le manuel</label>
+      <input id="searchInput" type="search" autocomplete="off" placeholder="ex. CROSS Master, latence…">
+      <p id="searchStatus" class="d" aria-live="polite"></p>
+      <ol id="searchResults" class="search-results"></ol>
+    </div>
+    <ol>{{TOC}}</ol>
+    <p class="d" style="font-size:13px;margin-top:20px">Build <code>{{VERSION}}</code><br>source <code>{{BUILD_SHA}}</code><br>documentation <code>{{DOC_SHA}}</code><br><a href="version.json">manifeste</a> · <a href="../">autres versions</a></p>
+  </nav>
+  <main id="main" tabindex="-1">
+    <div class="box proto noprint"><span class="tag">Trois niveaux de lecture</span><p><span class="level">Comprendre</span> le texte principal explique sans prérequis. <span class="level">Manipuler</span> les étapes, réglages et exemples se font dans l'instrument. <span class="level">Approfondir</span> les blocs repliés « Approfondir · » donnent le détail technique : vous pouvez les ignorer en première lecture.</p></div>
+{{CHAPTERS}}
+  </main>
+</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Figure agrandie" aria-hidden="true">
+  <button type="button" class="btn close">Fermer</button>
+  <img alt="">
+</div>
+<script>window.SBD_GLOSSARY = {{GLOSSARY_JSON}};</script>
+<script src="js/manual.js"></script>
+<script src="js/audio-ab.js"></script>
+<script src="js/demos.js"></script>
+</body>
+</html>

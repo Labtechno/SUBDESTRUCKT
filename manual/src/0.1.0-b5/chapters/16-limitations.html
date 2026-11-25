@@ -1,0 +1,44 @@
+<section class="chapter" id="ch-16">
+<header><p class="kicker">Chapitre 16</p><h1>Limitations et évolution</h1>
+<p class="lead">Ce que 0.1.0-b5 ne fait pas encore, ce qui reste à valider, et ce que ce manuel n'a pas pu confirmer.</p></header>
+
+<h2>Statut de la build</h2>
+<div class="table-wrap"><table><tbody>
+<tr><th>Nature</th><td>Prototype interne (vertical slice ARCH-G3). Ce n'est ni une bêta publique ni une V1.</td></tr>
+<tr><th>Tests automatisés</th><td>Critères G-01 à G-24 PASS en CI (rapport <code>docs/V1-ARCH-G3-REPORT.md</code>), sur machine virtuelle macOS 15.8.2, avec un hôte VST3 de test et pluginval. Aucun test en DAW réelle.</td></tr>
+<tr><th>Recette physique</th><td><strong>Non réalisée</strong> à la date de ce manuel : c'est l'objet de l'assistant (chapitre 13).</td></tr>
+<tr><th>Matériel</th><td>Aucune certification matérielle. M3 minimum cible et M4 recommandé sont des objectifs, pas des résultats mesurés.</td></tr>
+<tr><th>Distribution</th><td>Interne uniquement : paquets non signés, pas de notarisation, licence JUCE non arbitrée.</td></tr></tbody></table></div>
+
+<h2>Limitations connues de 0.1.0-b5</h2>
+<ul>
+<li>Monophonique, priorité à la dernière note ; pas de portamento, pitch bend, aftertouch ni MPE.</li>
+<li>Une seule forme de wavetable (dent de scie) ; pas de transposition de la WT.</li>
+<li>Deux opérateurs sinusoïdaux, modulation de phase uniquement.</li>
+<li>Une seule enveloppe (volume) ; pas de LFO, pas de matrice de modulation, pas de filtre, pas d'effet.</li>
+<li>Pas de presets autres que « Init », pas de navigateur, pas d'undo/redo.</li>
+<li>Interface de diagnostic, sans accessibilité spécifique (lecteur d'écran non testé).</li>
+<li>Quatre fréquences d'échantillonnage seulement (44,1 / 48 / 88,2 / 96 kHz) ; silence aux autres.</li>
+<li>Changement de routes : fondu court, absence de clic non garantie.</li>
+<li>Pas de limiteur de sortie.</li>
+<li>VST3 macOS arm64 uniquement.</li></ul>
+
+<h2>Évolution prévue (V1, non disponible)</h2>
+<p>Le cahier des charges V1 prévoit notamment : wavetables X/Y/Z, quatre opérateurs et plusieurs modes FM, matrice CROSS complète, filtres, Destruction, enveloppes et LFO, mode Drone, niveaux de qualité, presets, interface définitive. Rien de cela n'est présent ni promis à une date dans 0.1.0-b5. La prochaine étape (ARCH-G4) n'est pas lancée.</p>
+
+<h2 id="points-a-confirmer">Points à confirmer</h2>
+<div class="box proto"><span class="tag">Non confirmé à la rédaction</span>
+<ol>
+<li><strong>Menus de Reason</strong> : chemins exacts de la gestion des plugins VST3, de l'entrée MIDI, des réglages audio et de la compensation de latence. La documentation officielle n'a pas pu être lue de façon fiable ; seul « Reason › Settings » (Mac) est confirmé.</li>
+<li><strong>Compatibilité Reason</strong> : non établie ; dépend des tests R-03 à R-12.</li>
+<li><strong>PDC dans Reason</strong> : la compensation des 32 échantillons à 44,1 kHz n'est pas vérifiée (R-09).</li>
+<li><strong>macOS 14.0</strong> : version minimale déclarée à la compilation, jamais testée ; seul macOS 15.8.2 (machine virtuelle) a été utilisé.</li>
+<li><strong>Performances</strong> : aucune mesure de charge processeur sur M3, M4 ou M4 Max.</li>
+<li><strong>Exemples audio</strong> : rendus sous Windows (MSVC) depuis les mêmes sources que le plugin ; identité échantillon par échantillon avec le plugin macOS non vérifiée.</li>
+<li><strong>Clics de transition</strong> : perception réelle des changements de routes en jeu non évaluée (R-07).</li>
+<li><strong>Assistant de recette sur iPhone physique</strong> : voir le rapport de validation du manuel pour ce qui a été testé en émulation et ce qui reste à tester sur appareil réel.</li>
+</ol></div>
+
+<h2>Versions de ce manuel</h2>
+<p>Ce manuel décrit uniquement la build <strong>0.1.0-b5</strong>. Chaque nouvelle build aura son propre manuel, à une adresse distincte ; les manuels précédents restent accessibles depuis la <a href="../">liste des versions</a>.</p>
+</section>

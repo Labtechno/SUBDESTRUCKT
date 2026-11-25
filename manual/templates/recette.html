@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>SUBDESTRUCKT {{VERSION}} — Assistant de recette ARCH-G3</title>
+<link rel="stylesheet" href="css/manual.css">
+</head>
+<body class="recette">
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="topbar">
+  <a class="btn" href="index.html#ch-13">← Manuel</a>
+  <div class="brand"><b>LABTECHNO</b><span>//</span>RECETTE <i>{{VERSION}}</i></div>
+  <div class="spacer"></div>
+</header>
+<main id="main" tabindex="-1" style="padding:0 16px 60px">
+  <h1>Assistant de recette ARCH-G3</h1>
+  <p class="lead">Quinze tests sur un vrai Mac et une vraie DAW. Vos réponses restent sur cet appareil jusqu'à ce que vous choisissiez de les exporter, copier ou partager. Rien n'est transmis automatiquement.</p>
+  <p class="d">Build <code>{{VERSION}}</code> · source <code>{{BUILD_SHA}}</code></p>
+
+  <section class="summary" aria-label="Synthèse de la recette">
+    <label for="progressBar" id="progressText">Progression</label>
+    <progress id="progressBar" value="0" max="15"></progress>
+    <p id="counts" aria-live="polite"></p>
+    <p id="globalStatus" aria-live="polite"></p>
+    <p id="failList" role="alert" hidden></p>
+    <p id="saveState" class="d" style="font-size:13px;margin:0"></p>
+  </section>
+
+  <h2>Configuration de test</h2>
+  <div id="config" class="cfg-grid"></div>
+
+  <div id="tests"></div>
+
+  <h2>Observations générales</h2>
+  <div class="field"><label for="general">Observations générales (facultatif)</label><textarea id="general" rows="4"></textarea></div>
+
+  <h2>Validation et transmission</h2>
+  <p id="validation" aria-live="polite"></p>
+  <p class="d">La validation finale est possible lorsque les 15 tests sont renseignés et que chaque N/A est justifié. Elle verrouille les réponses (vous pouvez rouvrir pour corriger).</p>
+  <div class="actions">
+    <button type="button" class="btn primary" id="validateBtn">Valider la recette</button>
+    <button type="button" class="btn" id="reopenBtn" hidden>Rouvrir pour corriger</button>
+  </div>
+  <div class="actions">
+    <button type="button" class="btn" id="exportBtn">Exporter SUBDESTRUCKT_ARCH_G3_RESULTS.json</button>
+    <button type="button" class="btn" id="copyBtn">Copier les résultats pour la direction technique</button>
+    <button type="button" class="btn" id="shareBtn" hidden>Partager…</button>
+  </div>
+  <div class="field"><label for="json">Résultats JSON (texte de secours, sélectionnable)</label><textarea id="json" readonly></textarea></div>
+  <p class="d">Format décrit par <a href="schema/results.schema.json">schema/results.schema.json</a>.</p>
+  <div class="actions"><button type="button" class="btn danger" id="resetBtn">Réinitialiser la recette</button></div>
+</main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script>window.SBD_RECETTE_CONFIG = {{RECETTE_CONFIG}};</script>
+<script src="recette/store.js"></script>
+<script src="recette/recette.js"></script>
+</body>
+</html>

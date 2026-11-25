@@ -1,0 +1,62 @@
+<section class="chapter" id="ch-14">
+<header><p class="kicker">Chapitre 14</p><h1>Dépannage</h1>
+<p class="lead">Les problèmes les plus probables, du plus simple au plus technique. Pour chacun : symptôme, causes possibles, vérifications, corrections.</p></header>
+
+<details class="trouble" open><summary>Plugin non détecté par la DAW</summary>
+<p><strong>Causes possibles :</strong> installation non terminée ; DAW lancée pendant l'installation ; analyse des plugins non relancée ; DAW qui ne charge pas les VST3 ; DAW lancée en mode Rosetta (Intel).</p>
+<ol><li>Vérifiez la présence de <code>/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3</code> (Finder › Aller › Aller au dossier…).</li>
+<li>Quittez complètement la DAW, relancez-la et forcez une nouvelle analyse des plugins VST3.</li>
+<li>Vérifiez que la DAW fonctionne en natif Apple Silicon (Finder › Lire les informations sur l'application : l'option « Ouvrir avec Rosetta » doit être décochée). SUBDESTRUCKT est arm64 uniquement.</li>
+<li>Si la DAW a mis le plugin en liste noire (plugin « désactivé » ou « en échec »), réactivez-le ou relancez son analyse, puis notez le message.</li></ol></details>
+
+<details class="trouble"><summary>Le paquet refuse de s'ouvrir (« développeur non identifié »)</summary>
+<p>Normal : les paquets 0.1.0-b5 ne sont pas signés. Réglages Système › Confidentialité et sécurité › « Ouvrir quand même » (chapitre 2). Ne désactivez jamais Gatekeeper globalement.</p></details>
+
+<details class="trouble"><summary>L'installateur refuse d'installer</summary>
+<p>Lisez son message : chacun indique « Rien n'a été installé ».</p>
+<ul><li>« il exige un Mac Apple Silicon » : Mac Intel, non pris en charge.</li>
+<li>« déclare macOS 14.0 au minimum » : mettez macOS à jour.</li>
+<li>« Un élément qui n'est pas le plugin SUBDESTRUCKT occupe… » : un autre fichier porte ce nom ; déplacez-le vous-même après vérification.</li>
+<li>Plugin utilisé : fermez toute DAW ou tout programme qui l'a chargé.</li></ul>
+<p>Détail dans l'application Console › <code>/var/log/install.log</code> (lignes « SUBDESTRUCKT »).</p></details>
+
+<details class="trouble"><summary>Absence de son</summary>
+<ol><li>La ligne « Voix » change-t-elle quand vous jouez ? Si non : problème MIDI (section suivante).</li>
+<li>« gate on » mais rien : vérifiez Output Gain (pas à −48 dB), WT Level / OP1 Level (pas tous à 0), Amp Sustain et Attack.</li>
+<li>Le bloc configuration affiche-t-il « FREQUENCE NON SUPPORTEE » ? Réglez le projet sur 44,1, 48, 88,2 ou 96 kHz.</li>
+<li>« réinit. non finies » augmente ? Cliquez Panic, puis Preset init, et notez les réglages qui l'ont provoqué.</li>
+<li>Vérifiez la sortie de la piste et l'interface audio dans la DAW.</li></ol></details>
+
+<details class="trouble"><summary>MIDI non reçu</summary>
+<ol><li>Le clavier est-il reconnu par macOS (Configuration audio et MIDI) ?</li>
+<li>La piste SUBDESTRUCKT reçoit-elle bien ce clavier (entrée MIDI de la piste, piste sélectionnée ou armée) ?</li>
+<li>Testez avec une note dessinée dans la DAW : si elle sonne, le problème est l'entrée MIDI.</li></ol></details>
+
+<details class="trouble"><summary>Son trop fort, saturé ou distordu</summary>
+<p>Baissez Output Gain et surveillez « Crête » (viser −12 à −6 dBFS). Des profondeurs FM ou CROSS élevées rendent le son très dense : c'est le comportement normal, pas une panne. SUBDESTRUCKT n'a pas de limiteur. Si « garde sortie » ou « borne PM » augmente, les réglages sont extrêmes : réduisez les profondeurs.</p></details>
+
+<details class="trouble"><summary>Clics ou craquements</summary>
+<ul><li><strong>En ajoutant ou retirant une route :</strong> possible malgré le fondu ; aucune absence de clic n'est garantie. Notez-le dans la recette (R-07).</li>
+<li><strong>En permanence :</strong> buffer trop petit pour la machine. Augmentez la taille de buffer (256 ou 512) et vérifiez la charge processeur de la DAW.</li>
+<li><strong>En début de note avec Attack minimal :</strong> une attaque de 1 ms est naturellement « claquante » ; augmentez légèrement Amp Attack.</li></ul></details>
+
+<details class="trouble"><summary>Latence ressentie en jouant</summary>
+<p>Voir chapitre 10 : la latence du plugin est nulle sauf à 44,1 kHz (0,73 ms). La latence ressentie vient surtout du buffer de l'interface audio : réduisez-la.</p></details>
+
+<details class="trouble"><summary>Note bloquée</summary>
+<p>Cliquez Panic, ou envoyez CC120/CC123 depuis la DAW. Notez la séquence qui a provoqué le blocage.</p></details>
+
+<details class="trouble"><summary>Projet rechargé avec des réglages différents</summary>
+<p>Si le message indique « Etat refuse : … », l'état enregistré n'a pas été accepté (état incohérent ou enregistré par une version plus récente) et il est refusé en bloc : le plugin garde l'état qu'il avait avant le chargement (à l'ouverture d'un projet, en général le réglage initial). Notez le message complet. C'est le test R-10.</p></details>
+
+<details class="trouble"><summary>Le désinstallateur refuse d'agir</summary>
+<ul><li>« SUBDESTRUCKT n'est pas installé » : rien à faire, le plugin est déjà absent (comportement attendu, test R-15).</li>
+<li>« Élément non identifié » : l'élément présent n'est pas SUBDESTRUCKT ; vérifiez-le vous-même.</li>
+<li>« Version installée plus récente » : utilisez le désinstallateur de la version installée.</li></ul></details>
+
+<details class="trouble"><summary>L'assistant de recette a perdu mes réponses</summary>
+<p>Les réponses sont stockées dans le navigateur de l'appareil utilisé. Elles sont perdues en navigation privée, après effacement des données du site, ou sur un autre appareil ou navigateur. Exportez régulièrement le fichier JSON. Si l'assistant affiche « Stockage local indisponible », copiez ou exportez vos résultats avant de quitter la page.</p></details>
+
+<details class="trouble"><summary>L'export ne fonctionne pas sur iPhone</summary>
+<p>Utilisez « Partager » (feuille de partage : Mail, Messages, Fichiers…) ou « Copier les résultats ». En dernier recours, sélectionnez le texte JSON affiché en bas de l'assistant et copiez-le.</p></details>
+</section>

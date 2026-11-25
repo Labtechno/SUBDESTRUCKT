@@ -1,0 +1,78 @@
+<section class="chapter" id="ch-01">
+<header><p class="kicker">Chapitre 1</p><h1>Bienvenue dans SUBDESTRUCKT</h1>
+<p class="lead">SUBDESTRUCKT est un instrument logiciel construit autour d'une idée : faire dialoguer deux moteurs sonores. Ce chapitre vous présente l'instrument, ce qu'il sait déjà faire dans la version 0.1.0-b5, et ce qui viendra plus tard.</p></header>
+
+<div class="box proto"><span class="tag">Version prototype</span>
+<p>Vous utilisez <strong>SUBDESTRUCKT 0.1.0-b5</strong>, une <em>vertical slice</em> : un prototype complet mais volontairement réduit, qui traverse toute la chaîne (clavier → son → sauvegarde) avec un petit nombre de fonctions. Son interface est une <strong>interface de diagnostic</strong>, pas l'interface définitive. Ce manuel ne décrit que ce qui existe réellement dans cette build.</p></div>
+
+<h2>Qu'est-ce qu'un synthétiseur ?</h2>
+<p><span class="level">Comprendre</span></p>
+<p>Un synthétiseur fabrique du son à partir de rien : au lieu d'enregistrer un instrument, il <strong>calcule</strong> une vibration. Cette vibration passe ensuite par des étapes qui la transforment : on la colore, on la façonne dans le temps, on règle son volume.</p>
+<p>Trois mots reviennent sans cesse dans ce manuel :</p>
+<ul>
+<li>un <strong>oscillateur</strong> est la source qui produit une vibration régulière ;</li>
+<li>une <strong>modulation</strong> est l'action d'un signal qui en fait varier un autre (par exemple un oscillateur qui en déforme un second) ;</li>
+<li>un <strong>moteur sonore</strong> est un ensemble cohérent d'oscillateurs et de réglages ayant sa propre manière de produire du son.</li>
+</ul>
+
+<h2>Deux moteurs et un pont : WT, FM et CROSS</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 contient :</p>
+<ul>
+<li>un moteur <strong>Wavetable</strong> (« WT ») : un oscillateur qui relit une forme d'onde riche, une dent de scie (chapitre 6) ;</li>
+<li>un moteur <strong>FM</strong> à deux opérateurs, <strong>OP1</strong> et <strong>OP2</strong> : deux oscillateurs sinusoïdaux qui peuvent se moduler l'un l'autre (chapitre 7) ;</li>
+<li><strong>CROSS</strong>, le pont entre les deux : la WT peut moduler les opérateurs FM, et les opérateurs peuvent moduler la WT (chapitre 8). C'est la signature de l'instrument.</li>
+</ul>
+
+<figure>
+<svg class="diagram" viewBox="0 0 860 300" role="img" aria-labelledby="f1t f1d">
+<title id="f1t">Circulation du signal dans SUBDESTRUCKT 0.1.0-b5</title>
+<desc id="f1d">Une note MIDI arrive dans la voix, qui fixe la hauteur des trois oscillateurs WT, OP1 et OP2. Les oscillateurs se modulent entre eux par le réseau FM et CROSS. Leurs niveaux sont mélangés, puis l'enveloppe Amp, le gain de sortie et les protections mènent à la sortie stéréo.</desc>
+<g font-size="14">
+<rect x="10" y="120" width="110" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="65" y="146" text-anchor="middle">Note MIDI</text><text x="65" y="165" text-anchor="middle" class="d" font-size="12">hauteur, vélocité</text>
+<rect x="150" y="120" width="90" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="195" y="146" text-anchor="middle">Voix</text><text x="195" y="165" text-anchor="middle" class="d" font-size="12">mono</text>
+<rect x="280" y="20" width="300" height="260" rx="8" fill="none" style="stroke:var(--cross)" stroke-dasharray="6 4"/><text x="430" y="40" text-anchor="middle" style="fill:var(--cross)" font-size="13">réseau de modulation (FM + CROSS)</text>
+<rect x="300" y="60" width="100" height="50" rx="6" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="350" y="90" text-anchor="middle">WT</text>
+<rect x="460" y="60" width="100" height="50" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="510" y="90" text-anchor="middle">OP1</text>
+<rect x="460" y="200" width="100" height="50" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="510" y="230" text-anchor="middle">OP2</text>
+<path d="M400 78 H458" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#ar)"/><path d="M460 94 H402" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#ar)"/>
+<path d="M510 200 V112" style="stroke:var(--fm)" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="610" y="120" width="90" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="655" y="146" text-anchor="middle">Mélange</text><text x="655" y="165" text-anchor="middle" class="d" font-size="12">niveaux</text>
+<rect x="720" y="100" width="130" height="100" rx="6" fill="none" style="stroke:var(--dim)"/><text x="785" y="128" text-anchor="middle">Amp ADSR</text><text x="785" y="150" text-anchor="middle" class="d" font-size="12">gain de sortie</text><text x="785" y="170" text-anchor="middle" class="d" font-size="12">protections</text><text x="785" y="190" text-anchor="middle" font-size="12">→ stéréo</text>
+<path d="M120 150 H148" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/><path d="M240 150 H278" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/>
+<path d="M580 150 H608" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/><path d="M700 150 H718" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/>
+</g>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs>
+</svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Comment une note MIDI devient du son. Les flèches montrent les routes du réglage initial (« Preset init ») : OP2 module OP1, la WT et OP1 se modulent mutuellement.</figcaption>
+</figure>
+
+<h2>De la note au son, en cinq étapes</h2>
+<ol class="steps">
+<li><strong>Vous jouez une note.</strong> Le clavier envoie un message MIDI : quelle touche (la hauteur) et avec quelle force (la vélocité). Le MIDI ne transporte aucun son, seulement des instructions.</li>
+<li><strong>La voix choisit la note.</strong> SUBDESTRUCKT est monophonique : une seule note sonne à la fois, la dernière jouée.</li>
+<li><strong>Les oscillateurs vibrent</strong> à la hauteur de la note (WT) ou à un multiple de celle-ci (OP1 et OP2, selon leur ratio), et se modulent les uns les autres selon les routes actives.</li>
+<li><strong>Le mélange</strong> additionne les trois oscillateurs selon leurs niveaux (WT Level, OP1 Level, OP2 Level).</li>
+<li><strong>L'enveloppe Amp</strong> donne au son sa forme dans le temps (attaque, tenue, extinction), puis le gain de sortie règle le volume final, identique sur les deux canaux stéréo.</li>
+</ol>
+
+<h2>Identité sonore</h2>
+<p>SUBDESTRUCKT vise des sons métalliques, industriels et agressifs, des textures et des drones. Dans ce prototype, ce caractère vient de trois ingrédients : une forme d'onde riche (WT), la modulation entre opérateurs (FM) et surtout l'interaction entre les deux moteurs (CROSS).</p>
+
+<h2>Ce que contient exactement la build 0.1.0-b5</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Disponible dans 0.1.0-b5</th><th>Prévu pour la V1, absent ici</th></tr></thead>
+<tbody>
+<tr><td>Une wavetable : dent de scie limitée en bande</td><td>Banques de wavetables, axes X/Y, transformations Z</td></tr>
+<tr><td>Deux opérateurs FM sinusoïdaux (OP1, OP2) en modulation de phase</td><td>Quatre opérateurs, autres formes, modes FM linéaire, TZFM, exponentiel</td></tr>
+<tr><td>CROSS dans les deux sens, CROSS Master et intensités par direction</td><td>Matrice CROSS complète, bus, Ring/AM, Sync</td></tr>
+<tr><td>Une enveloppe Amp ADSR, vélocité sur le volume</td><td>Enveloppes WT/FM, enveloppes auxiliaires, LFO</td></tr>
+<tr><td>Voix monophonique, priorité à la dernière note</td><td>Modes legato/priorités sélectionnables, pitch bend, aftertouch</td></tr>
+<tr><td>Un réglage initial (« Preset init »), état sauvegardé dans le projet DAW</td><td>Banques de presets, navigateur, undo/redo</td></tr>
+<tr><td>Interface de diagnostic</td><td>Interface définitive (Performance, Sound Design, Engineering)</td></tr>
+<tr><td>—</td><td>Filtres, Destruction, matrice de modulation globale, mode Drone, Quality Eco/Normal/High</td></tr>
+</tbody></table></div>
+<p>Le chapitre 16 détaille les limitations connues et les différences avec la future V1.</p>
+
+<details class="adv"><summary>Pourquoi une « vertical slice » ?</summary>
+<p>Construire d'abord une tranche fine mais complète permet de valider l'architecture (cœur DSP indépendant, wrapper VST3, sauvegarde, installation) avant d'ajouter les fonctions. Le cœur DSP de SUBDESTRUCKT est écrit sans dépendre de JUCE ni de la DAW, ce qui le rend testable seul : les critères automatisés G-01 à G-24 sont PASS en CI pour la build 0.1.0-b5 (rapport <code>docs/V1-ARCH-G3-REPORT.md</code>). La recette sur un vrai Mac reste à faire : c'est l'objet du chapitre 13.</p></details>
+</section>

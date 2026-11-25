@@ -1,0 +1,29 @@
+{
+ "base": "https://labtechno.github.io/SUBDESTRUCKT/",
+ "title": "Recette perceptive — LABTECHNO",
+ "ghPagesCommit": "3f79c9108a54e9229a6a9832dcdaf93ffd44cf14",
+ "files": {
+  ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "campaigns/index.json": "ed08b5df46956f528b0ec3c2d29b3e39c6c567f26ce3a29a506f4a5916d5488e",
+  "campaigns/s01-final/audio/C1_REF.wav": "f3f694c9c0c26b3803dd2b79b8927c8ad23b3ad76d4ac2c663187979d58ab4c8",
+  "campaigns/s01-final/audio/C1_X.wav": "ca6a5a5c86a8ad0310911d89e2324ba4194ac759630da92687b1c70e7a97ab26",
+  "campaigns/s01-final/audio/C1_Y.wav": "fb8a014a0cf9f16ff59f49ea6f069df1632c401160740c5980a424ce9ee50177",
+  "campaigns/s01-final/audio/C2_REF.wav": "cfa5f0553827af60a832f883e41076da8177cb83c98835465cd76d97759fa0af",
+  "campaigns/s01-final/audio/C2_X.wav": "f1bc457dea6d784952de1d2be780d110a30bbd87521acf96b438eeb0e1346cff",
+  "campaigns/s01-final/audio/C2_Y.wav": "036e602d8ac4e306c53f32ebffa00d2ddd2243738760c9e73ac0dce40217553a",
+  "campaigns/s01-final/audio/C3_REF.wav": "8823aa579bb653ca08fdb981ed8c266d46c884cdc7d6acee5416ff5a613354e7",
+  "campaigns/s01-final/audio/C3_X.wav": "08d13632fa5214ffca2d3d71ece6ce72f058036e370cf969853e610d895c60e2",
+  "campaigns/s01-final/audio/C3_Y.wav": "dfbc10a32a825cd93a5de0fa30e0e0a37c6d1a4d0e1463b3557fac0ac5934050",
+  "campaigns/s01-final/audio/C5_REF.wav": "b07ff8de2c4aa164756705dd5f7b4447f12952120a67eecf0e712fe01442e367",
+  "campaigns/s01-final/audio/C5_X.wav": "7973df4c6f16f5c1df9e92a0d5b12dbb20254b6c7bb509865475d4dd6c7c1a0f",
+  "campaigns/s01-final/audio/C5_Y.wav": "3659ef45929921da50f5c892ef065f52176f40dcaa2098abd5fc48129fb807d8",
+  "campaigns/s01-final/manifest.json": "197877ee264043e4b14cdc5a388abe255b76c2b9ac2a5342d5d746c091e8a04e",
+  "css/labtechno.css": "e80eb892ab70ac64e05bc68a51af293c669a2026751e360ac0c1d3dd5f98dd72",
+  "index.html": "fcd2649a1f71bde60f4354e37fa7ee1f2b0cf267a33aed8e1a155e6e01956e76",
+  "js/app.js": "b6d76b8b5662fc8179902f9b71fc46fa0f7ef8ad19eb29261f017f99ae1c3ddb",
+  "js/dom.js": "f9d434a5325aba717915c520c83ea5260e6846050ce71058af333413e103a5e0",
+  "js/listening-engine.js": "f160c6db01475ade2187b6eb1ce4369e2a1b9ee94d0bac7861b3920e46f92be3",
+  "js/questionnaire.js": "5fae86f00ae96aaa4da17631c6b051d2a08b57d36ff9ff7022142249f0befdbe",
+  "js/session-store.js": "d412997ddfb9fe11b0360fa8fc1bfcd47957bc3d4c14cefffb8342ef166f38cd"
+ }
+}

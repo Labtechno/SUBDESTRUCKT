@@ -1,0 +1,63 @@
+<section class="chapter" id="ch-10">
+<header><p class="kicker">Chapitre 10</p><h1>Diagnostic technique</h1>
+<p class="lead">La partie droite de l'interface montre ce que fait réellement le moteur. Ce chapitre explique chaque indicateur et les valeurs attendues, utiles pour la recette.</p></header>
+
+<h2>Bloc « configuration »</h2>
+<p>Exemple réel (capture du chapitre 4, à 44,1 kHz) :</p>
+<pre><code>Fs hote 44100 Hz   K 2   Fs moteur 88200 Hz
+Retard T2 (aretes D) : D = 1.8375 ech. moteur = 20.833 us   lecteur Thiran1 a=0.08844
+Latence declaree (PDC) : 32 ech. (0.726 ms)
+Transition : repos   topologie active #…</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Indicateur</th><th>Signification</th></tr></thead><tbody>
+<tr><td>Fs hote</td><td>Fréquence d'échantillonnage du projet, imposée par la DAW.</td></tr>
+<tr><td>K</td><td>Facteur d'oversampling : le moteur calcule K fois plus d'échantillons que le projet.</td></tr>
+<tr><td>Fs moteur</td><td>Fréquence de calcul interne = Fs hôte × K.</td></tr>
+<tr><td>D</td><td>Le retard des routes Delayed (1/48000 s), exprimé en échantillons moteur.</td></tr>
+<tr><td>lecteur</td><td>« entier exact » si D est entier ; sinon « Thiran1 » avec son coefficient a.</td></tr>
+<tr><td>Latence déclarée (PDC)</td><td>Retard que le plugin annonce à la DAW pour qu'elle le compense.</td></tr>
+<tr><td>Transition</td><td>« repos », « fondu de sortie » ou « fondu d'entrée » pendant un changement de routes ; numéro de la topologie active.</td></tr>
+</tbody></table></div>
+
+<h2>Valeurs attendues par fréquence d'échantillonnage</h2>
+<div class="table-wrap"><table><thead><tr><th>Fs projet</th><th>K</th><th>Fs moteur</th><th>D (éch. moteur)</th><th>Lecteur</th><th>Latence déclarée</th></tr></thead><tbody>
+<tr><td>44 100 Hz</td><td>2</td><td>88 200 Hz</td><td>1,8375</td><td>Thiran1 (a ≈ 0,0884)</td><td>32 éch. (0,726 ms)</td></tr>
+<tr><td>48 000 Hz</td><td>1</td><td>48 000 Hz</td><td>1,0000</td><td>entier exact</td><td>0</td></tr>
+<tr><td>88 200 Hz</td><td>1</td><td>88 200 Hz</td><td>1,8375</td><td>Thiran1 (a ≈ 0,0884)</td><td>0</td></tr>
+<tr><td>96 000 Hz</td><td>1</td><td>96 000 Hz</td><td>2,0000</td><td>entier exact</td><td>0</td></tr>
+<tr><td>autre</td><td colspan="5">« FREQUENCE NON SUPPORTEE : silence » — le plugin reste chargé mais muet. Utilisez une des quatre fréquences ci-dessus.</td></tr>
+</tbody></table></div>
+<p>Dans tous les cas, D correspond à 20,833 µs. Le test R-08 vérifie ces valeurs dans votre DAW.</p>
+
+<details class="adv"><summary>Pourquoi l'oversampling ×2 à 44,1 kHz ?</summary>
+<p>À 44,1 kHz, 1/48000 s vaut 0,919 échantillon : moins d'un échantillon. Un retard plus court qu'un échantillon ne peut pas casser une boucle instantanée. Le contrat B-T2 impose donc un calcul permanent à 88,2 kHz (où D = 1,8375). Le retour à 44,1 kHz se fait par un filtre de décimation (demi-bande FIR à phase linéaire, fenêtre de Kaiser, environ 100 dB d'atténuation), dont la latence est arrondie à 32 échantillons, compensés par la DAW (PDC). L'oversampling ne change pas pendant la lecture : il est fixé à la préparation du plugin.</p></details>
+
+<h2>Trois latences à ne pas confondre</h2>
+<div class="table-wrap"><table><thead><tr><th>Latence</th><th>Origine</th><th>Ordre de grandeur</th></tr></thead><tbody>
+<tr><td>Interface audio</td><td>Taille de buffer et pilotes de la carte son, réglés dans la DAW ou le système.</td><td>quelques ms (dépend du buffer : 256 éch. à 48 kHz ≈ 5,3 ms par sens)</td></tr>
+<tr><td>DAW</td><td>Traitements et compensation de la DAW.</td><td>dépend de la DAW</td></tr>
+<tr><td>Plugin SUBDESTRUCKT</td><td>Filtre de décimation, à 44,1 kHz uniquement.</td><td>32 éch. = 0,726 ms à 44,1 kHz ; 0 ailleurs</td></tr></tbody></table></div>
+<p>La latence du plugin est déclarée à la DAW : la PDC l'aligne dans les rendus (test R-09). Si vous ressentez du retard en jouant, il vient presque toujours de la taille de buffer de l'interface audio : réduisez-la (128, voire 64 échantillons).</p>
+
+<h2>Table des routes</h2>
+<p>Huit lignes, une par route possible : OP2>OP1, OP1>OP2, OP1>OP1, OP2>OP2 (marquées [FM]) et WT>OP1, WT>OP2, OP1>WT, OP2>WT (marquées [CROSS]). Pour une route présente :</p>
+<ul><li><code>id</code> : identifiant stable ; <code>classe I</code> ou <code>classe D</code> : Immediate ou Delayed (chapitre 8) ;</li>
+<li><code>Eff</code> : profondeur Effective en radians, après CROSS Master, intensités et lissage ;</li>
+<li><code>g</code> : gain de transition (1 au repos, de 0 à 1 pendant un fondu).</li></ul>
+<p>Sous la table : le dernier message (« Transaction appliquee », « Transaction refusee : … », « Etat charge » ou « Etat refuse : … ») et <code>nextRouteId</code>, le prochain identifiant qui sera attribué.</p>
+
+<h2>Valeurs Base et Effective</h2>
+<p>La valeur <strong>Base</strong> est celle du curseur (et de l'automatisation). La valeur <strong>Effective</strong> est celle que le moteur utilise. Pour une route CROSS : Effective = Base × CROSS Master × intensité de la direction, puis lissée sur 20 ms. Le moteur ne modifie jamais la valeur Base.</p>
+
+<h2>Télémétrie</h2>
+<pre><code>Voix : note 57   gate on   enveloppe 0.800
+Crete L -11.6 dBFS   R -11.6 dBFS
+Surete : reinit. non finies 0   garde sortie 0   borne PM 0   evts perdus 0   Panic 0</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Indicateur</th><th>Normal</th><th>Si différent de 0</th></tr></thead><tbody>
+<tr><td>note / gate / enveloppe</td><td>suit votre jeu (note −1 avant la première note)</td><td>—</td></tr>
+<tr><td>Crête L / R</td><td>sous −6 dBFS</td><td>au-dessus de 0 dBFS : baissez Output Gain</td></tr>
+<tr><td>réinit. non finies</td><td>0</td><td>le moteur a détecté une valeur invalide et s'est réinitialisé : notez les réglages</td></tr>
+<tr><td>garde sortie</td><td>0</td><td>sortie au-delà de +30 dBFS, écrêtée : réglage extrême</td></tr>
+<tr><td>borne PM</td><td>0</td><td>somme des modulations reçues au-delà de ±32 rad, bornée : modulations très fortes cumulées</td></tr>
+<tr><td>evts perdus</td><td>0</td><td>événements MIDI trop nombreux dans un bloc : notez la situation</td></tr>
+<tr><td>Panic</td><td>nombre de Panic</td><td>augmente à chaque Panic ou CC120</td></tr></tbody></table></div>
+</section>

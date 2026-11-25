@@ -1,0 +1,78 @@
+<section class="chapter" id="ch-02">
+<header><p class="kicker">Chapitre 2</p><h1>Installation et première configuration</h1>
+<p class="lead">Télécharger, vérifier, installer, puis faire reconnaître SUBDESTRUCKT par votre logiciel de musique. Chaque étape est décrite pour un débutant.</p></header>
+
+<h2>Configuration requise</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Élément</th><th>Statut pour 0.1.0-b5</th></tr></thead>
+<tbody>
+<tr><td>Ordinateur</td><td>Mac Apple Silicon. <strong>Apple M3</strong> : configuration minimale cible (non encore certifiée). <strong>M4 et suivants</strong> : classe recommandée. M1 et M2 : hors support officiel, mais aucun blocage n'est imposé.</td></tr>
+<tr><td>Machine de recette principale</td><td>Mac Studio M4 Max (recette physique à réaliser, chapitre 13).</td></tr>
+<tr><td>Système</td><td>macOS <strong>14.0</strong> minimum <em>déclaré</em> (valeur de compilation, non encore validée). Seul macOS 15.8.2 a été testé, sur une machine virtuelle de CI.</td></tr>
+<tr><td>Format</td><td>Plugin instrument <strong>VST3</strong>, arm64 natif. Pas d'Audio Unit (AU), pas d'application autonome, pas de version Intel/Rosetta ni Windows.</td></tr>
+<tr><td>Logiciel hôte</td><td>Une DAW compatible VST3. Reason est la DAW de recette prévue. <strong>Aucune compatibilité DAW n'est encore validée</strong> : la CI n'a utilisé qu'un hôte VST3 de test et pluginval.</td></tr>
+</tbody></table></div>
+
+<h2>1. Télécharger</h2>
+<p>Téléchargez l'archive depuis le lien direct :</p>
+<p><a href="https://github.com/Labtechno/SUBDESTRUCKT/raw/b49a09e3efd6fe52fdb75a23c5b12dd794f696e8/deliveries/0.1.0-b5/SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip">SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip</a> (2 076 951 octets)</p>
+<p>Empreinte SHA-256 attendue :<br><code style="word-break:break-all">4b37271856ab690c3487df1a7a76dcc9a5c76459dd31c1558ab07766dd4fbe58</code></p>
+
+<h2>2. Vérifier l'empreinte</h2>
+<p><span class="level">Manipuler</span> Une empreinte SHA-256 est une « signature mathématique » du fichier : la moindre modification la change complètement. La vérifier garantit que vous avez exactement le fichier testé.</p>
+<ol class="steps">
+<li>Ouvrez <strong>Terminal</strong> (Applications › Utilitaires).</li>
+<li>Tapez <code>cd ~/Downloads</code> puis Entrée (adaptez si votre dossier de téléchargement est différent).</li>
+<li>Tapez <code>shasum -a 256 SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip</code> puis Entrée, et comparez le résultat avec l'empreinte ci-dessus.</li>
+<li>Double-cliquez sur le ZIP : un dossier apparaît avec 5 fichiers : <code>SUBDESTRUCKT_Installer.pkg</code>, <code>SUBDESTRUCKT_Uninstaller.pkg</code>, <code>README_FR.txt</code>, <code>CHANGELOG.txt</code>, <code>SHA256SUMS.txt</code>.</li>
+<li>Dans le Terminal, tapez <code>cd </code> (avec un espace), glissez ce dossier dans la fenêtre, Entrée, puis <code>shasum -a 256 -c SHA256SUMS.txt</code> : quatre lignes doivent se terminer par <code>OK</code>.</li>
+</ol>
+<div class="box warn"><span class="tag">Si l'empreinte diffère</span><p>N'installez pas. Retéléchargez depuis le lien direct. Ce contrôle est le test R-01 de la recette.</p></div>
+
+<h2>3. Installer</h2>
+<ol class="steps">
+<li><strong>Fermez votre DAW.</strong> L'installateur refuse d'agir si le plugin est utilisé par un programme ouvert.</li>
+<li>Double-cliquez sur <code>SUBDESTRUCKT_Installer.pkg</code>. macOS affiche que le paquet provient d'un développeur non identifié : c'est normal, il n'est pas signé (build interne).</li>
+<li>Ouvrez <strong>Réglages Système › Confidentialité et sécurité</strong>. En bas de la page, un message concerne <code>SUBDESTRUCKT_Installer.pkg</code> : cliquez <strong>« Ouvrir quand même »</strong>, puis confirmez.</li>
+<li>Suivez l'installateur et saisissez votre mot de passe administrateur : le plugin est installé pour tous les utilisateurs du Mac.</li>
+<li>L'écran final indique « SUBDESTRUCKT 0.1.0-b5 est installé ».</li>
+</ol>
+<div class="box fact"><span class="tag">Ce que fait l'installateur</span>
+<ul><li>Il copie le plugin dans <code>/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3</code>.</li>
+<li>Il vérifie ensuite son identité, sa version, son architecture arm64 et sa signature ad hoc, et écrit un petit manifeste dans <code>/Library/Application Support/Labtechno/SUBDESTRUCKT/</code>.</li>
+<li>Il refuse sans rien modifier si : le Mac n'est pas Apple Silicon, macOS est antérieur à 14.0, l'emplacement est occupé par un autre élément ou un lien symbolique, ou une DAW utilise le plugin.</li>
+<li>Si la vérification échoue après copie, il restaure l'installation précédente.</li></ul></div>
+<div class="box warn"><span class="tag">Gatekeeper</span><p>N'utilisez jamais de commande qui désactive Gatekeeper pour tout le système. L'autorisation « Ouvrir quand même » ne concerne que ce paquet.</p></div>
+
+<h2>4. Faire reconnaître le plugin par la DAW</h2>
+<p>Après l'installation :</p>
+<ol class="steps">
+<li>Lancez la DAW. Si elle n'analyse pas automatiquement les nouveaux plugins, ouvrez sa gestion des plugins et lancez une nouvelle analyse VST3.</li>
+<li>Cherchez <strong>SUBDESTRUCKT</strong>, fabricant <strong>Labtechno</strong>, dans les instruments VST3.</li>
+<li>Créez une piste instrument avec SUBDESTRUCKT.</li>
+<li>Sélectionnez votre clavier MIDI comme entrée de cette piste (ou toutes les entrées), puis armez ou sélectionnez la piste pour l'entendre en jouant.</li>
+<li>Dans les réglages audio de la DAW, choisissez votre interface audio, la fréquence d'échantillonnage (44,1, 48, 88,2 ou 96 kHz) et une taille de buffer raisonnable (par exemple 128 ou 256 échantillons).</li>
+</ol>
+<div class="box proto"><span class="tag">Reason : points à confirmer</span>
+<p>Les menus exacts de Reason pour la gestion des plugins VST3, la sélection MIDI, la configuration audio et la compensation de latence n'ont pas pu être vérifiés dans la documentation officielle de Reason Studios lors de la rédaction (les pages correspondantes ne sont pas lisibles sans navigateur). Seul ce point a été confirmé : les réglages de Reason s'ouvrent depuis le menu <strong>Reason › Settings</strong> sur Mac. Reportez-vous au manuel de votre version de Reason pour les menus précis ; la compatibilité de SUBDESTRUCKT avec Reason sera établie par la recette (tests R-03 à R-12).</p></div>
+
+<h2>5. Désinstaller</h2>
+<ol class="steps">
+<li>Fermez la DAW.</li>
+<li>Ouvrez <code>SUBDESTRUCKT_Uninstaller.pkg</code> (même autorisation « Ouvrir quand même »).</li>
+<li>Le désinstallateur retire uniquement le plugin SUBDESTRUCKT, son manifeste et son reçu d'installation. Vos projets, vos autres plugins et vos fichiers personnels ne sont pas touchés.</li>
+</ol>
+<p>Il refuse d'agir, sans rien supprimer, si SUBDESTRUCKT n'est pas installé (message « SUBDESTRUCKT n'est pas installé »), si l'élément présent n'est pas SUBDESTRUCKT, si la version installée est plus récente que lui, ou si une DAW utilise le plugin. Le détail est consigné dans <code>/var/log/install.log</code> (application Console).</p>
+
+<h2>6. Réinstaller</h2>
+<p>Relancez simplement <code>SUBDESTRUCKT_Installer.pkg</code>. Une réinstallation par-dessus une installation existante est gérée : l'ancienne version est sauvegardée pendant l'opération et restaurée en cas d'échec.</p>
+
+<h2>Signature, notarisation et licence</h2>
+<div class="table-wrap"><table><tbody>
+<tr><th>Plugin VST3</th><td>Signature <strong>ad hoc</strong> uniquement (pas de certificat Developer ID).</td></tr>
+<tr><th>Paquets .pkg</th><td><strong>Non signés.</strong></td></tr>
+<tr><th>Notarisation Apple</th><td><strong>Non effectuée.</strong></td></tr>
+<tr><th>Conséquence</th><td>Livraison <strong>interne uniquement</strong> ; distribution publique bloquée.</td></tr>
+<tr><th>Licence</th><td>SUBDESTRUCKT utilise JUCE 9 (AGPLv3 ou licence commerciale : choix non arbitré) et le SDK VST3 3.8 (MIT). Mentions dans <code>THIRD_PARTY_NOTICES.txt</code> à l'intérieur du plugin.</td></tr>
+</tbody></table></div>
+</section>
