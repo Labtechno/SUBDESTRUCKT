@@ -13,7 +13,8 @@ macOS 15 arm64, qui est une machine virtuelle.
 installation, découverte dans une DAW, son, MIDI, CROSS, PDC, rechargement de projet, désinstallation et
 réinstallation. Le M3 physique est exigé avant toute Beta.
 
-Le résultat du run de livraison, le lien de téléchargement et l'empreinte du ZIP sont au § 9.
+Le run de livraison n°5 réussit de bout en bout : job principal et job RTSan. Le lien de téléchargement et l'empreinte
+du ZIP sont au § 9.
 
 ## 2. Gates du dossier de mission
 
@@ -96,7 +97,16 @@ pas définitif.
 ## 5. Tests automatisés (CI macOS arm64, VM)
 
 Un même critère est validé à plusieurs niveaux quand c'est possible : cœur, wrapper instancié, et vrai bundle chargé
-par l'interface VST3. Résultats du run n°4 (`45607779663`), identiques à ceux du run de livraison (§ 9).
+par l'interface VST3. Résultats du run de livraison n°5 (`45609212850`), identiques au run n°4 (`45607779663`).
+
+**Machine du run de livraison :**
+
+- macOS 15.8.2 (24H232), image `macos15 20261118.0550.1` ;
+- Apple M1 (Virtual), 3 vCPU, 7 Gio, `kern.hv_vmm_present = 1` ;
+- Xcode 16.4, Apple clang 17.0.0, CMake 4.5.0.
+
+**Bilan :** le job principal donne 60 PASS et 0 échec (`deliveries/0.1.0-b5/results.txt`) ; le job RTSan donne
+G-18rt et G-18rt-neg en PASS.
 
 | critère | résultat |
 |---|---|
@@ -176,10 +186,40 @@ n'est demandée.**
    du benchmark M1 reste inchangé.
 10. **Périmètre fonctionnel.** Pas de pitch bend, d'aftertouch ni de CC autres que 120 et 123. Topologie éditable
     seulement depuis l'UI de diagnostic.
+11. **Affichage du gain de sortie.** La valeur par défaut s'affiche −5,9999990 dB au lieu de −6 dB : c'est l'arrondi
+    float du paramètre hôte JUCE, sans effet audible.
 
 ## 9. Livraison
 
-*(Complété après le run de livraison.)*
+| élément | valeur |
+|---|---|
+| Identité | **0.1.0-b5** (version 0.1.0, build 5, paquets 0.1.0.5) |
+| Commit source de la build | `186fb8644ae9518e3cb5116f4368b45dcea0d430` |
+| Run de livraison | https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45609212850 (succès) |
+| Commit de livraison (ZIP ajouté par la CI) | `b49a09e3efd6fe52fdb75a23c5b12dd794f696e8` |
+| Archive | `SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip`, 2 076 951 octets |
+| SHA-256 de l'archive | `4b37271856ab690c3487df1a7a76dcc9a5c76459dd31c1558ab07766dd4fbe58` |
+| **Lien direct** | https://github.com/Labtechno/SUBDESTRUCKT/raw/b49a09e3efd6fe52fdb75a23c5b12dd794f696e8/deliveries/0.1.0-b5/SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip |
+| Contenu | `SUBDESTRUCKT_Installer.pkg` (2 072 713 o), `SUBDESTRUCKT_Uninstaller.pkg` (5 588 o), `README_FR.txt`, `CHANGELOG.txt`, `SHA256SUMS.txt` |
+| Preuves publiées | `deliveries/0.1.0-b5/` : résultats, journaux (cœur, wrapper, hôte, pluginval, paquets), `machine.txt`, capture de l'UI sur macOS |
+
+**Vérification après téléchargement par le lien direct :**
+
+- HTTP 200 ;
+- empreinte identique à celle publiée ;
+- intégrité ZIP correcte ;
+- `SHA256SUMS` vérifié sur les 4 fichiers ;
+- README_FR conforme à la build : identité, commit, statut interne, signature.
+
+**Runs successifs** (corrections de CI et de packaging, sans changement DSP) :
+
+| run | résultat | correction apportée |
+|---|---|---|
+| n°1, `45605074185` | G-24 échoue sur le bundle brut | G-24 est désormais vérifié sur le bundle livré, re-signé |
+| n°2, `45606179537` | Le packaging échoue ; le contrôle négatif RTSan, compilé en -O1, n'est pas détecté, car l'allocation est éliminée par l'optimiseur | Contrôle négatif compilé en -O0, avec un pointeur publié |
+| n°3, `45606883873` | Le packaging échoue : la clé `BundleIsRelocatable` est absente de `pkgbuild --analyze` | Clé écrite avec `plutil -replace` |
+| n°4, `45607779663` | Succès complet | — |
+| n°5, `45609212850` | Succès complet, livraison publiée | — |
 
 ## 10. Suite
 
