@@ -1,0 +1,67 @@
+SUBDESTRUCKT — S0.1 — Recette perceptive finale — Instructions d'écoute
+=====================================================================
+
+1. Contenu de l'archive
+-----------------------
+- 12 fichiers WAV : C1, C2, C3 et C5, chacun en trois versions REF, X et Y.
+- FEUILLE_ECOUTE_S01_FINALE.odt : la feuille à remplir (LibreOffice, Word ou Google Docs).
+- INSTRUCTIONS_ECOUTE.txt : ce document.
+
+Les quatre cas :
+- C1 : feedback FM modéré (OP1 en auto-modulation vers OP2, PM 1,2 rad, 110 Hz).
+- C2 : feedback FM élevé (OP1 auto-modulé + cycle OP1 <-> OP2, FM exponentielle 1,5 octave, 110 Hz).
+- C3 : interaction WT/FM modérée (wavetable dent de scie <-> OP1, PM 1,0 rad, 110 Hz).
+- C5 : matrice FM dense (4x4 opérateurs, PM 1,0 rad, 110 Hz).
+
+2. Ce que contiennent les fichiers
+----------------------------------
+- REF : rendu à 48 kHz avec oversampling 2x. C'est la référence.
+- X et Y : deux rendus du même patch à 96 kHz avec oversampling 2x, convertis ensuite à 48 kHz.
+  Ils ne diffèrent que par la variante interne testée. Leur attribution à X ou Y a été tirée au sort,
+  indépendamment pour chaque cas : X dans un cas n'a aucun lien avec X dans un autre cas.
+- Les patches, profondeurs de modulation et états initiaux sont strictement ceux de la première campagne.
+- Format commun : WAV PCM 24 bits, mono, 48 kHz, 3,000 s, fondus d'entrée et de sortie de 20 ms.
+- Niveaux : chaque fichier est aligné à -20 dBFS RMS. Aucune saturation (crête la plus haute vers -11 dBFS).
+- Conversion 96 -> 48 kHz : filtre sinc à fenêtre de Kaiser, 2049 coefficients, phase linéaire,
+  appliqué identiquement à X et Y. Plat à +/-0,00000003 dB jusqu'à 21,5 kHz, atténuation d'au moins
+  165 dB à partir de 22,5 kHz.
+
+3. Préparation
+--------------
+- Écoute au casque de bonne qualité ou sur enceintes de monitoring, dans un endroit calme.
+- Régler si possible la sortie audio du système à 48 kHz, 24 bits.
+  Sous Windows : Paramètres son > périphérique > Propriétés > Format.
+  Sur macOS : Configuration audio et MIDI.
+- Désactiver tout traitement : améliorations audio Windows, égaliseur, spatialisation, normalisation
+  du volume du lecteur.
+- Régler le volume une seule fois, sur C1_REF.wav, à un niveau confortable et modéré, puis ne plus y toucher.
+- Lecteur conseillé : un lecteur qui permet de basculer instantanément entre fichiers en boucle.
+  Par exemple, Audacity avec les trois fichiers d'un cas importés sur trois pistes et le bouton Solo,
+  ou le composant ABX de foobar2000.
+
+4. Procédure, pour chaque cas, dans l'ordre C1, C2, C3, C5
+----------------------------------------------------------
+a) Écouter REF plusieurs fois.
+b) Écouter X, puis Y, en revenant à REF aussi souvent que nécessaire.
+c) Remplir les quatre rubriques de la feuille :
+   - Différence audible entre X et Y : oui / non / incertain.
+   - Rendu le plus proche de REF : X / Y / aucune différence.
+   - Préférence artistique, indépendamment de REF : X / Y / aucune.
+   - Observations libres : timbre, aigus, rugosité, battements, stabilité, attaque, etc.
+d) Faire une courte pause avant le cas suivant.
+
+Pour cocher une case, remplacer le symbole ☐ par ☒, ou écrire un X à côté.
+« Incertain » et « aucune différence » sont des réponses valables : il vaut mieux les utiliser
+que deviner.
+
+5. Règles du test à l'aveugle
+-----------------------------
+- Répondre à l'oreille uniquement. Ne pas analyser les fichiers (spectrogramme, comparaison numérique)
+  avant d'avoir rempli la feuille.
+- La clé X/Y n'est pas dans l'archive. Ne pas la chercher avant d'avoir terminé.
+- Les fichiers ont tous le même format, la même durée et la même taille : rien dans leurs propriétés
+  n'indique l'attribution.
+
+6. Retour
+---------
+Renvoyer la feuille ODT remplie. La direction technique ouvrira ensuite la clé pour l'arbitrage final.

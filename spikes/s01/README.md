@@ -18,3 +18,9 @@ make && ./build/s01_cli all data && ./build/s01_cli audio audio
 python3 -I scripts/summarize.py data audio > data/summary.md
 make bench-m1                               # Apple M1 -> data/bench_m1.csv, puis relancer summarize.py
 ```
+
+## Recette perceptive finale (campagne ciblée 96 kHz / 2×)
+
+`s01_cli final <dir> [graine_hex]`, puis `py -3 -I scripts/make_final_listening.py <dir> audio_final` :
+voir `audio_final/README.md`. L'archive d'écoute est `audio_final/SUBDESTRUCKT_S01_FINAL_LISTENING.zip` ;
+la clé X/Y n'est pas versionnée avant l'écoute (seule son empreinte SHA-256 l'est).

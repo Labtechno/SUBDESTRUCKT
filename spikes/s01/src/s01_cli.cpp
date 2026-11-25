@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <random>
 #include <string>
 #include <thread>
 #include <vector>
@@ -346,8 +347,9 @@ struct AudioCase {
   Shape wt; std::array<double, kNodes> mix;
 };
 
-static void audio(const std::string& dir) {
-  const std::vector<AudioCase> cases = {
+// Cas d'écoute S0.1 (partagés par les campagnes audio et final : configurations strictement identiques).
+static std::vector<AudioCase> audioCases() {
+  return {
       {"c1_fb_moderate", "OP1 self-feedback -> OP2, PM 1.2 rad, 110 Hz", Mode::PM, {{1, 1}, {1, 2}}, 1.2, 110, Shape::Saw, {0, 0.5, 0.5, 0, 0}},
       {"c2_fb_high", "OP1 self + cycle OP1<->OP2, Exponential FM 1.5 oct, 110 Hz", Mode::ExpFM, {{1, 1}, {1, 2}, {2, 1}}, 1.5, 110, Shape::Saw, {0, 0.5, 0.5, 0, 0}},
       {"c3_wtfm_moderate", "WT(saw)<->OP1, PM 1.0 rad, 110 Hz", Mode::PM, {{0, 1}, {1, 0}}, 1.0, 110, Shape::Saw, {0.6, 0.4, 0, 0, 0}},
@@ -355,6 +357,10 @@ static void audio(const std::string& dir) {
       {"c5_dense", "dense 4x4 OP, PM 1.0 rad, 110 Hz", Mode::PM, topologies()[4].srcDst, 1.0, 110, Shape::Saw, {0, 0.25, 0.25, 0.25, 0.25}},
       {"c6_drone", "WT/FM 2 cycles independants, ExpFM 0.3 oct, 55 Hz", Mode::ExpFM, topologies()[7].srcDst, 0.3, 55, Shape::Asym, {0.3, 0.2, 0.2, 0.15, 0.15}},
   };
+}
+
+static void audio(const std::string& dir) {
+  const std::vector<AudioCase> cases = audioCases();
   struct Var { const char* tag; double sr; int K; TimeRef ref; };
   // paires A/B : 44.1 kHz politique produit (T1 1x / T2 2x), 44.1 kHz à K égal (2x/2x), 96 kHz (1x/1x)
   struct Pair { const char* tag; Var a, b; };
@@ -427,9 +433,186 @@ static void audio(const std::string& dir) {
   std::fclose(key); std::fclose(sheet); std::fclose(meta);
 }
 
+// ============================================================================================ final
+// Recette perceptive finale S0.1 : cas C1, C2, C3, C5 (configurations audioCases() inchangées).
+//   REF = 48 kHz / 2x (T1 et T2 identiques à 48 kHz : vérifié bit à bit) ; X, Y = 96 kHz / 2x, T1/T2 tirés au sort.
+// Les rendus 96 kHz sont ramenés à 48 kHz hors ligne par OfflineDecim2 (outil d'écoute, hors moteur, non RT).
+
+// Décimation 2:1 hors ligne à phase nulle : sinc fenêtré Kaiser, 2M+1 coefficients symétriques, coupure fc,
+// beta = 0.1102 (A - 8.7) ; y[m] = sum_{k=-M..M} h[k] x[2m - k] (échantillons hors signal = 0), gain DC = 1.
+// Aucun retard à compenser (filtre centré). Réponse mesurée et contrôle sinusoïdal : resampler_check.csv.
+struct OfflineDecim2 {
+  int M; double fs, fc, attDb, beta; std::vector<double> h;
+  static double besselI0(double x) {
+    double s = 1, t = 1;
+    const double q = x / 2;
+    for (int k = 1; k < 500 && t > 1e-21 * s; ++k) { t *= (q / k) * (q / k); s += t; }
+    return s;
+  }
+  OfflineDecim2(double fs_, double fc_, double attDb_, int M_) : M(M_), fs(fs_), fc(fc_), attDb(attDb_), h(size_t(2 * M_ + 1)) {
+    beta = 0.1102 * (attDb - 8.7);
+    const double w = 2.0 * fc / fs, i0b = besselI0(beta);
+    double sum = 0;
+    for (int n = -M; n <= M; ++n) {
+      const double x = w * n;
+      const double sinc = n == 0 ? 1.0 : std::sin(kPi * x) / (kPi * x);
+      const double r = double(n) / double(M);
+      h[size_t(n + M)] = w * sinc * besselI0(beta * std::sqrt(std::max(0.0, 1.0 - r * r))) / i0b;
+      sum += h[size_t(n + M)];
+    }
+    for (double& v : h) v /= sum;
+  }
+  double responseDb(double f) const {
+    double a = h[size_t(M)];
+    for (int n = 1; n <= M; ++n) a += 2.0 * h[size_t(n + M)] * std::cos(2.0 * kPi * f * n / fs);
+    return 20.0 * std::log10(std::fabs(a) + 1e-300);
+  }
+  std::vector<double> process(const std::vector<double>& x, size_t nOut) const {
+    std::vector<double> y(nOut, 0.0);
+    const long long L = (long long)x.size();
+    for (size_t m = 0; m < nOut; ++m) {
+      double acc = 0;
+      const long long c = 2 * (long long)m;
+      for (int k = -M; k <= M; ++k) { const long long i = c - k; if (i >= 0 && i < L) acc += h[size_t(k + M)] * x[size_t(i)]; }
+      y[m] = acc;
+    }
+    return y;
+  }
+};
+
+static void finalListening(const std::string& dir, std::uint64_t seed) {
+  const auto cases = audioCases();
+  const std::vector<std::pair<const char*, size_t>> picks = {{"C1", 0}, {"C2", 1}, {"C3", 2}, {"C5", 4}};
+  const double seconds = 3.0, fade = 0.02, targetRmsDb = -20.0, fsOut = 48000;
+  const long long N = (long long)(seconds * fsOut);
+  const OfflineDecim2 rs(96000, 22000, 150, 1024);
+
+  // ---- contrôle du rééchantillonneur : réponse en fréquence + sinusoïdes 96 kHz -> 48 kHz
+  {
+    FILE* o = openOut(dir, "resampler_check.csv");
+    std::fprintf(o, "kind,f_hz,value_db\n");
+    double ppMax = -1e9, ppMin = 1e9, stop24 = -1e9, stop28 = -1e9;
+    for (double f = 0; f <= 48000.0 + 1e-9; f += 5.0) {
+      const double d = rs.responseDb(f);
+      if (std::fmod(f, 50.0) == 0.0) std::fprintf(o, "response,%.0f,%.6f\n", f, d);
+      if (f <= 20000) { ppMax = std::max(ppMax, d); ppMin = std::min(ppMin, d); }
+      if (f >= 24000) stop24 = std::max(stop24, d);
+      if (f >= 28000) stop28 = std::max(stop28, d);
+    }
+    std::fprintf(o, "passband_0_20k_max,,%.8f\npassband_0_20k_min,,%.8f\nstopband_ge_24k_max,,%.2f\nstopband_ge_28k_max,,%.2f\n",
+                 ppMax, ppMin, stop24, stop28);
+    for (double f : {100.0, 1000.0, 10000.0, 19000.0}) {  // erreur vs sinusoïde idéale à 48 kHz (zone centrale)
+      std::vector<double> x(96000);
+      for (size_t i = 0; i < x.size(); ++i) x[i] = std::sin(2 * kPi * f * double(i) / 96000.0);
+      auto y = rs.process(x, 48000);
+      double e = 0, s = 0;
+      for (size_t m = 4000; m < 44000; ++m) { const double r = std::sin(2 * kPi * f * double(m) / 48000.0); e += (y[m] - r) * (y[m] - r); s += r * r; }
+      std::fprintf(o, "sine_err,%.0f,%.2f\n", f, 10 * std::log10(e / s + 1e-300));
+    }
+    for (double f : {28000.0, 36000.0, 45000.0}) {  // composantes qui se replieraient dans 3..20 kHz
+      std::vector<double> x(96000);
+      for (size_t i = 0; i < x.size(); ++i) x[i] = std::sin(2 * kPi * f * double(i) / 96000.0);
+      auto y = rs.process(x, 48000);
+      double e = 0;
+      for (size_t m = 4000; m < 44000; ++m) e += y[m] * y[m];
+      std::fprintf(o, "alias_residual,%.0f,%.2f\n", f, 10 * std::log10(e / (0.5 * 40000) + 1e-300));
+    }
+    std::fclose(o);
+    std::fprintf(stderr, "resampler: 2M+1=%d taps, fc=%.0f Hz, beta=%.3f, passband 0..20k [%.2e, %.2e] dB, >=24k %.1f dB, >=28k %.1f dB\n",
+                 2 * rs.M + 1, rs.fc, rs.beta, ppMin, ppMax, stop24, stop28);
+  }
+
+  std::mt19937_64 rng(seed);
+  FILE* key = openOut(dir, "KEY_NE_PAS_OUVRIR_AVANT_ECOUTE.md");
+  FILE* meta = openOut(dir, "KEY_final_metrics.csv");
+  std::fprintf(key, "# S0.1 — recette perceptive finale — CLÉ X/Y\n\n"
+                    "**Ne pas ouvrir avant d'avoir rempli la feuille d'écoute.** Ce fichier n'est pas dans l'archive d'écoute.\n\n"
+                    "Graine du tirage : `%016llx` (reproduction : `s01_cli final <dir> %016llx`).\n\n"
+                    "| cas | fichier | référence temporelle | K | rendu | latence compensée (éch. hôte) |\n|---|---|---|---|---|---|\n",
+               (unsigned long long)seed, (unsigned long long)seed);
+  std::fprintf(meta, "case,file,role,ref,K,render_sr,rms_db_before,gain_db,peak_dbfs_after,rms_db_after,lsd_vs_ref_db,nmse_vs_ref_db,sha_fnv1a\n");
+  for (const auto& pk : picks) {
+    const AudioCase& c = cases[pk.second];
+    auto renderHost = [&](double sr, int K, TimeRef ref, long long n, int& lat) {
+      RouteTable t = RouteTable::build(c.routes, c.depth);
+      EngineParams p = makeParams(sr, K, ref, c.mode, c.f0, Frac::Lagrange3, c.wt);
+      p.mix = c.mix;
+      RenderOut r = render(makeSpec(t, p, n + 4096), 256);
+      lat = r.latencyHost;
+      return std::vector<double>(r.host.begin() + lat, r.host.begin() + lat + n);  // compense la latence du décimateur
+    };
+    struct F { std::string file, role; TimeRef ref; int K; double sr; int lat; std::vector<double> y; };
+    std::vector<F> fs;
+    // REF : 48 kHz / 2x. À 48 kHz, T1 = T2 = 2 échantillons moteur : les deux rendus doivent être identiques.
+    int latA, latB;
+    auto r1 = renderHost(48000, 2, TimeRef::T1, N, latA);
+    auto r2 = renderHost(48000, 2, TimeRef::T2, N, latB);
+    if (r1 != r2 || latA != latB) { std::fprintf(stderr, "ERREUR %s : REF T1 != REF T2 à 48 kHz\n", pk.first); std::exit(3); }
+    fs.push_back({std::string(pk.first) + "_REF.wav", "REF", TimeRef::T1, 2, 48000, latA, r1});
+    const bool swap = (rng() >> 63) & 1;
+    for (int side = 0; side < 2; ++side) {
+      const TimeRef ref = side == 0 ? TimeRef::T1 : TimeRef::T2;
+      const char* label = ((side == 0) != swap) ? "X" : "Y";
+      int lat;
+      auto y96 = renderHost(96000, 2, ref, 2 * N + 2 * rs.M, lat);  // marge pour la queue du filtre
+      fs.push_back({std::string(pk.first) + "_" + label + ".wav", label, ref, 2, 96000, lat, rs.process(y96, size_t(N))});
+    }
+    std::sort(fs.begin() + 1, fs.end(), [](const F& a, const F& b) { return a.role < b.role; });  // REF, X, Y
+    // fondu identique (cosinus surélevé 20 ms) à 48 kHz, puis RMS commun ; abaissement commun si crête > -1 dBFS
+    const long long nf = (long long)(fade * fsOut);
+    for (F& f : fs)
+      for (long long i = 0; i < nf; ++i) { const double g = 0.5 - 0.5 * std::cos(kPi * double(i) / double(nf)); f.y[size_t(i)] *= g; f.y[size_t(N - 1 - i)] *= g; }
+    std::vector<double> rmsDb(fs.size());
+    double minHead = 1e9;
+    for (size_t i = 0; i < fs.size(); ++i) {
+      Stats s = stats(fs[i].y.data(), fs[i].y.size());
+      if (s.nan || s.inf) { std::fprintf(stderr, "ERREUR %s : NaN/Inf\n", fs[i].file.c_str()); std::exit(3); }
+      rmsDb[i] = 20 * std::log10(s.rms + 1e-30);
+      minHead = std::min(minHead, -1.0 - (20 * std::log10(s.peak + 1e-30) + (targetRmsDb - rmsDb[i])));
+    }
+    const double common = std::min(0.0, minHead);
+    for (size_t i = 0; i < fs.size(); ++i) {
+      const double g = targetRmsDb - rmsDb[i] + common;
+      const double lin = std::pow(10.0, g / 20.0);
+      for (double& v : fs[i].y) v *= lin;
+    }
+    // métriques objectives (clé uniquement) : écart de bandes de tiers d'octave 20 Hz..20 kHz et NMSE vs REF
+    auto bandsOf = [&](const std::vector<double>& y) { return bandLevels(y.data(), y.size(), fsOut); };
+    const auto bRef = bandsOf(fs[0].y);
+    const auto& cs = s0::thirdOctaveCenters();
+    for (size_t i = 0; i < fs.size(); ++i) {
+      writeWav24(dir + "/" + fs[i].file, fs[i].y, int(fsOut));
+      Stats s = stats(fs[i].y.data(), fs[i].y.size());
+      const auto b = bandsOf(fs[i].y);
+      double lsd = 0; int nb = 0;
+      for (size_t k = 0; k < cs.size(); ++k) if (cs[k] >= 20 && cs[k] <= 20000) { lsd += std::fabs(b[k] - bRef[k]); ++nb; }
+      std::fprintf(meta, "%s,%s,%s,%s,%d,%.0f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f,%016llx\n", pk.first, fs[i].file.c_str(), fs[i].role.c_str(),
+                   i == 0 ? "T1=T2" : name(fs[i].ref), fs[i].K, fs[i].sr, rmsDb[i], targetRmsDb - rmsDb[i] + common,
+                   20 * std::log10(s.peak), 20 * std::log10(s.rms), lsd / nb, i == 0 ? -999.0 : nmseDb(fs[0].y.data(), fs[i].y.data(), size_t(N)),
+                   (unsigned long long)fnv1a(fs[i].y.data(), fs[i].y.size()));
+      std::fprintf(key, "| %s | %s | %s | %d | %.0f Hz -> 48 kHz | %d |\n", pk.first, fs[i].file.c_str(), i == 0 ? "T1 = T2" : name(fs[i].ref),
+                   fs[i].K, fs[i].sr, fs[i].lat);
+    }
+    std::fprintf(stderr, "final %s (%s) ok\n", pk.first, c.desc);  // la clé n'est écrite que dans KEY_*
+  }
+  std::fprintf(key, "\nCas : ");
+  for (const auto& pk : picks) std::fprintf(key, "%s = `%s` (%s) ; ", pk.first, cases[pk.second].id, cases[pk.second].desc);
+  std::fprintf(key, "\n");
+  std::fclose(key); std::fclose(meta);
+}
+
 int main(int argc, char** argv) {
-  if (argc < 3) { std::fprintf(stderr, "usage: %s <matrix|delay|fracresp|fracfb|transition|audio|all> <dir> [threads]\n", argv[0]); return 1; }
+  if (argc < 3) { std::fprintf(stderr, "usage: %s <matrix|delay|fracresp|fracfb|transition|audio|all> <dir> [threads]\n"
+                                       "       %s final <dir> [graine_hex]\n", argv[0], argv[0]); return 1; }
   std::string cmd = argv[1], dir = argv[2];
+  if (cmd == "final") {
+    (void)TableBank::instance();
+    std::uint64_t seed;
+    if (argc > 3) seed = std::strtoull(argv[3], nullptr, 16);
+    else { std::random_device rd; seed = (std::uint64_t(rd()) << 32) ^ std::uint64_t(rd()); }
+    finalListening(dir, seed);
+    return 0;
+  }
   if (argc > 3) g_threads = std::atoi(argv[3]);
   (void)TableBank::instance();  // tables construites hors campagne
   const bool all = cmd == "all";
