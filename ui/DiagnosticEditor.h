@@ -19,6 +19,7 @@ class DiagnosticEditor : public juce::AudioProcessorEditor, private juce::Timer 
 
   void paint(juce::Graphics& g) override;
   void resized() override;
+  void refreshNow() { timerCallback(); }  // rafraîchissement immédiat (capture d'écran de test)
 
  private:
   void timerCallback() override;

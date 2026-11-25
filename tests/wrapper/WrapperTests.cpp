@@ -17,6 +17,7 @@
 
 #include "TestKit.h"
 #include "plugin/PluginProcessor.h"
+#include "ui/DiagnosticEditor.h"
 
 void* operator new(std::size_t n) {
   if (tk::countingAllocations().load(std::memory_order_relaxed)) tk::allocationCount().fetch_add(1);
@@ -243,6 +244,38 @@ void testPanicRequest() {
   tk::result("G-16w", ok, "Panic demande par l'UI : transmis au moteur comme evenement de securite (offset 0)");
 }
 
+// Capture PNG de l'UI de diagnostic (contrôle visuel, non bloquant) après quelques blocs joués à 44,1 kHz.
+void snapshotEditor(const std::string& path) {
+  SubdestrucktProcessor p;
+  p.prepareToPlay(44100.0, 256);
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  midi.addEvent(juce::MidiMessage::noteOn(1, 57, static_cast<juce::uint8>(110)), 0);
+  for (int i = 0; i < 60; ++i) {
+    buf.clear();
+    p.processBlock(buf, midi);
+    midi.clear();
+  }
+  std::unique_ptr<juce::AudioProcessorEditor> ed(p.createEditorIfNeeded());
+  auto* diag = dynamic_cast<sbd::DiagnosticEditor*>(ed.get());
+  if (diag == nullptr) {
+    tk::info("UI : editeur indisponible");
+    return;
+  }
+  diag->setSize(1080, 720);
+  diag->refreshNow();
+  const auto img = diag->createComponentSnapshot(diag->getLocalBounds(), true, 1.0f);
+  juce::File f(juce::String::fromUTF8(path.c_str()));
+  f.deleteFile();
+  bool ok = false;
+  {
+    juce::FileOutputStream os(f);
+    juce::PNGImageFormat png;
+    ok = os.openedOk() && png.writeImageToStream(img, os);
+  }
+  tk::info("UI : capture %dx%d -> %s (%s)", img.getWidth(), img.getHeight(), path.c_str(), ok ? "ecrite" : "ECHEC d'ecriture");
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -259,5 +292,9 @@ int main(int argc, char** argv) {
   testInstances();
   std::fprintf(stderr, "[panic]\n");
   testPanicRequest();
+  if (argc > 2) {
+    std::fprintf(stderr, "[capture UI]\n");
+    snapshotEditor(argv[2]);
+  }
   return tk::finish("wrapper_tests");
 }

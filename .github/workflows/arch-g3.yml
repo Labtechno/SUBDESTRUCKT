@@ -77,7 +77,7 @@ jobs:
       - name: Tests du wrapper JUCE (G-06w, G-16w, G-18w, G-19w, G-21w, G-22w)
         run: |
           set -o pipefail
-          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/wrapper_tests.log
+          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log
 
       - name: Paquets Installer / Uninstaller (bundle livré re-signé ad hoc)
         run: |
@@ -208,6 +208,8 @@ jobs:
           mkdir -p "$DEST"
           cp "out/delivery/$NAME.zip" "out/delivery/$NAME.zip.sha256" out/results.txt out/machine.txt "$DEST/"
           cp out/core_tests.log out/wrapper_tests.log out/host_tests.log out/pluginval.log out/sandbox_tests.log out/system_tests.log out/bundle.log "$DEST/"
+          cp out/rtsan_tests.log "$DEST/" 2>/dev/null || true
+          [ -f out/ui_snapshot.png ] && cp out/ui_snapshot.png "$DEST/ui_diagnostic_macos.png" || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST"
