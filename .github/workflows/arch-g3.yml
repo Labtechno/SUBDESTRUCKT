@@ -79,41 +79,53 @@ jobs:
           set -o pipefail
           ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/wrapper_tests.log
 
-      - name: Bundle VST3 (G-24)
+      - name: Paquets Installer / Uninstaller (bundle livré re-signé ad hoc)
+        run: |
+          set -euo pipefail
+          RAW=build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3
+          { codesign --verify --strict "$RAW" && echo "signature du bundle brut (post-build JUCE) : valide" \
+            || echo "signature du bundle brut (post-build JUCE) : invalide ou absente (re-signature au packaging)"; } 2>&1 | tee out/packaging.log
+          bash packaging/build_packages.sh "$RAW" out/packages "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" 2>&1 | tee -a out/packaging.log
+          cat out/packages/signature_status.txt | tee -a out/packaging.log
+
+      - name: Bundle VST3 livré (G-24)
         run: |
           set +e -uo pipefail
-          B=build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3
-          p() { /usr/libexec/PlistBuddy -c "Print :$1" "$B/Contents/Info.plist"; }
+          B=out/packages/signed/SUBDESTRUCKT.vst3
+          p() { /usr/libexec/PlistBuddy -c "Print :$1" "$B/Contents/Info.plist" 2>/dev/null; }
           archs="$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT")"
-          codesign --verify --strict --verbose=2 "$B"; sig=$?
-          ok=1
-          [ "$archs" = arm64 ] || ok=0
-          [ "$sig" = 0 ] || ok=0
-          [ "$(p CFBundleIdentifier)" = com.labtechno.subdestruckt ] || ok=0
-          [ "$(p CFBundleShortVersionString)" = "$VERSION" ] || ok=0
-          [ "$(p CFBundleVersion)" = "$BUILD" ] || ok=0
-          [ "$(p SUBDESTRUCKTBuild)" = "$VERSION-b$BUILD" ] || ok=0
-          [ "$(p SUBDESTRUCKTCommit)" = "$COMMIT" ] || ok=0
+          codesign --verify --strict --verbose=2 "$B" > out/bundle_codesign.txt 2>&1; sig=$?
           minos="$(otool -l "$B/Contents/MacOS/SUBDESTRUCKT" | awk '/LC_BUILD_VERSION/{f=1} f&&/minos/{print $2; exit}')"
-          detail="arch $archs ; codesign ad hoc $([ $sig = 0 ] && echo valide || echo INVALIDE) ; id $(p CFBundleIdentifier) ; version $(p CFBundleShortVersionString) build $(p CFBundleVersion) ; minos $minos"
-          { [ $ok = 1 ] && echo "RESULT G-24 PASS bundle : $detail" || echo "RESULT G-24 FAIL bundle : $detail"; } | tee out/bundle.log
-          ls -la "$B/Contents" "$B/Contents/MacOS" "$B/Contents/Resources" | tee -a out/bundle.log
-          [ $ok = 1 ]
+          bad=""
+          [ "$archs" = arm64 ] || bad="$bad arch=$archs"
+          [ "$sig" = 0 ] || bad="$bad codesign=$(tr '\n' ' ' < out/bundle_codesign.txt)"
+          [ "$(p CFBundleIdentifier)" = com.labtechno.subdestruckt ] || bad="$bad id=$(p CFBundleIdentifier)"
+          [ "$(p CFBundleShortVersionString)" = "$VERSION" ] || bad="$bad version=$(p CFBundleShortVersionString)"
+          [ "$(p CFBundleVersion)" = "$BUILD" ] || bad="$bad build=$(p CFBundleVersion)"
+          [ "$(p SUBDESTRUCKTBuild)" = "$VERSION-b$BUILD" ] || bad="$bad cleBuild=$(p SUBDESTRUCKTBuild)"
+          [ "$(p SUBDESTRUCKTCommit)" = "$COMMIT" ] || bad="$bad cleCommit=$(p SUBDESTRUCKTCommit)"
+          [ "$minos" = "$MIN_MACOS" ] || bad="$bad minos=$minos"
+          [ -f "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt" ] || bad="$bad mentions-tierces-absentes"
+          detail="arch $archs ; signature ad hoc $([ $sig = 0 ] && echo valide || echo INVALIDE) ; $(p CFBundleIdentifier) $(p CFBundleShortVersionString) build $(p CFBundleVersion) ($(p SUBDESTRUCKTBuild)) ; minos $minos"
+          if [ -z "$bad" ]; then echo "RESULT G-24 PASS bundle livre : $detail" | tee out/bundle.log
+          else echo "RESULT G-24 FAIL bundle livre :$bad" | tee out/bundle.log; fi
+          ls -la "$B/Contents" "$B/Contents/MacOS" "$B/Contents/Resources" >> out/bundle.log
+          [ -z "$bad" ]
 
-      - name: Tests d'hôte VST3 (G-19h, G-20, G-21, G-22)
+      - name: Tests d'hôte VST3 sur le bundle livré (G-19h, G-20, G-21, G-22)
         run: |
           set -o pipefail
           ./build/subdestruckt_host_tests_artefacts/Release/subdestruckt_host_tests \
-            build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3 tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/host_tests.log
+            out/packages/signed/SUBDESTRUCKT.vst3 tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/host_tests.log
 
-      - name: pluginval 1.0.4, rigueur 10 (G-23)
+      - name: pluginval 1.0.4, rigueur 10, sur le bundle livré (G-23)
         run: |
           set +e -uo pipefail
           curl -sfL -o "$RUNNER_TEMP/pluginval.zip" "https://github.com/Tracktion/pluginval/releases/download/$PLUGINVAL_VERSION/pluginval_macOS.zip"
-          echo "$PLUGINVAL_SHA256  $RUNNER_TEMP/pluginval.zip" | shasum -a 256 -c -
+          echo "$PLUGINVAL_SHA256  $RUNNER_TEMP/pluginval.zip" | shasum -a 256 -c - || { echo "RESULT G-23 FAIL empreinte de pluginval inattendue" | tee out/pluginval_result.log; exit 1; }
           unzip -q -o "$RUNNER_TEMP/pluginval.zip" -d "$RUNNER_TEMP/pluginval"
           PV="$RUNNER_TEMP/pluginval/pluginval.app/Contents/MacOS/pluginval"
-          B="$PWD/build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3"
+          B="$PWD/out/packages/signed/SUBDESTRUCKT.vst3"
           "$PV" --help > out/pluginval_help.txt 2>&1 || true
           extra=""
           grep -q -- "--sample-rates" out/pluginval_help.txt && extra="$extra --sample-rates 44100,48000,88200,96000"
@@ -121,20 +133,13 @@ jobs:
           "$PV" --strictness-level 10 --timeout-ms 900000 $extra --validate "$B" > out/pluginval.log 2>&1; r=$?
           tail -40 out/pluginval.log
           if [ $r = 0 ]; then
-            echo "RESULT G-23 PASS pluginval $PLUGINVAL_VERSION rigueur 10 (tests d'interface inclus)$extra" | tee -a out/pluginval_result.log
+            echo "RESULT G-23 PASS pluginval $PLUGINVAL_VERSION rigueur 10 (tests d'interface inclus)$extra" | tee out/pluginval_result.log
           else
             "$PV" --strictness-level 10 --timeout-ms 900000 --skip-gui-tests $extra --validate "$B" > out/pluginval_nogui.log 2>&1; r2=$?
             tail -40 out/pluginval_nogui.log
-            echo "RESULT G-23 FAIL pluginval rigueur 10 : echec avec tests d'interface (code $r) ; sans tests d'interface : code $r2" | tee -a out/pluginval_result.log
+            echo "RESULT G-23 FAIL pluginval rigueur 10 : echec avec tests d'interface (code $r) ; sans tests d'interface : code $r2" | tee out/pluginval_result.log
             exit 1
           fi
-
-      - name: Paquets Installer / Uninstaller
-        run: |
-          set -euo pipefail
-          bash packaging/build_packages.sh build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3 out/packages \
-            "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" 2>&1 | tee out/packaging.log
-          cat out/packages/signature_status.txt | tee -a out/packaging.log
 
       - name: Tests des scripts de paquets (bac à sable)
         run: set -o pipefail; bash packaging/tests/sandbox_tests.sh out/packages/signed/SUBDESTRUCKT.vst3 out/packages/scripts 2>&1 | tee out/sandbox_tests.log
@@ -152,6 +157,23 @@ jobs:
           bash packaging/make_delivery.sh out/packages out/delivery "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" out/results.txt \
             "$RUN_URL" "macOS $(sw_vers -productVersion) ($(sw_vers -buildVersion))" 2>&1 | tee out/delivery.log
 
+      - name: Annotations des résultats
+        if: always()
+        run: |
+          set +e
+          for f in out/*.log; do
+            [ -f "$f" ] || continue
+            lines="$(grep -h "^RESULT " "$f" | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+            [ -n "$lines" ] && echo "::notice title=$(basename "$f")::$lines"
+          done
+          for f in out/configure.log out/build.log out/core_tests.log out/wrapper_tests.log out/bundle.log out/host_tests.log out/pluginval.log out/pluginval_nogui.log out/packaging.log out/sandbox_tests.log out/system_tests.log out/delivery.log; do
+            [ -f "$f" ] || continue
+            if grep -q -E "FAIL|error:|ECHEC|FAILED|Error|inattendu" "$f"; then
+              tailtxt="$(grep -E "FAIL|error|ECHEC|FAILED|Error|refus|echec|inattendu" "$f" | tail -25 | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+              echo "::warning title=extrait $(basename "$f")::$tailtxt"
+            fi
+          done
+
       - name: Résumé
         if: always()
         run: |
@@ -160,8 +182,8 @@ jobs:
             echo '```'; cat out/machine.txt 2>/dev/null; echo '```'
             echo "| statut | critère |"; echo "|---|---|"
             grep -h "^RESULT " out/*.log 2>/dev/null | sed -E 's/^RESULT ([^ ]+) (PASS|FAIL) (.*)$/| \2 | **\1** \3 |/'
-            [ -f out/delivery/NAME ] && { echo; echo "Livraison : $(cat out/delivery/NAME).zip"; cat out/delivery/*.zip.sha256; }
-          } >> "$GITHUB_STEP_SUMMARY"
+            if [ -f out/delivery/NAME ]; then echo; echo "Livraison : $(cat out/delivery/NAME).zip"; cat out/delivery/*.zip.sha256; fi
+          } >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Artefact CI
         if: always()
@@ -223,6 +245,24 @@ jobs:
             exit 1
           fi
           grep "^RESULT G-18rt" out/rtsan_tests.log >> "$GITHUB_STEP_SUMMARY"
+      - name: Contrôle négatif RTSan (allocation volontaire détectée)
+        run: |
+          set +e
+          LLVM="$(brew --prefix llvm)"
+          "$LLVM/bin/clang++" -std=c++17 -O1 -fsanitize=realtime -DSBD_RTSAN -Isource tests/rtsan/negative_control.cpp             -L"$LLVM/lib/c++" -Wl,-rpath,"$LLVM/lib/c++" -o out/rtsan_negative 2>&1 | tail -5
+          ./out/rtsan_negative > out/rtsan_negative.log 2>&1; r=$?
+          head -20 out/rtsan_negative.log
+          if [ $r != 0 ] && grep -q "RealtimeSanitizer" out/rtsan_negative.log; then
+            echo "RESULT G-18rt-neg PASS controle negatif : allocation volontaire dans une fonction nonblocking detectee par RTSan (code $r)" | tee -a out/rtsan_tests.log
+          else
+            echo "RESULT G-18rt-neg FAIL controle negatif non detecte (code $r) : RTSan inactif, G-18rt non probant" | tee -a out/rtsan_tests.log
+            exit 1
+          fi
+      - name: Annotations RTSan
+        if: always()
+        run: |
+          lines="$(grep -h "^RESULT " out/rtsan_tests.log 2>/dev/null | awk 'BEGIN{ORS="%0A"} {print}')"
+          [ -n "$lines" ] && echo "::notice title=rtsan::$lines" || true
       - name: Artefact
         if: always()
         uses: actions/upload-artifact@v4

@@ -26,12 +26,18 @@ B="$ROOT/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3"
 mkdir -p "$(dirname "$B")"
 ditto "$SRC_BUNDLE" "$B"
 cp "$HERE/THIRD_PARTY_NOTICES.txt" "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt"
-[ "$(plist "$B" CFBundleIdentifier)" = "com.labtechno.subdestruckt" ] || { echo "identifiant de bundle inattendu"; exit 1; }
-[ "$(plist "$B" CFBundleShortVersionString)" = "$VERSION" ] || { echo "version inattendue"; exit 1; }
-[ "$(plist "$B" CFBundleVersion)" = "$BUILD" ] || { echo "numero de build inattendu"; exit 1; }
-[ "$(plist "$B" SUBDESTRUCKTBuild)" = "$BUILD_ID" ] || { echo "cle SUBDESTRUCKTBuild inattendue"; exit 1; }
-[ "$(plist "$B" SUBDESTRUCKTCommit)" = "$COMMIT" ] || { echo "cle SUBDESTRUCKTCommit inattendue"; exit 1; }
-[ "$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT")" = "arm64" ] || { echo "binaire non arm64 uniquement"; exit 1; }
+expect() {  # expect <clé> <valeur attendue>
+  local got
+  got="$(plist "$B" "$1" 2>/dev/null || true)"
+  [ "$got" = "$2" ] || { echo "ECHEC Info.plist : $1 = '$got' (attendu '$2')"; exit 1; }
+}
+expect CFBundleIdentifier "com.labtechno.subdestruckt"
+expect CFBundleShortVersionString "$VERSION"
+expect CFBundleVersion "$BUILD"
+expect SUBDESTRUCKTBuild "$BUILD_ID"
+expect SUBDESTRUCKTCommit "$COMMIT"
+archs="$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT")"
+[ "$archs" = "arm64" ] || { echo "ECHEC binaire : architectures '$archs' (attendu arm64 uniquement)"; exit 1; }
 codesign --force --sign - --timestamp=none "$B"
 codesign --verify --strict --verbose=2 "$B"
 rm -rf "$OUT/signed" && mkdir -p "$OUT/signed" && ditto "$B" "$OUT/signed/SUBDESTRUCKT.vst3"
