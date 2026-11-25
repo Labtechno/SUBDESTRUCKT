@@ -90,3 +90,7 @@ Le dossier [V1-S0-CAUSALITY-SPIKE.md](V1-S0-CAUSALITY-SPIKE.md) définit le prot
 
 ## 16. Arbitrage S0 — VALIDÉ PARTIELLEMENT
 Le 2026-11-24, la stratégie causale **B** est validée : retard uniquement sur les arêtes nécessaires pour casser les cycles. La classification causale est **sticky/persistante** afin qu'une route survivante ne change jamais silencieusement de son à la suite d'une autre modification de routage. T2 reste candidat non gelé. Si T2 est retenu après S0.1, le réseau récursif impose K≥2 à 44.1 kHz et la durée T2 s'applique à toutes les arêtes retardées FM/CROSS, pas aux delays créatifs/compensations/resamplers.
+
+
+## 17. Packaging et livraison — VALIDÉ (2026-11-25)
+Chaque version installable, dès ARCH-G3, doit être fournie en ZIP versionné avec installateur et désinstallateur .pkg, documentation FR, changelog et SHA-256. Conservation des données personnelles par défaut; recette d'installation, mise à jour et désinstallation obligatoire. Voir [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Les spikes sans VST3 installable sont exclus. Aucun changement des gates DSP.

@@ -51,3 +51,7 @@ Ces valeurs restent candidates et ne sont PAS des décisions utilisateur :
 
 ## 6. Risque produit assumé
 Le choix macOS Apple Silicon réduit volontairement le marché adressable. En contrepartie, il réduit fortement la matrice de support et permet de concentrer le travail sur la qualité DSP, la stabilité et l'UX du VSTi. Cette restriction doit rester une décision produit consciente, pas une conséquence accidentelle de code non portable.
+
+
+## 7. Packaging macOS — VALIDÉ (2026-11-25)
+À partir d'ARCH-G3, chaque version installable VST3 arm64 (test, alpha, beta, stable) inclut un ZIP versionné avec Installer.pkg et Uninstaller.pkg, README_FR, CHANGELOG et SHA256SUMS. Installation système /Library/Audio/Plug-Ins/VST3/; désinstallation ciblée préservant les données personnelles; recette sur Apple Silicon. Signature Developer ID et notarisation exigées pour distribution publique, sous réserve d'obtention des certificats (sans ceux-ci, distribution publique bloquée). Contrat complet : [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Les spikes non installables sont exclus. Aucun test packaging exécuté à ce stade.

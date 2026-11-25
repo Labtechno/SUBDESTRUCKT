@@ -562,6 +562,7 @@ Stratégie B + classification sticky validées. La référence T1/T2 reste ouver
 
 ### ARCH-G3 — Vertical Slice
 MIDI mono → WT simple → 2 OP FM → CROSS → Amp → Output → preset minimal → UI diagnostic.
+La livraison ARCH-G3 inclut dès la première version installable le ZIP et les deux PKG macOS arm64 ainsi que la recette PKG-01 à PKG-08, selon [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Packaging/build/release hors DSP et hors processus audio; aucune livraison VST3 nue. Cette exigence ne débloque pas ARCH-G3.
 
 ### ARCH-G4 — Expansion P0
 Seulement après vertical slice et tests.
