@@ -1,0 +1,53 @@
+installer: Package name is SUBDESTRUCKT 0.1.0-b5 (build interne)
+installer: Installing at base path /
+installer: The install was successful.
+RESULT PKG-02-install PASS installation propre (installer reel, VM) : code 0, bundle arm64 present, recu et manifeste
+package-id: com.labtechno.subdestruckt.vst3
+version: 0.1.0.5
+volume: /
+location: 
+install-time: 1795608173
+/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3: valid on disk
+/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3: satisfies its Designated Requirement
+SUBDESTRUCKT ARCH-G3 — tests d'hote VST3 (JUCE JUCE v9.0.6) sur /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3
+  decouvert : SUBDESTRUCKT / Labtechno / version 0.1.0 / instrument 1 / sorties 0 / format VST3
+RESULT PKG-02-G-20a PASS decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version 0.1.0
+  rendu 1,5 s : crete 0.3943
+RESULT PKG-02-G-20q PASS instanciation et rendu d'une note depuis le bundle installe (sortie finie, non silencieuse, < 0 dBFS)
+
+host_tests : 2 controles, 0 echecs, 2 criteres rapportes
+RESULT PKG-02-host PASS bundle installe decouvert et instancie depuis /Library/Audio/Plug-Ins/VST3 par l'hote VST3 de test (rendu d'une note)
+installer: Package name is SUBDESTRUCKT 0.1.0-b5 (build interne)
+installer: Upgrading at base path /
+installer: The upgrade was successful.
+RESULT PKG-03-reinstall PASS reinstallation de la meme version : code 0, contenu identique, identite conservee
+installer: Package name is Désinstallation de SUBDESTRUCKT (désinstallateur 0.1.0-b5)
+installer: Installing at base path /
+installer: The install was successful.
+RESULT PKG-04 PASS desinstallation : bundle, manifeste et recu retires ; autre plugin et donnees personnelles conserves
+installer: Error - Aucun plugin SUBDESTRUCKT n'a été trouvé dans /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3. Rien n'a été supprimé.
+RESULT PKG-06-absent PASS desinstallateur sans plugin present : refus (code non nul), aucun autre element touche
+installer: Package name is SUBDESTRUCKT 0.1.0-b5 (build interne)
+installer: Installing at base path /
+installer: The install was successful.
+RESULT PKG-05 PASS reinstallation apres desinstallation : code 0, donnees personnelles toujours presentes
+installer: Error - La version installée (9.9.9, build 5) est plus récente que ce désinstallateur. Utilisez le désinstallateur livré avec la version installée. Rien n'a été supprimé.
+RESULT PKG-06-newer PASS desinstallateur plus ancien que la version installee : refus, bundle intact
+installer: Error - Un élément qui n'est pas le plugin SUBDESTRUCKT occupe /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3. Il ne sera pas remplacé. Rien n'a été installé.
+installer: Error - L'élément présent dans /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 n'est pas le plugin SUBDESTRUCKT. Rien n'a été supprimé.
+RESULT PKG-06-foreign PASS element tiers a l'emplacement : installateur et desinstallateur refusent, element intact
+installer: Error - Un élément qui n'est pas le plugin SUBDESTRUCKT occupe /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3. Il ne sera pas remplacé. Rien n'a été installé.
+installer: Error - L'élément présent dans /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 n'est pas le plugin SUBDESTRUCKT. Rien n'a été supprimé.
+RESULT PKG-06-symlink PASS lien symbolique a l'emplacement : refus des deux paquets, cible non suivie et intacte
+--- extrait de /var/log/install.log (SUBDESTRUCKT) ---
+2026-11-25 12:02:52+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+2026-11-25 12:02:53+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./postinstall: SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+2026-11-25 12:02:55+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[preinstall]: mise a jour / reinstallation depuis 0.1.0 (build 5) ; sauvegarde : /Library/Application Support/Labtechno/SUBDESTRUCKT/installer-backup/SUBDESTRUCKT.vst3
+2026-11-25 12:02:55+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./postinstall: SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+2026-11-25 12:02:57+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[uninstall]: desinstallation terminee ; supprime : /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3, /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt, /Library/Application Support/Labtechno/SUBDESTRUCKT (vide), /Library/Application Support/Labtechno (vide), recu com.labtechno.subdestruckt.vst3 ; donnees personnelles conservees
+2026-11-25 12:02:59+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+2026-11-25 12:02:59+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./postinstall: SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+2026-11-25 12:03:01+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+2026-11-25 12:03:01+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./postinstall: SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+2026-11-25 12:03:02+00 sjc20-bb661-e09ec1a3-48b4-4538-b8db-c4dabcd65588-5213C238D406 package_script_service[7216]: ./preinstall: SUBDESTRUCKT[uninstall]: desinstallation terminee ; supprime : /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3, /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt, /Library/Application Support/Labtechno/SUBDESTRUCKT (vide), /Library/Application Support/Labtechno (vide), recu com.labtechno.subdestruckt.vst3 ; donnees personnelles conservees
+system_tests : 9 PASS, 0 FAIL

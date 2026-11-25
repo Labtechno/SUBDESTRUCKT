@@ -1,0 +1,23 @@
+RESULT G-24 PASS bundle livre : arch arm64 ; signature ad hoc valide ; com.labtechno.subdestruckt 0.1.0 build 5 (0.1.0-b5) ; minos 14.0
+out/packages/signed/SUBDESTRUCKT.vst3/Contents:
+total 16
+drwxr-xr-x  3 runner  staff    96 Nov 25 12:01 _CodeSignature
+drwxr-xr-x  7 runner  staff   224 Nov 25 12:01 .
+drwxr-xr-x  3 runner  staff    96 Nov 25 11:58 ..
+-rw-r--r--  1 runner  staff  1038 Nov 25 11:58 Info.plist
+drwxr-xr-x  3 runner  staff    96 Nov 25 12:01 MacOS
+-rw-r--r--  1 runner  staff     8 Nov 25 12:01 PkgInfo
+drwxr-xr-x  4 runner  staff   128 Nov 25 12:01 Resources
+
+out/packages/signed/SUBDESTRUCKT.vst3/Contents/MacOS:
+total 9784
+drwxr-xr-x  3 runner  staff       96 Nov 25 12:01 .
+drwxr-xr-x  7 runner  staff      224 Nov 25 12:01 ..
+-rwxr-xr-x  1 runner  staff  5005456 Nov 25 12:01 SUBDESTRUCKT
+
+out/packages/signed/SUBDESTRUCKT.vst3/Contents/Resources:
+total 16
+drwxr-xr-x  4 runner  staff   128 Nov 25 12:01 .
+drwxr-xr-x  7 runner  staff   224 Nov 25 12:01 ..
+-rw-r--r--  1 runner  staff  1050 Nov 25 12:01 moduleinfo.json
+-rw-r--r--  1 runner  staff   861 Nov 25 12:01 THIRD_PARTY_NOTICES.txt

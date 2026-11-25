@@ -1,0 +1,11 @@
+SUBDESTRUCKT ARCH-G3 — tests d'hote VST3 (JUCE JUCE v9.0.6) sur out/packages/signed/SUBDESTRUCKT.vst3
+  decouvert : SUBDESTRUCKT / Labtechno / version 0.1.0 / instrument 1 / sorties 0 / format VST3
+RESULT G-20a PASS decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version 0.1.0
+RESULT G-20 PASS hote VST3 : 4 frequences x blocs 32/64/128/256/512, rendu fini non silencieux < 0 dBFS, latence attendue, sorties identiques bit a bit entre tailles de bloc : [44.1k latence 32 : ok] [48.0k latence 0 : ok] [88.2k latence 0 : ok] [96.0k latence 0 : ok]
+  2103 parametres exposes par l'interface VST3
+RESULT G-22 PASS identifiants VST3 des 22 parametres = liste de reference derivee des StableID (stables d'une compilation a l'autre)
+  etat : 1609 octets, blob identique apres rechargement oui, rendu identique oui
+RESULT G-21 PASS etat via VST3 : getState -> nouvelle instance -> setState, etat relu identique et rendu identique bit a bit
+RESULT G-19h PASS deux instances VST3 hebergees entrelacees : sorties identiques aux rendus separes, instances isolees
+
+host_tests : 5 controles, 0 echecs, 5 criteres rapportes

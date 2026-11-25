@@ -1,0 +1,44 @@
+RESULT SBX-01 PASS installation initiale : preinstall 0, postinstall 0, manifeste ecrit, aucune sauvegarde residuelle
+RESULT SBX-02 PASS reinstallation de la meme version
+RESULT SBX-03 PASS mise a jour depuis une version anterieure simulee (0.0.9) -> version courante installee
+RESULT SBX-04 PASS echec de verification (binaire manquant) : postinstall en echec et installation anterieure restauree a l'identique
+RESULT SBX-05 PASS echec de verification sans installation anterieure : rien de partiel ne reste
+RESULT SBX-06 PASS installateur : bundle tiers a l'emplacement -> refus, element intact
+RESULT SBX-07 PASS desinstallateur : bundle tiers -> refus, element intact
+RESULT SBX-08 PASS lien symbolique a l'emplacement : installateur et desinstallateur refusent, cible non suivie et intacte
+RESULT SBX-09 PASS plugin en cours d'utilisation : installateur et desinstallateur refusent sans rien modifier
+RESULT SBX-10 PASS desinstallation : bundle et manifeste retires, dossier produit vide retire, autres plugins, donnees personnelles, projets et dossier Labtechno partage conserves
+RESULT SBX-11 PASS desinstallation sans plugin present : refus explicite (30), rien supprime
+RESULT SBX-12 PASS reinstallation apres desinstallation, donnees conservees accessibles
+RESULT SBX-13 PASS desinstallateur plus ancien que la version installee (9.9.9) : refus explicite (33), bundle intact
+--- journal des scripts ---
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[preinstall]: mise a jour / reinstallation depuis 0.1.0 (build 5) ; sauvegarde : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/installer-backup/SUBDESTRUCKT.vst3
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[preinstall]: mise a jour / reinstallation depuis 0.0.9 (build 5) ; sauvegarde : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/installer-backup/SUBDESTRUCKT.vst3
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[preinstall]: mise a jour / reinstallation depuis 0.1.0 (build 5) ; sauvegarde : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/installer-backup/SUBDESTRUCKT.vst3
+SUBDESTRUCKT[postinstall]: ECHEC de verification : binaire absent
+SUBDESTRUCKT[postinstall]: installation anterieure restauree
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: ECHEC de verification : numero de build inattendu
+SUBDESTRUCKT[postinstall]: installation incomplete retiree (aucune installation anterieure)
+SUBDESTRUCKT[preinstall]: refus : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 est un element non identifie ou d'un tiers (rien modifie)
+SUBDESTRUCKT[uninstall]: refus : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 n'est pas un bundle SUBDESTRUCKT identifie (rien supprime)
+SUBDESTRUCKT[preinstall]: refus : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 est un lien symbolique (aucun lien suivi, rien modifie)
+SUBDESTRUCKT[uninstall]: refus : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3 est un lien symbolique (non suivi, rien supprime)
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[preinstall]: refus : le plugin est charge par un processus (fermez la DAW puis relancez l'installation)
+SUBDESTRUCKT[uninstall]: refus : le plugin est charge par un processus (fermez la DAW puis relancez)
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[uninstall]: desinstallation terminee ; supprime : /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3, /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt, /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT (vide) ; donnees personnelles conservees
+SUBDESTRUCKT[uninstall]: aucune installation de SUBDESTRUCKT detectee : rien n'a ete supprime
+SUBDESTRUCKT[preinstall]: installation initiale de 0.1.0-b5
+SUBDESTRUCKT[postinstall]: installation verifiee : 0.1.0-b5 (186fb8644ae9518e3cb5116f4368b45dcea0d430), manifeste /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/tmp.e4NYzB9LI9/vol/Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt
+SUBDESTRUCKT[uninstall]: refus : version installee 9.9.9 (build 5) plus recente que ce desinstallateur (0.1.0-b5) : utilisez le desinstallateur de la version installee
+sandbox_tests : 13 PASS, 0 FAIL

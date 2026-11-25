@@ -1,0 +1,11 @@
+run            : https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45609212850
+commit         : 186fb8644ae9518e3cb5116f4368b45dcea0d430  build 5
+image          : macos15 20261118.0550.1
+macOS          : macOS 15.8.2 (24H232)
+cpu            : Apple M1 (Virtual)  ncpu 3  memoire 7168 Mio
+vm             : kern.hv_vmm_present=1  modele VirtualMac2,1
+arch           : arm64  rosetta=0
+xcode          : Xcode 16.4 Build version 16F6 
+compilateur    : Apple clang version 17.0.0 (clang-1700.0.13.5)
+cmake          : cmake version 4.5.0
+JUCE 9.0.6 @ 654bdbc7a9db0dae90849b44abe91f339e9f0768 verifie

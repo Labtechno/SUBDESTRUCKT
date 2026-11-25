@@ -1,0 +1,16 @@
+[temps reel et latence]
+SUBDESTRUCKT ARCH-G3 — tests du wrapper JUCE
+RESULT G-18w PASS AudioProcessor::processBlock : 0 allocation(s)/liberation(s) (4 frequences x blocs 32/512, notes, CC120, automation, transactions de topologie)
+RESULT G-06w PASS latence declaree a l'hote (setLatencySamples) : 32 a 44,1 kHz, 0 a 48/88,2/96 kHz
+[etat]
+RESULT G-21w PASS etat du wrapper : blob identique apres rechargement (oui), routes/ids/classes (oui), rendu bit a bit (oui), etat invalide refuse (oui), version future refusee (oui)
+[identite]
+RESULT G-22w PASS 22 parametres : identite hote = StableID ; identifiants VST3 (calcul JUCE) = liste de reference calculee independamment ; tous distincts
+[instances]
+RESULT G-19w PASS deux processeurs entrelaces : sorties identiques aux rendus separes, instances isolees
+[panic]
+RESULT G-16w PASS Panic demande par l'UI : transmis au moteur comme evenement de securite (offset 0)
+[capture UI]
+  UI : capture 1080x720 -> out/ui_snapshot.png (ecrite)
+
+wrapper_tests : 14 controles, 0 echecs, 6 criteres rapportes

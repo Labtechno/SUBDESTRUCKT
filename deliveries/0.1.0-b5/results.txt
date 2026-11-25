@@ -1,0 +1,60 @@
+RESULT G-24 PASS bundle livre : arch arm64 ; signature ad hoc valide ; com.labtechno.subdestruckt 0.1.0 build 5 (0.1.0-b5) ; minos 14.0
+RESULT G-05 PASS retard T2 : D entier exact ou Thiran1 (|H|=1, tau(DC)=D, tau(1k) a 0,5 %), K=2 a 44,1 kHz, K=1 a 48/88,2/96 kHz
+RESULT G-06 PASS latence du decimateur = pic impulsionnel exact (K=2,4) ; 32 ech. a 44,1 kHz, 0 a 48/88,2/96 kHz
+RESULT G-01a PASS regles B sticky : cycle -> D, auto-boucle -> D, survivants jamais reclasses, retarget = nouvel id, union dans une transaction
+RESULT G-01b PASS 1200 sequences, 48000 transactions aleatoires : Immediate acyclique, ordre topologique, survivants inchanges, ids croissants jamais reutilises (0 echecs)
+RESULT G-02 PASS 6 transactions invalides rejetees sans effet partiel (etat et nextRouteId identiques)
+RESULT G-01c PASS validation au chargement : cycle Immediate, auto-boucle I, doublons, ids hors plage refuses
+RESULT G-03a PASS preset minimal conforme, encodage deterministe, 300 allers-retours exacts (0 echecs)
+RESULT G-03b PASS 16 etats invalides refuses sans effet (version future, cycle I, auto-boucle I, doublons, hors plage, NaN, inconnu, manquant, tronque)
+RESULT G-04 PASS empoisonnement NaN des sorties non calculees : 0 violation aux 4 frequences ; controle negatif (ordre inverse) detecte : oui
+RESULT G-01d PASS profondeur 0 : la route et sa classe D restent dans le graphe compile ; contribution exactement nulle (sortie identique au graphe sans la route)
+RESULT G-07 PASS rendus identiques bit a bit (2 executions) et invariants aux blocs 1/7/32/64/128/256/512/variables, aux 4 frequences
+RESULT G-08 PASS note-on appliquee a son offset exact (zero avant, son a l'offset a K=1) ; note-off avant note-on dans un meme echantillon ; priorite derniere note
+RESULT G-09 PASS WT seul (220 Hz) : harmoniques 2..10 en 1/k a 0.001 dB pres (seuil 0,5), energie inharmonique -82.8 dB (seuil -40), independance vis-a-vis du FM : identique bit a bit
+RESULT G-10 PASS FM seul OP2>OP1, I=1 rad : bandes laterales k=0..3 conformes a |Jk(1)|, ecart max 0.112 dB (seuil 0,5) ; J0:-0.000dB J1:+0.000dB J2:-0.000dB J3:-0.000dB
+RESULT G-11 PASS CROSS WT>FM mesurable (NMSE >= -20 dB, ecart spectral >= 1 dB), inactif identique bit a bit a la reference : [48.0k route seule NMSE -5.1 dB, ecart 29.33 dB, inactif=ref oui] [48.0k cycle B-T2 NMSE -5.1 dB, ecart 29.33 dB, inactif=ref oui] [44.1k route seule NMSE -5.0 dB, ecart 31.37 dB, inactif=ref oui] [44.1k cycle B-T2 NMSE -5.0 dB, ecart 31.37 dB, inactif=ref oui]
+RESULT G-12 PASS CROSS FM>WT mesurable (NMSE >= -20 dB, ecart spectral >= 1 dB), inactif identique bit a bit a la reference : [48.0k route seule NMSE -0.1 dB, ecart 18.93 dB, inactif=ref oui] [48.0k cycle B-T2 NMSE -0.1 dB, ecart 18.89 dB, inactif=ref oui] [44.1k route seule NMSE -0.1 dB, ecart 19.02 dB, inactif=ref oui] [44.1k cycle B-T2 NMSE -0.1 dB, ecart 19.09 dB, inactif=ref oui]
+RESULT G-13 PASS CROSS Master -> 0 en cours de note : apres la rampe, sortie identique bit a bit a une reference sans CROSS (aucun reset de phase) : [44.1k avant: NMSE -5.0 dB ; apres rampe: identique bit a bit] [48.0k avant: NMSE -4.2 dB ; apres rampe: identique bit a bit] [88.2k avant: NMSE -4.4 dB ; apres rampe: identique bit a bit] [96.0k avant: NMSE -4.1 dB ; apres rampe: identique bit a bit]
+RESULT G-14 PASS 6 transactions en cours de note (dont union cyclique), sequence fondu-sortie / bascule / fondu-entree, poison actif : [48.0k K=1 : union cyclique presente, chevauchement 0 ech., NaN 0, burst D4 max +3.1 dB] [44.1k K=2 : union cyclique presente, chevauchement 0 ech., NaN 0, burst D4 max -0.0 dB] (metrique de clic rapportee sans seuil)
+RESULT G-15 PASS 200 configurations aleatoires x 2 s (parametres, topologies, notes, automation) : 0 en defaut ; garde |y|>32 : 0 ; borne PM +/-32 rad atteinte : 0
+RESULT G-16 PASS Panic : silence exact apres 5 ms (oui), note suivante normale (crete 0.397) ; NaN injecte : 1 reinitialisation(s), sortie toujours finie, reprise du son (oui)
+RESULT G-17 PASS sans note : sortie exactement nulle ; 1 s apres la fin du relachement : crete < -120 dBFS (4 frequences)
+RESULT G-19 PASS deux instances entrelacees (table immuable partagee) : sorties identiques bit a bit aux rendus separes
+RESULT G-18 PASS allocations/liberations pendant Engine::process sur l'ensemble des rendus : 0 (seuil 0)
+RESULT G-20a PASS decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version 0.1.0
+RESULT G-20 PASS hote VST3 : 4 frequences x blocs 32/64/128/256/512, rendu fini non silencieux < 0 dBFS, latence attendue, sorties identiques bit a bit entre tailles de bloc : [44.1k latence 32 : ok] [48.0k latence 0 : ok] [88.2k latence 0 : ok] [96.0k latence 0 : ok]
+RESULT G-22 PASS identifiants VST3 des 22 parametres = liste de reference derivee des StableID (stables d'une compilation a l'autre)
+RESULT G-21 PASS etat via VST3 : getState -> nouvelle instance -> setState, etat relu identique et rendu identique bit a bit
+RESULT G-19h PASS deux instances VST3 hebergees entrelacees : sorties identiques aux rendus separes, instances isolees
+RESULT G-23 PASS pluginval v1.0.4 rigueur 10 (tests d'interface inclus) --sample-rates 44100,48000,88200,96000 --block-sizes 32,64,128,256,512
+RESULT SBX-01 PASS installation initiale : preinstall 0, postinstall 0, manifeste ecrit, aucune sauvegarde residuelle
+RESULT SBX-02 PASS reinstallation de la meme version
+RESULT SBX-03 PASS mise a jour depuis une version anterieure simulee (0.0.9) -> version courante installee
+RESULT SBX-04 PASS echec de verification (binaire manquant) : postinstall en echec et installation anterieure restauree a l'identique
+RESULT SBX-05 PASS echec de verification sans installation anterieure : rien de partiel ne reste
+RESULT SBX-06 PASS installateur : bundle tiers a l'emplacement -> refus, element intact
+RESULT SBX-07 PASS desinstallateur : bundle tiers -> refus, element intact
+RESULT SBX-08 PASS lien symbolique a l'emplacement : installateur et desinstallateur refusent, cible non suivie et intacte
+RESULT SBX-09 PASS plugin en cours d'utilisation : installateur et desinstallateur refusent sans rien modifier
+RESULT SBX-10 PASS desinstallation : bundle et manifeste retires, dossier produit vide retire, autres plugins, donnees personnelles, projets et dossier Labtechno partage conserves
+RESULT SBX-11 PASS desinstallation sans plugin present : refus explicite (30), rien supprime
+RESULT SBX-12 PASS reinstallation apres desinstallation, donnees conservees accessibles
+RESULT SBX-13 PASS desinstallateur plus ancien que la version installee (9.9.9) : refus explicite (33), bundle intact
+RESULT PKG-02-install PASS installation propre (installer reel, VM) : code 0, bundle arm64 present, recu et manifeste
+RESULT PKG-02-G-20a PASS decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version 0.1.0
+RESULT PKG-02-G-20q PASS instanciation et rendu d'une note depuis le bundle installe (sortie finie, non silencieuse, < 0 dBFS)
+RESULT PKG-02-host PASS bundle installe decouvert et instancie depuis /Library/Audio/Plug-Ins/VST3 par l'hote VST3 de test (rendu d'une note)
+RESULT PKG-03-reinstall PASS reinstallation de la meme version : code 0, contenu identique, identite conservee
+RESULT PKG-04 PASS desinstallation : bundle, manifeste et recu retires ; autre plugin et donnees personnelles conserves
+RESULT PKG-06-absent PASS desinstallateur sans plugin present : refus (code non nul), aucun autre element touche
+RESULT PKG-05 PASS reinstallation apres desinstallation : code 0, donnees personnelles toujours presentes
+RESULT PKG-06-newer PASS desinstallateur plus ancien que la version installee : refus, bundle intact
+RESULT PKG-06-foreign PASS element tiers a l'emplacement : installateur et desinstallateur refusent, element intact
+RESULT PKG-06-symlink PASS lien symbolique a l'emplacement : refus des deux paquets, cible non suivie et intacte
+RESULT G-18w PASS AudioProcessor::processBlock : 0 allocation(s)/liberation(s) (4 frequences x blocs 32/512, notes, CC120, automation, transactions de topologie)
+RESULT G-06w PASS latence declaree a l'hote (setLatencySamples) : 32 a 44,1 kHz, 0 a 48/88,2/96 kHz
+RESULT G-21w PASS etat du wrapper : blob identique apres rechargement (oui), routes/ids/classes (oui), rendu bit a bit (oui), etat invalide refuse (oui), version future refusee (oui)
+RESULT G-22w PASS 22 parametres : identite hote = StableID ; identifiants VST3 (calcul JUCE) = liste de reference calculee independamment ; tous distincts
+RESULT G-19w PASS deux processeurs entrelaces : sorties identiques aux rendus separes, instances isolees
+RESULT G-16w PASS Panic demande par l'UI : transmis au moteur comme evenement de securite (offset 0)
