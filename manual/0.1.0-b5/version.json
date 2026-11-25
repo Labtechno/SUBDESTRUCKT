@@ -1,0 +1,153 @@
+{
+  "version": "0.1.0-b5",
+  "label": "vertical slice ARCH-G3, build interne",
+  "buildSourceSha": "186fb8644ae9518e3cb5116f4368b45dcea0d430",
+  "documentationSha": "8d2334250994758f2182b18c3a47dd059cb68495",
+  "deliveryZip": "SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip",
+  "deliveryZipSha256": "4b37271856ab690c3487df1a7a76dcc9a5c76459dd31c1558ab07766dd4fbe58",
+  "deliveryZipBytes": 2076951,
+  "recetteCampaignId": "SUBDESTRUCKT-ARCH-G3-RECETTE-PHYSIQUE",
+  "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g3-recette.v1",
+  "resultsSchemaVersion": 1,
+  "generator": "manual/build.py",
+  "audioExamples": [
+    {
+      "id": "e01_init",
+      "file": "audio/e01_init.wav",
+      "sha256": "61216b6a1a10d7c6eaf3635845b2e01bc43f4e4622cc7813b54f2a2357e24eee"
+    },
+    {
+      "id": "e02_wt_seule",
+      "file": "audio/e02_wt_seule.wav",
+      "sha256": "e09cf35372f53fcd8ae925d29533382e8cf872385861586e134147b8d65ec14e"
+    },
+    {
+      "id": "e03_fm_seule",
+      "file": "audio/e03_fm_seule.wav",
+      "sha256": "68cf8219806910f921ff129d820e4a0ca46bd31779b3b75e33874c41bd2e2d61"
+    },
+    {
+      "id": "e04_fm_faible",
+      "file": "audio/e04_fm_faible.wav",
+      "sha256": "eb71f8463a4a6013293718ec6bbf69bc30d6932fc075214c2c025d82f2550f40"
+    },
+    {
+      "id": "e05_fm_forte",
+      "file": "audio/e05_fm_forte.wav",
+      "sha256": "b541e82128238637acd808f61b1ef2965f4cc10b33b8202e9621c4d91fe92907"
+    },
+    {
+      "id": "e06_ratio_2",
+      "file": "audio/e06_ratio_2.wav",
+      "sha256": "658037f9f11eb996319a7e665fda1e8159208b19fcdc98a0ba542bd69f9d9142"
+    },
+    {
+      "id": "e07_ratio_3_5",
+      "file": "audio/e07_ratio_3_5.wav",
+      "sha256": "877cedca2290fb65f1c434ca5e8038d7129b0449387d74d318685abc4cbbf56c"
+    },
+    {
+      "id": "e08_op1_sans_cross",
+      "file": "audio/e08_op1_sans_cross.wav",
+      "sha256": "bfda9f773b7b8de65dd4b8f20039022214d2ad4e386cdab1ce0ebdfacfd1c71a"
+    },
+    {
+      "id": "e09_cross_wt_vers_fm",
+      "file": "audio/e09_cross_wt_vers_fm.wav",
+      "sha256": "fdfcf45764fa593409ccfd89a1b24ab1a4addc46b995f2aad4587675f24eb583"
+    },
+    {
+      "id": "e10_wt_sans_cross",
+      "file": "audio/e10_wt_sans_cross.wav",
+      "sha256": "e09cf35372f53fcd8ae925d29533382e8cf872385861586e134147b8d65ec14e"
+    },
+    {
+      "id": "e11_cross_fm_vers_wt",
+      "file": "audio/e11_cross_fm_vers_wt.wav",
+      "sha256": "c96bf6b0775a0f17ee52570571dd7084a2f04dfd515a0c5817f42ece09c656b3"
+    },
+    {
+      "id": "e12_bidirectionnel",
+      "file": "audio/e12_bidirectionnel.wav",
+      "sha256": "8a248fb5a4788682b1c76d7f122e9f5f89e2bb78e2ec4581a13e0ea233559f59"
+    },
+    {
+      "id": "e13_env_courte",
+      "file": "audio/e13_env_courte.wav",
+      "sha256": "c70159e518182905b7ed29e61e92313725ba87c44eaf4171b285d912a3c927d4"
+    },
+    {
+      "id": "e14_env_longue",
+      "file": "audio/e14_env_longue.wav",
+      "sha256": "7ab94587855b777a27319c3fae558f3977bfb37e0f2363b8d401a46946cd19b6"
+    },
+    {
+      "id": "e15_texture",
+      "file": "audio/e15_texture.wav",
+      "sha256": "b85db27b3d2935fb645859edfa73e04e8b614bf22d32275233a45ffef1fabf06"
+    }
+  ],
+  "screenshot": {
+    "file": "assets/ui_diagnostic_macos.png",
+    "sha256": "69e1c9b26003d1399c95f699ad805f11452a90754c0a55c74ffb2f2face89ede"
+  },
+  "files": {
+    "assets/fig/mesure_onde_e01_init.svg": "cc289b2312166221dd10330b250a5eb8eff9890a62bd13e6252bf19e1e7832ec",
+    "assets/fig/mesure_onde_e02_wt_seule.svg": "568684c9aeff6b36b5919624396919448da97afc38e752358842663bb8475ae5",
+    "assets/fig/mesure_onde_e03_fm_seule.svg": "8a66be10882ecd75bf10991a3cf9190879b88dcdde091afee7938709b50e8b7d",
+    "assets/fig/mesure_onde_e04_fm_faible.svg": "f8237b2ba8ca7abf9385aea54354da2eddc2993e0319b8586a0afbac2a77aee7",
+    "assets/fig/mesure_onde_e05_fm_forte.svg": "6c80c23e7035271c3bfa71b93ab1927f4645c9d90117d0f93919668d46f52869",
+    "assets/fig/mesure_onde_e06_ratio_2.svg": "9cc138b3ad7640075b938a3cff90c6dd669272d155f90c719d532e962bb8ea11",
+    "assets/fig/mesure_onde_e07_ratio_3_5.svg": "5c6d60b01404cdaaf944e951cee4048421eeb98eb3d9afd3e7b228734f7ad25c",
+    "assets/fig/mesure_onde_e08_op1_sans_cross.svg": "3d5c3b1e530df55eff2e36bdb82e87c9ba28bfa742e96e7856f94cce8dbb17ca",
+    "assets/fig/mesure_onde_e09_cross_wt_vers_fm.svg": "17324737af65814988d07e316860c9b9152aa252f843aec2b61e4d1bebe7fa4a",
+    "assets/fig/mesure_onde_e10_wt_sans_cross.svg": "76615bc38b0e72e5ab9be7bd996bb6540fcc55b3fc9af171f7d33aeba97abe2c",
+    "assets/fig/mesure_onde_e11_cross_fm_vers_wt.svg": "d397cad4b35920f51c41be7d38e87a8dfa0012dc023a9f13570bde310d9a1755",
+    "assets/fig/mesure_onde_e12_bidirectionnel.svg": "579cd0bbd2da4a0a8c5e603acd12810ee8df0f6cabf8826bd0eef25d4c486429",
+    "assets/fig/mesure_onde_e13_env_courte.svg": "8731a549405703c55ee9278d0f205e2aabfcbe45efb4a460d4a302f1b43e3ade",
+    "assets/fig/mesure_onde_e14_env_longue.svg": "a03e3c2b25ed5106c1d6138cc396d191674139c4995786a75c069b64f230a8b6",
+    "assets/fig/mesure_onde_e15_texture.svg": "e280fb52c5e1319ac750bc044c7cdf5463f3dbb8ff994600737e56212468110b",
+    "assets/fig/mesure_spectre_e01_init.svg": "0b3730c0de2c1bc9384afd93189cdb965f2a9d86733f45281403a7edab2b7379",
+    "assets/fig/mesure_spectre_e02_wt_seule.svg": "f9a363984a7e502a19ac55eb1377cfaaf9b30f02b9019026960ffbd54097b187",
+    "assets/fig/mesure_spectre_e03_fm_seule.svg": "29328f7f116557dfb05963c7f226c690ea301532247c9d191861bc72ccea81b0",
+    "assets/fig/mesure_spectre_e04_fm_faible.svg": "a1701a9ab156caa629e4520e76fbae24aeccfc8b0724dcb84e6f6a887be543f0",
+    "assets/fig/mesure_spectre_e05_fm_forte.svg": "3a4dd1442fdfb0a69498653abc26e35f0a03fbabc2985e2c83bfebde249fcddf",
+    "assets/fig/mesure_spectre_e06_ratio_2.svg": "c877b76446988cb0d0298ebfe9995e59753a16594d3c81d42a10f58f75fc35f7",
+    "assets/fig/mesure_spectre_e07_ratio_3_5.svg": "9fdba0e464c497e76982b3c1d18305d8855cab8bf8e67a51b765519dc5d7ff8c",
+    "assets/fig/mesure_spectre_e08_op1_sans_cross.svg": "2f366826b92605750daf5ddbdb685db05ea3a1d3a089aec067340def61d19cc2",
+    "assets/fig/mesure_spectre_e09_cross_wt_vers_fm.svg": "3a09760622fc65fb3ae09aab1fbdbbceac1b823c3ed359f557c0c7e9b83f40d9",
+    "assets/fig/mesure_spectre_e10_wt_sans_cross.svg": "5256d29144d9fc56065ac1029646bd32dfeadef0b861d094cf5b13178d357145",
+    "assets/fig/mesure_spectre_e11_cross_fm_vers_wt.svg": "56bdf6e9d931a638b0cc956c502fada24dd2413e59ee5f9a2bf27419d0c87a39",
+    "assets/fig/mesure_spectre_e12_bidirectionnel.svg": "f738fedfcb6093b1a32b8d58600abe22ca2defaad5aa95c5345d39f46011c62d",
+    "assets/fig/mesure_spectre_e13_env_courte.svg": "d14c5eefd9feac11a696675723345a0125aa894a51313cff7cd98426ba3235c9",
+    "assets/fig/mesure_spectre_e14_env_longue.svg": "4450fb216f3daa04101a94c68786190797372aef042021cc6e095d72ede837e9",
+    "assets/fig/mesure_spectre_e15_texture.svg": "c1601e2c3f28d2ff3d4f93a45cc192c649186598c45bc67909511b6073da554d",
+    "assets/ui_diagnostic_macos.png": "69e1c9b26003d1399c95f699ad805f11452a90754c0a55c74ffb2f2face89ede",
+    "audio/e01_init.wav": "61216b6a1a10d7c6eaf3635845b2e01bc43f4e4622cc7813b54f2a2357e24eee",
+    "audio/e02_wt_seule.wav": "e09cf35372f53fcd8ae925d29533382e8cf872385861586e134147b8d65ec14e",
+    "audio/e03_fm_seule.wav": "68cf8219806910f921ff129d820e4a0ca46bd31779b3b75e33874c41bd2e2d61",
+    "audio/e04_fm_faible.wav": "eb71f8463a4a6013293718ec6bbf69bc30d6932fc075214c2c025d82f2550f40",
+    "audio/e05_fm_forte.wav": "b541e82128238637acd808f61b1ef2965f4cc10b33b8202e9621c4d91fe92907",
+    "audio/e06_ratio_2.wav": "658037f9f11eb996319a7e665fda1e8159208b19fcdc98a0ba542bd69f9d9142",
+    "audio/e07_ratio_3_5.wav": "877cedca2290fb65f1c434ca5e8038d7129b0449387d74d318685abc4cbbf56c",
+    "audio/e08_op1_sans_cross.wav": "bfda9f773b7b8de65dd4b8f20039022214d2ad4e386cdab1ce0ebdfacfd1c71a",
+    "audio/e09_cross_wt_vers_fm.wav": "fdfcf45764fa593409ccfd89a1b24ab1a4addc46b995f2aad4587675f24eb583",
+    "audio/e10_wt_sans_cross.wav": "e09cf35372f53fcd8ae925d29533382e8cf872385861586e134147b8d65ec14e",
+    "audio/e11_cross_fm_vers_wt.wav": "c96bf6b0775a0f17ee52570571dd7084a2f04dfd515a0c5817f42ece09c656b3",
+    "audio/e12_bidirectionnel.wav": "8a248fb5a4788682b1c76d7f122e9f5f89e2bb78e2ec4581a13e0ea233559f59",
+    "audio/e13_env_courte.wav": "c70159e518182905b7ed29e61e92313725ba87c44eaf4171b285d912a3c927d4",
+    "audio/e14_env_longue.wav": "7ab94587855b777a27319c3fae558f3977bfb37e0f2363b8d401a46946cd19b6",
+    "audio/e15_texture.wav": "b85db27b3d2935fb645859edfa73e04e8b614bf22d32275233a45ffef1fabf06",
+    "audio/examples.json": "4e14cf6c5524463f0ba9f10665df3cf50e3ff301680c100c569a15ce9d285b43",
+    "css/manual.css": "8cdfb1bf097e4f5d544f74cb805e25fce142eb9415c619c9accdc13fd208bde8",
+    "index.html": "9fe2ca1b7d7a7330cf5b72890ecb965dce81d22007d53844d36f15a20cdd8f5a",
+    "js/audio-ab.js": "7bd0c65762a846e3e2ebb213bb622e540226a8896c03fc4134a9fefdd66d71fe",
+    "js/demos.js": "6799afa7e8855a7518d52d83e58810100546fab3af820aff1c92dbe4a30512bc",
+    "js/manual.js": "2456080020aa659088b75e1258fe4aa80b14dc51ec26fdcb05ea07e65d59abee",
+    "recette/recette.js": "0d365eaa0867e931a6be8564a48fb0ff674037b0bad8e14f85e75c42f0406783",
+    "recette/store.js": "9b661168c75e08af93ddd0718334e0c689279522159b07c30ef109d76e76d6ec",
+    "recette/tests.json": "583ab993154e31b062898e5604fcbfedbb7a8be007884ae8ece314e0868a9339",
+    "recette.html": "7ea1522c3fbb3dfb0f3c7b01213245b4ee450e51f107209012aeca9215e22875",
+    "schema/results.schema.json": "38a4aeae6d893b3a60bc3534df7a5934c27efa830f0f72e486a0b0855456c7ce"
+  }
+}

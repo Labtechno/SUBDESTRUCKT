@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>SUBDESTRUCKT 0.1.0-b5 — Manuel utilisateur</title>
+<link rel="stylesheet" href="css/manual.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="topbar">
+  <button type="button" class="btn" id="tocToggle" aria-controls="toc" aria-expanded="false">Sommaire</button>
+  <div class="brand"><b>LABTECHNO</b><span>//</span>SUBDESTRUCKT <i>0.1.0-b5</i></div>
+  <div class="spacer"></div>
+  <a class="btn" href="recette.html">Recette</a>
+  <button type="button" class="btn" id="themeToggle" aria-pressed="false">Mode clair</button>
+</header>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Sommaire du manuel">
+    <div class="search" role="search">
+      <label for="searchInput">Rechercher dans le manuel</label>
+      <input id="searchInput" type="search" autocomplete="off" placeholder="ex. CROSS Master, latence…">
+      <p id="searchStatus" class="d" aria-live="polite"></p>
+      <ol id="searchResults" class="search-results"></ol>
+    </div>
+    <ol><li><a href="#ch-01" data-chapter="ch-01"><span class="num">01</span>Bienvenue dans SUBDESTRUCKT</a></li><li><a href="#ch-02" data-chapter="ch-02"><span class="num">02</span>Installation et première configuration</a></li><li><a href="#ch-03" data-chapter="ch-03"><span class="num">03</span>Mes 10 premières minutes avec SUBDESTRUCKT</a></li><li><a href="#ch-04" data-chapter="ch-04"><span class="num">04</span>Découverte complète de l&#x27;interface</a></li><li><a href="#ch-05" data-chapter="ch-05"><span class="num">05</span>Comprendre le son</a></li><li><a href="#ch-06" data-chapter="ch-06"><span class="num">06</span>Le moteur Wavetable</a></li><li><a href="#ch-07" data-chapter="ch-07"><span class="num">07</span>Le moteur FM</a></li><li><a href="#ch-08" data-chapter="ch-08"><span class="num">08</span>CROSS : le cœur de SUBDESTRUCKT</a></li><li><a href="#ch-09" data-chapter="ch-09"><span class="num">09</span>Enveloppe, voix et sortie</a></li><li><a href="#ch-10" data-chapter="ch-10"><span class="num">10</span>Diagnostic technique</a></li><li><a href="#ch-11" data-chapter="ch-11"><span class="num">11</span>Exercices de sound design</a></li><li><a href="#ch-12" data-chapter="ch-12"><span class="num">12</span>Exemples audio</a></li><li><a href="#ch-13" data-chapter="ch-13"><span class="num">13</span>Assistant de recette ARCH-G3</a></li><li><a href="#ch-14" data-chapter="ch-14"><span class="num">14</span>Dépannage</a></li><li><a href="#glossaire" data-chapter="glossaire"><span class="num">15</span>Glossaire illustré</a></li><li><a href="#ch-16" data-chapter="ch-16"><span class="num">16</span>Limitations et évolution</a></li></ol>
+    <p class="d" style="font-size:13px;margin-top:20px">Build <code>0.1.0-b5</code><br>source <code>186fb8644ae9518e3cb5116f4368b45dcea0d430</code><br>documentation <code>8d2334250994758f2182b18c3a47dd059cb68495</code><br><a href="version.json">manifeste</a> · <a href="../">autres versions</a></p>
+  </nav>
+  <main id="main" tabindex="-1">
+    <div class="box proto noprint"><span class="tag">Trois niveaux de lecture</span><p><span class="level">Comprendre</span> le texte principal explique sans prérequis. <span class="level">Manipuler</span> les étapes, réglages et exemples se font dans l'instrument. <span class="level">Approfondir</span> les blocs repliés « Approfondir · » donnent le détail technique : vous pouvez les ignorer en première lecture.</p></div>
+<section class="chapter" id="ch-01">
+<header><p class="kicker">Chapitre 1</p><h1>Bienvenue dans SUBDESTRUCKT</h1>
+<p class="lead">SUBDESTRUCKT est un instrument logiciel construit autour d'une idée : faire dialoguer deux moteurs sonores. Ce chapitre vous présente l'instrument, ce qu'il sait déjà faire dans la version 0.1.0-b5, et ce qui viendra plus tard.</p></header>
+
+<div class="box proto"><span class="tag">Version prototype</span>
+<p>Vous utilisez <strong>SUBDESTRUCKT 0.1.0-b5</strong>, une <em>vertical slice</em> : un prototype complet mais volontairement réduit, qui traverse toute la chaîne (clavier → son → sauvegarde) avec un petit nombre de fonctions. Son interface est une <strong>interface de diagnostic</strong>, pas l'interface définitive. Ce manuel ne décrit que ce qui existe réellement dans cette build.</p></div>
+
+<h2>Qu'est-ce qu'un synthétiseur ?</h2>
+<p><span class="level">Comprendre</span></p>
+<p>Un synthétiseur fabrique du son à partir de rien : au lieu d'enregistrer un instrument, il <strong>calcule</strong> une vibration. Cette vibration passe ensuite par des étapes qui la transforment : on la colore, on la façonne dans le temps, on règle son volume.</p>
+<p>Trois mots reviennent sans cesse dans ce manuel :</p>
+<ul>
+<li>un <strong>oscillateur</strong> est la source qui produit une vibration régulière ;</li>
+<li>une <strong>modulation</strong> est l'action d'un signal qui en fait varier un autre (par exemple un oscillateur qui en déforme un second) ;</li>
+<li>un <strong>moteur sonore</strong> est un ensemble cohérent d'oscillateurs et de réglages ayant sa propre manière de produire du son.</li>
+</ul>
+
+<h2>Deux moteurs et un pont : WT, FM et CROSS</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 contient :</p>
+<ul>
+<li>un moteur <strong>Wavetable</strong> (« WT ») : un oscillateur qui relit une forme d'onde riche, une dent de scie (chapitre 6) ;</li>
+<li>un moteur <strong>FM</strong> à deux opérateurs, <strong>OP1</strong> et <strong>OP2</strong> : deux oscillateurs sinusoïdaux qui peuvent se moduler l'un l'autre (chapitre 7) ;</li>
+<li><strong>CROSS</strong>, le pont entre les deux : la WT peut moduler les opérateurs FM, et les opérateurs peuvent moduler la WT (chapitre 8). C'est la signature de l'instrument.</li>
+</ul>
+
+<figure>
+<svg class="diagram" viewBox="0 0 860 300" role="img" aria-labelledby="f1t f1d">
+<title id="f1t">Circulation du signal dans SUBDESTRUCKT 0.1.0-b5</title>
+<desc id="f1d">Une note MIDI arrive dans la voix, qui fixe la hauteur des trois oscillateurs WT, OP1 et OP2. Les oscillateurs se modulent entre eux par le réseau FM et CROSS. Leurs niveaux sont mélangés, puis l'enveloppe Amp, le gain de sortie et les protections mènent à la sortie stéréo.</desc>
+<g font-size="14">
+<rect x="10" y="120" width="110" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="65" y="146" text-anchor="middle">Note MIDI</text><text x="65" y="165" text-anchor="middle" class="d" font-size="12">hauteur, vélocité</text>
+<rect x="150" y="120" width="90" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="195" y="146" text-anchor="middle">Voix</text><text x="195" y="165" text-anchor="middle" class="d" font-size="12">mono</text>
+<rect x="280" y="20" width="300" height="260" rx="8" fill="none" style="stroke:var(--cross)" stroke-dasharray="6 4"/><text x="430" y="40" text-anchor="middle" style="fill:var(--cross)" font-size="13">réseau de modulation (FM + CROSS)</text>
+<rect x="300" y="60" width="100" height="50" rx="6" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="350" y="90" text-anchor="middle">WT</text>
+<rect x="460" y="60" width="100" height="50" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="510" y="90" text-anchor="middle">OP1</text>
+<rect x="460" y="200" width="100" height="50" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="510" y="230" text-anchor="middle">OP2</text>
+<path d="M400 78 H458" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#ar)"/><path d="M460 94 H402" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#ar)"/>
+<path d="M510 200 V112" style="stroke:var(--fm)" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="610" y="120" width="90" height="60" rx="6" fill="none" style="stroke:var(--dim)"/><text x="655" y="146" text-anchor="middle">Mélange</text><text x="655" y="165" text-anchor="middle" class="d" font-size="12">niveaux</text>
+<rect x="720" y="100" width="130" height="100" rx="6" fill="none" style="stroke:var(--dim)"/><text x="785" y="128" text-anchor="middle">Amp ADSR</text><text x="785" y="150" text-anchor="middle" class="d" font-size="12">gain de sortie</text><text x="785" y="170" text-anchor="middle" class="d" font-size="12">protections</text><text x="785" y="190" text-anchor="middle" font-size="12">→ stéréo</text>
+<path d="M120 150 H148" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/><path d="M240 150 H278" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/>
+<path d="M580 150 H608" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/><path d="M700 150 H718" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#ar)"/>
+</g>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs>
+</svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Comment une note MIDI devient du son. Les flèches montrent les routes du réglage initial (« Preset init ») : OP2 module OP1, la WT et OP1 se modulent mutuellement.</figcaption>
+</figure>
+
+<h2>De la note au son, en cinq étapes</h2>
+<ol class="steps">
+<li><strong>Vous jouez une note.</strong> Le clavier envoie un message MIDI : quelle touche (la hauteur) et avec quelle force (la vélocité). Le MIDI ne transporte aucun son, seulement des instructions.</li>
+<li><strong>La voix choisit la note.</strong> SUBDESTRUCKT est monophonique : une seule note sonne à la fois, la dernière jouée.</li>
+<li><strong>Les oscillateurs vibrent</strong> à la hauteur de la note (WT) ou à un multiple de celle-ci (OP1 et OP2, selon leur ratio), et se modulent les uns les autres selon les routes actives.</li>
+<li><strong>Le mélange</strong> additionne les trois oscillateurs selon leurs niveaux (WT Level, OP1 Level, OP2 Level).</li>
+<li><strong>L'enveloppe Amp</strong> donne au son sa forme dans le temps (attaque, tenue, extinction), puis le gain de sortie règle le volume final, identique sur les deux canaux stéréo.</li>
+</ol>
+
+<h2>Identité sonore</h2>
+<p>SUBDESTRUCKT vise des sons métalliques, industriels et agressifs, des textures et des drones. Dans ce prototype, ce caractère vient de trois ingrédients : une forme d'onde riche (WT), la modulation entre opérateurs (FM) et surtout l'interaction entre les deux moteurs (CROSS).</p>
+
+<h2>Ce que contient exactement la build 0.1.0-b5</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Disponible dans 0.1.0-b5</th><th>Prévu pour la V1, absent ici</th></tr></thead>
+<tbody>
+<tr><td>Une wavetable : dent de scie limitée en bande</td><td>Banques de wavetables, axes X/Y, transformations Z</td></tr>
+<tr><td>Deux opérateurs FM sinusoïdaux (OP1, OP2) en modulation de phase</td><td>Quatre opérateurs, autres formes, modes FM linéaire, TZFM, exponentiel</td></tr>
+<tr><td>CROSS dans les deux sens, CROSS Master et intensités par direction</td><td>Matrice CROSS complète, bus, Ring/AM, Sync</td></tr>
+<tr><td>Une enveloppe Amp ADSR, vélocité sur le volume</td><td>Enveloppes WT/FM, enveloppes auxiliaires, LFO</td></tr>
+<tr><td>Voix monophonique, priorité à la dernière note</td><td>Modes legato/priorités sélectionnables, pitch bend, aftertouch</td></tr>
+<tr><td>Un réglage initial (« Preset init »), état sauvegardé dans le projet DAW</td><td>Banques de presets, navigateur, undo/redo</td></tr>
+<tr><td>Interface de diagnostic</td><td>Interface définitive (Performance, Sound Design, Engineering)</td></tr>
+<tr><td>—</td><td>Filtres, Destruction, matrice de modulation globale, mode Drone, Quality Eco/Normal/High</td></tr>
+</tbody></table></div>
+<p>Le chapitre 16 détaille les limitations connues et les différences avec la future V1.</p>
+
+<details class="adv"><summary>Pourquoi une « vertical slice » ?</summary>
+<p>Construire d'abord une tranche fine mais complète permet de valider l'architecture (cœur DSP indépendant, wrapper VST3, sauvegarde, installation) avant d'ajouter les fonctions. Le cœur DSP de SUBDESTRUCKT est écrit sans dépendre de JUCE ni de la DAW, ce qui le rend testable seul : les critères automatisés G-01 à G-24 sont PASS en CI pour la build 0.1.0-b5 (rapport <code>docs/V1-ARCH-G3-REPORT.md</code>). La recette sur un vrai Mac reste à faire : c'est l'objet du chapitre 13.</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><span></span><a href="#ch-02" rel="next">2. Installation et première configuration →</a></nav></section>
+
+<section class="chapter" id="ch-02">
+<header><p class="kicker">Chapitre 2</p><h1>Installation et première configuration</h1>
+<p class="lead">Télécharger, vérifier, installer, puis faire reconnaître SUBDESTRUCKT par votre logiciel de musique. Chaque étape est décrite pour un débutant.</p></header>
+
+<h2>Configuration requise</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Élément</th><th>Statut pour 0.1.0-b5</th></tr></thead>
+<tbody>
+<tr><td>Ordinateur</td><td>Mac Apple Silicon. <strong>Apple M3</strong> : configuration minimale cible (non encore certifiée). <strong>M4 et suivants</strong> : classe recommandée. M1 et M2 : hors support officiel, mais aucun blocage n'est imposé.</td></tr>
+<tr><td>Machine de recette principale</td><td>Mac Studio M4 Max (recette physique à réaliser, chapitre 13).</td></tr>
+<tr><td>Système</td><td>macOS <strong>14.0</strong> minimum <em>déclaré</em> (valeur de compilation, non encore validée). Seul macOS 15.8.2 a été testé, sur une machine virtuelle de CI.</td></tr>
+<tr><td>Format</td><td>Plugin instrument <strong>VST3</strong>, arm64 natif. Pas d'Audio Unit (AU), pas d'application autonome, pas de version Intel/Rosetta ni Windows.</td></tr>
+<tr><td>Logiciel hôte</td><td>Une DAW compatible VST3. Reason est la DAW de recette prévue. <strong>Aucune compatibilité DAW n'est encore validée</strong> : la CI n'a utilisé qu'un hôte VST3 de test et pluginval.</td></tr>
+</tbody></table></div>
+
+<h2>1. Télécharger</h2>
+<p>Téléchargez l'archive depuis le lien direct :</p>
+<p><a href="https://github.com/Labtechno/SUBDESTRUCKT/raw/b49a09e3efd6fe52fdb75a23c5b12dd794f696e8/deliveries/0.1.0-b5/SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip">SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip</a> (2 076 951 octets)</p>
+<p>Empreinte SHA-256 attendue :<br><code style="word-break:break-all">4b37271856ab690c3487df1a7a76dcc9a5c76459dd31c1558ab07766dd4fbe58</code></p>
+
+<h2>2. Vérifier l'empreinte</h2>
+<p><span class="level">Manipuler</span> Une empreinte SHA-256 est une « signature mathématique » du fichier : la moindre modification la change complètement. La vérifier garantit que vous avez exactement le fichier testé.</p>
+<ol class="steps">
+<li>Ouvrez <strong>Terminal</strong> (Applications › Utilitaires).</li>
+<li>Tapez <code>cd ~/Downloads</code> puis Entrée (adaptez si votre dossier de téléchargement est différent).</li>
+<li>Tapez <code>shasum -a 256 SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip</code> puis Entrée, et comparez le résultat avec l'empreinte ci-dessus.</li>
+<li>Double-cliquez sur le ZIP : un dossier apparaît avec 5 fichiers : <code>SUBDESTRUCKT_Installer.pkg</code>, <code>SUBDESTRUCKT_Uninstaller.pkg</code>, <code>README_FR.txt</code>, <code>CHANGELOG.txt</code>, <code>SHA256SUMS.txt</code>.</li>
+<li>Dans le Terminal, tapez <code>cd </code> (avec un espace), glissez ce dossier dans la fenêtre, Entrée, puis <code>shasum -a 256 -c SHA256SUMS.txt</code> : quatre lignes doivent se terminer par <code>OK</code>.</li>
+</ol>
+<div class="box warn"><span class="tag">Si l'empreinte diffère</span><p>N'installez pas. Retéléchargez depuis le lien direct. Ce contrôle est le test R-01 de la recette.</p></div>
+
+<h2>3. Installer</h2>
+<ol class="steps">
+<li><strong>Fermez votre DAW.</strong> L'installateur refuse d'agir si le plugin est utilisé par un programme ouvert.</li>
+<li>Double-cliquez sur <code>SUBDESTRUCKT_Installer.pkg</code>. macOS affiche que le paquet provient d'un développeur non identifié : c'est normal, il n'est pas signé (build interne).</li>
+<li>Ouvrez <strong>Réglages Système › Confidentialité et sécurité</strong>. En bas de la page, un message concerne <code>SUBDESTRUCKT_Installer.pkg</code> : cliquez <strong>« Ouvrir quand même »</strong>, puis confirmez.</li>
+<li>Suivez l'installateur et saisissez votre mot de passe administrateur : le plugin est installé pour tous les utilisateurs du Mac.</li>
+<li>L'écran final indique « SUBDESTRUCKT 0.1.0-b5 est installé ».</li>
+</ol>
+<div class="box fact"><span class="tag">Ce que fait l'installateur</span>
+<ul><li>Il copie le plugin dans <code>/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3</code>.</li>
+<li>Il vérifie ensuite son identité, sa version, son architecture arm64 et sa signature ad hoc, et écrit un petit manifeste dans <code>/Library/Application Support/Labtechno/SUBDESTRUCKT/</code>.</li>
+<li>Il refuse sans rien modifier si : le Mac n'est pas Apple Silicon, macOS est antérieur à 14.0, l'emplacement est occupé par un autre élément ou un lien symbolique, ou une DAW utilise le plugin.</li>
+<li>Si la vérification échoue après copie, il restaure l'installation précédente.</li></ul></div>
+<div class="box warn"><span class="tag">Gatekeeper</span><p>N'utilisez jamais de commande qui désactive Gatekeeper pour tout le système. L'autorisation « Ouvrir quand même » ne concerne que ce paquet.</p></div>
+
+<h2>4. Faire reconnaître le plugin par la DAW</h2>
+<p>Après l'installation :</p>
+<ol class="steps">
+<li>Lancez la DAW. Si elle n'analyse pas automatiquement les nouveaux plugins, ouvrez sa gestion des plugins et lancez une nouvelle analyse VST3.</li>
+<li>Cherchez <strong>SUBDESTRUCKT</strong>, fabricant <strong>Labtechno</strong>, dans les instruments VST3.</li>
+<li>Créez une piste instrument avec SUBDESTRUCKT.</li>
+<li>Sélectionnez votre clavier MIDI comme entrée de cette piste (ou toutes les entrées), puis armez ou sélectionnez la piste pour l'entendre en jouant.</li>
+<li>Dans les réglages audio de la DAW, choisissez votre interface audio, la fréquence d'échantillonnage (44,1, 48, 88,2 ou 96 kHz) et une taille de buffer raisonnable (par exemple 128 ou 256 échantillons).</li>
+</ol>
+<div class="box proto"><span class="tag">Reason : points à confirmer</span>
+<p>Les menus exacts de Reason pour la gestion des plugins VST3, la sélection MIDI, la configuration audio et la compensation de latence n'ont pas pu être vérifiés dans la documentation officielle de Reason Studios lors de la rédaction (les pages correspondantes ne sont pas lisibles sans navigateur). Seul ce point a été confirmé : les réglages de Reason s'ouvrent depuis le menu <strong>Reason › Settings</strong> sur Mac. Reportez-vous au manuel de votre version de Reason pour les menus précis ; la compatibilité de SUBDESTRUCKT avec Reason sera établie par la recette (tests R-03 à R-12).</p></div>
+
+<h2>5. Désinstaller</h2>
+<ol class="steps">
+<li>Fermez la DAW.</li>
+<li>Ouvrez <code>SUBDESTRUCKT_Uninstaller.pkg</code> (même autorisation « Ouvrir quand même »).</li>
+<li>Le désinstallateur retire uniquement le plugin SUBDESTRUCKT, son manifeste et son reçu d'installation. Vos projets, vos autres plugins et vos fichiers personnels ne sont pas touchés.</li>
+</ol>
+<p>Il refuse d'agir, sans rien supprimer, si SUBDESTRUCKT n'est pas installé (message « SUBDESTRUCKT n'est pas installé »), si l'élément présent n'est pas SUBDESTRUCKT, si la version installée est plus récente que lui, ou si une DAW utilise le plugin. Le détail est consigné dans <code>/var/log/install.log</code> (application Console).</p>
+
+<h2>6. Réinstaller</h2>
+<p>Relancez simplement <code>SUBDESTRUCKT_Installer.pkg</code>. Une réinstallation par-dessus une installation existante est gérée : l'ancienne version est sauvegardée pendant l'opération et restaurée en cas d'échec.</p>
+
+<h2>Signature, notarisation et licence</h2>
+<div class="table-wrap"><table><tbody>
+<tr><th>Plugin VST3</th><td>Signature <strong>ad hoc</strong> uniquement (pas de certificat Developer ID).</td></tr>
+<tr><th>Paquets .pkg</th><td><strong>Non signés.</strong></td></tr>
+<tr><th>Notarisation Apple</th><td><strong>Non effectuée.</strong></td></tr>
+<tr><th>Conséquence</th><td>Livraison <strong>interne uniquement</strong> ; distribution publique bloquée.</td></tr>
+<tr><th>Licence</th><td>SUBDESTRUCKT utilise JUCE 9 (AGPLv3 ou licence commerciale : choix non arbitré) et le SDK VST3 3.8 (MIT). Mentions dans <code>THIRD_PARTY_NOTICES.txt</code> à l'intérieur du plugin.</td></tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-01" rel="prev">← 1. Bienvenue dans SUBDESTRUCKT</a><a href="#ch-03" rel="next">3. Mes 10 premières minutes avec SUBDESTRUCKT →</a></nav></section>
+
+<section class="chapter" id="ch-03">
+<header><p class="kicker">Chapitre 3</p><h1>Mes 10 premières minutes avec SUBDESTRUCKT</h1>
+<p class="lead">Un parcours guidé en dix étapes, sans théorie : à chaque étape, une action, les valeurs exactes, ce que vous devez entendre, et quoi faire si ce n'est pas le cas.</p></header>
+
+<div class="box fact"><span class="tag">Avant de commencer</span><p>SUBDESTRUCKT est installé (chapitre 2), votre clavier MIDI est branché, et le volume général de votre système est <strong>bas</strong>. Les curseurs de l'interface se règlent à la souris ; vous pouvez aussi cliquer dans la case de valeur à droite d'un curseur et taper un nombre.</p></div>
+
+<h2>Étape 1 — Ouvrir l'instrument</h2>
+<p><strong>Action :</strong> dans votre DAW, créez une piste instrument avec SUBDESTRUCKT (Labtechno) et ouvrez son interface.</p>
+<p><strong>Résultat attendu :</strong> une fenêtre sombre titrée « SUBDESTRUCKT // diagnostic ARCH-G3 // build 0.1.0-b5 », avec 22 curseurs à gauche et des informations techniques à droite (chapitre 4).</p>
+<p><strong>Si ce n'est pas le cas :</strong> chapitre 14, « Plugin non détecté ».</p>
+
+<h2>Étape 2 — Première note</h2>
+<p><strong>Action :</strong> cliquez sur <strong>Preset init</strong> (sous la liste des routes), puis jouez et tenez une note au milieu du clavier.</p>
+<p><strong>Résultat attendu :</strong> un son immédiat, brillant et légèrement métallique, qui s'éteint en 0,3 s environ quand vous relâchez la touche. En bas à droite, la ligne « Voix » affiche le numéro de la note et « gate on ».</p>
+<div class="ab" role="group" aria-label="Preset init (réglages par défaut)"><h4>Preset init (réglages par défaut)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e01_init.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Preset init (réglages par défaut)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+<div class="box listen"><span class="tag">À écouter</span><p>Le son est stable tant que vous tenez la touche : c'est normal, aucun mouvement automatique n'existe dans ce prototype (pas de LFO).</p></div>
+<p><strong>Si vous n'entendez rien :</strong> vérifiez que la piste reçoit votre clavier (la ligne « Voix » doit changer quand vous jouez), puis chapitre 14, « Absence de son ».</p>
+
+<h2>Étape 3 — Un volume raisonnable</h2>
+<p><strong>Action :</strong> réglez le volume avec le fader de la piste dans la DAW, ou avec le curseur <strong>Output Gain</strong> (−6 dB par défaut, de −48 à +6 dB).</p>
+<p><strong>Résultat attendu :</strong> la ligne « Crête » affiche le niveau maximal de chaque bloc audio, en dBFS (0 dBFS = maximum numérique). Visez des crêtes autour de −12 à −6 dBFS.</p>
+<div class="box warn"><span class="tag">Attention</span><p>Monter Output Gain au maximum avec des modulations fortes peut produire un son très fort. Réglez toujours le volume de votre système avant d'expérimenter.</p></div>
+
+<h2>Étape 4 — Qu'est-ce qui produit le son ?</h2>
+<p>Trois sources sont mélangées. Leurs volumes sont réglés par trois curseurs :</p>
+<div class="table-wrap"><table><thead><tr><th>Curseur</th><th>Valeur initiale</th><th>Rôle</th></tr></thead><tbody>
+<tr><td>WT Level</td><td>0,5</td><td>volume de la wavetable</td></tr>
+<tr><td>OP1 Level</td><td>0,5</td><td>volume de l'opérateur 1</td></tr>
+<tr><td>OP2 Level</td><td>0</td><td>volume de l'opérateur 2 (muet au départ)</td></tr></tbody></table></div>
+<p>OP2 est muet, mais il travaille quand même : il <em>module</em> OP1 (route « OP2 > OP1 »). Un oscillateur peut agir sur le son sans être entendu directement.</p>
+
+<h2>Étape 5 — La wavetable seule</h2>
+<p><strong>Réglages :</strong> WT Level <code>0.8</code>, OP1 Level <code>0</code>, OP2 Level <code>0</code>, CROSS Master <code>0</code>.</p>
+<p><strong>À entendre :</strong> un son riche et brillant, de type « dent de scie », très stable. C'est la forme d'onde de la WT, sans aucune modulation.</p>
+<div class="ab" role="group" aria-label="WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)"><h4>WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e02_wt_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+<p><strong>Pourquoi CROSS Master à 0 ?</strong> Dans le réglage initial, OP1 module la WT (route « OP1 > WT »). Mettre CROSS Master à 0 coupe toutes les modulations entre moteurs : vous entendez la WT pure.</p>
+
+<h2>Étape 6 — Le moteur FM seul</h2>
+<p><strong>Réglages :</strong> WT Level <code>0</code>, OP1 Level <code>0.8</code>, OP2 Level <code>0</code>, CROSS Master <code>0</code> (FM OP2>OP1 reste à 1).</p>
+<p><strong>À entendre :</strong> un son plus rond que la WT, avec un caractère « électrique ». C'est OP1, une sinusoïde, enrichie par la modulation de OP2.</p>
+<div class="ab" role="group" aria-label="FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)"><h4>FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e03_fm_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+
+<h2>Étape 7 — Changer le timbre</h2>
+<p><strong>Action :</strong> faites varier <strong>FM OP2>OP1</strong> de <code>0.3</code> à <code>4</code> en tenant une note.</p>
+<p><strong>À entendre :</strong> à 0,3 le son est presque pur ; plus vous montez, plus il devient brillant et dense. Le volume général change peu : c'est la <em>couleur</em> (le timbre) qui change.</p>
+<div class="ab" role="group" aria-label="Profondeur de modulation : 0,3 rad / 4 rad"><h4>Profondeur de modulation : 0,3 rad / 4 rad</h4><div class="players"><button type="button" class="btn play" data-src="audio/e04_fm_faible.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · FM faible (FM OP2&gt;OP1 0,3 rad)</button><button type="button" class="btn play" data-src="audio/e05_fm_forte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · FM forte (FM OP2&gt;OP1 4 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+
+<h2>Étape 8 — Les ratios</h2>
+<p><strong>Réglages :</strong> FM OP2>OP1 <code>2</code>, puis OP2 Ratio <code>2</code>, puis <code>3.5</code>.</p>
+<p><strong>À entendre :</strong> avec un ratio entier (2), le son reste « musical » ; avec 3,5, il devient métallique, comme une cloche ou une tôle frappée.</p>
+<div class="ab" role="group" aria-label="OP2 Ratio : 2 / 3,5"><h4>OP2 Ratio : 2 / 3,5</h4><div class="players"><button type="button" class="btn play" data-src="audio/e06_ratio_2.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</button><button type="button" class="btn play" data-src="audio/e07_ratio_3_5.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+
+<h2>Étape 9 — Faire dialoguer les deux moteurs</h2>
+<p><strong>Réglages :</strong> Preset init, puis WT Level <code>0.5</code>, OP1 Level <code>0.5</code>, CROSS WT>OP1 <code>1.5</code>, CROSS OP1>WT <code>1.5</code>. Tenez une note et descendez lentement <strong>CROSS Master</strong> de 1 à 0, puis remontez.</p>
+<p><strong>À entendre :</strong> à 1, les deux moteurs se déforment mutuellement : le son devient rugueux et complexe. À 0, vous retrouvez le simple mélange des deux moteurs, sans coupure ni redémarrage de la note.</p>
+<div class="ab" role="group" aria-label="CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)"><h4>CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e12_bidirectionnel.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+
+<h2>Étape 10 — Sauvegarder</h2>
+<p><strong>Action :</strong> sauvegardez votre projet dans la DAW.</p>
+<p><strong>Résultat :</strong> tous les réglages de SUBDESTRUCKT (les 22 curseurs et les routes) sont enregistrés <strong>dans le projet</strong>. Il n'existe pas encore de bibliothèque de presets : pour conserver un son, gardez le projet, ou dupliquez la piste.</p>
+<div class="box warn"><span class="tag">Attention</span><p>« Preset init » remet tout à zéro sans confirmation, et il n'y a pas d'annulation (undo) des routes dans ce prototype.</p></div>
+
+<p>Bravo : vous avez parcouru l'essentiel de l'instrument. Le chapitre 4 décrit chaque commande ; les chapitres 5 à 8 expliquent ce que vous venez d'entendre.</p>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-02" rel="prev">← 2. Installation et première configuration</a><a href="#ch-04" rel="next">4. Découverte complète de l&#x27;interface →</a></nav></section>
+
+<section class="chapter" id="ch-04">
+<header><p class="kicker">Chapitre 4</p><h1>Découverte complète de l'interface</h1>
+<p class="lead">L'interface de 0.1.0-b5 est une interface de diagnostic : fonctionnelle et précise, pas encore l'interface définitive. Voici chaque zone, chaque commande et chaque indicateur.</p></header>
+
+<figure class="annotated" id="ui-annotated">
+<div class="pins">
+<img class="zoomable" src="assets/ui_diagnostic_macos.png" width="1080" height="720" alt="Interface réelle de SUBDESTRUCKT 0.1.0-b5 sur macOS : 22 curseurs de paramètres à gauche ; à droite la configuration active, la table des huit routes avec classes et valeurs Effective, les boutons Panic et Preset init, et la télémétrie.">
+<a class="pin" href="#ui-1" style="left:55%;top:2.8%" aria-label="Repère 1 : titre et identité de build">1</a>
+<a class="pin" href="#ui-2" style="left:28%;top:12.0%" aria-label="Repère 2 : enveloppe Amp et vélocité">2</a>
+<a class="pin" href="#ui-3" style="left:28%;top:28.8%" aria-label="Repère 3 : Output Gain">3</a>
+<a class="pin" href="#ui-4" style="left:23.5%;top:37.2%" aria-label="Repère 4 : niveaux des oscillateurs">4</a>
+<a class="pin" href="#ui-5" style="left:30%;top:47.6%" aria-label="Repère 5 : ratios des opérateurs">5</a>
+<a class="pin" href="#ui-6" style="left:30%;top:60.2%" aria-label="Repère 6 : profondeurs FM">6</a>
+<a class="pin" href="#ui-7" style="left:30%;top:77%" aria-label="Repère 7 : profondeurs CROSS">7</a>
+<a class="pin" href="#ui-8" style="left:30%;top:91.6%" aria-label="Repère 8 : CROSS Master et intensités">8</a>
+<a class="pin" href="#ui-9" style="left:86%;top:13%" aria-label="Repère 9 : configuration active">9</a>
+<a class="pin" href="#ui-10" style="left:72%;top:17.3%" aria-label="Repère 10 : table des routes">10</a>
+<a class="pin" href="#ui-11" style="left:95.8%;top:51.5%" aria-label="Repère 11 : boutons d'ajout et de retrait des routes">11</a>
+<a class="pin" href="#ui-12" style="left:50.6%;top:50.6%" aria-label="Repère 12 : bouton Panic">12</a>
+<a class="pin" href="#ui-13" style="left:73.6%;top:50.6%" aria-label="Repère 13 : bouton Preset init">13</a>
+<a class="pin" href="#ui-14" style="left:66%;top:54.8%" aria-label="Repère 14 : message et prochain identifiant de route">14</a>
+<a class="pin" href="#ui-15" style="left:60%;top:67.5%" aria-label="Repère 15 : télémétrie et sûreté">15</a>
+</div>
+<figcaption><span class="figlabel real">Capture réelle</span>SUBDESTRUCKT 0.1.0-b5 sur macOS (capture produite par la CI de la build livrée, note 57 jouée à 44,1 kHz). Les repères numérotés sont ajoutés pour ce manuel ; cliquez sur l'image pour l'agrandir sans repères.</figcaption>
+</figure>
+
+<ol class="legend" aria-label="Légende des repères">
+<li id="ui-1"><b>1</b> Titre : nom, numéro de build (0.1.0-b5) et début du commit source. Vérifiez-le en cas de doute sur la version.</li>
+<li id="ui-2"><b>2</b> Enveloppe Amp (Attack, Decay, Sustain, Release) et Amp Velocity : forme du volume de chaque note.</li>
+<li id="ui-3"><b>3</b> Output Gain : volume final, en dB.</li>
+<li id="ui-4"><b>4</b> WT Level, OP1 Level, OP2 Level : volume de chaque oscillateur dans le mélange.</li>
+<li id="ui-5"><b>5</b> OP1 Ratio, OP2 Ratio : hauteur des opérateurs par rapport à la note.</li>
+<li id="ui-6"><b>6</b> FM OP2>OP1, FM OP1>OP2, FM OP1 Self, FM OP2 Self : profondeurs des modulations entre opérateurs.</li>
+<li id="ui-7"><b>7</b> CROSS WT>OP1, WT>OP2, OP1>WT, OP2>WT : profondeurs des modulations entre moteurs.</li>
+<li id="ui-8"><b>8</b> CROSS Master, CROSS WT>FM, CROSS FM>WT : dosage global et par direction de CROSS.</li>
+<li id="ui-9"><b>9</b> Configuration active : fréquences, oversampling K, retard D, lecteur de retard, latence, état de transition (indicateurs, chapitre 10).</li>
+<li id="ui-10"><b>10</b> Table des huit routes possibles : présente ou absente, identifiant, classe causale I ou D, profondeur Effective, gain de transition.</li>
+<li id="ui-11"><b>11</b> Boutons <strong>+</strong> (ajouter la route) et <strong>−</strong> (retirer la route). Un seul est actif à la fois.</li>
+<li id="ui-12"><b>12</b> Panic : coupe immédiatement le son et réinitialise les mémoires internes.</li>
+<li id="ui-13"><b>13</b> Preset init : remet les 22 paramètres et les routes au réglage initial.</li>
+<li id="ui-14"><b>14</b> Dernier message (transaction appliquée ou refusée, état chargé ou refusé) et prochain identifiant de route (nextRouteId).</li>
+<li id="ui-15"><b>15</b> Télémétrie : note jouée, gate, niveau d'enveloppe, crêtes de sortie, compteurs de sûreté.</li>
+</ol>
+
+<h2>Lire les curseurs</h2>
+<p>Chaque ligne de gauche contient : le nom du paramètre suivi de son unité entre parenthèses, un curseur horizontal, et une case de valeur. Vous pouvez faire glisser le curseur, ou cliquer dans la case et taper une valeur. Survoler un nom affiche son identifiant stable (par exemple <code>amp.attack</code>).</p>
+<p>Les unités : <code>s</code> secondes ; <code>lin</code> valeur linéaire de 0 à 1 ; <code>dB</code> décibels ; <code>x f0</code> multiple de la fréquence de la note ; <code>rad</code> radians (unité de profondeur de modulation de phase).</p>
+<div class="box fact"><span class="tag">Valeurs affichées</span><p>Les cases affichent 7 décimales. Une valeur comme −5,9999990 dB pour Output Gain correspond à −6 dB : c'est un arrondi de calcul en virgule flottante, sans effet audible.</p></div>
+
+<h2>Les 22 paramètres</h2>
+<p>Tous les paramètres sont <strong>automatisables</strong> par la DAW et enregistrés dans le projet. Les changements de niveaux, ratios, profondeurs, CROSS, Amp Velocity et Output Gain sont lissés sur 20 ms pour éviter les sauts brusques ; les réglages d'enveloppe s'appliquent immédiatement. Valeurs extraites du registre du code source (<code>source/core/Parameters.cpp</code>) :</p>
+<div class="table-wrap"><table class="params"><caption>Tableau récapitulatif des 22 paramètres</caption><thead><tr><th scope="col">Paramètre</th><th scope="col">Plage</th><th scope="col">Unité</th><th scope="col">Défaut</th><th scope="col">Lissage</th><th scope="col">Automatisable</th></tr></thead><tbody><tr class="grp"><th colspan="6" scope="colgroup">Enveloppe et sortie</th></tr><tr><th scope="row"><a href="#p-amp.attack">Amp Attack</a></th><td>0,001 à 5</td><td>s</td><td>0,005</td><td>immédiat</td><td>oui</td></tr><tr><th scope="row"><a href="#p-amp.decay">Amp Decay</a></th><td>0,001 à 5</td><td>s</td><td>0,25</td><td>immédiat</td><td>oui</td></tr><tr><th scope="row"><a href="#p-amp.sustain">Amp Sustain</a></th><td>0 à 1</td><td>—</td><td>0,8</td><td>immédiat</td><td>oui</td></tr><tr><th scope="row"><a href="#p-amp.release">Amp Release</a></th><td>0,001 à 10</td><td>s</td><td>0,3</td><td>immédiat</td><td>oui</td></tr><tr><th scope="row"><a href="#p-amp.velocity">Amp Velocity</a></th><td>0 à 1</td><td>—</td><td>1</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-out.gain">Output Gain</a></th><td>−48 à 6</td><td>dB</td><td>−6</td><td>20 ms</td><td>oui</td></tr><tr class="grp"><th colspan="6" scope="colgroup">Niveaux et ratios</th></tr><tr><th scope="row"><a href="#p-wt.level">WT Level</a></th><td>0 à 1</td><td>—</td><td>0,5</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-op1.level">OP1 Level</a></th><td>0 à 1</td><td>—</td><td>0,5</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-op2.level">OP2 Level</a></th><td>0 à 1</td><td>—</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-op1.ratio">OP1 Ratio</a></th><td>0,25 à 16</td><td>× note</td><td>1</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-op2.ratio">OP2 Ratio</a></th><td>0,25 à 16</td><td>× note</td><td>2</td><td>20 ms</td><td>oui</td></tr><tr class="grp"><th colspan="6" scope="colgroup">Profondeurs FM</th></tr><tr><th scope="row"><a href="#p-fm.op2_op1.depth">FM OP2&gt;OP1</a></th><td>0 à 8</td><td>rad</td><td>1</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-fm.op1_op2.depth">FM OP1&gt;OP2</a></th><td>0 à 8</td><td>rad</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-fm.op1_op1.depth">FM OP1 Self</a></th><td>0 à 8</td><td>rad</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-fm.op2_op2.depth">FM OP2 Self</a></th><td>0 à 8</td><td>rad</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr class="grp"><th colspan="6" scope="colgroup">CROSS</th></tr><tr><th scope="row"><a href="#p-cross.wt_op1.depth">CROSS WT&gt;OP1</a></th><td>0 à 8</td><td>rad</td><td>0,5</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.wt_op2.depth">CROSS WT&gt;OP2</a></th><td>0 à 8</td><td>rad</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.op1_wt.depth">CROSS OP1&gt;WT</a></th><td>0 à 8</td><td>rad</td><td>0,5</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.op2_wt.depth">CROSS OP2&gt;WT</a></th><td>0 à 8</td><td>rad</td><td>0</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.master">CROSS Master</a></th><td>0 à 1</td><td>—</td><td>1</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.fwd">CROSS WT&gt;FM</a></th><td>0 à 1</td><td>—</td><td>1</td><td>20 ms</td><td>oui</td></tr><tr><th scope="row"><a href="#p-cross.rev">CROSS FM&gt;WT</a></th><td>0 à 1</td><td>—</td><td>1</td><td>20 ms</td><td>oui</td></tr></tbody></table></div><h3>Fiches détaillées</h3><p>Ouvrez une fiche pour lire la fonction, l'intérêt musical, le comportement et les interactions de chaque paramètre.</p><h3>Enveloppe et sortie</h3><details class="adv param" id="p-amp.attack"><summary>Amp Attack <code>amp.attack</code></summary><dl class="kv"><dt>Fonction</dt><dd>Durée de montée du volume après l&#x27;appui d&#x27;une touche (temps de parcours de 0 à 1).</dd><dt>Intérêt musical</dt><dd>Court : attaque franche, percussive. Long : apparition progressive.</dd><dt>Plage</dt><dd>0,001 à 5 s</dd><dt>Défaut</dt><dd>0,005 s</dd><dt>Comportement</dt><dd>Segment linéaire. Une nouvelle note repart de son niveau actuel.</dd><dt>Effet sonore</dt><dd>Forme le début de chaque note.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec Decay et Sustain ; très court (0,001 s) peut produire un léger claquement d&#x27;attaque.</dd></dl></details><details class="adv param" id="p-amp.decay"><summary>Amp Decay <code>amp.decay</code></summary><dl class="kv"><dt>Fonction</dt><dd>Durée de descente du maximum vers le niveau Sustain (temps de parcours pleine échelle).</dd><dt>Intérêt musical</dt><dd>Court : son pincé. Long : déclin lent.</dd><dt>Plage</dt><dd>0,001 à 5 s</dd><dt>Défaut</dt><dd>0,25 s</dd><dt>Comportement</dt><dd>Segment linéaire ; durée réelle proportionnelle à l&#x27;écart 1 − Sustain.</dd><dt>Effet sonore</dt><dd>Forme la transition après l&#x27;attaque.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Sans effet audible si Sustain = 1.</dd></dl></details><details class="adv param" id="p-amp.sustain"><summary>Amp Sustain <code>amp.sustain</code></summary><dl class="kv"><dt>Fonction</dt><dd>Niveau tenu tant que la touche est enfoncée.</dd><dt>Intérêt musical</dt><dd>0 : son percussif qui s&#x27;éteint seul ; 1 : son tenu plein.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>0,8 lin</dd><dt>Comportement</dt><dd>Un changement pendant la note est rejoint progressivement (pente de Decay ou d&#x27;Attack).</dd><dt>Effet sonore</dt><dd>Volume de la partie tenue.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec Decay (descente) et Release (extinction).</dd></dl></details><details class="adv param" id="p-amp.release"><summary>Amp Release <code>amp.release</code></summary><dl class="kv"><dt>Fonction</dt><dd>Durée d&#x27;extinction après le relâchement de la touche (temps de parcours pleine échelle).</dd><dt>Intérêt musical</dt><dd>Court : coupure nette. Long : queue de son.</dd><dt>Plage</dt><dd>0,001 à 10 s</dd><dt>Défaut</dt><dd>0,3 s</dd><dt>Comportement</dt><dd>Segment linéaire depuis le niveau courant.</dd><dt>Effet sonore</dt><dd>Fin de chaque note.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Monophonie : une nouvelle note pendant le Release relance l&#x27;attaque depuis le niveau courant.</dd></dl></details><details class="adv param" id="p-amp.velocity"><summary>Amp Velocity <code>amp.velocity</code></summary><dl class="kv"><dt>Fonction</dt><dd>Influence de la force de frappe (vélocité MIDI) sur le volume.</dd><dt>Intérêt musical</dt><dd>0 : jeu égal ; 1 : jeu expressif.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>1 lin</dd><dt>Comportement</dt><dd>Gain = 1 − v + v × vélocité/127. Lissé.</dd><dt>Effet sonore</dt><dd>Volume uniquement (pas le timbre).</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Aucune avec le timbre.</dd></dl></details><details class="adv param" id="p-out.gain"><summary>Output Gain <code>out.gain</code></summary><dl class="kv"><dt>Fonction</dt><dd>Volume final de l&#x27;instrument.</dd><dt>Intérêt musical</dt><dd>Adapter le niveau au mixage.</dd><dt>Plage</dt><dd>−48 à 6 dB</dd><dt>Défaut</dt><dd>−6 dB</dd><dt>Comportement</dt><dd>En dB, lissé sur 20 ms.</dd><dt>Effet sonore</dt><dd>Volume global.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Aucun limiteur : au-delà de 0 dBFS, la DAW sature.</dd></dl></details><h3>Niveaux et ratios</h3><details class="adv param" id="p-wt.level"><summary>WT Level <code>wt.level</code></summary><dl class="kv"><dt>Fonction</dt><dd>Volume de la wavetable dans le mélange.</dd><dt>Intérêt musical</dt><dd>Doser la brillance de la dent de scie.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>0,5 lin</dd><dt>Comportement</dt><dd>Lissé. N&#x27;affecte pas la WT en tant que modulateur.</dd><dt>Effet sonore</dt><dd>Part audible de la WT.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>À 0, la WT peut encore moduler OP1/OP2 par CROSS.</dd></dl></details><details class="adv param" id="p-op1.level"><summary>OP1 Level <code>op1.level</code></summary><dl class="kv"><dt>Fonction</dt><dd>Volume de l&#x27;opérateur 1 dans le mélange.</dd><dt>Intérêt musical</dt><dd>Doser la part FM.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>0,5 lin</dd><dt>Comportement</dt><dd>Lissé. N&#x27;affecte pas OP1 en tant que modulateur.</dd><dt>Effet sonore</dt><dd>Part audible d&#x27;OP1.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>À 0, OP1 peut encore moduler la WT (CROSS OP1&gt;WT) ou OP2.</dd></dl></details><details class="adv param" id="p-op2.level"><summary>OP2 Level <code>op2.level</code></summary><dl class="kv"><dt>Fonction</dt><dd>Volume de l&#x27;opérateur 2 dans le mélange.</dd><dt>Intérêt musical</dt><dd>Entendre directement OP2 (souvent laissé à 0 : OP2 sert de modulateur).</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>0 lin</dd><dt>Comportement</dt><dd>Lissé.</dd><dt>Effet sonore</dt><dd>Part audible d&#x27;OP2.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>À 0, OP2 module toujours OP1 si la route OP2&gt;OP1 est présente.</dd></dl></details><details class="adv param" id="p-op1.ratio"><summary>OP1 Ratio <code>op1.ratio</code></summary><dl class="kv"><dt>Fonction</dt><dd>Fréquence d&#x27;OP1 = fréquence de la note × ratio.</dd><dt>Intérêt musical</dt><dd>Transposer OP1 ; créer des rapports harmoniques ou non avec la WT.</dd><dt>Plage</dt><dd>0,25 à 16 x f0</dd><dt>Défaut</dt><dd>1 x f0</dd><dt>Comportement</dt><dd>Lissé (glissement de 20 ms lors d&#x27;un changement).</dd><dt>Effet sonore</dt><dd>Hauteur d&#x27;OP1 ; couleur des modulations qui l&#x27;impliquent.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec CROSS : rapport entre OP1 et la WT.</dd></dl></details><details class="adv param" id="p-op2.ratio"><summary>OP2 Ratio <code>op2.ratio</code></summary><dl class="kv"><dt>Fonction</dt><dd>Fréquence d&#x27;OP2 = fréquence de la note × ratio.</dd><dt>Intérêt musical</dt><dd>Ratio entier : son harmonique ; non entier : son métallique.</dd><dt>Plage</dt><dd>0,25 à 16 x f0</dd><dt>Défaut</dt><dd>2 x f0</dd><dt>Comportement</dt><dd>Lissé.</dd><dt>Effet sonore</dt><dd>Position des raies créées par la modulation d&#x27;OP1 par OP2.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec FM OP2&gt;OP1.</dd></dl></details><h3>Profondeurs FM</h3><details class="adv param" id="p-fm.op2_op1.depth"><summary>FM OP2&gt;OP1 <code>fm.op2_op1.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation de phase d&#x27;OP1 par OP2 (route OP2 &gt; OP1).</dd><dt>Intérêt musical</dt><dd>Le réglage principal du timbre FM.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>1 rad</dd><dt>Comportement</dt><dd>Lissé. Active seulement si la route est présente.</dd><dt>Effet sonore</dt><dd>Plus de profondeur = plus d&#x27;harmoniques, son plus brillant puis agressif.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec OP2 Ratio. Non affecté par CROSS Master.</dd></dl></details><details class="adv param" id="p-fm.op1_op2.depth"><summary>FM OP1&gt;OP2 <code>fm.op1_op2.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation d&#x27;OP2 par OP1 (route OP1 &gt; OP2).</dd><dt>Intérêt musical</dt><dd>Enrichir OP2 quand il est audible ; créer une boucle avec OP2&gt;OP1.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0 rad</dd><dt>Comportement</dt><dd>Lissé. Route absente au départ ; si OP2&gt;OP1 est présente, elle est classée D.</dd><dt>Effet sonore</dt><dd>Audible si OP2 Level &gt; 0, ou indirectement via OP2&gt;OP1.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Boucle OP1 ↔ OP2.</dd></dl></details><details class="adv param" id="p-fm.op1_op1.depth"><summary>FM OP1 Self <code>fm.op1_op1.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de l&#x27;auto-modulation d&#x27;OP1 (route OP1 &gt; OP1, toujours classe D).</dd><dt>Intérêt musical</dt><dd>Rendre OP1 rugueux, de la dent de scie au bruit.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0 rad</dd><dt>Comportement</dt><dd>Lissé. Route absente au départ.</dd><dt>Effet sonore</dt><dd>Grain, rugosité.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>S&#x27;ajoute aux autres modulations reçues par OP1.</dd></dl></details><details class="adv param" id="p-fm.op2_op2.depth"><summary>FM OP2 Self <code>fm.op2_op2.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de l&#x27;auto-modulation d&#x27;OP2 (route OP2 &gt; OP2, toujours classe D).</dd><dt>Intérêt musical</dt><dd>Rendre le modulateur OP2 plus complexe.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0 rad</dd><dt>Comportement</dt><dd>Lissé. Route absente au départ.</dd><dt>Effet sonore</dt><dd>Modulations plus chaotiques sur OP1 (via OP2&gt;OP1).</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec FM OP2&gt;OP1.</dd></dl></details><h3>CROSS</h3><details class="adv param" id="p-cross.wt_op1.depth"><summary>CROSS WT&gt;OP1 <code>cross.wt_op1.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation d&#x27;OP1 par la WT (route CROSS WT &gt; OP1).</dd><dt>Intérêt musical</dt><dd>Imprimer la richesse de la dent de scie dans OP1.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0,5 rad</dd><dt>Comportement</dt><dd>Effective = profondeur × CROSS Master × CROSS WT&gt;FM. Lissé.</dd><dt>Effet sonore</dt><dd>OP1 plus riche et rugueux.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec OP1&gt;WT : boucle bidirectionnelle.</dd></dl></details><details class="adv param" id="p-cross.wt_op2.depth"><summary>CROSS WT&gt;OP2 <code>cross.wt_op2.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation d&#x27;OP2 par la WT (route CROSS WT &gt; OP2).</dd><dt>Intérêt musical</dt><dd>Rendre le modulateur OP2 complexe.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0 rad</dd><dt>Comportement</dt><dd>Effective = profondeur × Master × WT&gt;FM. Route absente au départ.</dd><dt>Effet sonore</dt><dd>Indirect via OP2&gt;OP1, ou direct si OP2 Level &gt; 0.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec FM OP2&gt;OP1.</dd></dl></details><details class="adv param" id="p-cross.op1_wt.depth"><summary>CROSS OP1&gt;WT <code>cross.op1_wt.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation de la WT par OP1 (route CROSS OP1 &gt; WT).</dd><dt>Intérêt musical</dt><dd>Déformer la dent de scie par OP1.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0,5 rad</dd><dt>Comportement</dt><dd>Effective = profondeur × Master × FM&gt;WT. Classe D dans le réglage initial.</dd><dt>Effet sonore</dt><dd>WT grinçante ou métallique selon OP1 Ratio.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec OP1 Ratio et WT&gt;OP1.</dd></dl></details><details class="adv param" id="p-cross.op2_wt.depth"><summary>CROSS OP2&gt;WT <code>cross.op2_wt.depth</code></summary><dl class="kv"><dt>Fonction</dt><dd>Profondeur de la modulation de la WT par OP2 (route CROSS OP2 &gt; WT).</dd><dt>Intérêt musical</dt><dd>Déformer la WT par le modulateur OP2.</dd><dt>Plage</dt><dd>0 à 8 rad</dd><dt>Défaut</dt><dd>0 rad</dd><dt>Comportement</dt><dd>Effective = profondeur × Master × FM&gt;WT. Route absente au départ.</dd><dt>Effet sonore</dt><dd>WT déformée.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec OP2 Ratio.</dd></dl></details><details class="adv param" id="p-cross.master"><summary>CROSS Master <code>cross.master</code></summary><dl class="kv"><dt>Fonction</dt><dd>Dosage global de toutes les routes CROSS.</dd><dt>Intérêt musical</dt><dd>Faire apparaître ou disparaître l&#x27;interaction sans toucher aux profondeurs.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>1 lin</dd><dt>Comportement</dt><dd>Multiplie toutes les profondeurs CROSS. À 0, CROSS est retiré sans coupure ni reset.</dd><dt>Effet sonore</dt><dd>De simple mélange (0) à interaction complète (1).</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>N&#x27;agit pas sur les routes FM internes.</dd></dl></details><details class="adv param" id="p-cross.fwd"><summary>CROSS WT&gt;FM <code>cross.fwd</code></summary><dl class="kv"><dt>Fonction</dt><dd>Intensité de la direction WT → FM (routes WT&gt;OP1 et WT&gt;OP2).</dd><dt>Intérêt musical</dt><dd>Doser une direction indépendamment de l&#x27;autre.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>1 lin</dd><dt>Comportement</dt><dd>Multiplie les profondeurs WT&gt;OP1 et WT&gt;OP2.</dd><dt>Effet sonore</dt><dd>Influence de la WT sur les opérateurs.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec CROSS Master.</dd></dl></details><details class="adv param" id="p-cross.rev"><summary>CROSS FM&gt;WT <code>cross.rev</code></summary><dl class="kv"><dt>Fonction</dt><dd>Intensité de la direction FM → WT (routes OP1&gt;WT et OP2&gt;WT).</dd><dt>Intérêt musical</dt><dd>Doser une direction indépendamment de l&#x27;autre.</dd><dt>Plage</dt><dd>0 à 1 lin</dd><dt>Défaut</dt><dd>1 lin</dd><dt>Comportement</dt><dd>Multiplie les profondeurs OP1&gt;WT et OP2&gt;WT.</dd><dt>Effet sonore</dt><dd>Influence des opérateurs sur la WT.</dd><dt>Automatisable</dt><dd>oui</dd><dt>Interactions</dt><dd>Avec CROSS Master.</dd></dl></details>
+
+<h2>Les commandes qui ne sont pas des paramètres</h2>
+<div class="table-wrap"><table><thead><tr><th>Commande</th><th>Effet</th><th>Automatisable</th></tr></thead><tbody>
+<tr><td>Boutons <strong>+</strong> / <strong>−</strong> des routes</td><td>Ajoutent ou retirent une route de modulation. Les routes sont des éléments de structure : elles ne se changent pas en continu. Chaque ajout reçoit un nouvel identifiant et une classe causale (chapitre 8). Le changement est appliqué par un fondu d'environ 2 × 128 échantillons.</td><td>Non</td></tr>
+<tr><td><strong>Panic</strong></td><td>Rampe vers le silence en 5 ms, puis efface les mémoires internes (historiques de retard, filtre de sortie). Les notes tenues sont relâchées. Équivalent au message MIDI CC120 (All Sound Off).</td><td>Non (mais CC120 via MIDI)</td></tr>
+<tr><td><strong>Preset init</strong></td><td>Remet les 22 paramètres à leur valeur initiale et les routes au réglage initial : OP2>OP1 (id 1, I), WT>OP1 (id 2, I), OP1>WT (id 3, D). Sans confirmation ni annulation.</td><td>Non</td></tr>
+</tbody></table></div>
+<p>La DAW voit aussi un unique programme nommé « Init ». Le plugin expose en outre des paramètres techniques ajoutés par son environnement (JUCE) pour transmettre les contrôleurs MIDI : ce ne sont pas des réglages sonores de SUBDESTRUCKT.</p>
+
+<h2>Paramètres et indicateurs</h2>
+<p>À gauche, tout est <strong>modifiable</strong>. À droite, seuls les boutons + / −, Panic et Preset init agissent ; tout le reste est un <strong>indicateur</strong> (lecture seule), utile pour comprendre ce qui se passe et pour la recette (chapitre 10). Les indicateurs se mettent à jour environ 15 fois par seconde.</p>
+<p>La fenêtre est redimensionnable (de 980 × 680 à 2000 × 1400 points).</p>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-03" rel="prev">← 3. Mes 10 premières minutes avec SUBDESTRUCKT</a><a href="#ch-05" rel="next">5. Comprendre le son →</a></nav></section>
+
+<section class="chapter" id="ch-05">
+<header><p class="kicker">Chapitre 5</p><h1>Comprendre le son</h1>
+<p class="lead">Les notions indispensables pour savoir ce que font les commandes : vibration, fréquence, amplitude, forme d'onde, harmoniques, timbre, phase, modulation, enveloppe et spectre.</p></header>
+
+<div class="box proto"><span class="tag">Simulations</span><p>Les démonstrations animées de ce chapitre sont des <strong>simulations pédagogiques</strong> dessinées par votre navigateur. Elles ne produisent pas de son et ne sont pas des rendus de SUBDESTRUCKT. Les figures marquées « Mesure » sont, elles, calculées à partir de sons réellement produits par le moteur.</p></div>
+
+<h2>Un son est une vibration</h2>
+<p>Un son est une variation rapide de la pression de l'air. Dans un ordinateur, cette variation est représentée par un <strong>signal audio</strong> : une suite de nombres qui montent et descendent autour de zéro. Une <strong>oscillation</strong> est un motif qui se répète.</p>
+
+<h2>Fréquence et hauteur</h2>
+<p>La <strong>fréquence</strong> est le nombre de répétitions par seconde, en hertz (Hz). Nous l'entendons comme la <strong>hauteur</strong> : plus la fréquence est élevée, plus la note est aiguë. Le La du diapason vibre à 440 Hz ; une octave plus haut, 880 Hz.</p>
+<div class="demo" data-demo="sine"><canvas aria-label="Sinusoïde dont la fréquence et l'amplitude suivent les curseurs"></canvas>
+<div class="controls">
+<label for="d-cyc">Fréquence (périodes visibles)</label><input id="d-cyc" name="cycles" type="range" min="1" max="12" step="1" value="3"><span class="readout" data-out="cycles"></span>
+<label for="d-amp">Amplitude</label><input id="d-amp" name="amp" type="range" min="0" max="1" step="0.05" value="0.8"><span class="readout" data-out="amp"></span>
+</div></div>
+
+<h2>Amplitude et volume</h2>
+<p>L'<strong>amplitude</strong> est la taille de l'oscillation. Nous l'entendons comme le volume. Changer l'amplitude ne change pas la hauteur. Dans SUBDESTRUCKT, les curseurs Level, l'enveloppe Amp et Output Gain agissent sur l'amplitude.</p>
+<details class="adv"><summary>Les décibels</summary><p>Le volume est souvent exprimé en décibels (dB), une échelle logarithmique proche de notre perception. −6 dB divise l'amplitude par environ 2 ; −20 dB par 10. En numérique, dBFS prend pour référence le maximum (0 dBFS).</p></details>
+
+<h2>Forme d'onde, harmoniques et timbre</h2>
+<p>Deux sons de même hauteur et de même volume peuvent sonner très différemment : c'est le <strong>timbre</strong>. Il dépend de la <strong>forme d'onde</strong>, c'est-à-dire du dessin d'une période.</p>
+<p>Toute forme d'onde régulière peut être vue comme une somme de sinusoïdes : la <strong>fondamentale</strong> (la note) et des <strong>harmoniques</strong> à 2, 3, 4… fois sa fréquence. Plus il y a d'harmoniques fortes, plus le son est brillant. Ajoutez des harmoniques ci-dessous : la sinusoïde devient peu à peu une dent de scie.</p>
+<div class="demo" data-demo="harmonics"><canvas aria-label="Forme d'onde obtenue en additionnant des harmoniques"></canvas><canvas class="bars" style="height:90px;margin-top:8px" aria-label="Amplitudes des harmoniques additionnées"></canvas>
+<div class="controls"><label for="d-n">Nombre d'harmoniques</label><input id="d-n" name="n" type="range" min="1" max="32" step="1" value="1"><span class="readout" data-out="n"></span></div></div>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e02_wt_seule.svg" alt="Trois périodes de la forme d'onde de la wavetable seule : une dent de scie"><figcaption><span class="figlabel meas">Mesure</span>Forme d'onde de la WT de SUBDESTRUCKT (dent de scie).</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e08_op1_sans_cross.svg" alt="Trois périodes de la forme d'onde d'OP1 seul : une sinusoïde"><figcaption><span class="figlabel meas">Mesure</span>Forme d'onde d'OP1 seul (sinusoïde).</figcaption></figure>
+</div>
+
+<h2>Le spectre</h2>
+<p>Un <strong>spectre</strong> représente un son selon ses fréquences : chaque pic vertical est une composante. À gauche les graves, à droite les aigus ; plus un pic est haut, plus la composante est forte. Comparez :</p>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e08_op1_sans_cross.svg" alt="Spectre d'OP1 seul : une seule raie à 220 Hz"><figcaption><span class="figlabel meas">Mesure</span>OP1 seul : une seule raie, la fondamentale.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e02_wt_seule.svg" alt="Spectre de la WT seule : une série d'harmoniques décroissantes"><figcaption><span class="figlabel meas">Mesure</span>WT seule : toutes les harmoniques, de plus en plus faibles.</figcaption></figure>
+</div>
+
+<h2>La phase</h2>
+<p>La <strong>phase</strong> indique où en est une oscillation dans son cycle (de 0 à 360°). Deux signaux identiques mais décalés en phase peuvent se renforcer ou s'annuler quand on les additionne. Faites varier le décalage : la courbe orange est la somme.</p>
+<div class="demo" data-demo="phase"><canvas aria-label="Deux sinusoïdes déphasées et leur somme"></canvas>
+<div class="controls"><label for="d-ph">Décalage de phase</label><input id="d-ph" name="phase" type="range" min="0" max="360" step="5" value="90" data-unit="°"><span class="readout" data-out="phase"></span></div></div>
+<p>À 180°, les deux signaux s'annulent : la somme est plate. Cette notion est au cœur du moteur FM de SUBDESTRUCKT, qui <em>module la phase</em> (chapitre 7).</p>
+
+<h2>Modulation</h2>
+<p>Moduler, c'est faire varier une propriété d'un signal à l'aide d'un autre signal. Si la variation est lente, on entend un mouvement ; si elle est très rapide (à la fréquence d'une note), on entend un <strong>nouveau timbre</strong>. Dans SUBDESTRUCKT 0.1.0-b5, toutes les modulations sont rapides et agissent sur la phase : elles transforment le timbre.</p>
+
+<h2>Enveloppe</h2>
+<p>Une <strong>enveloppe</strong> décrit comment une propriété évolue au cours d'une note : par exemple le volume qui monte à l'attaque puis s'éteint. Chapitre 9.</p>
+
+<details class="adv"><summary>Fréquence d'échantillonnage</summary><p>Un ordinateur représente le son par des <em>échantillons</em> régulièrement espacés : 44 100 par seconde à 44,1 kHz. Ce nombre limite la fréquence la plus aiguë représentable (la moitié : 22 050 Hz à 44,1 kHz). Une fréquence plus haute que cette limite se replie et produit des sons parasites appelés repliement (<em>aliasing</em>). Ne confondez pas la fréquence d'échantillonnage (réglage du projet) et la fréquence d'une note.</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-04" rel="prev">← 4. Découverte complète de l&#x27;interface</a><a href="#ch-06" rel="next">6. Le moteur Wavetable →</a></nav></section>
+
+<section class="chapter" id="ch-06">
+<header><p class="kicker">Chapitre 6</p><h1>Le moteur Wavetable</h1>
+<p class="lead">Une wavetable (« table d'onde ») est un oscillateur qui relit en boucle une forme d'onde mémorisée. Dans 0.1.0-b5, ce moteur est volontairement minimal.</p></header>
+
+<h2>Comprendre</h2>
+<p>Imaginez un disque vinyle de la longueur d'une seule période de son, lu en boucle : plus il tourne vite, plus la note est aiguë. La wavetable stocke une période de forme d'onde (2048 points) et la relit à la vitesse correspondant à la note jouée.</p>
+<div class="box proto"><span class="tag">Ce qui existe dans 0.1.0-b5</span>
+<ul><li><strong>Une seule forme d'onde</strong> : une dent de scie limitée en bande (sans repliement).</li>
+<li>La WT joue <strong>toujours à la hauteur de la note</strong> : il n'y a pas de réglage de transposition ni de ratio pour la WT.</li>
+<li>Une seule commande propre : <strong>WT Level</strong> (son volume dans le mélange, de 0 à 1, 0,5 par défaut).</li>
+<li>Elle peut être <strong>modulée</strong> par OP1 et OP2 (routes CROSS OP1>WT et OP2>WT) et <strong>moduler</strong> OP1 et OP2 (CROSS WT>OP1 et WT>OP2) : chapitre 8.</li></ul>
+<p>Les axes X (choix de la forme), Y (morphing entre tables) et Z (transformations), ainsi que les banques de tables prévues pour la V1, <strong>ne sont pas disponibles</strong>.</p></div>
+
+<h2>Observer</h2>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e02_wt_seule.svg" alt="Forme d'onde dent de scie de la WT"><figcaption><span class="figlabel meas">Mesure</span>La WT seule : une dent de scie.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e02_wt_seule.svg" alt="Spectre harmonique de la WT"><figcaption><span class="figlabel meas">Mesure</span>Toutes les harmoniques, d'amplitude 1/k (la 2<sup>e</sup> à moitié, la 3<sup>e</sup> au tiers…).</figcaption></figure>
+</div>
+<p>La dent de scie contient toutes les harmoniques : c'est un son brillant, « cuivré », point de départ classique pour façonner des timbres.</p>
+
+<h2>Manipuler et écouter</h2>
+<ol class="steps">
+<li><strong>Isoler la WT :</strong> Preset init, puis WT Level <code>0.8</code>, OP1 Level <code>0</code>, CROSS Master <code>0</code>. Jouez des notes graves puis aiguës : le caractère reste le même, seule la hauteur change.</li>
+<li><strong>Doser la WT dans le mélange :</strong> remettez OP1 Level à <code>0.5</code> et faites varier WT Level de 0 à 1 : vous entendez la part de brillance apportée par la WT.</li>
+<li><strong>Déformer la WT par le FM :</strong> voir l'étape 3 de la progression CROSS (chapitre 8).</li>
+</ol>
+<div class="ab" role="group" aria-label="WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)"><h4>WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e02_wt_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+
+<details class="adv"><summary>Limitation de bande et mip-mapping</summary>
+<p>Une dent de scie idéale contient des harmoniques jusqu'à l'infini. Celles qui dépassent la moitié de la fréquence d'échantillonnage se replieraient en fréquences parasites (repliement). Pour l'éviter, la WT de SUBDESTRUCKT contient <strong>11 versions</strong> de la même dent de scie (un « mip-map »), chacune avec deux fois moins d'harmoniques que la précédente (de 1024 à 1 harmonique). Le moteur choisit et mélange les deux versions adaptées à la vitesse de lecture instantanée, y compris quand une modulation de phase accélère ou ralentit la lecture. La lecture entre deux points de la table est interpolée linéairement.</p>
+<p>Mesuré par les tests automatisés : harmoniques 2 à 10 conformes à 1/k à 0,001 dB près, énergie hors harmoniques −82,8 dB (critère G-09).</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-05" rel="prev">← 5. Comprendre le son</a><a href="#ch-07" rel="next">7. Le moteur FM →</a></nav></section>
+
+<section class="chapter" id="ch-07">
+<header><p class="kicker">Chapitre 7</p><h1>Le moteur FM</h1>
+<p class="lead">Avec seulement deux sinusoïdes, la synthèse FM crée des sons brillants, métalliques ou agressifs. Ce chapitre l'explique pas à pas, à partir des commandes réelles de SUBDESTRUCKT.</p></header>
+
+<h2>L'opérateur</h2>
+<p>Un <strong>opérateur</strong> est un oscillateur sinusoïdal. SUBDESTRUCKT 0.1.0-b5 en a deux, <strong>OP1</strong> et <strong>OP2</strong>. Chacun a deux commandes propres :</p>
+<ul><li><strong>Level</strong> (OP1 Level, OP2 Level, 0 à 1) : son volume dans ce que vous entendez ;</li>
+<li><strong>Ratio</strong> (OP1 Ratio, OP2 Ratio, 0,25 à 16) : sa fréquence = fréquence de la note × ratio. Ratio 1 = même hauteur que la note ; 2 = une octave au-dessus ; 0,5 = une octave en dessous.</li></ul>
+
+<h2>Mélanger ou moduler : deux choses différentes</h2>
+<figure>
+<svg class="diagram" viewBox="0 0 860 220" role="img" aria-labelledby="f7t f7d"><title id="f7t">Trois façons d'utiliser deux opérateurs</title>
+<desc id="f7d">À gauche, un opérateur seul produit une sinusoïde. Au centre, deux opérateurs sont mélangés : on entend deux sinusoïdes superposées. À droite, OP2 module OP1 : on n'entend qu'OP1, mais son timbre est enrichi de nouvelles harmoniques.</desc>
+<g font-size="14">
+<text x="120" y="24" text-anchor="middle">1. Un opérateur seul</text>
+<rect x="70" y="60" width="100" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="120" y="87" text-anchor="middle">OP1</text>
+<path d="M120 104 V150" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#a7)"/><text x="120" y="172" text-anchor="middle" class="d">sinusoïde pure</text>
+<text x="430" y="24" text-anchor="middle">2. Deux opérateurs mélangés</text>
+<rect x="340" y="60" width="80" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="380" y="87" text-anchor="middle">OP1</text>
+<rect x="440" y="60" width="80" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="480" y="87" text-anchor="middle">OP2</text>
+<path d="M380 104 L430 146 M480 104 L430 146" style="stroke:var(--dim)" stroke-width="2"/><circle cx="430" cy="152" r="8" fill="none" style="stroke:var(--dim)"/><text x="430" y="182" text-anchor="middle" class="d">deux sinusoïdes superposées</text>
+<text x="740" y="24" text-anchor="middle">3. OP2 module OP1</text>
+<rect x="690" y="40" width="100" height="40" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2" stroke-dasharray="5 3"/><text x="740" y="65" text-anchor="middle">OP2 (modulateur)</text>
+<path d="M740 80 V104" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#a7)"/>
+<rect x="690" y="108" width="100" height="40" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="740" y="133" text-anchor="middle">OP1 (porteur)</text>
+<path d="M740 148 V176" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#a7)"/><text x="740" y="198" text-anchor="middle" class="d">nouvelles harmoniques</text>
+</g><defs><marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Mélanger additionne des sons ; moduler transforme un son par un autre.</figcaption></figure>
+<p>Dans le cas 3, on dit qu'OP2 est le <strong>modulateur</strong> et OP1 le <strong>porteur</strong>. Dans le réglage initial, c'est exactement ce qui se passe : OP2 Level vaut 0 (on ne l'entend pas) mais la route <strong>FM OP2>OP1</strong> (profondeur 1 rad) le fait agir sur OP1.</p>
+<div class="box fact"><span class="tag">Important</span><p>Le Level d'un opérateur règle seulement ce que vous <em>entendez</em> de lui. Il ne change pas sa force de modulation : celle-ci est réglée par la profondeur de la route (FM OP2>OP1, etc.). Un opérateur à Level 0 peut moduler à pleine force.</p></div>
+
+<h2>La modulation de phase (PM)</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 utilise la <strong>modulation de phase</strong> (PM) : le modulateur fait avancer et reculer rapidement la position de lecture du porteur dans son cycle. À l'écoute, la PM donne les sons caractéristiques de la « synthèse FM » (c'est d'ailleurs la technique de nombreux synthétiseurs dits FM), mais les deux ne sont pas strictement identiques : ce manuel parle donc de FM pour la famille de sons et de PM pour le calcul réel.</p>
+<p>La <strong>profondeur</strong> de modulation se règle en <strong>radians</strong> (rad), de 0 à 8 : c'est l'amplitude du décalage de phase (2π ≈ 6,28 rad = un cycle complet).</p>
+
+<h2>Profondeur : du son pur au son dense</h2>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e04_fm_faible.svg" alt="Spectre avec modulation faible : peu de raies"><figcaption><span class="figlabel meas">Mesure</span>FM OP2>OP1 = 0,3 rad : quelques raies proches de la fondamentale.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e05_fm_forte.svg" alt="Spectre avec modulation forte : nombreuses raies jusque dans l'aigu"><figcaption><span class="figlabel meas">Mesure</span>FM OP2>OP1 = 4 rad : beaucoup de raies, son brillant.</figcaption></figure>
+</div>
+<div class="ab" role="group" aria-label="Profondeur : 0,3 rad / 4 rad"><h4>Profondeur : 0,3 rad / 4 rad</h4><div class="players"><button type="button" class="btn play" data-src="audio/e04_fm_faible.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · FM faible (FM OP2&gt;OP1 0,3 rad)</button><button type="button" class="btn play" data-src="audio/e05_fm_forte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · FM forte (FM OP2&gt;OP1 4 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<p>Plus la profondeur augmente, plus des raies apparaissent loin de la fondamentale : le son s'enrichit, puis devient agressif.</p>
+
+<h2>Ratio : harmonique ou métallique</h2>
+<p>Les nouvelles raies apparaissent à des écarts égaux à la fréquence du modulateur. Si le ratio du modulateur est un nombre entier (1, 2, 3…), elles tombent sur des harmoniques : le son reste « musical ». S'il ne l'est pas (3,5 ; 1,41…), elles tombent entre les harmoniques : le son devient métallique ou cloche.</p>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e06_ratio_2.svg" alt="Spectre avec ratio 2 : raies régulièrement espacées"><figcaption><span class="figlabel meas">Mesure</span>OP2 Ratio 2.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e07_ratio_3_5.svg" alt="Spectre avec ratio 3,5 : raies inharmoniques"><figcaption><span class="figlabel meas">Mesure</span>OP2 Ratio 3,5 : raies entre les harmoniques.</figcaption></figure>
+</div>
+<div class="ab" role="group" aria-label="OP2 Ratio : 2 / 3,5"><h4>OP2 Ratio : 2 / 3,5</h4><div class="players"><button type="button" class="btn play" data-src="audio/e06_ratio_2.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</button><button type="button" class="btn play" data-src="audio/e07_ratio_3_5.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+
+<h2>Explorer avec une simulation</h2>
+<p>Cette simulation reproduit la formule de modulation de phase de deux sinusoïdes (rapport porteur/modulateur et indice en radians). Elle n'est pas un rendu de SUBDESTRUCKT.</p>
+<div class="demo" data-demo="pm"><canvas aria-label="Forme d'onde d'une sinusoïde modulée en phase"></canvas><canvas class="bars" style="height:110px;margin-top:8px" aria-label="Raies du spectre, en multiples de la note"></canvas>
+<div class="controls">
+<label for="d-rc">Ratio porteur</label><input id="d-rc" name="rc" type="range" min="0.25" max="4" step="0.25" value="1"><span class="readout" data-out="rc"></span>
+<label for="d-rm">Ratio modulateur</label><input id="d-rm" name="rm" type="range" min="0.25" max="8" step="0.25" value="2"><span class="readout" data-out="rm"></span>
+<label for="d-ix">Profondeur</label><input id="d-ix" name="index" type="range" min="0" max="8" step="0.1" value="1" data-unit=" rad"><span class="readout" data-out="index"></span>
+</div></div>
+
+<h2>Les quatre routes FM</h2>
+<div class="table-wrap"><table><thead><tr><th>Route</th><th>Paramètre de profondeur</th><th>Dans le réglage initial</th><th>Effet</th></tr></thead><tbody>
+<tr><td>OP2 > OP1</td><td>FM OP2>OP1 (1 rad)</td><td>présente</td><td>OP2 module OP1 : l'enrichissement FM classique.</td></tr>
+<tr><td>OP1 > OP2</td><td>FM OP1>OP2 (0)</td><td>absente</td><td>OP1 module OP2 (audible si OP2 Level &gt; 0).</td></tr>
+<tr><td>OP1 > OP1</td><td>FM OP1 Self (0)</td><td>absente</td><td>OP1 se module lui-même (feedback) : son plus rugueux, proche d'une dent de scie puis du bruit.</td></tr>
+<tr><td>OP2 > OP2</td><td>FM OP2 Self (0)</td><td>absente</td><td>OP2 se module lui-même.</td></tr></tbody></table></div>
+<p>Une route doit être <strong>présente</strong> (bouton +) pour que sa profondeur agisse. Une route présente avec une profondeur 0 n'a aucun effet audible mais reste en place avec sa classe (chapitre 8).</p>
+
+<h2>Recettes de sons</h2>
+<div class="table-wrap"><table><thead><tr><th>Objectif</th><th>Réglages (à partir de Preset init, WT Level 0, OP1 Level 0.8, CROSS Master 0)</th></tr></thead><tbody>
+<tr><td>Son simple</td><td>FM OP2>OP1 <code>0.2</code></td></tr>
+<tr><td>Son brillant</td><td>FM OP2>OP1 <code>2</code>, OP2 Ratio <code>1</code></td></tr>
+<tr><td>Son métallique</td><td>FM OP2>OP1 <code>2</code>, OP2 Ratio <code>3.5</code></td></tr>
+<tr><td>Son agressif</td><td>FM OP2>OP1 <code>6</code>, OP2 Ratio <code>2</code></td></tr>
+<tr><td>Texture complexe</td><td>ajouter la route OP1 > OP1 (+), FM OP1 Self <code>1.5</code>, FM OP2>OP1 <code>3</code>, OP2 Ratio <code>1.41</code></td></tr></tbody></table></div>
+<p>Ces réglages n'utilisent que les commandes réelles ; les rendus du chapitre 12 en illustrent certains.</p>
+
+<details class="adv"><summary>Équations</summary>
+<p>Pour un porteur de fréquence f<sub>c</sub> modulé par une sinusoïde de fréquence f<sub>m</sub> avec une profondeur I (rad) : y(t) = sin(2π f<sub>c</sub> t + I · sin(2π f<sub>m</sub> t)). Ce signal contient des raies à f<sub>c</sub> ± k·f<sub>m</sub> (k = 0, 1, 2…) d'amplitudes |J<sub>k</sub>(I)| (fonctions de Bessel). Dans SUBDESTRUCKT, la contribution de chaque route est profondeur × sortie de l'oscillateur source, additionnée à la phase de l'oscillateur destination ; la somme des modulations reçues par un oscillateur est bornée à ±32 rad. Test G-10 : raies k = 0 à 3 conformes à |J<sub>k</sub>(1)| à 0,112 dB près.</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-06" rel="prev">← 6. Le moteur Wavetable</a><a href="#ch-08" rel="next">8. CROSS : le cœur de SUBDESTRUCKT →</a></nav></section>
+
+<section class="chapter" id="ch-08">
+<header><p class="kicker">Chapitre 8</p><h1>CROSS : le cœur de SUBDESTRUCKT</h1>
+<p class="lead">Deux moteurs que l'on se contenterait de mélanger resteraient deux sons côte à côte. CROSS les fait réagir l'un sur l'autre : c'est là que naît le caractère de SUBDESTRUCKT.</p></header>
+
+<h2>Mélanger ou faire interagir</h2>
+<p>Mélanger, c'est additionner : WT + FM. Faire interagir, c'est laisser un moteur <em>déformer</em> l'autre en temps réel. Avec CROSS, la forme d'onde de la WT peut moduler la phase des opérateurs FM, et les opérateurs peuvent moduler la phase de la WT. Le résultat n'est ni la WT ni le FM : c'est un troisième son, souvent rugueux, métallique, vivant.</p>
+
+<figure>
+<svg class="diagram" viewBox="0 0 860 250" role="img" aria-labelledby="f8t f8d"><title id="f8t">CROSS bidirectionnel</title>
+<desc id="f8d">La WT et le moteur FM (OP1, OP2) sont reliés par deux familles de routes : WT vers FM (WT>OP1, WT>OP2), dosées par l'intensité CROSS WT>FM ; FM vers WT (OP1>WT, OP2>WT), dosées par CROSS FM>WT. CROSS Master multiplie les deux familles.</desc>
+<g font-size="14">
+<rect x="40" y="80" width="170" height="90" rx="8" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="125" y="120" text-anchor="middle">Wavetable</text><text x="125" y="142" text-anchor="middle" class="d" font-size="12">WT</text>
+<rect x="650" y="50" width="170" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="735" y="86" text-anchor="middle">OP1</text>
+<rect x="650" y="140" width="170" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="735" y="176" text-anchor="middle">OP2</text>
+<path d="M212 100 C380 60 480 60 646 78" fill="none" style="stroke:var(--cross)" stroke-width="2.5" marker-end="url(#a8)"/>
+<path d="M212 120 C380 150 480 170 646 168" fill="none" style="stroke:var(--cross)" stroke-width="2.5" marker-end="url(#a8)"/>
+<path d="M648 92 C480 105 380 110 214 132" fill="none" style="stroke:var(--wt)" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#a8)"/>
+<path d="M648 184 C480 210 360 200 214 156" fill="none" style="stroke:var(--wt)" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#a8)"/>
+<text x="430" y="40" text-anchor="middle" style="fill:var(--cross)">WT → FM : WT>OP1, WT>OP2 × « CROSS WT>FM »</text>
+<text x="430" y="240" text-anchor="middle" style="fill:var(--wt)">FM → WT : OP1>WT, OP2>WT × « CROSS FM>WT »</text>
+<text x="430" y="130" text-anchor="middle" font-size="13" class="d">× CROSS Master (les deux sens)</text>
+</g><defs><marker id="a8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Les quatre routes CROSS et leurs dosages.</figcaption></figure>
+
+<h2>Les commandes CROSS</h2>
+<div class="table-wrap"><table><thead><tr><th>Commande</th><th>Plage</th><th>Défaut</th><th>Rôle</th></tr></thead><tbody>
+<tr><td>CROSS WT>OP1, CROSS WT>OP2</td><td>0 à 8 rad</td><td>0,5 / 0</td><td>profondeur de chaque route WT → FM</td></tr>
+<tr><td>CROSS OP1>WT, CROSS OP2>WT</td><td>0 à 8 rad</td><td>0,5 / 0</td><td>profondeur de chaque route FM → WT</td></tr>
+<tr><td>CROSS WT>FM</td><td>0 à 1</td><td>1</td><td>intensité de la direction WT → FM (les deux routes à la fois)</td></tr>
+<tr><td>CROSS FM>WT</td><td>0 à 1</td><td>1</td><td>intensité de la direction FM → WT</td></tr>
+<tr><td>CROSS Master</td><td>0 à 1</td><td>1</td><td>dosage global de tout CROSS</td></tr></tbody></table></div>
+<p>La profondeur réellement appliquée (valeur <strong>Effective</strong>, affichée « Eff » dans la table des routes) vaut : <strong>profondeur × CROSS Master × intensité de la direction</strong>. CROSS Master et les intensités n'agissent que sur les routes CROSS, jamais sur les routes FM internes (OP2>OP1, etc.). Une route doit être présente (bouton +) pour agir.</p>
+
+<h2>Progression pratique</h2>
+<h3>Étape 1 — Entendre chaque moteur seul</h3>
+<p>Refaites les étapes 5 et 6 du chapitre 3 (WT seule, puis FM seul, avec CROSS Master à 0).</p>
+
+<h3>Étape 2 — WT vers FM uniquement</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0</code> ; OP1 Level <code>0.8</code> ; FM OP2>OP1 <code>0</code> ; CROSS FM>WT <code>0</code> ; CROSS WT>OP1 <code>2</code> ; faites varier CROSS WT>FM de 0 à 1.</p>
+<p><strong>À entendre :</strong> on n'entend qu'OP1. À 0, une sinusoïde pure ; à 1, elle est déformée par la dent de scie de la WT et devient riche. La WT agit sans être entendue.</p>
+<div class="ab" role="group" aria-label="OP1 seul / OP1 modulé par la WT"><h4>OP1 seul / OP1 modulé par la WT</h4><div class="players"><button type="button" class="btn play" data-src="audio/e08_op1_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP1 seul, CROSS WT&gt;FM 0 (FM OP2&gt;OP1 0)</button><button type="button" class="btn play" data-src="audio/e09_cross_wt_vers_fm.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP1 modulé par la WT (CROSS WT&gt;OP1 2 rad, CROSS WT&gt;FM 1, CROSS FM&gt;WT 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e08_op1_sans_cross.svg" alt="Spectre d'OP1 sans CROSS : une raie"><figcaption><span class="figlabel meas">Mesure</span>Sans CROSS.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e09_cross_wt_vers_fm.svg" alt="Spectre d'OP1 modulé par la WT : nombreuses raies"><figcaption><span class="figlabel meas">Mesure</span>WT → OP1, 2 rad.</figcaption></figure>
+</div>
+
+<h3>Étape 3 — FM vers WT uniquement</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0.8</code> ; OP1 Level <code>0</code> ; CROSS WT>FM <code>0</code> ; OP1 Ratio <code>1.5</code> ; CROSS OP1>WT <code>2</code> ; faites varier CROSS FM>WT de 0 à 1.</p>
+<p><strong>À entendre :</strong> on n'entend que la WT. OP1, muet, la déforme : la dent de scie devient grinçante, inharmonique avec un ratio 1,5.</p>
+<div class="ab" role="group" aria-label="WT seule / WT modulée par OP1"><h4>WT seule / WT modulée par OP1</h4><div class="players"><button type="button" class="btn play" data-src="audio/e10_wt_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · WT seule, CROSS FM&gt;WT 0</button><button type="button" class="btn play" data-src="audio/e11_cross_fm_vers_wt.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · WT modulée par OP1 (CROSS OP1&gt;WT 2 rad, OP1 Ratio 1,5, CROSS FM&gt;WT 1, CROSS WT&gt;FM 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+
+<h3>Étape 4 — Les deux directions</h3>
+<p><strong>Réglages :</strong> Preset init ; WT Level <code>0.5</code> ; OP1 Level <code>0.5</code> ; CROSS WT>OP1 <code>1.5</code> ; CROSS OP1>WT <code>1.5</code>.</p>
+<p><strong>À entendre :</strong> les deux moteurs se déforment mutuellement : une boucle de modulation. Le son devient dense et rugueux.</p>
+<div class="ab" role="group" aria-label="CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)"><h4>CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e12_bidirectionnel.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div>
+
+<h3>Étape 5 — CROSS Master</h3>
+<p>En tenant une note, descendez lentement CROSS Master de 1 à 0. L'interaction diminue progressivement ; à 0, il ne reste que le mélange des moteurs (et les routes FM internes). Le son n'est <strong>jamais coupé</strong> et la note n'est pas relancée : les oscillateurs continuent leur course. Un test automatisé vérifie qu'après le passage à 0 la sortie est identique, échantillon pour échantillon, à celle d'un réglage qui n'aurait jamais eu de CROSS (critère G-13).</p>
+<p>L'exemple ci-dessous est une note tenue pendant laquelle CROSS Master est automatisé de 0 à 1 en 6 secondes :</p>
+<div class="ab" role="group" aria-label="Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)"><h4>Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e15_texture.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 7.0 s · détails au chapitre 12</p></div>
+
+<h3>Étape 6 — Manipuler la topologie</h3>
+<p>La <strong>topologie</strong> est l'ensemble des routes présentes. Dans la table de droite, chaque ligne est une route possible ; « absente » signifie qu'elle n'existe pas. Le bouton + l'ajoute, le bouton − la retire.</p>
+<ol class="steps">
+<li>Preset init : OP2>OP1 « id 1 classe I », WT>OP1 « id 2 classe I », OP1>WT « id 3 classe D ».</li>
+<li>Retirez WT>OP1 (−) : elle devient « absente ». OP1>WT garde sa « classe D ».</li>
+<li>Ajoutez de nouveau WT>OP1 (+) : elle reçoit l'identifiant 4 et la classe I.</li>
+<li>Ajoutez OP1>OP2 : elle referme une boucle avec OP2>OP1 et reçoit la classe D.</li>
+</ol>
+<p>La section « Approfondir » ci-dessous explique ces classes. Retenez : <strong>I</strong> = Immediate (lecture instantanée), <strong>D</strong> = Delayed (lecture avec un retard infime qui rend la boucle calculable).</p>
+<div class="box warn"><span class="tag">Clics</span><p>Ajouter ou retirer une route en jouant passe par un fondu d'environ 2 × 128 échantillons. Aucune absence de clic n'est garantie : notez tout clic perçu pendant la recette (test R-07).</p></div>
+
+<details class="adv"><summary>Graphe, cycle et dépendance instantanée</summary>
+<p>Les oscillateurs et les routes forment un <strong>graphe</strong> : des nœuds (WT, OP1, OP2) reliés par des flèches (routes). À chaque échantillon, le moteur calcule les nœuds dans un ordre tel que chaque source soit calculée avant sa destination.</p>
+<p>Un <strong>cycle</strong> (ou <em>feedback</em>) apparaît lorsque les flèches forment une boucle : WT>OP1 puis OP1>WT. Si toutes les routes de la boucle étaient lues instantanément, chaque nœud aurait besoin du résultat de l'autre au même instant : c'est une <strong>dépendance instantanée</strong>, impossible à calculer.</p></details>
+
+<details class="adv"><summary>Routes Immediate et Delayed</summary>
+<figure>
+<svg class="diagram" viewBox="0 0 860 200" role="img" aria-labelledby="f8bt f8bd"><title id="f8bt">Route Immediate et route Delayed</title>
+<desc id="f8bd">WT envoie sa sortie à OP1 par une route Immediate, lue au même instant. OP1 renvoie sa sortie à WT par une route Delayed, lue avec un retard de 1/48000 de seconde, ce qui casse la dépendance instantanée.</desc>
+<g font-size="14">
+<rect x="120" y="70" width="140" height="60" rx="8" fill="none" style="stroke:var(--wt)" stroke-width="2"/><text x="190" y="106" text-anchor="middle">WT</text>
+<rect x="600" y="70" width="140" height="60" rx="8" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="670" y="106" text-anchor="middle">OP1</text>
+<path d="M262 86 H596" style="stroke:var(--cross)" stroke-width="3" marker-end="url(#a8b)"/><text x="430" y="76" text-anchor="middle">WT>OP1 — Immediate (I) : même instant</text>
+<path d="M598 116 H264" style="stroke:var(--wt)" stroke-width="3" stroke-dasharray="8 5" marker-end="url(#a8b)"/><text x="430" y="146" text-anchor="middle">OP1>WT — Delayed (D) : retard de 1/48000 s</text>
+<text x="430" y="186" text-anchor="middle" class="d" font-size="12">la boucle reste audible, mais devient calculable</text>
+</g><defs><marker id="a8b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Le réglage initial : la boucle WT ↔ OP1 est rendue calculable par une route Delayed.</figcaption></figure>
+<p>Règle (stratégie « B ») : quand vous ajoutez une route, elle est <strong>Immediate</strong> sauf si elle referme une boucle de routes Immediate, ou si c'est une auto-modulation (OP1>OP1) : elle devient alors <strong>Delayed</strong>. Seules les routes qui en ont besoin sont retardées.</p>
+<p>Analogie : dans une conversation, deux personnes ne peuvent pas répondre chacune à ce que l'autre dit <em>au même instant</em> ; l'une réagit à ce que l'autre vient de dire. Le retard est minuscule (environ 21 microsecondes).</p></details>
+
+<details class="adv"><summary>Classification sticky et StableRouteID</summary>
+<p>Une fois attribuée, la classe d'une route ne change plus tant que la route existe : elle est <strong>sticky</strong> (« collante »). Ainsi, retirer une autre route ne change jamais en silence le son d'une route existante. Exemple : après le retrait de WT>OP1, OP1>WT reste D même si la boucle a disparu.</p>
+<p>Chaque route reçoit un <strong>identifiant stable</strong> (StableRouteID, « id » dans l'interface), strictement croissant, jamais réutilisé tant que l'état n'est pas rechargé. Modifier la source ou la destination d'une route revient à la retirer puis en ajouter une nouvelle (nouvel identifiant). Les identifiants et les classes sont sauvegardés dans le projet ; au chargement, un état incohérent (par exemple une boucle de routes Immediate) est refusé en bloc.</p></details>
+
+<details class="adv"><summary>Contrat causal B-T2, retard de 1/48000 s et Thiran1</summary>
+<p>Le retard des routes Delayed a une durée fixe de <strong>1/48000 s</strong> (≈ 20,83 µs), quelle que soit la fréquence d'échantillonnage : c'est le contrat « B-T2 ». Exprimé en échantillons du moteur, il vaut D = fréquence moteur / 48000 :</p>
+<ul><li>48 kHz : D = 1 échantillon, lecture exacte ;</li><li>96 kHz : D = 2, lecture exacte ;</li>
+<li>44,1 kHz (moteur à 88,2 kHz) et 88,2 kHz : D = 1,8375 : un retard « entre deux échantillons », calculé par un filtre <strong>Thiran1</strong> (passe-tout du premier ordre) qui conserve le niveau de toutes les fréquences ; son retard est exact dans le grave et augmente légèrement dans l'aigu (1,879 échantillon à 20 kHz).</li></ul>
+<p>Garder la même durée à toutes les fréquences d'échantillonnage permet que les boucles CROSS sonnent de la même façon d'un projet à l'autre. À 44,1 kHz, un retard de 1/48000 s serait plus court qu'un échantillon : c'est pourquoi le moteur y calcule en permanence à 88,2 kHz (oversampling 2×, chapitre 10).</p></details>
+
+<details class="adv"><summary>Transitions entre topologies</summary>
+<figure>
+<svg class="diagram" viewBox="0 0 860 170" role="img" aria-labelledby="f8ct f8cd"><title id="f8ct">Transition de topologie en trois temps</title>
+<desc id="f8cd">Lors d'un changement de routes, le moteur réduit d'abord à zéro les routes retirées sur 128 échantillons avec l'ancien graphe, bascule vers le nouveau graphe, puis augmente les routes ajoutées sur 128 échantillons. Les routes conservées restent à pleine intensité.</desc>
+<g font-size="13">
+<line x1="40" y1="140" x2="820" y2="140" style="stroke:var(--dim)"/>
+<path d="M40 50 H300 L420 120" fill="none" style="stroke:var(--bad)" stroke-width="3"/><text x="120" y="42" style="fill:var(--bad)">routes retirées</text>
+<path d="M420 120 L540 50 H820" fill="none" style="stroke:var(--ok)" stroke-width="3"/><text x="640" y="42" style="fill:var(--ok)">routes ajoutées</text>
+<path d="M40 30 H820" style="stroke:var(--wt)" stroke-width="2" stroke-dasharray="6 4"/><text x="760" y="24" style="fill:var(--wt)">routes conservées</text>
+<line x1="420" y1="30" x2="420" y2="150" style="stroke:var(--text)" stroke-width="1.5"/><text x="420" y="164" text-anchor="middle">bascule</text>
+<text x="360" y="160" text-anchor="middle" class="d">128 éch.</text><text x="480" y="160" text-anchor="middle" class="d">128 éch.</text>
+</g></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Les anciennes et les nouvelles routes ne sont jamais actives en même temps.</figcaption></figure>
+<p>Le nouveau graphe est préparé hors du traitement audio puis échangé sans blocage. Les routes conservées gardent leur état et leur classe. À 44,1 kHz, les 128 échantillons sont comptés au rythme du projet (≈ 2,9 ms chacun des deux fondus).</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-07" rel="prev">← 7. Le moteur FM</a><a href="#ch-09" rel="next">9. Enveloppe, voix et sortie →</a></nav></section>
+
+<section class="chapter" id="ch-09">
+<header><p class="kicker">Chapitre 9</p><h1>Enveloppe, voix et sortie</h1>
+<p class="lead">Comment le volume d'une note évolue dans le temps, comment SUBDESTRUCKT choisit la note qui sonne, et ce qui se passe juste avant la sortie audio.</p></header>
+
+<h2>L'enveloppe Amp (ADSR)</h2>
+<p>Quand vous enfoncez une touche, le volume ne passe pas brutalement de 0 au maximum : il suit une <strong>enveloppe</strong> en quatre étapes.</p>
+<div class="table-wrap"><table><thead><tr><th>Étape</th><th>Paramètre</th><th>Plage</th><th>Défaut</th><th>Ce qui se passe</th></tr></thead><tbody>
+<tr><td><strong>A</strong>ttack</td><td>Amp Attack</td><td>0,001 à 5 s</td><td>0,005 s</td><td>montée de 0 au maximum après l'appui</td></tr>
+<tr><td><strong>D</strong>ecay</td><td>Amp Decay</td><td>0,001 à 5 s</td><td>0,25 s</td><td>descente du maximum vers le niveau de maintien</td></tr>
+<tr><td><strong>S</strong>ustain</td><td>Amp Sustain</td><td>0 à 1</td><td>0,8</td><td>niveau tenu tant que la touche reste enfoncée (c'est un niveau, pas une durée)</td></tr>
+<tr><td><strong>R</strong>elease</td><td>Amp Release</td><td>0,001 à 10 s</td><td>0,3 s</td><td>extinction après le relâchement</td></tr></tbody></table></div>
+<div class="demo" data-demo="adsr"><canvas aria-label="Courbe de l'enveloppe ADSR selon les curseurs"></canvas>
+<div class="controls">
+<label for="d-a">Attack</label><input id="d-a" name="a" type="range" min="0.001" max="2" step="0.001" value="0.2" data-unit=" s"><span class="readout" data-out="a"></span>
+<label for="d-d">Decay</label><input id="d-d" name="d" type="range" min="0.001" max="2" step="0.001" value="0.4" data-unit=" s"><span class="readout" data-out="d"></span>
+<label for="d-s">Sustain</label><input id="d-s" name="s" type="range" min="0" max="1" step="0.01" value="0.6"><span class="readout" data-out="s"></span>
+<label for="d-r">Release</label><input id="d-r" name="r" type="range" min="0.001" max="3" step="0.001" value="0.8" data-unit=" s"><span class="readout" data-out="r"></span>
+<label for="d-g">Durée de la touche tenue</label><input id="d-g" name="gate" type="range" min="0.1" max="3" step="0.1" value="1.2" data-unit=" s"><span class="readout" data-out="gate"></span>
+</div><p class="figlabel peda">Simulation pédagogique (forme de l'enveloppe, sans son)</p></div>
+<p>Dans SUBDESTRUCKT, les segments sont <strong>linéaires</strong> (des droites). Les durées sont mesurées sur la pleine échelle : Decay = 0,25 s signifie qu'il faudrait 0,25 s pour descendre de 1 à 0 ; pour descendre de 1 à 0,8, il faut donc 0,05 s. De même, la durée du relâchement est proportionnelle au niveau atteint.</p>
+<div class="ab" role="group" aria-label="Enveloppe courte (percussive) / longue (nappe)"><h4>Enveloppe courte (percussive) / longue (nappe)</h4><div class="players"><button type="button" class="btn play" data-src="audio/e13_env_courte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · Enveloppe courte (A 0,001 s, D 0,15 s, S 0, R 0,1 s)</button><button type="button" class="btn play" data-src="audio/e14_env_longue.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · Enveloppe longue (A 1 s, D 0,5 s, S 0,7, R 1,5 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 4.5 s · détails au chapitre 12</p></div>
+<div class="grid2">
+<div class="box try"><span class="tag">Son percussif</span><p>Attack <code>0.001</code>, Decay <code>0.15</code>, Sustain <code>0</code>, Release <code>0.1</code>.</p></div>
+<div class="box try"><span class="tag">Son de nappe</span><p>Attack <code>1</code>, Decay <code>0.5</code>, Sustain <code>0.7</code>, Release <code>1.5</code>.</p></div>
+</div>
+<div class="box fact"><span class="tag">Une seule enveloppe</span><p>Dans 0.1.0-b5, l'enveloppe agit uniquement sur le <strong>volume global</strong>. Elle ne fait pas évoluer le timbre : les profondeurs FM et CROSS restent fixes pendant la note (sauf si vous les automatisez dans la DAW).</p></div>
+
+<h2>La vélocité</h2>
+<p><strong>Amp Velocity</strong> (0 à 1, défaut 1) règle l'influence de la force de frappe sur le volume. Le gain appliqué vaut : 1 − Velocity + Velocity × (vélocité / 127).</p>
+<ul><li>À 0 : toutes les notes ont le même volume, quelle que soit la force de frappe.</li>
+<li>À 1 : une note jouée doucement (vélocité 64) sonne environ deux fois moins fort (−6 dB) qu'une note jouée au maximum (127).</li></ul>
+<p>La vélocité n'agit pas sur le timbre.</p>
+
+<h2>La voix : une note à la fois</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 est <strong>monophonique</strong>, avec <strong>priorité à la dernière note</strong> :</p>
+<ul>
+<li>si vous jouez une nouvelle note alors qu'une autre est tenue, la hauteur saute à la nouvelle note et l'enveloppe repart en attaque <em>depuis son niveau actuel</em> (sans retomber à zéro) ;</li>
+<li>si vous relâchez la note qui sonne alors qu'une autre est encore tenue, la hauteur revient à la note tenue la plus récente, sans relancer l'enveloppe ;</li>
+<li>quand toutes les notes sont relâchées, l'enveloppe passe en Release.</li></ul>
+<p>Les oscillateurs ne sont jamais remis à zéro entre deux notes : leur phase continue. Il n'y a ni glissando (portamento), ni pitch bend, ni aftertouch dans ce prototype. Les messages MIDI CC120 (All Sound Off, équivalent de Panic) et CC123 (All Notes Off, relâche toutes les notes) sont reconnus.</p>
+
+<h2>La sortie</h2>
+<ol class="steps">
+<li><strong>Mélange :</strong> WT Level × WT + OP1 Level × OP1 + OP2 Level × OP2.</li>
+<li><strong>Enveloppe et vélocité</strong> appliquées.</li>
+<li><strong>Retour à la fréquence du projet</strong> (à 44,1 kHz uniquement, après le calcul à 88,2 kHz).</li>
+<li><strong>Output Gain</strong> (−48 à +6 dB, défaut −6 dB, lissé sur 20 ms).</li>
+<li><strong>Garde DC</strong> : un filtre coupe-très-bas (5 Hz) qui retire un éventuel décalage continu.</li>
+<li><strong>Garde numérique</strong> : si le calcul produisait une valeur invalide, la sortie est coupée et l'état interne réinitialisé (compteur « réinit. non finies ») ; une valeur extrême au-delà de +30 dBFS est écrêtée (compteur « garde sortie »).</li>
+<li><strong>Sortie stéréo</strong> : le même signal sur les deux canaux (pas de panoramique ni d'effet stéréo).</li>
+</ol>
+<div class="box warn"><span class="tag">Pas de limiteur</span><p>La garde numérique n'est <strong>pas</strong> un limiteur musical : un signal au-dessus de 0 dBFS reste possible et saturera votre DAW ou votre interface. Gardez des crêtes sous −6 dBFS (indicateur « Crête »).</p></div>
+
+<h2>Panic</h2>
+<p>Le bouton <strong>Panic</strong> (ou le message MIDI CC120) fait descendre le son à zéro en 5 ms, relâche toutes les notes, puis efface les mémoires internes. Les notes suivantes jouent normalement. Utilisez-le si une note reste bloquée ou si un réglage extrême produit un son incontrôlé.</p>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-08" rel="prev">← 8. CROSS : le cœur de SUBDESTRUCKT</a><a href="#ch-10" rel="next">10. Diagnostic technique →</a></nav></section>
+
+<section class="chapter" id="ch-10">
+<header><p class="kicker">Chapitre 10</p><h1>Diagnostic technique</h1>
+<p class="lead">La partie droite de l'interface montre ce que fait réellement le moteur. Ce chapitre explique chaque indicateur et les valeurs attendues, utiles pour la recette.</p></header>
+
+<h2>Bloc « configuration »</h2>
+<p>Exemple réel (capture du chapitre 4, à 44,1 kHz) :</p>
+<pre><code>Fs hote 44100 Hz   K 2   Fs moteur 88200 Hz
+Retard T2 (aretes D) : D = 1.8375 ech. moteur = 20.833 us   lecteur Thiran1 a=0.08844
+Latence declaree (PDC) : 32 ech. (0.726 ms)
+Transition : repos   topologie active #…</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Indicateur</th><th>Signification</th></tr></thead><tbody>
+<tr><td>Fs hote</td><td>Fréquence d'échantillonnage du projet, imposée par la DAW.</td></tr>
+<tr><td>K</td><td>Facteur d'oversampling : le moteur calcule K fois plus d'échantillons que le projet.</td></tr>
+<tr><td>Fs moteur</td><td>Fréquence de calcul interne = Fs hôte × K.</td></tr>
+<tr><td>D</td><td>Le retard des routes Delayed (1/48000 s), exprimé en échantillons moteur.</td></tr>
+<tr><td>lecteur</td><td>« entier exact » si D est entier ; sinon « Thiran1 » avec son coefficient a.</td></tr>
+<tr><td>Latence déclarée (PDC)</td><td>Retard que le plugin annonce à la DAW pour qu'elle le compense.</td></tr>
+<tr><td>Transition</td><td>« repos », « fondu de sortie » ou « fondu d'entrée » pendant un changement de routes ; numéro de la topologie active.</td></tr>
+</tbody></table></div>
+
+<h2>Valeurs attendues par fréquence d'échantillonnage</h2>
+<div class="table-wrap"><table><thead><tr><th>Fs projet</th><th>K</th><th>Fs moteur</th><th>D (éch. moteur)</th><th>Lecteur</th><th>Latence déclarée</th></tr></thead><tbody>
+<tr><td>44 100 Hz</td><td>2</td><td>88 200 Hz</td><td>1,8375</td><td>Thiran1 (a ≈ 0,0884)</td><td>32 éch. (0,726 ms)</td></tr>
+<tr><td>48 000 Hz</td><td>1</td><td>48 000 Hz</td><td>1,0000</td><td>entier exact</td><td>0</td></tr>
+<tr><td>88 200 Hz</td><td>1</td><td>88 200 Hz</td><td>1,8375</td><td>Thiran1 (a ≈ 0,0884)</td><td>0</td></tr>
+<tr><td>96 000 Hz</td><td>1</td><td>96 000 Hz</td><td>2,0000</td><td>entier exact</td><td>0</td></tr>
+<tr><td>autre</td><td colspan="5">« FREQUENCE NON SUPPORTEE : silence » — le plugin reste chargé mais muet. Utilisez une des quatre fréquences ci-dessus.</td></tr>
+</tbody></table></div>
+<p>Dans tous les cas, D correspond à 20,833 µs. Le test R-08 vérifie ces valeurs dans votre DAW.</p>
+
+<details class="adv"><summary>Pourquoi l'oversampling ×2 à 44,1 kHz ?</summary>
+<p>À 44,1 kHz, 1/48000 s vaut 0,919 échantillon : moins d'un échantillon. Un retard plus court qu'un échantillon ne peut pas casser une boucle instantanée. Le contrat B-T2 impose donc un calcul permanent à 88,2 kHz (où D = 1,8375). Le retour à 44,1 kHz se fait par un filtre de décimation (demi-bande FIR à phase linéaire, fenêtre de Kaiser, environ 100 dB d'atténuation), dont la latence est arrondie à 32 échantillons, compensés par la DAW (PDC). L'oversampling ne change pas pendant la lecture : il est fixé à la préparation du plugin.</p></details>
+
+<h2>Trois latences à ne pas confondre</h2>
+<div class="table-wrap"><table><thead><tr><th>Latence</th><th>Origine</th><th>Ordre de grandeur</th></tr></thead><tbody>
+<tr><td>Interface audio</td><td>Taille de buffer et pilotes de la carte son, réglés dans la DAW ou le système.</td><td>quelques ms (dépend du buffer : 256 éch. à 48 kHz ≈ 5,3 ms par sens)</td></tr>
+<tr><td>DAW</td><td>Traitements et compensation de la DAW.</td><td>dépend de la DAW</td></tr>
+<tr><td>Plugin SUBDESTRUCKT</td><td>Filtre de décimation, à 44,1 kHz uniquement.</td><td>32 éch. = 0,726 ms à 44,1 kHz ; 0 ailleurs</td></tr></tbody></table></div>
+<p>La latence du plugin est déclarée à la DAW : la PDC l'aligne dans les rendus (test R-09). Si vous ressentez du retard en jouant, il vient presque toujours de la taille de buffer de l'interface audio : réduisez-la (128, voire 64 échantillons).</p>
+
+<h2>Table des routes</h2>
+<p>Huit lignes, une par route possible : OP2>OP1, OP1>OP2, OP1>OP1, OP2>OP2 (marquées [FM]) et WT>OP1, WT>OP2, OP1>WT, OP2>WT (marquées [CROSS]). Pour une route présente :</p>
+<ul><li><code>id</code> : identifiant stable ; <code>classe I</code> ou <code>classe D</code> : Immediate ou Delayed (chapitre 8) ;</li>
+<li><code>Eff</code> : profondeur Effective en radians, après CROSS Master, intensités et lissage ;</li>
+<li><code>g</code> : gain de transition (1 au repos, de 0 à 1 pendant un fondu).</li></ul>
+<p>Sous la table : le dernier message (« Transaction appliquee », « Transaction refusee : … », « Etat charge » ou « Etat refuse : … ») et <code>nextRouteId</code>, le prochain identifiant qui sera attribué.</p>
+
+<h2>Valeurs Base et Effective</h2>
+<p>La valeur <strong>Base</strong> est celle du curseur (et de l'automatisation). La valeur <strong>Effective</strong> est celle que le moteur utilise. Pour une route CROSS : Effective = Base × CROSS Master × intensité de la direction, puis lissée sur 20 ms. Le moteur ne modifie jamais la valeur Base.</p>
+
+<h2>Télémétrie</h2>
+<pre><code>Voix : note 57   gate on   enveloppe 0.800
+Crete L -11.6 dBFS   R -11.6 dBFS
+Surete : reinit. non finies 0   garde sortie 0   borne PM 0   evts perdus 0   Panic 0</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Indicateur</th><th>Normal</th><th>Si différent de 0</th></tr></thead><tbody>
+<tr><td>note / gate / enveloppe</td><td>suit votre jeu (note −1 avant la première note)</td><td>—</td></tr>
+<tr><td>Crête L / R</td><td>sous −6 dBFS</td><td>au-dessus de 0 dBFS : baissez Output Gain</td></tr>
+<tr><td>réinit. non finies</td><td>0</td><td>le moteur a détecté une valeur invalide et s'est réinitialisé : notez les réglages</td></tr>
+<tr><td>garde sortie</td><td>0</td><td>sortie au-delà de +30 dBFS, écrêtée : réglage extrême</td></tr>
+<tr><td>borne PM</td><td>0</td><td>somme des modulations reçues au-delà de ±32 rad, bornée : modulations très fortes cumulées</td></tr>
+<tr><td>evts perdus</td><td>0</td><td>événements MIDI trop nombreux dans un bloc : notez la situation</td></tr>
+<tr><td>Panic</td><td>nombre de Panic</td><td>augmente à chaque Panic ou CC120</td></tr></tbody></table></div>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-09" rel="prev">← 9. Enveloppe, voix et sortie</a><a href="#ch-11" rel="next">11. Exercices de sound design →</a></nav></section>
+
+<section class="chapter" id="ch-11">
+<header><p class="kicker">Chapitre 11</p><h1>Exercices de sound design</h1>
+<p class="lead">Dix exercices progressifs, réalisables uniquement avec les commandes de 0.1.0-b5. Chacun part de <strong>Preset init</strong>. Les valeurs sont des points de départ : écoutez, puis ajustez.</p></header>
+
+<article class="exercise" id="ex1"><h2>Exercice 1 — Isoler la wavetable</h2><div class="meta"><span class="chip">Débutant</span><span class="chip">5 min</span><span class="chip">wavetable</span><span class="chip">niveaux</span><span class="chip">CROSS Master</span></div><dl><dt>Objectif</dt><dd>Reconnaître le son de la WT seule.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>WT Level 0.8.</li><li>OP1 Level 0.</li><li>CROSS Master 0.</li><li>Jouez une note grave, puis une note aiguë.</li></ol></dd><dt>Valeurs</dt><dd><code>WT Level 0.8 · OP1 Level 0 · OP2 Level 0 · CROSS Master 0</code></dd><dt>Résultat attendu</dt><dd>Un son brillant et constant, de type dent de scie, à toutes les hauteurs.</dd><dt>À écouter</dt><dd>La brillance (beaucoup d&#x27;harmoniques) et l&#x27;absence de mouvement.</dd><dt>Erreurs fréquentes</dt><dd>Oublier CROSS Master : OP1, même muet, colore encore la WT par la route OP1&gt;WT.</dd><dt>Variante</dt><dd>Remontez CROSS Master lentement et écoutez la WT se déformer.</dd></dl><div class="ab" role="group" aria-label="Référence sonore de l&#x27;exercice 1"><h4>Référence sonore de l&#x27;exercice 1</h4><div class="players"><button type="button" class="btn play" data-src="audio/e02_wt_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex2"><h2>Exercice 2 — Isoler le FM</h2><div class="meta"><span class="chip">Débutant</span><span class="chip">5 min</span><span class="chip">opérateur</span><span class="chip">porteur</span><span class="chip">modulateur</span></div><dl><dt>Objectif</dt><dd>Entendre OP1 modulé par OP2, sans WT.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>WT Level 0.</li><li>OP1 Level 0.8.</li><li>CROSS Master 0.</li><li>Faites varier FM OP2&gt;OP1 de 0 à 1.</li></ol></dd><dt>Valeurs</dt><dd><code>WT Level 0 · OP1 Level 0.8 · CROSS Master 0 · FM OP2&gt;OP1 0 → 1</code></dd><dt>Résultat attendu</dt><dd>À 0, une sinusoïde pure, douce ; à 1, un son plus riche.</dd><dt>À écouter</dt><dd>OP2 est muet (Level 0) mais transforme quand même OP1.</dd><dt>Erreurs fréquentes</dt><dd>Monter OP2 Level en pensant augmenter la modulation : cela ajoute seulement OP2 au mélange.</dd><dt>Variante</dt><dd>Montez OP2 Level à 0.3 pour entendre aussi le modulateur.</dd></dl><div class="ab" role="group" aria-label="Référence sonore de l&#x27;exercice 2"><h4>Référence sonore de l&#x27;exercice 2</h4><div class="players"><button type="button" class="btn play" data-src="audio/e03_fm_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex3"><h2>Exercice 3 — Du doux au brillant</h2><div class="meta"><span class="chip">Débutant</span><span class="chip">5 min</span><span class="chip">profondeur</span><span class="chip">radian</span><span class="chip">harmoniques</span></div><dl><dt>Objectif</dt><dd>Comprendre la profondeur de modulation.</dd><dt>Réglage de départ</dt><dd>Exercice 2 terminé.</dd><dt>Étapes</dt><dd><ol><li>FM OP2&gt;OP1 0.3.</li><li>Tenez une note.</li><li>Montez progressivement jusqu&#x27;à 4.</li></ol></dd><dt>Valeurs</dt><dd><code>FM OP2&gt;OP1 : 0.3 → 4 rad</code></dd><dt>Résultat attendu</dt><dd>Le son s&#x27;éclaircit progressivement, puis devient dense et agressif.</dd><dt>À écouter</dt><dd>Le volume change peu : c&#x27;est la couleur qui change.</dd><dt>Erreurs fréquentes</dt><dd>Juger au volume plutôt qu&#x27;au timbre ; écouter trop fort.</dd><dt>Variante</dt><dd>Essayez 6 ou 8 rad, à volume modéré.</dd></dl><div class="ab" role="group" aria-label="Avant / après — exercice 3"><h4>Avant / après — exercice 3</h4><div class="players"><button type="button" class="btn play" data-src="audio/e04_fm_faible.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · FM faible (FM OP2&gt;OP1 0,3 rad)</button><button type="button" class="btn play" data-src="audio/e05_fm_forte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · FM forte (FM OP2&gt;OP1 4 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex4"><h2>Exercice 4 — Son métallique par ratio</h2><div class="meta"><span class="chip">Intermédiaire</span><span class="chip">10 min</span><span class="chip">ratio</span><span class="chip">inharmonique</span></div><dl><dt>Objectif</dt><dd>Passer d&#x27;un son harmonique à un son de cloche ou de tôle.</dd><dt>Réglage de départ</dt><dd>Preset init, puis WT Level 0, OP1 Level 0.8, CROSS Master 0, FM OP2&gt;OP1 2.</dd><dt>Étapes</dt><dd><ol><li>OP2 Ratio 2 : écoutez.</li><li>OP2 Ratio 3.5 : écoutez.</li><li>Essayez 1.41 puis 5.3.</li></ol></dd><dt>Valeurs</dt><dd><code>FM OP2&gt;OP1 2 · OP2 Ratio 2 / 3.5 / 1.41 / 5.3</code></dd><dt>Résultat attendu</dt><dd>Ratios entiers : son « musical » ; non entiers : son métallique, la hauteur devient ambiguë.</dd><dt>À écouter</dt><dd>La sensation de hauteur : elle se brouille avec les ratios non entiers.</dd><dt>Erreurs fréquentes</dt><dd>Changer OP1 Ratio au lieu d&#x27;OP2 Ratio : cela transpose le son entendu.</dd><dt>Variante</dt><dd>Ajoutez une enveloppe percussive (exercice 7) pour un son de cloche.</dd></dl><div class="ab" role="group" aria-label="Avant / après — exercice 4"><h4>Avant / après — exercice 4</h4><div class="players"><button type="button" class="btn play" data-src="audio/e06_ratio_2.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</button><button type="button" class="btn play" data-src="audio/e07_ratio_3_5.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex5"><h2>Exercice 5 — La WT pilote le FM</h2><div class="meta"><span class="chip">Intermédiaire</span><span class="chip">10 min</span><span class="chip">CROSS</span><span class="chip">WT&gt;FM</span></div><dl><dt>Objectif</dt><dd>Entendre la direction CROSS WT → FM seule.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>WT Level 0, OP1 Level 0.8.</li><li>FM OP2&gt;OP1 0 (pour n&#x27;entendre que l&#x27;effet de la WT).</li><li>CROSS FM&gt;WT 0.</li><li>CROSS WT&gt;OP1 2.</li><li>Faites varier CROSS WT&gt;FM de 0 à 1.</li></ol></dd><dt>Valeurs</dt><dd><code>WT Level 0 · OP1 Level 0.8 · FM OP2&gt;OP1 0 · CROSS FM&gt;WT 0 · CROSS WT&gt;OP1 2 · CROSS WT&gt;FM 0 → 1</code></dd><dt>Résultat attendu</dt><dd>La sinusoïde d&#x27;OP1 se charge d&#x27;harmoniques venues de la dent de scie.</dd><dt>À écouter</dt><dd>On n&#x27;entend jamais la WT directement, seulement son empreinte sur OP1.</dd><dt>Erreurs fréquentes</dt><dd>Laisser FM OP2&gt;OP1 à 1 : on mélange alors deux effets.</dd><dt>Variante</dt><dd>Changez OP1 Ratio (0.5, 1.5) : la relation entre WT et OP1 change de couleur.</dd></dl><div class="ab" role="group" aria-label="Avant / après — exercice 5"><h4>Avant / après — exercice 5</h4><div class="players"><button type="button" class="btn play" data-src="audio/e08_op1_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP1 seul, CROSS WT&gt;FM 0 (FM OP2&gt;OP1 0)</button><button type="button" class="btn play" data-src="audio/e09_cross_wt_vers_fm.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP1 modulé par la WT (CROSS WT&gt;OP1 2 rad, CROSS WT&gt;FM 1, CROSS FM&gt;WT 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex6"><h2>Exercice 6 — Le FM déforme la WT</h2><div class="meta"><span class="chip">Intermédiaire</span><span class="chip">10 min</span><span class="chip">CROSS</span><span class="chip">FM&gt;WT</span></div><dl><dt>Objectif</dt><dd>Entendre la direction CROSS FM → WT seule.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>WT Level 0.8, OP1 Level 0.</li><li>CROSS WT&gt;FM 0.</li><li>OP1 Ratio 1.5.</li><li>CROSS OP1&gt;WT 2.</li><li>Faites varier CROSS FM&gt;WT de 0 à 1.</li></ol></dd><dt>Valeurs</dt><dd><code>WT Level 0.8 · OP1 Level 0 · CROSS WT&gt;FM 0 · OP1 Ratio 1.5 · CROSS OP1&gt;WT 2 · CROSS FM&gt;WT 0 → 1</code></dd><dt>Résultat attendu</dt><dd>La dent de scie devient grinçante et inharmonique.</dd><dt>À écouter</dt><dd>OP1 est muet mais transforme la WT.</dd><dt>Erreurs fréquentes</dt><dd>Oublier que la route OP1&gt;WT est Delayed (classe D) : c&#x27;est normal, le retard est imperceptible.</dd><dt>Variante</dt><dd>OP1 Ratio 1, puis 2 : le son redevient harmonique.</dd></dl><div class="ab" role="group" aria-label="Avant / après — exercice 6"><h4>Avant / après — exercice 6</h4><div class="players"><button type="button" class="btn play" data-src="audio/e10_wt_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · WT seule, CROSS FM&gt;WT 0</button><button type="button" class="btn play" data-src="audio/e11_cross_fm_vers_wt.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · WT modulée par OP1 (CROSS OP1&gt;WT 2 rad, OP1 Ratio 1,5, CROSS FM&gt;WT 1, CROSS WT&gt;FM 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex7"><h2>Exercice 7 — Percussion métallique</h2><div class="meta"><span class="chip">Intermédiaire</span><span class="chip">10 min</span><span class="chip">enveloppe</span><span class="chip">ratio</span></div><dl><dt>Objectif</dt><dd>Construire un son court et frappé.</dd><dt>Réglage de départ</dt><dd>Exercice 4 avec OP2 Ratio 3.5.</dd><dt>Étapes</dt><dd><ol><li>Amp Attack 0.001.</li><li>Amp Decay 0.15.</li><li>Amp Sustain 0.</li><li>Amp Release 0.1.</li><li>Jouez des notes courtes.</li></ol></dd><dt>Valeurs</dt><dd><code>A 0.001 · D 0.15 · S 0 · R 0.1 · OP2 Ratio 3.5 · FM OP2&gt;OP1 2</code></dd><dt>Résultat attendu</dt><dd>Un impact métallique bref, qui s&#x27;éteint même si la touche reste enfoncée.</dd><dt>À écouter</dt><dd>L&#x27;attaque nette et la queue courte.</dd><dt>Erreurs fréquentes</dt><dd>Sustain laissé à 0.8 : le son ne s&#x27;éteint plus tant que la touche est tenue.</dd><dt>Variante</dt><dd>Decay 0.6 pour un son de cloche plus long.</dd></dl><div class="ab" role="group" aria-label="Référence sonore de l&#x27;exercice 7"><h4>Référence sonore de l&#x27;exercice 7</h4><div class="players"><button type="button" class="btn play" data-src="audio/e13_env_courte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Enveloppe courte (A 0,001 s, D 0,15 s, S 0, R 0,1 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex8"><h2>Exercice 8 — Son tenu et lent</h2><div class="meta"><span class="chip">Intermédiaire</span><span class="chip">10 min</span><span class="chip">enveloppe</span><span class="chip">Sustain</span></div><dl><dt>Objectif</dt><dd>Obtenir un son de nappe avec les commandes disponibles.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>Amp Attack 1.</li><li>Amp Decay 0.5.</li><li>Amp Sustain 0.7.</li><li>Amp Release 1.5.</li><li>Tenez une note grave plusieurs secondes.</li></ol></dd><dt>Valeurs</dt><dd><code>A 1 · D 0.5 · S 0.7 · R 1.5</code></dd><dt>Résultat attendu</dt><dd>Le son apparaît en douceur, se stabilise, puis s&#x27;éteint lentement après le relâchement.</dd><dt>À écouter</dt><dd>La montée lente et la queue longue.</dd><dt>Erreurs fréquentes</dt><dd>Relâcher trop tôt : l&#x27;attaque n&#x27;a pas le temps d&#x27;arriver au maximum.</dd><dt>Variante</dt><dd>Automatisez CROSS Master dans la DAW pendant la note pour faire évoluer le timbre.</dd></dl><div class="ab" role="group" aria-label="Référence sonore de l&#x27;exercice 8"><h4>Référence sonore de l&#x27;exercice 8</h4><div class="players"><button type="button" class="btn play" data-src="audio/e14_env_longue.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Enveloppe longue (A 1 s, D 0,5 s, S 0,7, R 1,5 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 4.5 s · détails au chapitre 12</p></div></article><article class="exercise" id="ex9"><h2>Exercice 9 — Rétroaction de l&#x27;opérateur</h2><div class="meta"><span class="chip">Avancé</span><span class="chip">15 min</span><span class="chip">feedback</span><span class="chip">Delayed</span><span class="chip">sticky</span></div><dl><dt>Objectif</dt><dd>Utiliser une auto-modulation et observer sa classe causale.</dd><dt>Réglage de départ</dt><dd>Preset init, puis WT Level 0, OP1 Level 0.8, CROSS Master 0, FM OP2&gt;OP1 0.</dd><dt>Étapes</dt><dd><ol><li>Ajoutez la route OP1 &gt; OP1 (bouton +).</li><li>Lisez sa classe dans la table : D.</li><li>Montez FM OP1 Self de 0 à 2.</li></ol></dd><dt>Valeurs</dt><dd><code>Route OP1&gt;OP1 ajoutée · FM OP1 Self 0 → 2</code></dd><dt>Résultat attendu</dt><dd>La sinusoïde devient progressivement plus rugueuse, proche d&#x27;une dent de scie, puis plus bruitée.</dd><dt>À écouter</dt><dd>Le grain qui apparaît vers 1,5 à 2 rad.</dd><dt>Erreurs fréquentes</dt><dd>Monter FM OP1 Self sans avoir ajouté la route : aucun effet.</dd><dt>Variante</dt><dd>Retirez la route (−) puis rajoutez-la : nouvel identifiant, toujours classe D.</dd></dl></article><article class="exercise" id="ex10"><h2>Exercice 10 — Texture CROSS évolutive</h2><div class="meta"><span class="chip">Avancé</span><span class="chip">15 min</span><span class="chip">CROSS bidirectionnel</span><span class="chip">automatisation</span></div><dl><dt>Objectif</dt><dd>Créer une texture dense et la faire évoluer par CROSS Master.</dd><dt>Réglage de départ</dt><dd>Preset init.</dd><dt>Étapes</dt><dd><ol><li>Jouez une note grave (La1, note 45).</li><li>CROSS WT&gt;OP1 3, CROSS OP1&gt;WT 3.</li><li>OP1 Ratio 0.5.</li><li>Amp Release 1.</li><li>Automatisez CROSS Master de 0 à 1 sur 6 secondes dans la DAW.</li></ol></dd><dt>Valeurs</dt><dd><code>note 45 · CROSS WT&gt;OP1 3 · CROSS OP1&gt;WT 3 · OP1 Ratio 0.5 · Release 1 · CROSS Master 0 → 1 (automatisation)</code></dd><dt>Résultat attendu</dt><dd>Le son part d&#x27;un simple mélange et devient de plus en plus rugueux et industriel.</dd><dt>À écouter</dt><dd>La continuité : aucune coupure pendant la montée.</dd><dt>Erreurs fréquentes</dt><dd>Volume trop fort : surveillez l&#x27;indicateur « Crête ».</dd><dt>Variante</dt><dd>Ajoutez la route WT&gt;OP2 et montez OP2 Level pour épaissir la texture.</dd></dl><div class="ab" role="group" aria-label="Référence sonore de l&#x27;exercice 10"><h4>Référence sonore de l&#x27;exercice 10</h4><div class="players"><button type="button" class="btn play" data-src="audio/e15_texture.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 7.0 s · détails au chapitre 12</p></div></article>
+
+<div class="box fact"><span class="tag">À propos des sons « drone »</span><p>Il n'existe pas de mode Drone dans 0.1.0-b5. L'exercice 8 obtient un son tenu avec les seules commandes disponibles : enveloppe lente, Sustain élevé, note tenue.</p></div>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-10" rel="prev">← 10. Diagnostic technique</a><a href="#ch-12" rel="next">12. Exemples audio →</a></nav></section>
+
+<section class="chapter" id="ch-12">
+<header><p class="kicker">Chapitre 12</p><h1>Exemples audio</h1>
+<p class="lead">Quinze sons produits par le moteur DSP réel de SUBDESTRUCKT 0.1.0-b5, avec tous leurs réglages. Aucun son n'est joué automatiquement ; un seul son joue à la fois.</p></header>
+
+<div class="box fact"><span class="tag">Comment ces sons ont été produits</span>
+<ul>
+<li><strong>Moteur :</strong> le cœur DSP non modifié de SUBDESTRUCKT (<code>source/core</code>, <code>source/dsp</code>, <code>source/engine</code>) au commit source de la build 0.1.0-b5, <code>186fb8644ae9518e3cb5116f4368b45dcea0d430</code>, piloté par un petit programme de rendu hors ligne (<code>tools/manual-audio/render_examples.cpp</code>), sans DAW ni interface.</li>
+<li><strong>Format :</strong> WAV PCM 24 bits, mono, 48 000 Hz (donc K = 1, D = 1 échantillon, lecteur entier exact), blocs de 256 échantillons.</li>
+<li><strong>Jeu :</strong> note MIDI 57 (La2, 220 Hz) sauf mention contraire, vélocité 100, déclenchée à 0,05 s.</li>
+<li><strong>Topologie :</strong> celle de Preset init (OP2>OP1 I, WT>OP1 I, OP1>WT D).</li>
+<li><strong>Niveau :</strong> chaque fichier est multiplié par un gain unique pour que la partie tenue soit à −20 dBFS RMS (crête limitée à −1 dBFS). Les écarts de volume entre exemples ne correspondent donc <em>pas</em> à ce que vous entendrez dans la DAW : le gain appliqué est indiqué pour chaque son. Aucune autre transformation (pas de compression, d'égalisation ni de réverbération).</li>
+<li><strong>Plateforme de rendu :</strong> Windows (compilateur MSVC), à partir des mêmes sources que le plugin macOS. Les rendus n'ont pas été comparés échantillon par échantillon avec le plugin sur Mac : de très légers écarts numériques sont possibles, sans conséquence audible attendue (voir « Points à confirmer », chapitre 16).</li>
+</ul></div>
+
+<div class="table-wrap"><table><caption>Catalogue des rendus (paramètres complets dans <a href="audio/examples.json">examples.json</a>)</caption><thead><tr><th scope="col">Exemple</th><th scope="col">Note</th><th scope="col">Durée</th><th scope="col">Relâchement</th><th scope="col">Gain de normalisation</th><th scope="col">Crête</th><th scope="col">SHA-256 (début)</th></tr></thead><tbody><tr><th scope="row">e01_init</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−6,46 dB</td><td>−15,4 dBFS</td><td><code>61216b6a1a10d7c6</code></td></tr><tr><th scope="row">e02_wt_seule</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−1,8 dB</td><td>−12,6 dBFS</td><td><code>e09cf35372f53fcd</code></td></tr><tr><th scope="row">e03_fm_seule</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−7,02 dB</td><td>−16,9 dBFS</td><td><code>68cf8219806910f9</code></td></tr><tr><th scope="row">e04_fm_faible</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−6,13 dB</td><td>−16,2 dBFS</td><td><code>eb71f8463a4a6013</code></td></tr><tr><th scope="row">e05_fm_forte</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−5,95 dB</td><td>−15,9 dBFS</td><td><code>b541e82128238637</code></td></tr><tr><th scope="row">e06_ratio_2</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−4,74 dB</td><td>−14,7 dBFS</td><td><code>658037f9f11eb996</code></td></tr><tr><th scope="row">e07_ratio_3_5</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−5,04 dB</td><td>−15 dBFS</td><td><code>877cedca2290fb65</code></td></tr><tr><th scope="row">e08_op1_sans_cross</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−5,04 dB</td><td>−15,1 dBFS</td><td><code>bfda9f773b7b8de6</code></td></tr><tr><th scope="row">e09_cross_wt_vers_fm</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−5,11 dB</td><td>−15,2 dBFS</td><td><code>fdfcf45764fa5934</code></td></tr><tr><th scope="row">e10_wt_sans_cross</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−1,8 dB</td><td>−12,6 dBFS</td><td><code>e09cf35372f53fcd</code></td></tr><tr><th scope="row">e11_cross_fm_vers_wt</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−2,29 dB</td><td>−12,8 dBFS</td><td><code>c96bf6b0775a0f17</code></td></tr><tr><th scope="row">e12_bidirectionnel</th><td>57</td><td>3.0 s</td><td>2.20 s</td><td>−4,13 dB</td><td>−14,7 dBFS</td><td><code>8a248fb5a4788682</code></td></tr><tr><th scope="row">e13_env_courte</th><td>57</td><td>3.0 s</td><td>0.50 s</td><td>1,83 dB</td><td>−7,1 dBFS</td><td><code>c70159e518182905</code></td></tr><tr><th scope="row">e14_env_longue</th><td>57</td><td>4.5 s</td><td>2.50 s</td><td>−5,29 dB</td><td>−13,9 dBFS</td><td><code>7ab94587855b777a</code></td></tr><tr><th scope="row">e15_texture</th><td>45</td><td>7.0 s</td><td>6.20 s</td><td>−3,45 dB</td><td>−12,3 dBFS</td><td><code>b85db27b3d2935fb</code></td></tr></tbody></table></div><h3 id="ex-e01_init">e01_init — Preset init (réglages par défaut)</h3><p>Différences avec Preset init : <code>aucune (réglages par défaut)</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e01_init"><h4>Écouter e01_init</h4><div class="players"><button type="button" class="btn play" data-src="audio/e01_init.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Preset init (réglages par défaut)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e02_wt_seule">e02_wt_seule — WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</h3><p>Différences avec Preset init : <code>wt.level = 0,8, op1.level = 0, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e02_wt_seule"><h4>Écouter e02_wt_seule</h4><div class="players"><button type="button" class="btn play" data-src="audio/e02_wt_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e03_fm_seule">e03_fm_seule — FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e03_fm_seule"><h4>Écouter e03_fm_seule</h4><div class="players"><button type="button" class="btn play" data-src="audio/e03_fm_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e04_fm_faible">e04_fm_faible — FM faible (FM OP2&gt;OP1 0,3 rad)</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, fm.op2_op1.depth = 0,3, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e04_fm_faible"><h4>Écouter e04_fm_faible</h4><div class="players"><button type="button" class="btn play" data-src="audio/e04_fm_faible.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> FM faible (FM OP2&gt;OP1 0,3 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e05_fm_forte">e05_fm_forte — FM forte (FM OP2&gt;OP1 4 rad)</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, fm.op2_op1.depth = 4, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e05_fm_forte"><h4>Écouter e05_fm_forte</h4><div class="players"><button type="button" class="btn play" data-src="audio/e05_fm_forte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> FM forte (FM OP2&gt;OP1 4 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e06_ratio_2">e06_ratio_2 — OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, fm.op2_op1.depth = 2, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e06_ratio_2"><h4>Écouter e06_ratio_2</h4><div class="players"><button type="button" class="btn play" data-src="audio/e06_ratio_2.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e07_ratio_3_5">e07_ratio_3_5 — OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, op2.ratio = 3,5, fm.op2_op1.depth = 2, cross.master = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e07_ratio_3_5"><h4>Écouter e07_ratio_3_5</h4><div class="players"><button type="button" class="btn play" data-src="audio/e07_ratio_3_5.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e08_op1_sans_cross">e08_op1_sans_cross — OP1 seul, CROSS WT&gt;FM 0 (FM OP2&gt;OP1 0)</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, fm.op2_op1.depth = 0, cross.fwd = 0, cross.rev = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e08_op1_sans_cross"><h4>Écouter e08_op1_sans_cross</h4><div class="players"><button type="button" class="btn play" data-src="audio/e08_op1_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> OP1 seul, CROSS WT&gt;FM 0 (FM OP2&gt;OP1 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e09_cross_wt_vers_fm">e09_cross_wt_vers_fm — OP1 modulé par la WT (CROSS WT&gt;OP1 2 rad, CROSS WT&gt;FM 1, CROSS FM&gt;WT 0)</h3><p>Différences avec Preset init : <code>wt.level = 0, op1.level = 0,8, fm.op2_op1.depth = 0, cross.wt_op1.depth = 2, cross.rev = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e09_cross_wt_vers_fm"><h4>Écouter e09_cross_wt_vers_fm</h4><div class="players"><button type="button" class="btn play" data-src="audio/e09_cross_wt_vers_fm.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> OP1 modulé par la WT (CROSS WT&gt;OP1 2 rad, CROSS WT&gt;FM 1, CROSS FM&gt;WT 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e10_wt_sans_cross">e10_wt_sans_cross — WT seule, CROSS FM&gt;WT 0</h3><p>Différences avec Preset init : <code>wt.level = 0,8, op1.level = 0, op1.ratio = 1,5, cross.fwd = 0, cross.rev = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e10_wt_sans_cross"><h4>Écouter e10_wt_sans_cross</h4><div class="players"><button type="button" class="btn play" data-src="audio/e10_wt_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT seule, CROSS FM&gt;WT 0</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e11_cross_fm_vers_wt">e11_cross_fm_vers_wt — WT modulée par OP1 (CROSS OP1&gt;WT 2 rad, OP1 Ratio 1,5, CROSS FM&gt;WT 1, CROSS WT&gt;FM 0)</h3><p>Différences avec Preset init : <code>wt.level = 0,8, op1.level = 0, op1.ratio = 1,5, cross.op1_wt.depth = 2, cross.fwd = 0</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e11_cross_fm_vers_wt"><h4>Écouter e11_cross_fm_vers_wt</h4><div class="players"><button type="button" class="btn play" data-src="audio/e11_cross_fm_vers_wt.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> WT modulée par OP1 (CROSS OP1&gt;WT 2 rad, OP1 Ratio 1,5, CROSS FM&gt;WT 1, CROSS WT&gt;FM 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e12_bidirectionnel">e12_bidirectionnel — CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</h3><p>Différences avec Preset init : <code>cross.wt_op1.depth = 1,5, cross.op1_wt.depth = 1,5</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e12_bidirectionnel"><h4>Écouter e12_bidirectionnel</h4><div class="players"><button type="button" class="btn play" data-src="audio/e12_bidirectionnel.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> CROSS dans les deux sens (CROSS WT&gt;OP1 1,5 rad, CROSS OP1&gt;WT 1,5 rad, Master 1)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e13_env_courte">e13_env_courte — Enveloppe courte (A 0,001 s, D 0,15 s, S 0, R 0,1 s)</h3><p>Différences avec Preset init : <code>amp.attack = 0,001, amp.decay = 0,15, amp.sustain = 0, amp.release = 0,1</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e13_env_courte"><h4>Écouter e13_env_courte</h4><div class="players"><button type="button" class="btn play" data-src="audio/e13_env_courte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Enveloppe courte (A 0,001 s, D 0,15 s, S 0, R 0,1 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · détails au chapitre 12</p></div><h3 id="ex-e14_env_longue">e14_env_longue — Enveloppe longue (A 1 s, D 0,5 s, S 0,7, R 1,5 s)</h3><p>Différences avec Preset init : <code>amp.attack = 1, amp.decay = 0,5, amp.sustain = 0,7, amp.release = 1,5</code>. Note 57, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e14_env_longue"><h4>Écouter e14_env_longue</h4><div class="players"><button type="button" class="btn play" data-src="audio/e14_env_longue.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Enveloppe longue (A 1 s, D 0,5 s, S 0,7, R 1,5 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 4.5 s · détails au chapitre 12</p></div><h3 id="ex-e15_texture">e15_texture — Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)</h3><p>Différences avec Preset init : <code>amp.release = 1, op1.ratio = 0,5, cross.wt_op1.depth = 3, cross.op1_wt.depth = 3, cross.master = 0</code>. Automatisation : cross.master 0 -&gt; 1 en 6 s. Note 45, vélocité 100, 48 kHz, K = 1.</p><div class="ab" role="group" aria-label="Écouter e15_texture"><h4>Écouter e15_texture</h4><div class="players"><button type="button" class="btn play" data-src="audio/e15_texture.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> Note tenue, automation de CROSS Master de 0 à 1 en 6 s (CROSS 3 rad, OP1 Ratio 0,5)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 7.0 s · détails au chapitre 12</p></div>
+
+<h2>Comparaisons A/B</h2>
+<p>Le bouton A ou B lance le son correspondant ; passer de l'un à l'autre reprend au même instant, pour comparer le timbre sans interruption.</p>
+<div class="ab" role="group" aria-label="WT seule / FM seule"><h4>WT seule / FM seule</h4><div class="players"><button type="button" class="btn play" data-src="audio/e02_wt_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · WT seule (WT Level 0,8, OP1/OP2 Level 0, CROSS Master 0)</button><button type="button" class="btn play" data-src="audio/e03_fm_seule.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · FM seule (OP1 Level 0,8, FM OP2&gt;OP1 1 rad, WT Level 0, CROSS Master 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="ab" role="group" aria-label="FM faible / FM forte"><h4>FM faible / FM forte</h4><div class="players"><button type="button" class="btn play" data-src="audio/e04_fm_faible.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · FM faible (FM OP2&gt;OP1 0,3 rad)</button><button type="button" class="btn play" data-src="audio/e05_fm_forte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · FM forte (FM OP2&gt;OP1 4 rad)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="ab" role="group" aria-label="Ratio 2 / ratio 3,5"><h4>Ratio 2 / ratio 3,5</h4><div class="players"><button type="button" class="btn play" data-src="audio/e06_ratio_2.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP2 Ratio 2 (harmonique), FM OP2&gt;OP1 2 rad</button><button type="button" class="btn play" data-src="audio/e07_ratio_3_5.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP2 Ratio 3,5 (métallique), FM OP2&gt;OP1 2 rad</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="ab" role="group" aria-label="OP1 sans CROSS / avec CROSS WT→FM"><h4>OP1 sans CROSS / avec CROSS WT→FM</h4><div class="players"><button type="button" class="btn play" data-src="audio/e08_op1_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · OP1 seul, CROSS WT&gt;FM 0 (FM OP2&gt;OP1 0)</button><button type="button" class="btn play" data-src="audio/e09_cross_wt_vers_fm.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · OP1 modulé par la WT (CROSS WT&gt;OP1 2 rad, CROSS WT&gt;FM 1, CROSS FM&gt;WT 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="ab" role="group" aria-label="WT sans CROSS / avec CROSS FM→WT"><h4>WT sans CROSS / avec CROSS FM→WT</h4><div class="players"><button type="button" class="btn play" data-src="audio/e10_wt_sans_cross.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · WT seule, CROSS FM&gt;WT 0</button><button type="button" class="btn play" data-src="audio/e11_cross_fm_vers_wt.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · WT modulée par OP1 (CROSS OP1&gt;WT 2 rad, OP1 Ratio 1,5, CROSS FM&gt;WT 1, CROSS WT&gt;FM 0)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 3.0 s · détails au chapitre 12</p></div>
+<div class="ab" role="group" aria-label="Enveloppe courte / longue"><h4>Enveloppe courte / longue</h4><div class="players"><button type="button" class="btn play" data-src="audio/e13_env_courte.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> A · Enveloppe courte (A 0,001 s, D 0,15 s, S 0, R 0,1 s)</button><button type="button" class="btn play" data-src="audio/e14_env_longue.wav" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> B · Enveloppe longue (A 1 s, D 0,5 s, S 0,7, R 1,5 s)</button></div><p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · 3.0 s · 4.5 s · détails au chapitre 12</p></div>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-11" rel="prev">← 11. Exercices de sound design</a><a href="#ch-13" rel="next">13. Assistant de recette ARCH-G3 →</a></nav></section>
+
+<section class="chapter" id="ch-13">
+<header><p class="kicker">Chapitre 13</p><h1>Assistant de recette ARCH-G3</h1>
+<p class="lead">La recette physique vérifie, sur un vrai Mac et dans une vraie DAW, ce que les tests automatisés n'ont pas pu vérifier. Quinze tests, regroupés en quatre étapes.</p></header>
+
+<p><a class="btn primary" href="recette.html">Ouvrir l'assistant de recette interactif</a></p>
+
+<h2>Comment fonctionne l'assistant</h2>
+<ul>
+<li>Chaque test commence au statut <strong>PENDING</strong> (à faire). Rien n'est prérempli.</li>
+<li>Pour chaque test, vous choisissez <strong>PASS</strong> (conforme), <strong>FAIL</strong> (non conforme) ou <strong>N/A</strong> (non applicable : une justification est alors obligatoire).</li>
+<li>Vous pouvez ajouter des observations et une référence de preuve (nom d'une capture, d'un enregistrement).</li>
+<li>Vos réponses sont enregistrées automatiquement <strong>sur cet appareil uniquement</strong> (stockage local du navigateur). Rien n'est envoyé automatiquement.</li>
+<li>La <strong>progression</strong> (nombre de tests renseignés) n'est pas une validation : un seul FAIL reste visible en permanence dans la synthèse.</li>
+<li>Quand tous les tests sont renseignés (et les N/A justifiés), vous pouvez <strong>valider</strong> la recette (avec confirmation) ; les réponses sont alors verrouillées, mais vous pouvez rouvrir pour corriger.</li>
+<li>Pour transmettre les résultats : <strong>Exporter</strong> le fichier <code>SUBDESTRUCKT_ARCH_G3_RESULTS.json</code>, <strong>Copier les résultats pour la direction technique</strong>, ou <strong>Partager</strong> (feuille de partage de l'iPhone, si disponible). Le texte JSON reste affiché en dernier recours.</li>
+</ul>
+<div class="box warn"><span class="tag">Attention</span><p>Effacer les données du navigateur (ou utiliser la navigation privée) efface les réponses. Exportez régulièrement. Le bouton « Réinitialiser » efface toute la session après confirmation.</p></div>
+
+<h2>Les quinze tests</h2>
+<h3>Installation</h3><div class="table-wrap"><table><thead><tr><th scope="col">Test</th><th scope="col">Objet</th><th scope="col">Critère officiel</th></tr></thead><tbody><tr><th scope="row"><a href="recette.html#R-01">R-01</a></th><td>Intégrité de l&#x27;archive</td><td>Empreinte identique au lien publié ; 4 lignes « OK ».</td></tr><tr><th scope="row"><a href="recette.html#R-02">R-02</a></th><td>Installation</td><td>Installation réussie ; bundle présent dans /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3.</td></tr><tr><th scope="row"><a href="recette.html#R-03">R-03</a></th><td>Découverte dans la DAW</td><td>SUBDESTRUCKT (Labtechno) apparaît comme instrument VST3 et s&#x27;instancie.</td></tr></tbody></table></div><h3>Validation musicale</h3><div class="table-wrap"><table><thead><tr><th scope="col">Test</th><th scope="col">Objet</th><th scope="col">Critère officiel</th></tr></thead><tbody><tr><th scope="row"><a href="recette.html#R-04">R-04</a></th><td>Son et MIDI</td><td>Son immédiat ; priorité à la dernière note ; relâchement correct.</td></tr><tr><th scope="row"><a href="recette.html#R-05">R-05</a></th><td>WT seul / FM seul</td><td>Deux timbres distincts, chacun audible seul.</td></tr><tr><th scope="row"><a href="recette.html#R-06">R-06</a></th><td>CROSS</td><td>Effet audible dans chaque direction ; Master à 0 supprime l&#x27;effet sans coupure ni reset.</td></tr><tr><th scope="row"><a href="recette.html#R-07">R-07</a></th><td>Topologie</td><td>Classes affichées conformes ; aucun plantage ; noter tout clic perçu.</td></tr></tbody></table></div><h3>Validation technique</h3><div class="table-wrap"><table><thead><tr><th scope="col">Test</th><th scope="col">Objet</th><th scope="col">Critère officiel</th></tr></thead><tbody><tr><th scope="row"><a href="recette.html#R-08">R-08</a></th><td>Fréquences d&#x27;échantillonnage</td><td>Son correct ; l&#x27;UI affiche K = 2 à 44,1 kHz et 1 ailleurs, ainsi que la latence déclarée.</td></tr><tr><th scope="row"><a href="recette.html#R-09">R-09</a></th><td>Compensation de latence (PDC)</td><td>Latence de 32 échantillons compensée par la DAW.</td></tr><tr><th scope="row"><a href="recette.html#R-10">R-10</a></th><td>Rechargement du projet</td><td>Paramètres, routes, identifiants et classes restaurés ; son identique.</td></tr><tr><th scope="row"><a href="recette.html#R-11">R-11</a></th><td>Instances multiples</td><td>Instances indépendantes.</td></tr><tr><th scope="row"><a href="recette.html#R-12">R-12</a></th><td>Panic</td><td>Silence en moins de 5 ms environ ; les notes suivantes jouent normalement.</td></tr></tbody></table></div><h3>Validation des paquets</h3><div class="table-wrap"><table><thead><tr><th scope="col">Test</th><th scope="col">Objet</th><th scope="col">Critère officiel</th></tr></thead><tbody><tr><th scope="row"><a href="recette.html#R-13">R-13</a></th><td>Désinstallation</td><td>Bundle retiré, projets et autres plugins intacts ; journal dans /var/log/install.log.</td></tr><tr><th scope="row"><a href="recette.html#R-14">R-14</a></th><td>Réinstallation</td><td>Le projet se recharge avec le même son.</td></tr><tr><th scope="row"><a href="recette.html#R-15">R-15</a></th><td>Refus de désinstallation si absent</td><td>Message explicite « SUBDESTRUCKT n&#x27;est pas installé », rien supprimé.</td></tr></tbody></table></div>
+
+<h2>Ordre conseillé</h2>
+<p>Suivez l'ordre des groupes : Installation → Validation musicale → Validation technique → Validation des paquets. R-13 à R-15 désinstallent puis réinstallent le plugin : faites-les en dernier. Prévoyez environ deux heures.</p>
+<p>Source officielle des critères : <code>docs/V1-ARCH-G3-RECETTE-M4MAX.md</code> (commit <code>8d23342</code>). En cas de divergence, ce document fait foi.</p>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-12" rel="prev">← 12. Exemples audio</a><a href="#ch-14" rel="next">14. Dépannage →</a></nav></section>
+
+<section class="chapter" id="ch-14">
+<header><p class="kicker">Chapitre 14</p><h1>Dépannage</h1>
+<p class="lead">Les problèmes les plus probables, du plus simple au plus technique. Pour chacun : symptôme, causes possibles, vérifications, corrections.</p></header>
+
+<details class="trouble" open><summary>Plugin non détecté par la DAW</summary>
+<p><strong>Causes possibles :</strong> installation non terminée ; DAW lancée pendant l'installation ; analyse des plugins non relancée ; DAW qui ne charge pas les VST3 ; DAW lancée en mode Rosetta (Intel).</p>
+<ol><li>Vérifiez la présence de <code>/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3</code> (Finder › Aller › Aller au dossier…).</li>
+<li>Quittez complètement la DAW, relancez-la et forcez une nouvelle analyse des plugins VST3.</li>
+<li>Vérifiez que la DAW fonctionne en natif Apple Silicon (Finder › Lire les informations sur l'application : l'option « Ouvrir avec Rosetta » doit être décochée). SUBDESTRUCKT est arm64 uniquement.</li>
+<li>Si la DAW a mis le plugin en liste noire (plugin « désactivé » ou « en échec »), réactivez-le ou relancez son analyse, puis notez le message.</li></ol></details>
+
+<details class="trouble"><summary>Le paquet refuse de s'ouvrir (« développeur non identifié »)</summary>
+<p>Normal : les paquets 0.1.0-b5 ne sont pas signés. Réglages Système › Confidentialité et sécurité › « Ouvrir quand même » (chapitre 2). Ne désactivez jamais Gatekeeper globalement.</p></details>
+
+<details class="trouble"><summary>L'installateur refuse d'installer</summary>
+<p>Lisez son message : chacun indique « Rien n'a été installé ».</p>
+<ul><li>« il exige un Mac Apple Silicon » : Mac Intel, non pris en charge.</li>
+<li>« déclare macOS 14.0 au minimum » : mettez macOS à jour.</li>
+<li>« Un élément qui n'est pas le plugin SUBDESTRUCKT occupe… » : un autre fichier porte ce nom ; déplacez-le vous-même après vérification.</li>
+<li>Plugin utilisé : fermez toute DAW ou tout programme qui l'a chargé.</li></ul>
+<p>Détail dans l'application Console › <code>/var/log/install.log</code> (lignes « SUBDESTRUCKT »).</p></details>
+
+<details class="trouble"><summary>Absence de son</summary>
+<ol><li>La ligne « Voix » change-t-elle quand vous jouez ? Si non : problème MIDI (section suivante).</li>
+<li>« gate on » mais rien : vérifiez Output Gain (pas à −48 dB), WT Level / OP1 Level (pas tous à 0), Amp Sustain et Attack.</li>
+<li>Le bloc configuration affiche-t-il « FREQUENCE NON SUPPORTEE » ? Réglez le projet sur 44,1, 48, 88,2 ou 96 kHz.</li>
+<li>« réinit. non finies » augmente ? Cliquez Panic, puis Preset init, et notez les réglages qui l'ont provoqué.</li>
+<li>Vérifiez la sortie de la piste et l'interface audio dans la DAW.</li></ol></details>
+
+<details class="trouble"><summary>MIDI non reçu</summary>
+<ol><li>Le clavier est-il reconnu par macOS (Configuration audio et MIDI) ?</li>
+<li>La piste SUBDESTRUCKT reçoit-elle bien ce clavier (entrée MIDI de la piste, piste sélectionnée ou armée) ?</li>
+<li>Testez avec une note dessinée dans la DAW : si elle sonne, le problème est l'entrée MIDI.</li></ol></details>
+
+<details class="trouble"><summary>Son trop fort, saturé ou distordu</summary>
+<p>Baissez Output Gain et surveillez « Crête » (viser −12 à −6 dBFS). Des profondeurs FM ou CROSS élevées rendent le son très dense : c'est le comportement normal, pas une panne. SUBDESTRUCKT n'a pas de limiteur. Si « garde sortie » ou « borne PM » augmente, les réglages sont extrêmes : réduisez les profondeurs.</p></details>
+
+<details class="trouble"><summary>Clics ou craquements</summary>
+<ul><li><strong>En ajoutant ou retirant une route :</strong> possible malgré le fondu ; aucune absence de clic n'est garantie. Notez-le dans la recette (R-07).</li>
+<li><strong>En permanence :</strong> buffer trop petit pour la machine. Augmentez la taille de buffer (256 ou 512) et vérifiez la charge processeur de la DAW.</li>
+<li><strong>En début de note avec Attack minimal :</strong> une attaque de 1 ms est naturellement « claquante » ; augmentez légèrement Amp Attack.</li></ul></details>
+
+<details class="trouble"><summary>Latence ressentie en jouant</summary>
+<p>Voir chapitre 10 : la latence du plugin est nulle sauf à 44,1 kHz (0,73 ms). La latence ressentie vient surtout du buffer de l'interface audio : réduisez-la.</p></details>
+
+<details class="trouble"><summary>Note bloquée</summary>
+<p>Cliquez Panic, ou envoyez CC120/CC123 depuis la DAW. Notez la séquence qui a provoqué le blocage.</p></details>
+
+<details class="trouble"><summary>Projet rechargé avec des réglages différents</summary>
+<p>Si le message indique « Etat refuse : … », l'état enregistré n'a pas été accepté (état incohérent ou enregistré par une version plus récente) et il est refusé en bloc : le plugin garde l'état qu'il avait avant le chargement (à l'ouverture d'un projet, en général le réglage initial). Notez le message complet. C'est le test R-10.</p></details>
+
+<details class="trouble"><summary>Le désinstallateur refuse d'agir</summary>
+<ul><li>« SUBDESTRUCKT n'est pas installé » : rien à faire, le plugin est déjà absent (comportement attendu, test R-15).</li>
+<li>« Élément non identifié » : l'élément présent n'est pas SUBDESTRUCKT ; vérifiez-le vous-même.</li>
+<li>« Version installée plus récente » : utilisez le désinstallateur de la version installée.</li></ul></details>
+
+<details class="trouble"><summary>L'assistant de recette a perdu mes réponses</summary>
+<p>Les réponses sont stockées dans le navigateur de l'appareil utilisé. Elles sont perdues en navigation privée, après effacement des données du site, ou sur un autre appareil ou navigateur. Exportez régulièrement le fichier JSON. Si l'assistant affiche « Stockage local indisponible », copiez ou exportez vos résultats avant de quitter la page.</p></details>
+
+<details class="trouble"><summary>L'export ne fonctionne pas sur iPhone</summary>
+<p>Utilisez « Partager » (feuille de partage : Mail, Messages, Fichiers…) ou « Copier les résultats ». En dernier recours, sélectionnez le texte JSON affiché en bas de l'assistant et copiez-le.</p></details>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-13" rel="prev">← 13. Assistant de recette ARCH-G3</a><a href="#glossaire" rel="next">15. Glossaire illustré →</a></nav></section>
+
+<section class="chapter" id="glossaire">
+<header><p class="kicker">Chapitre 15</p><h1>Glossaire illustré</h1>
+<p class="lead">Les termes du manuel, par ordre alphabétique. Dans le texte, la première apparition d'un terme dans chaque chapitre renvoie ici.</p></header>
+<figure>
+<svg class="diagram" viewBox="0 0 860 180" role="img" aria-labelledby="g1t g1d"><title id="g1t">Fréquence, amplitude et phase sur une sinusoïde</title>
+<desc id="g1d">Une sinusoïde avec, annotées, sa période (inverse de la fréquence), son amplitude (hauteur du sommet) et une seconde courbe décalée illustrant la phase.</desc>
+<g font-size="13">
+<line x1="40" y1="90" x2="820" y2="90" style="stroke:var(--line2)"/>
+<path d="M40 90 C80 10 120 10 160 90 S240 170 280 90 S360 10 400 90 S480 170 520 90 S600 10 640 90 S720 170 760 90" fill="none" style="stroke:var(--fm)" stroke-width="2.5"/>
+<path d="M80 90 C120 10 160 10 200 90 S280 170 320 90 S400 10 440 90 S520 170 560 90 S640 10 680 90 S760 170 800 90" fill="none" style="stroke:var(--wt)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<path d="M40 176 H280" style="stroke:var(--text)"/><text x="160" y="172" text-anchor="middle">période = 1 / fréquence</text>
+<path d="M100 90 V30" style="stroke:var(--text)"/><text x="108" y="50">amplitude</text>
+<text x="700" y="30" style="fill:var(--wt)">courbe déphasée</text>
+</g></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Trois notions de base : fréquence, amplitude, phase.</figcaption></figure>
+<dl class="glossary"><div class="letter" aria-hidden="true">A</div><dt id="gl-adsr">ADSR</dt><dd>Abréviation d&#x27;Attack, Decay, Sustain, Release. Dans SUBDESTRUCKT, l&#x27;enveloppe ADSR contrôle le volume de chaque note (voir chapitre 9). Attack, Decay et Release sont des durées ; Sustain est un niveau. <a href="#ch-09">Voir le chapitre</a>.</dd><dt id="gl-amplitude">Amplitude <span class="d">(amplitude)</span></dt><dd>L&#x27;amplitude mesure l&#x27;écart maximal du signal autour de zéro. On la perçoit comme le volume. Elle se distingue de la fréquence (la hauteur) et du timbre (la couleur). <a href="#ch-05">Voir le chapitre</a>.</dd><dt id="gl-automation">Automatisation <span class="d">(automatisation, automatisable)</span></dt><dd>Les 22 paramètres de SUBDESTRUCKT sont automatisables : la DAW peut les modifier au cours du morceau. L&#x27;automatisation agit sur la valeur Base. <a href="#ch-04">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">B</div><dt id="gl-base">Base Value <span class="d">(valeur Base, Base)</span></dt><dd>La valeur Base est celle du curseur. Le moteur en déduit la valeur Effective (par exemple une profondeur CROSS multipliée par CROSS Master) sans jamais modifier la valeur Base. <a href="#ch-10">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">C</div><dt id="gl-cross">CROSS</dt><dd>CROSS désigne les routes de modulation entre le moteur Wavetable et le moteur FM. C&#x27;est la signature de SUBDESTRUCKT (chapitre 8). <a href="#ch-08">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">D</div><dt id="gl-daw">DAW</dt><dd>La DAW charge SUBDESTRUCKT comme instrument, lui envoie les notes MIDI, récupère le son et sauvegarde ses réglages dans le projet. <a href="#ch-02">Voir le chapitre</a>.</dd><dt id="gl-db">Décibel <span class="d">(dB, dBFS, décibels)</span></dt><dd>Le décibel compare un niveau à une référence. dBFS (decibels full scale) prend pour référence le niveau numérique maximal : 0 dBFS est le maximum, les niveaux usuels sont négatifs. <a href="#ch-09">Voir le chapitre</a>.</dd><dt id="gl-delayed">Delayed <span class="d">(retardée, retardées)</span></dt><dd>Une route Delayed est créée lorsqu&#x27;elle fermerait une boucle instantanée. Elle lit la source 1/48000 de seconde plus tôt. Sa classe est conservée (sticky). <a href="#ch-08">Voir le chapitre</a>.</dd><dt id="gl-dsp">DSP</dt><dd>Le moteur DSP de SUBDESTRUCKT calcule les oscillateurs, les modulations, l&#x27;enveloppe et la sortie, échantillon par échantillon. <a href="#ch-01">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">E</div><dt id="gl-effective">Effective Value <span class="d">(valeur Effective, Effective, Eff)</span></dt><dd>Pour une route CROSS : profondeur × CROSS Master × intensité de la direction. Les valeurs Effective changent progressivement (rampe de 20 ms). L&#x27;interface les affiche sous « Eff ». <a href="#ch-10">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">F</div><dt id="gl-feedback">Feedback <span class="d">(rétroaction, boucle)</span></dt><dd>Exemples : un opérateur qui se module lui-même (OP1&gt;OP1), ou WT&gt;OP1 puis OP1&gt;WT. Le feedback enrichit fortement le son ; SUBDESTRUCKT rend ces boucles calculables grâce aux routes Delayed. <a href="#ch-08">Voir le chapitre</a>.</dd><dt id="gl-fm">FM</dt><dd>Famille de synthèse où un modulateur modifie un porteur. SUBDESTRUCKT 0.1.0-b5 implémente la variante modulation de phase (PM), très proche à l&#x27;écoute de la FM classique. <a href="#ch-07">Voir le chapitre</a>.</dd><dt id="gl-frequence">Fréquence <span class="d">(fréquence, fréquences)</span></dt><dd>Le La du diapason (La3, note MIDI 69) vibre à 440 Hz. Doubler la fréquence fait monter d&#x27;une octave. À ne pas confondre avec la fréquence d&#x27;échantillonnage. <a href="#ch-05">Voir le chapitre</a>.</dd><dt id="gl-fs">Fréquence d&#x27;échantillonnage <span class="d">(sample rate)</span></dt><dd>Réglée dans la DAW ou l&#x27;interface audio. SUBDESTRUCKT adapte son fonctionnement interne à cette valeur (voir chapitre 10). <a href="#ch-10">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">H</div><dt id="gl-harmoniques">Harmoniques <span class="d">(harmonique, partiels)</span></dt><dd>Le dosage des harmoniques donne au son sa couleur (son timbre). Un sinus n&#x27;en a pas ; une dent de scie les contient toutes. <a href="#ch-05">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">I</div><dt id="gl-immediate">Immediate</dt><dd>Une nouvelle route est Immediate tant qu&#x27;elle ne ferme pas une boucle instantanée. Sinon elle devient Delayed. <a href="#ch-08">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">L</div><dt id="gl-latence">Latence <span class="d">(latence)</span></dt><dd>La latence totale additionne celle de l&#x27;interface audio, celle de la DAW et celle du plugin. SUBDESTRUCKT déclare 32 échantillons à 44,1 kHz et 0 aux autres fréquences. <a href="#ch-10">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">M</div><dt id="gl-midi">MIDI</dt><dd>Musical Instrument Digital Interface. Un clavier envoie des messages « note on » (avec la vélocité) et « note off » ; SUBDESTRUCKT les transforme en son. <a href="#ch-01">Voir le chapitre</a>.</dd><dt id="gl-modulateur">Modulateur <span class="d">(modulateurs)</span></dt><dd>Dans la route OP2&gt;OP1, OP2 est le modulateur et OP1 le porteur. <a href="#ch-07">Voir le chapitre</a>.</dd><dt id="gl-mono">Monophonie <span class="d">(monophonique)</span></dt><dd>SUBDESTRUCKT 0.1.0-b5 est monophonique avec priorité à la dernière note jouée. <a href="#ch-09">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">O</div><dt id="gl-operateur">Opérateur <span class="d">(opérateurs)</span></dt><dd>Chaque opérateur a un niveau audio (Level) et un ratio de fréquence (Ratio). <a href="#ch-07">Voir le chapitre</a>.</dd><dt id="gl-oscillateur">Oscillateur <span class="d">(oscillateurs)</span></dt><dd>SUBDESTRUCKT 0.1.0-b5 contient trois oscillateurs : la wavetable (WT) et deux opérateurs (OP1, OP2). <a href="#ch-05">Voir le chapitre</a>.</dd><dt id="gl-oversampling">Oversampling <span class="d">(suréchantillonnage)</span></dt><dd>À 44,1 kHz, SUBDESTRUCKT calcule à 88,2 kHz (K = 2) puis revient à 44,1 kHz par un filtre. C&#x27;est imposé par le contrat causal B-T2. <a href="#ch-10">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">P</div><dt id="gl-pdc">PDC</dt><dd>Grâce à la PDC, le son de SUBDESTRUCKT reste aligné avec les autres pistes malgré ses 32 échantillons de latence à 44,1 kHz (test R-09). <a href="#ch-10">Voir le chapitre</a>.</dd><dt id="gl-phase">Phase <span class="d">(phase)</span></dt><dd>Deux signaux de même fréquence peuvent être décalés en phase. La modulation de phase (PM) fait avancer ou reculer cette position. <a href="#ch-05">Voir le chapitre</a>.</dd><dt id="gl-pm">PM <span class="d">(modulation de phase)</span></dt><dd>Variante de la FM réellement utilisée par SUBDESTRUCKT 0.1.0-b5. Les profondeurs sont exprimées en radians (rad). <a href="#ch-07">Voir le chapitre</a>.</dd><dt id="gl-porteur">Porteur <span class="d">(porteuse)</span></dt><dd>Dans la route OP2&gt;OP1, OP1 est le porteur : c&#x27;est OP1 que l&#x27;on entend (OP1 Level). <a href="#ch-07">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">R</div><dt id="gl-radian">Radian <span class="d">(rad, radians)</span></dt><dd>Les profondeurs de modulation de SUBDESTRUCKT sont en radians, de 0 à 8 rad. <a href="#ch-07">Voir le chapitre</a>.</dd><dt id="gl-ratio">Ratio <span class="d">(ratios)</span></dt><dd>OP1 Ratio et OP2 Ratio vont de 0,25 à 16. Des ratios entiers donnent des sons harmoniques ; des ratios non entiers, des sons métalliques ou cloches. <a href="#ch-07">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">S</div><dt id="gl-spectre">Spectre <span class="d">(spectre fréquentiel, spectres)</span></dt><dd>Le spectre montre quelles harmoniques composent un son et avec quelle force (en dB). <a href="#ch-05">Voir le chapitre</a>.</dd><dt id="gl-sticky">Sticky</dt><dd>La classification n&#x27;est jamais recalculée tant que la route existe, même si la boucle qui l&#x27;a rendue Delayed disparaît. Ainsi le son d&#x27;une route ne change pas en silence quand on modifie une autre route. <a href="#ch-08">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">T</div><dt id="gl-thiran">Thiran1</dt><dd>Filtre passe-tout du premier ordre : il conserve le niveau de toutes les fréquences et retarde le signal de 1,8375 échantillon moteur en DC ; son retard varie légèrement dans l&#x27;aigu (1,879 à 20 kHz). <a href="#ch-10">Voir le chapitre</a>.</dd><dt id="gl-timbre">Timbre <span class="d">(timbre)</span></dt><dd>Le timbre dépend surtout des harmoniques et de leur évolution dans le temps. <a href="#ch-05">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">V</div><dt id="gl-velocite">Vélocité <span class="d">(vélocité)</span></dt><dd>Dans SUBDESTRUCKT, la vélocité agit seulement sur le volume, selon le réglage Amp Velocity. <a href="#ch-09">Voir le chapitre</a>.</dd><dt id="gl-vst3">VST3</dt><dd>SUBDESTRUCKT est un instrument VST3 pour macOS Apple Silicon (arm64). Il n&#x27;existe pas en AU ni en version autonome. <a href="#ch-02">Voir le chapitre</a>.</dd><div class="letter" aria-hidden="true">W</div><dt id="gl-wavetable">Wavetable <span class="d">(WT, table d&#x27;onde)</span></dt><dd>Dans 0.1.0-b5, la WT contient une seule forme : une dent de scie limitée en bande. Les axes X, Y et Z prévus pour la V1 ne sont pas disponibles. <a href="#ch-06">Voir le chapitre</a>.</dd></dl>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#ch-14" rel="prev">← 14. Dépannage</a><a href="#ch-16" rel="next">16. Limitations et évolution →</a></nav></section>
+
+<section class="chapter" id="ch-16">
+<header><p class="kicker">Chapitre 16</p><h1>Limitations et évolution</h1>
+<p class="lead">Ce que 0.1.0-b5 ne fait pas encore, ce qui reste à valider, et ce que ce manuel n'a pas pu confirmer.</p></header>
+
+<h2>Statut de la build</h2>
+<div class="table-wrap"><table><tbody>
+<tr><th>Nature</th><td>Prototype interne (vertical slice ARCH-G3). Ce n'est ni une bêta publique ni une V1.</td></tr>
+<tr><th>Tests automatisés</th><td>Critères G-01 à G-24 PASS en CI (rapport <code>docs/V1-ARCH-G3-REPORT.md</code>), sur machine virtuelle macOS 15.8.2, avec un hôte VST3 de test et pluginval. Aucun test en DAW réelle.</td></tr>
+<tr><th>Recette physique</th><td><strong>Non réalisée</strong> à la date de ce manuel : c'est l'objet de l'assistant (chapitre 13).</td></tr>
+<tr><th>Matériel</th><td>Aucune certification matérielle. M3 minimum cible et M4 recommandé sont des objectifs, pas des résultats mesurés.</td></tr>
+<tr><th>Distribution</th><td>Interne uniquement : paquets non signés, pas de notarisation, licence JUCE non arbitrée.</td></tr></tbody></table></div>
+
+<h2>Limitations connues de 0.1.0-b5</h2>
+<ul>
+<li>Monophonique, priorité à la dernière note ; pas de portamento, pitch bend, aftertouch ni MPE.</li>
+<li>Une seule forme de wavetable (dent de scie) ; pas de transposition de la WT.</li>
+<li>Deux opérateurs sinusoïdaux, modulation de phase uniquement.</li>
+<li>Une seule enveloppe (volume) ; pas de LFO, pas de matrice de modulation, pas de filtre, pas d'effet.</li>
+<li>Pas de presets autres que « Init », pas de navigateur, pas d'undo/redo.</li>
+<li>Interface de diagnostic, sans accessibilité spécifique (lecteur d'écran non testé).</li>
+<li>Quatre fréquences d'échantillonnage seulement (44,1 / 48 / 88,2 / 96 kHz) ; silence aux autres.</li>
+<li>Changement de routes : fondu court, absence de clic non garantie.</li>
+<li>Pas de limiteur de sortie.</li>
+<li>VST3 macOS arm64 uniquement.</li></ul>
+
+<h2>Évolution prévue (V1, non disponible)</h2>
+<p>Le cahier des charges V1 prévoit notamment : wavetables X/Y/Z, quatre opérateurs et plusieurs modes FM, matrice CROSS complète, filtres, Destruction, enveloppes et LFO, mode Drone, niveaux de qualité, presets, interface définitive. Rien de cela n'est présent ni promis à une date dans 0.1.0-b5. La prochaine étape (ARCH-G4) n'est pas lancée.</p>
+
+<h2 id="points-a-confirmer">Points à confirmer</h2>
+<div class="box proto"><span class="tag">Non confirmé à la rédaction</span>
+<ol>
+<li><strong>Menus de Reason</strong> : chemins exacts de la gestion des plugins VST3, de l'entrée MIDI, des réglages audio et de la compensation de latence. La documentation officielle n'a pas pu être lue de façon fiable ; seul « Reason › Settings » (Mac) est confirmé.</li>
+<li><strong>Compatibilité Reason</strong> : non établie ; dépend des tests R-03 à R-12.</li>
+<li><strong>PDC dans Reason</strong> : la compensation des 32 échantillons à 44,1 kHz n'est pas vérifiée (R-09).</li>
+<li><strong>macOS 14.0</strong> : version minimale déclarée à la compilation, jamais testée ; seul macOS 15.8.2 (machine virtuelle) a été utilisé.</li>
+<li><strong>Performances</strong> : aucune mesure de charge processeur sur M3, M4 ou M4 Max.</li>
+<li><strong>Exemples audio</strong> : rendus sous Windows (MSVC) depuis les mêmes sources que le plugin ; identité échantillon par échantillon avec le plugin macOS non vérifiée.</li>
+<li><strong>Clics de transition</strong> : perception réelle des changements de routes en jeu non évaluée (R-07).</li>
+<li><strong>Assistant de recette sur iPhone physique</strong> : voir le rapport de validation du manuel pour ce qui a été testé en émulation et ce qui reste à tester sur appareil réel.</li>
+</ol></div>
+
+<h2>Versions de ce manuel</h2>
+<p>Ce manuel décrit uniquement la build <strong>0.1.0-b5</strong>. Chaque nouvelle build aura son propre manuel, à une adresse distincte ; les manuels précédents restent accessibles depuis la <a href="../">liste des versions</a>.</p>
+<nav class="chapter-nav" aria-label="Chapitres précédent et suivant"><a href="#glossaire" rel="prev">← 15. Glossaire illustré</a><span></span></nav></section>
+
+  </main>
+</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Figure agrandie" aria-hidden="true">
+  <button type="button" class="btn close">Fermer</button>
+  <img alt="">
+</div>
+<script>window.SBD_GLOSSARY = [{"id": "adsr", "term": "ADSR", "aliases": [], "short": "Enveloppe en quatre étapes : Attack (montée), Decay (descente), Sustain (niveau tenu), Release (extinction)."}, {"id": "amplitude", "term": "Amplitude", "aliases": ["amplitude"], "short": "Taille de l'oscillation d'un signal : plus elle est grande, plus le son est fort."}, {"id": "automation", "term": "Automatisation", "aliases": ["automatisation", "automatisable"], "short": "Enregistrement par la DAW des mouvements d'un paramètre pour les rejouer."}, {"id": "base", "term": "Base Value", "aliases": ["valeur Base", "Base"], "short": "Valeur d'un paramètre telle que réglée par vous ou par l'automatisation de la DAW."}, {"id": "cross", "term": "CROSS", "aliases": [], "short": "Interaction entre les deux moteurs : la WT module les opérateurs FM, et inversement."}, {"id": "daw", "term": "DAW", "aliases": [], "short": "Digital Audio Workstation : logiciel de production musicale qui héberge les plugins (Reason, par exemple)."}, {"id": "db", "term": "Décibel", "aliases": ["dB", "dBFS", "décibels"], "short": "Unité logarithmique de niveau. −6 dB correspond environ à la moitié de l'amplitude."}, {"id": "delayed", "term": "Delayed", "aliases": ["retardée", "retardées"], "short": "Classe d'une route qui lit le signal source avec un très léger retard (1/48000 s) pour rendre une boucle calculable."}, {"id": "dsp", "term": "DSP", "aliases": [], "short": "Digital Signal Processing : calcul numérique du signal audio."}, {"id": "effective", "term": "Effective Value", "aliases": ["valeur Effective", "Effective", "Eff"], "short": "Valeur réellement utilisée par le moteur, calculée à partir de la valeur Base."}, {"id": "feedback", "term": "Feedback", "aliases": ["rétroaction", "boucle"], "short": "Boucle où un signal revient moduler sa propre source, directement ou par un autre élément."}, {"id": "fm", "term": "FM", "aliases": [], "short": "Frequency Modulation : un signal en module un autre pour créer de nouvelles harmoniques."}, {"id": "frequence", "term": "Fréquence", "aliases": ["fréquence", "fréquences"], "short": "Nombre d'oscillations par seconde, en hertz (Hz). On l'entend comme la hauteur."}, {"id": "fs", "term": "Fréquence d'échantillonnage", "aliases": ["sample rate"], "short": "Nombre d'échantillons numériques par seconde (44,1 ; 48 ; 88,2 ou 96 kHz)."}, {"id": "harmoniques", "term": "Harmoniques", "aliases": ["harmonique", "partiels"], "short": "Composantes d'un son à des multiples de sa fréquence fondamentale (2×, 3×, 4×…)."}, {"id": "immediate", "term": "Immediate", "aliases": [], "short": "Classe d'une route qui lit la source au même instant, sans retard."}, {"id": "latence", "term": "Latence", "aliases": ["latence"], "short": "Délai entre une action (note jouée) et le son correspondant."}, {"id": "midi", "term": "MIDI", "aliases": [], "short": "Protocole qui transmet des notes et des commandes, pas du son."}, {"id": "modulateur", "term": "Modulateur", "aliases": ["modulateurs"], "short": "Signal qui fait varier un autre signal (le porteur) sans forcément être entendu lui-même."}, {"id": "mono", "term": "Monophonie", "aliases": ["monophonique"], "short": "Une seule note sonne à la fois."}, {"id": "operateur", "term": "Opérateur", "aliases": ["opérateurs"], "short": "Oscillateur sinusoïdal du moteur FM (OP1, OP2) qui peut être entendu, moduler, ou les deux."}, {"id": "oscillateur", "term": "Oscillateur", "aliases": ["oscillateurs"], "short": "Générateur d'une forme d'onde répétitive : la source du son."}, {"id": "oversampling", "term": "Oversampling", "aliases": ["suréchantillonnage"], "short": "Calcul interne à une fréquence plus élevée que celle du projet, ici ×2 à 44,1 kHz."}, {"id": "pdc", "term": "PDC", "aliases": [], "short": "Plugin Delay Compensation : la DAW compense la latence déclarée par un plugin."}, {"id": "phase", "term": "Phase", "aliases": ["phase"], "short": "Position dans le cycle d'une oscillation, de 0 à 360°."}, {"id": "pm", "term": "PM", "aliases": ["modulation de phase"], "short": "Phase Modulation : le modulateur décale la position de lecture (la phase) du porteur."}, {"id": "porteur", "term": "Porteur", "aliases": ["porteuse"], "short": "Signal entendu dont le timbre est transformé par un modulateur."}, {"id": "radian", "term": "Radian", "aliases": ["rad", "radians"], "short": "Unité d'angle : 2π rad ≈ 6,28 rad = un tour complet (360°)."}, {"id": "ratio", "term": "Ratio", "aliases": ["ratios"], "short": "Multiplicateur de la fréquence de la note pour un opérateur (1 = même hauteur, 2 = octave au-dessus)."}, {"id": "spectre", "term": "Spectre", "aliases": ["spectre fréquentiel", "spectres"], "short": "Représentation d'un son selon ses fréquences : chaque raie est une composante."}, {"id": "sticky", "term": "Sticky", "aliases": [], "short": "« Collante » : une fois classée Immediate ou Delayed, une route garde sa classe."}, {"id": "thiran", "term": "Thiran1", "aliases": [], "short": "Méthode de calcul d'un retard fractionnaire (entre deux échantillons), utilisée à 44,1 et 88,2 kHz."}, {"id": "timbre", "term": "Timbre", "aliases": ["timbre"], "short": "Couleur d'un son, qui distingue deux instruments jouant la même note au même volume."}, {"id": "velocite", "term": "Vélocité", "aliases": ["vélocité"], "short": "Force avec laquelle une touche est enfoncée (1 à 127), transmise par le MIDI."}, {"id": "vst3", "term": "VST3", "aliases": [], "short": "Format de plugin audio (Steinberg) utilisé par SUBDESTRUCKT."}, {"id": "wavetable", "term": "Wavetable", "aliases": ["WT", "table d'onde"], "short": "Oscillateur qui relit en boucle une forme d'onde enregistrée dans une table."}];</script>
+<script src="js/manual.js"></script>
+<script src="js/audio-ab.js"></script>
+<script src="js/demos.js"></script>
+</body>
+</html>
