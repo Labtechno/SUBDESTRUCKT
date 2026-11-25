@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "campaignId": "SUBDESTRUCKT-S01-FINAL",
+  "title": "S0.1 — Recette perceptive finale",
+  "subtitle": "Écoute à l'aveugle · 4 cas · REF, X, Y",
+  "audioSource": {
+    "repository": "Labtechno/SUBDESTRUCKT",
+    "commit": "3edc528f79500941b8a748f747eedf4f704db521",
+    "archive": "spikes/s01/audio_final/SUBDESTRUCKT_S01_FINAL_LISTENING.zip"
+  },
+  "exportFileName": "S01_LISTENING_RESULTS.json",
+  "player": {
+    "switchFadeMs": 5,
+    "loopDefault": false
+  },
+  "intro": [
+    "Pour chaque cas, écoute REF, puis X et Y, autant de fois que nécessaire, en revenant à REF.",
+    "REF est la référence (48 kHz, oversampling 2×). X et Y sont deux variantes du même patch (96 kHz, oversampling 2×, converties à 48 kHz). Leur attribution a été tirée au sort, indépendamment pour chaque cas : X dans un cas n'a aucun lien avec X dans un autre.",
+    "Les fichiers sont lus tels quels : WAV 24 bits, mono, 48 kHz, 3 s, tous alignés à −20 dBFS RMS. La page n'applique aucun traitement, seulement un fondu de 5 ms au moment où tu démarres, mets en pause ou bascules entre deux rendus, pour éviter un clic.",
+    "« Incertain » et « Aucune différence discernable » sont des réponses valables : mieux vaut les utiliser que deviner."
+  ],
+  "checklist": [
+    "Écouteurs filaires ou casque de qualité, dans un endroit calme.",
+    "Désactive le mode silencieux de l'iPhone (interrupteur latéral) et tout égaliseur ou traitement audio.",
+    "Règle le volume une seule fois sur C1 · REF, à un niveau confortable et modéré, puis n'y touche plus.",
+    "Réponds à l'oreille uniquement, sans analyser les fichiers."
+  ],
+  "contextQuestions": [
+    {
+      "id": "system",
+      "type": "single",
+      "required": false,
+      "label": "Système d'écoute",
+      "options": [
+        { "value": "headphones", "label": "Casque" },
+        { "value": "earphones", "label": "Écouteurs" },
+        { "value": "speakers", "label": "Enceintes" }
+      ]
+    },
+    {
+      "id": "equipment",
+      "type": "text",
+      "required": false,
+      "label": "Modèle (facultatif)",
+      "placeholder": "ex. casque filaire, AirPods, adaptateur USB-C…",
+      "multiline": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "audibleDifference",
+      "type": "single",
+      "required": true,
+      "label": "Différence audible entre X et Y ?",
+      "options": [
+        { "value": "yes", "label": "Oui" },
+        { "value": "no", "label": "Non" },
+        { "value": "uncertain", "label": "Incertain" }
+      ]
+    },
+    {
+      "id": "closestToRef",
+      "type": "single",
+      "required": true,
+      "label": "Quel rendu est le plus proche de REF ?",
+      "options": [
+        { "value": "X", "label": "X" },
+        { "value": "Y", "label": "Y" },
+        { "value": "none", "label": "Aucune différence discernable" }
+      ]
+    },
+    {
+      "id": "artisticPreference",
+      "type": "single",
+      "required": true,
+      "label": "Quel rendu préfères-tu artistiquement ?",
+      "options": [
+        { "value": "X", "label": "X" },
+        { "value": "Y", "label": "Y" },
+        { "value": "none", "label": "Aucune préférence" }
+      ]
+    },
+    {
+      "id": "observations",
+      "type": "text",
+      "required": false,
+      "label": "Observations",
+      "placeholder": "Facultatif : timbre, aigus, rugosité, battements, stabilité…",
+      "multiline": true
+    }
+  ],
+  "renders": [
+    { "id": "REF", "label": "REF", "hint": "référence" },
+    { "id": "X", "label": "X", "hint": "variante" },
+    { "id": "Y", "label": "Y", "hint": "variante" }
+  ],
+  "cases": [
+    {
+      "id": "C1",
+      "title": "Feedback FM modéré",
+      "description": "OP1 en auto-modulation vers OP2, PM 1,2 rad, 110 Hz.",
+      "audio": {
+        "REF": { "file": "audio/C1_REF.wav", "bytes": 432044, "sha256": "f3f694c9c0c26b3803dd2b79b8927c8ad23b3ad76d4ac2c663187979d58ab4c8" },
+        "X": { "file": "audio/C1_X.wav", "bytes": 432044, "sha256": "ca6a5a5c86a8ad0310911d89e2324ba4194ac759630da92687b1c70e7a97ab26" },
+        "Y": { "file": "audio/C1_Y.wav", "bytes": 432044, "sha256": "fb8a014a0cf9f16ff59f49ea6f069df1632c401160740c5980a424ce9ee50177" }
+      }
+    },
+    {
+      "id": "C2",
+      "title": "Feedback FM élevé",
+      "description": "OP1 auto-modulé et cycle OP1 ↔ OP2, FM exponentielle 1,5 octave, 110 Hz.",
+      "audio": {
+        "REF": { "file": "audio/C2_REF.wav", "bytes": 432044, "sha256": "cfa5f0553827af60a832f883e41076da8177cb83c98835465cd76d97759fa0af" },
+        "X": { "file": "audio/C2_X.wav", "bytes": 432044, "sha256": "f1bc457dea6d784952de1d2be780d110a30bbd87521acf96b438eeb0e1346cff" },
+        "Y": { "file": "audio/C2_Y.wav", "bytes": 432044, "sha256": "036e602d8ac4e306c53f32ebffa00d2ddd2243738760c9e73ac0dce40217553a" }
+      }
+    },
+    {
+      "id": "C3",
+      "title": "Interaction WT/FM modérée",
+      "description": "Wavetable (dent de scie) ↔ OP1, PM 1,0 rad, 110 Hz.",
+      "audio": {
+        "REF": { "file": "audio/C3_REF.wav", "bytes": 432044, "sha256": "8823aa579bb653ca08fdb981ed8c266d46c884cdc7d6acee5416ff5a613354e7" },
+        "X": { "file": "audio/C3_X.wav", "bytes": 432044, "sha256": "08d13632fa5214ffca2d3d71ece6ce72f058036e370cf969853e610d895c60e2" },
+        "Y": { "file": "audio/C3_Y.wav", "bytes": 432044, "sha256": "dfbc10a32a825cd93a5de0fa30e0e0a37c6d1a4d0e1463b3557fac0ac5934050" }
+      }
+    },
+    {
+      "id": "C5",
+      "title": "Matrice FM dense",
+      "description": "Matrice 4×4 opérateurs, PM 1,0 rad, 110 Hz.",
+      "audio": {
+        "REF": { "file": "audio/C5_REF.wav", "bytes": 432044, "sha256": "b07ff8de2c4aa164756705dd5f7b4447f12952120a67eecf0e712fe01442e367" },
+        "X": { "file": "audio/C5_X.wav", "bytes": 432044, "sha256": "7973df4c6f16f5c1df9e92a0d5b12dbb20254b6c7bb509865475d4dd6c7c1a0f" },
+        "Y": { "file": "audio/C5_Y.wav", "bytes": 432044, "sha256": "3659ef45929921da50f5c892ef065f52176f40dcaa2098abd5fc48129fb807d8" }
+      }
+    }
+  ],
+  "keyCommitment": {
+    "note": "La clé X/Y n'est pas publiée. Ses empreintes SHA-256 ont été commitées avant l'écoute (commit audio ci-dessus) pour vérification après la recette.",
+    "files": [
+      { "name": "KEY_NE_PAS_OUVRIR_AVANT_ECOUTE.md", "sha256": "029e9bead88367ddba161fdbfd43af77d03567c98e043840c6699d3a9daa9220" },
+      { "name": "KEY_final_metrics.csv", "sha256": "6666a44035192e12d134ac32385b392e00ff818e80963f7b963f683eb1d93a25" }
+    ]
+  }
+}

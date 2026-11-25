@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "default": "s01-final",
+  "campaigns": [
+    { "id": "s01-final", "manifest": "campaigns/s01-final/manifest.json", "title": "S0.1 — Recette perceptive finale" }
+  ]
+}
