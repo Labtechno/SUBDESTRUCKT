@@ -142,7 +142,7 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-**Préparer ARCH-G4 par lots**, en commençant par le cadrage S1 Wavetable/XY/Z, sans inventer les cinq transformations Z manquantes. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md).
+**Exécuter ARCH-G4 P0/P1 dans une mission globale**, sans inventer les cinq transformations Z manquantes. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md).
 
 
 ### Révision plateforme — décision utilisateur du 2026-11-25
@@ -155,3 +155,7 @@ B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. A
 
 ## Clôture ARCH-G3 — recette physique du 25 novembre 2026
 GO ARCH-G3 dans la portée de la tranche 0.1.0-b5, 15/15 PASS déclarés et acceptés par la direction technique. R-08 et R-09 complétés par confirmation explicite : 44,1/48/88,2/96 kHz et PDC à 44,1 kHz. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md). Les restrictions antérieures « avant recette » sont levées pour le prototype validé; la préparation d'ARCH-G4 par lots est ouverte, pas l'implémentation monolithique ni la diffusion publique. M3 physique, budget CPU produit, licence JUCE, signature/notarisation et dettes d'intégration restent ouverts. Aucun merge du code ni nouvelle release par cette décision.
+
+
+## Autorisation ARCH-G4 — développement maximal P0/P1
+Décision utilisateur : développer tout ce qui peut être développé sur la base des spécifications V1 existantes, sans arrêt systématique pour validation humaine entre les lots. Les lots restent des frontières de test et de rollback; ils ne constituent plus des demandes d'autorisation individuelles. Voir [V1-ARCH-G4-FULL-MISSION.md](V1-ARCH-G4-FULL-MISSION.md). Les décisions produit non résolues et gates de sûreté, de licence, de performance et de recette restent applicables. Pas de merge ni diffusion publique automatique.

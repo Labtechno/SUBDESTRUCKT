@@ -563,13 +563,13 @@ B-T2 et sticky retenus; validation runtime et performances produit encore ouvert
 MIDI mono → WT simple → 2 OP FM → CROSS → Amp → Output → preset minimal → UI diagnostic.
 La livraison ARCH-G3 inclut dès la première version installable le ZIP et les deux PKG macOS arm64 ainsi que la recette PKG-01 à PKG-08, selon [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Packaging/build/release hors DSP et hors processus audio; aucune livraison VST3 nue. ARCH-G3 est validé dans la portée de 0.1.0-b5; voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md).
 
-### ARCH-G4 — Expansion P0
-La recette de la vertical slice est acceptée. Préparation de l'expansion P0 par lots et spikes ciblés; mission distincte obligatoire.
+### ARCH-G4 — Expansion P0/P1
+La recette de la vertical slice est acceptée. Développement maximal P0/P1 autorisé suivant la mission globale, avec gates automatisés par lots.
 
 ## 15. Verdict
 Cette architecture réduit le risque principal du projet : que l'UI, le host, les presets et les algorithmes DSP deviennent mutuellement dépendants.
 
-**GO ARCH-G3 dans la portée testée. Préparation ARCH-G4 par lots; pas de release publique.**
+**GO ARCH-G3 dans la portée testée. GO développement ARCH-G4 P0/P1 selon mission globale; pas de release publique.**
 
 
 ### Révision plateforme — décision utilisateur du 2026-11-25
@@ -582,3 +582,7 @@ B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. A
 
 ## Clôture ARCH-G3 — recette physique du 25 novembre 2026
 GO ARCH-G3 dans la portée de la tranche 0.1.0-b5, 15/15 PASS déclarés et acceptés par la direction technique. R-08 et R-09 complétés par confirmation explicite : 44,1/48/88,2/96 kHz et PDC à 44,1 kHz. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md). Les restrictions antérieures « avant recette » sont levées pour le prototype validé; la préparation d'ARCH-G4 par lots est ouverte, pas l'implémentation monolithique ni la diffusion publique. M3 physique, budget CPU produit, licence JUCE, signature/notarisation et dettes d'intégration restent ouverts. Aucun merge du code ni nouvelle release par cette décision.
+
+
+## Autorisation ARCH-G4 — développement maximal P0/P1
+Décision utilisateur : développer tout ce qui peut être développé sur la base des spécifications V1 existantes, sans arrêt systématique pour validation humaine entre les lots. Les lots restent des frontières de test et de rollback; ils ne constituent plus des demandes d'autorisation individuelles. Voir [V1-ARCH-G4-FULL-MISSION.md](V1-ARCH-G4-FULL-MISSION.md). Les décisions produit non résolues et gates de sûreté, de licence, de performance et de recette restent applicables. Pas de merge ni diffusion publique automatique.
