@@ -1,0 +1,25 @@
+configurations : 2000 (1920 mesurées, 80 rejetées)
+répétition 1/7 terminée
+répétition 2/7 terminée
+répétition 3/7 terminée
+répétition 4/7 terminée
+répétition 5/7 terminée
+répétition 6/7 terminée
+répétition 7/7 terminée
+écrit : ../../out/bench_matrix.csv, ../../out/bench_reps.csv, ../../out/bench_isolated.csv
+      535.32 real       512.76 user         4.99 sys
+           128811008  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                8805  page reclaims
+                 956  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 365  voluntary context switches
+              110876  involuntary context switches
+           137397952  peak memory footprint

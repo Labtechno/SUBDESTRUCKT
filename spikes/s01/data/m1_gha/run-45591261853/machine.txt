@@ -1,0 +1,23 @@
+date_utc            : 2026-11-25T10:03:33Z
+run                 : https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45591261853 (tentative 1)
+commit              : 64b13c6a0ed909caad35c729d410ac738de0ad81
+runner              : GitHub Actions 1000000091, image macos15 20261118.0550.1, label macos-15
+uname -m            : arm64
+uname -a            : Darwin iad20-fj920-6746689e-6007-4c2d-ae81-348b525aedbe-C6422A8F3825.local 24.6.0 Darwin Kernel Version 24.6.0: Sun Oct 11 23:44:11 PDT 2026; root:xnu-11417.140.69.713.47~2/RELEASE_ARM64_VMAPPLE arm64
+macOS               : macOS 15.8.2 (24H232)
+cpu                 : Apple M1 (Virtual)
+hw.ncpu             : 3
+hw.physicalcpu      : 3
+hw.perflevel0 (P)   : 3 cœurs, Standard
+hw.perflevel1 (E)   :  cœurs, 
+hw.memsize          : 7168 Mio
+hw.optional.arm64   : 1
+kern.hv_vmm_present : 1  (1 = machine virtuelle)
+hw.model            : VirtualMac2,1
+translated (Rosetta): 0
+compilateur         : Apple clang version 17.0.0 (clang-1700.0.13.5)
+cible clang         : arm64-apple-darwin24.6.0
+python              : Python 3.15.2
+build/s01_tests : arm64 — Mach-O 64-bit executable arm64
+build/s01_bench_matrix : arm64 — Mach-O 64-bit executable arm64
+S0.1 tests: 87662 pass, 0 fail

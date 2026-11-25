@@ -1,0 +1,7 @@
+kind,name,K,ns_per_unit
+delay_reader,integer,2,1.934
+delay_reader,lagrange3,2,4.204
+delay_reader,linear,2,3.494
+delay_reader,thiran1,2,3.872
+decimator,latency32_macs67,2,73.533
+decimator,latency35_macs97,4,133.808

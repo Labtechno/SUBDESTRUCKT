@@ -1,0 +1,5 @@
+/Applications/Xcode_16.4.app/Contents/Developer/usr/bin/make clean
+rm -rf build
+/Applications/Xcode_16.4.app/Contents/Developer/usr/bin/make build/s01_tests build/s01_bench_matrix CXX=clang++ CXXFLAGS="-std=c++17 -O3 -DNDEBUG -Wall -Wextra -ffp-contract=off -mcpu=apple-m1 -Iinclude -I../s0/include"
+clang++ -std=c++17 -O3 -DNDEBUG -Wall -Wextra -ffp-contract=off -mcpu=apple-m1 -Iinclude -I../s0/include tests/s01_tests.cpp -o build/s01_tests -pthread
+clang++ -std=c++17 -O3 -DNDEBUG -Wall -Wextra -ffp-contract=off -mcpu=apple-m1 -Iinclude -I../s0/include bench/s01_bench_matrix.cpp -o build/s01_bench_matrix -pthread

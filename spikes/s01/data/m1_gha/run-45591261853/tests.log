@@ -1,0 +1,6 @@
+S0.1 tests
+  sticky ok (76258 pass, 0 fail)
+  causalite/stabilite (81580 pass, 0 fail)
+  determinisme : 736 configurations x 7 tailles de bloc
+  determinisme (87469 pass, 0 fail)
+S0.1 tests: 87662 pass, 0 fail
