@@ -3,8 +3,8 @@ Date : 2026-11-24. Statut : décisions produit + exigences de benchmark. Aucun b
 
 ## 1. Décisions validées
 - **Cible desktop V1 confirmée : macOS sur Apple Silicon natif (arm64).**
-- **Minimum matériel : Apple M1.**
-- Apple M1 Pro/Max/Ultra, M2/M3/M4 et générations ultérieures sont dans la classe cible sous réserve de validation de la version macOS/hôte au moment de la release.
+- **Minimum matériel cible : Apple M3 de base (révision validée le 2026-11-25).**
+- Apple M1 et M2, toutes variantes, hors support officiel. M3 et variantes, M4 et générations ultérieures dans la classe cible sous réserve de validation. M4 et générations ultérieures recommandés; Mac Studio M4 Max utilisateur pour développement et recette principale.
 - **Windows est hors périmètre produit.**
 - Intel Mac et Rosetta ne sont pas des cibles de compatibilité.
 - Linux n'est pas engagé dans le périmètre V1; toute prise en charge future nécessitera une décision produit explicite et une nouvelle matrice de QA.
@@ -12,15 +12,15 @@ Date : 2026-11-24. Statut : décisions produit + exigences de benchmark. Aucun b
 - **Le hardware est hors périmètre de la phase actuelle.** Aucun budget de commandes physiques, manifest de capacités hardware, processeur embarqué, Eurorack/Desktop ni portage ne doit être traité ou utilisé comme contrainte. Le DSP reste séparé proprement de l'UI et de l'hôte pour la maintenabilité du VSTi.
 
 ## 2. Philosophie performance
-Le minimum M1 n'est pas une simple condition de lancement. Une machine officiellement supportée doit satisfaire une recette de performance définie.
+Le minimum M3 n'est pas une simple condition de lancement. Une machine officiellement supportée doit satisfaire une recette de performance définie.
 
-**Principe proposé :** un Mac M1 de base doit pouvoir exécuter au moins une instance du preset de stress de référence en **Quality Normal**, à 48 kHz et à une taille de buffer réaliste à fixer, sans dropout et sous un plafond CPU mesuré.
+**Principe proposé :** un Mac M3 de base doit pouvoir exécuter au moins une instance du preset de stress de référence en **Quality Normal**, à 48 kHz et à une taille de buffer réaliste à fixer, sans dropout et sous un plafond CPU mesuré.
 
 Eco reste un mode d'économie CPU / live; il ne doit pas être obligatoire pour rendre la configuration minimale utilisable. High peut exiger une machine supérieure et sera documenté comme tel si les benchmarks le démontrent.
 
 ## 3. Benchmarks obligatoires avant release
 Mesurer au minimum :
-- M1 base comme machine plancher;
+- M3 de base physique comme machine plancher, avant Beta publique;
 - une génération Apple Silicon plus récente comme référence recommandée;
 - VST3 uniquement;
 - **44.1 / 48 / 88.2 / 96 kHz officiellement testés**; 192 kHz non garanti en V1;
@@ -31,7 +31,7 @@ Mesurer au minimum :
 - UI ouverte/fermée, analyseurs visibles/masqués;
 - charge moyenne, pics, xruns/dropouts, mémoire, latence déclarée, temps de chargement des presets/captures.
 
-Les critères de GO chiffrés seront définis avant de considérer le M1 officiellement supporté, afin d'éviter d'abaisser les seuils après les résultats.
+Les critères de GO chiffrés seront définis avant de considérer le M3 officiellement supporté, afin d'éviter d'abaisser les seuils après les résultats.
 
 ## 4. RAM / stockage / OS — non encore validés
 Ces valeurs restent candidates et ne sont PAS des décisions utilisateur :
@@ -55,3 +55,7 @@ Le choix macOS Apple Silicon réduit volontairement le marché adressable. En co
 
 ## 7. Packaging macOS — VALIDÉ (2026-11-25)
 À partir d'ARCH-G3, chaque version installable VST3 arm64 (test, alpha, beta, stable) inclut un ZIP versionné avec Installer.pkg et Uninstaller.pkg, README_FR, CHANGELOG et SHA256SUMS. Installation système /Library/Audio/Plug-Ins/VST3/; désinstallation ciblée préservant les données personnelles; recette sur Apple Silicon. Signature Developer ID et notarisation exigées pour distribution publique, sous réserve d'obtention des certificats (sans ceux-ci, distribution publique bloquée). Contrat complet : [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Les spikes non installables sont exclus. Aucun test packaging exécuté à ce stade.
+
+
+### Révision plateforme — décision utilisateur du 2026-11-25
+Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.

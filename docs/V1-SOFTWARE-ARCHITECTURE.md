@@ -6,7 +6,7 @@ Références normatives :
 - [V1-PLATFORM-REQUIREMENTS.md](V1-PLATFORM-REQUIREMENTS.md)
 - [V1-GENERAL-AUDIT.md](V1-GENERAL-AUDIT.md)
 
-Périmètre : VSTi VST3 macOS Apple Silicon natif, M1 minimum. Pas de standalone, pas de Windows, pas de hardware dans la phase actuelle. Aucun code n'est autorisé par ce document seul.
+Périmètre : VSTi VST3 macOS Apple Silicon natif, M3 minimum (cible non certifiée). Pas de standalone, pas de Windows, pas de hardware dans la phase actuelle. Aucun code n'est autorisé par ce document seul.
 
 ## 1. Objectif architectural
 L'architecture doit permettre :
@@ -528,7 +528,7 @@ Cette structure peut évoluer; ce qui est normatif est la séparation des respon
 - multiple instances.
 
 ### Performance
-- M1 baseline;
+- M3 physique comme référence minimale avant Beta publique; M4 Max comme machine principale de recette;
 - UI open/closed;
 - 44.1/48/88.2/96 kHz;
 - buffer ladder;
@@ -571,3 +571,7 @@ Seulement après vertical slice et tests.
 Cette architecture réduit le risque principal du projet : que l'UI, le host, les presets et les algorithmes DSP deviennent mutuellement dépendants.
 
 **Recommandation : GO pour S0.1. NO-GO pour la vertical slice tant que T1/T2 et la politique de transition topologique ne sont pas closes.**
+
+
+### Révision plateforme — décision utilisateur du 2026-11-25
+Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.

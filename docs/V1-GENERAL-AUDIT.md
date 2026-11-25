@@ -96,7 +96,7 @@ Les captures créatives peuvent grossir fortement les states de plugin avec plus
 Décision supersédante du 2026-11-24 : **aucun développement hardware n'est traité dans la phase actuelle**. Les anciennes exigences de parité matérielle ne doivent plus influencer le périmètre, les performances minimales, l'UI, le format de preset ni l'architecture de release du VSTi. Le sujet pourra être rouvert ultérieurement comme projet séparé.
 
 ### AUD-A11 — Plateforme desktop V1 resserrée
-Décision produit validée le 2026-11-24 : macOS Apple Silicon natif uniquement comme cible desktop confirmée, **M1 minimum**. Windows est exclu. Linux n'est pas engagé dans la V1 et ne doit pas augmenter la matrice de CI, de QA ou d'architecture sans décision ultérieure explicite. Intel Mac et Rosetta ne constituent pas des cibles supportées.
+Décision produit du 2026-11-24, révisée le 2026-11-25 : macOS Apple Silicon natif uniquement, **M3 minimum** (ancien minimum : M1). Windows est exclu. Linux n'est pas engagé dans la V1 et ne doit pas augmenter la matrice de CI, de QA ou d'architecture sans décision ultérieure explicite. Intel Mac et Rosetta ne constituent pas des cibles supportées.
 **Impact positif :** matrice de tests fortement réduite, possibilité d'optimiser et benchmarker sur une famille CPU cohérente, moindre dette de packaging/support. **Risque :** marché adressable plus petit; garder néanmoins une séparation saine entre DSP, host et UI afin de préserver la testabilité et la maintenabilité du VSTi.
 
 ## 5. Points solides à conserver sans réouverture
@@ -143,3 +143,7 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 
 ## 9. Prochaine mission recommandée
 **Exécuter S0.1** afin de départager B-T1 et B-T2 avec Linear FM, TZFM, Exponential FM, vraie wavetable minimale, resampling temps réel, classification sticky, sweep de transitions et benchmark M1. Vertical slice interdite avant clôture de S0.1.
+
+
+### Révision plateforme — décision utilisateur du 2026-11-25
+Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.

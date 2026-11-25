@@ -4,7 +4,7 @@ Date : 2026-11-25. Statut : **EXIGENCE PRODUIT VALIDÉE — IMPLÉMENTATION ET R
 ## 1. Périmètre
 À compter d'ARCH-G3, chaque version installable de SUBDESTRUCKT, y compris build de test, alpha, beta, release candidate et stable, est livrée avec un installateur ET un désinstallateur. Un VST3 nu ne constitue pas une livraison. Les spikes de recherche ne produisant pas de VST3 installable (S0, S0.1 notamment) sont exclus. Cette décision n'autorise pas à démarrer ARCH-G3 et ne modifie aucun contrat DSP.
 
-Cible : VST3 instrument macOS Apple Silicon arm64 natif, M1 minimum. Aucun standalone, AU, Windows, Intel/Rosetta ou hardware ajouté. La version minimale de macOS reste à déterminer et doit être annoncée pour chaque build testé.
+Cible : VST3 instrument macOS Apple Silicon arm64 natif, M3 minimum (cible non encore certifiée). Aucun standalone, AU, Windows, Intel/Rosetta ou hardware ajouté. La version minimale de macOS reste à déterminer et doit être annoncée pour chaque build testé.
 
 ## 2. Format de livraison
 Archive ZIP versionnée, par exemple SUBDESTRUCKT_v0.1.0_macOS_arm64.zip (exemple, pas une version déjà attribuée).
@@ -18,6 +18,7 @@ Contenu obligatoire :
 Identité de version unique et cohérente entre ZIP, métadonnées VST3, packages, documentation et commit source. Une reconstruction qui modifie les binaires reçoit une identité distincte ; ne pas écraser silencieusement une livraison publiée. L'empreinte du ZIP peut être publiée séparément. Identifiants de bundle VST3 et de package stables, à définir lors d'ARCH-G3; ne pas changer l'identité du plugin à chaque version. Les noms ci-dessus sont le contrat de distribution, non une prescription d'outil de build.
 
 ## 3. Installateur
+Le README et la présentation de chaque livraison indiquent M3 minimum comme périmètre cible, avec statut de validation explicite. M1/M2 sont hors support officiel, sans blocage matériel imposé. La vérification arm64 reste obligatoire; aucune restriction artificielle par génération CPU n'est demandée.
 - Installer le bundle VST3 sous /Library/Audio/Plug-Ins/VST3/ (installation système ; élévation macOS si nécessaire).
 - Précontrôler l'architecture, la compatibilité macOS déclarée, le volume cible et l'identité des ressources existantes. Demander la fermeture des DAW utilisant le plugin avant remplacement.
 - Détecter version installée et gérer installation initiale, réinstallation, mise à jour sans désinstallation préalable. Ne pas écraser un bundle d'un tiers ou un fichier non identifié.
@@ -53,3 +54,7 @@ Scripts de build/packaging versionnés et reproductibles au niveau des entrées 
 | PKG-08 | Rapport de recette avec macOS, architecture, hôte, versions et preuves; cas non applicables justifiés (première version sans prédécesseur). |
 
 Les tests restent à implémenter et à exécuter. L'outillage précis, le manifeste de fichiers, les identifiants et la stratégie de récupération seront spécifiés pendant ARCH-G3. Aucun package, tag, release ni GO de développement n'est créé par ce document. S0.1 doit encore être clôturé selon ses critères existants.
+
+
+### Révision plateforme — décision utilisateur du 2026-11-25
+Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.
