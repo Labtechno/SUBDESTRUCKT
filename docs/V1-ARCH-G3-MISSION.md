@@ -15,3 +15,7 @@ Nouvelle branche feature/arch-g3-vertical-slice depuis main actualisé. C++/JUCE
 
 ## Verdict attendu
 GO livraison interne si build, tests et packaging effectivement réussis dans leur portée; distinguer livraison candidate de validation ARCH-G3 complète. NO-GO sur défaut causal, sûreté, audio, état ou packaging; PENDING pour tests physiques non exécutés. Ne pas inventer version macOS minimale, hôtes certifiés, budget CPU final ou résultats de performance. Les seuils de performance produit restent à arbitrer séparément. 
+
+
+## Clôture ARCH-G3 — recette physique du 25 novembre 2026
+GO ARCH-G3 dans la portée de la tranche 0.1.0-b5, 15/15 PASS déclarés et acceptés par la direction technique. R-08 et R-09 complétés par confirmation explicite : 44,1/48/88,2/96 kHz et PDC à 44,1 kHz. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md). Les restrictions antérieures « avant recette » sont levées pour le prototype validé; la préparation d'ARCH-G4 par lots est ouverte, pas l'implémentation monolithique ni la diffusion publique. M3 physique, budget CPU produit, licence JUCE, signature/notarisation et dettes d'intégration restent ouverts. Aucun merge du code ni nouvelle release par cette décision.

@@ -34,7 +34,7 @@ Le contrat P0 confirme huit transformations Z visées, deux slots en série avec
 **Stratégie B validée** : retard ciblé uniquement sur les arêtes nécessaires pour casser un cycle. **Classification sticky validée** : les routes survivantes conservent leur classe Immediate/Delayed et cette classe est persistée.
 B-T2 retenu; restent ouverts la recette Thiran1, les transitions sûres et la performance physique M3.
 K≥2 permanent à 44.1 kHz; T2 sur toutes les arêtes Delayed FM/CROSS et seulement elles.
-**Gate : ARCH-G3 autorisé sous conditions du contrat causal et de sa recette.**
+**Gate : ARCH-G3 validé dans la portée testée.**
 
 ### AUD-P0-03 — Cycle de voix / Amp / Note Off — FERMÉ CONTRACTUELLEMENT
 Fermé par [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md) : Amp avant les générateurs de tails, Note Off sans reset des états DSP, Tail guidé par énergie, états autonomes armés explicitement, Drone via Gate normal, Panic avec rampe anti-click puis purge. Les seuils d'énergie et garde-fous temporels sont des valeurs d'implémentation à mesurer, pas des arbitrages produit.
@@ -129,9 +129,9 @@ Le projet est **sur-dimensionné pour une implémentation monolithique**, mais p
 ### Gate A — Fermeture documentaire ciblée — MAJORITAIREMENT FERMÉE
 AUD-P0-03/04/05/06/07 sont fermés par le Core Contract P0. AUD-P0-01 reste partiel uniquement pour les cinq transformations Z historiques manquantes. Ne pas inventer ces cinq algorithmes.
 ### Gate B — Architecture logicielle — FORMALISÉE
-[V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) formalise Core DSP indépendant du wrapper, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State, ownership RT/non-RT et télémétrie. Aucun code produit n'est encore validé.
+[V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) formalise Core DSP indépendant du wrapper, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State, ownership RT/non-RT et télémétrie. Le noyau de la vertical slice 0.1.0-b5 est validé dans sa portée; moteurs complets non validés.
 ### Gate C — Spike S0 causalité — CHOIX CLOS
-S0/S0.1 : B-T2 retenu; NO-GO historique du benchmark M1 conservé. Recette intégration et M3 physique encore requises.
+S0/S0.1 : B-T2 retenu; NO-GO historique du benchmark M1 conservé. Recette intégration de la tranche acceptée; M3 physique et expansion du moteur encore ouverts.
 ### Gate D — Spikes ciblés
 S1 Wavetable/XY/Z, S2 FM/PM, S3 ADAA/wavefolder, S4 Mod Matrix, S5 State/RNG, S6 performance cumulée, S7 prototype ergonomique.
 ### Gate E — Architecture gelée
@@ -142,7 +142,7 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-**Exécuter ARCH-G3 exclusivement**, selon la mission dédiée et les conditions du contrat causal.
+**Préparer ARCH-G4 par lots**, en commençant par le cadrage S1 Wavetable/XY/Z, sans inventer les cinq transformations Z manquantes. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md).
 
 
 ### Révision plateforme — décision utilisateur du 2026-11-25
@@ -151,3 +151,7 @@ Apple M3 de base devient la configuration matérielle minimale cible, en remplac
 
 ## Décision de clôture S0.1 — 2026-11-25
 B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. ARCH-G3 est autorisé sous conditions de recette d'intégration, sans certification de performance. Voir [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md) et [V1-ARCH-G3-MISSION.md](V1-ARCH-G3-MISSION.md). Le NO-GO historique du benchmark M1 reste inchangé; M3 physique avant Beta publique. Les formulations antérieures conditionnant le choix à S0.1 ou au M1 sont historiques et remplacées pour les travaux futurs par cette décision. Aucun GO ARCH-G4 ni release publique.
+
+
+## Clôture ARCH-G3 — recette physique du 25 novembre 2026
+GO ARCH-G3 dans la portée de la tranche 0.1.0-b5, 15/15 PASS déclarés et acceptés par la direction technique. R-08 et R-09 complétés par confirmation explicite : 44,1/48/88,2/96 kHz et PDC à 44,1 kHz. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md). Les restrictions antérieures « avant recette » sont levées pour le prototype validé; la préparation d'ARCH-G4 par lots est ouverte, pas l'implémentation monolithique ni la diffusion publique. M3 physique, budget CPU produit, licence JUCE, signature/notarisation et dettes d'intégration restent ouverts. Aucun merge du code ni nouvelle release par cette décision.
