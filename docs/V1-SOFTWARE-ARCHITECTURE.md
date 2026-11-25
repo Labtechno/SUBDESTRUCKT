@@ -174,7 +174,7 @@ Sous-systèmes :
 - Character;
 - internal bus exports.
 
-La causalité finale n'est pas définie ici. Le FmEngine doit permettre le spike S0 sans préjuger de la stratégie retenue.
+La causalité du FmEngine est régie par [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md).
 
 ### 3.7 CrossEngine
 Responsable de :
@@ -185,7 +185,7 @@ Responsable de :
 - Cross Audio Mix/Crossfade/Ring/AM;
 - Cross Reset.
 
-**Contrat causal validé : stratégie B.** Le graphe spécialisé FM/CROSS compile uniquement les arêtes nécessaires pour casser les cycles en classe Delayed; les autres restent Immediate. La classe causale d'une route est sticky et persistante : une route survivante conserve sa classe lors d'une transaction ultérieure. Les objets de configuration doivent donc sérialiser au minimum StableRouteID + CausalClass, avec validation que le sous-graphe Immediate reste acyclique.
+**Contrat causal validé : stratégie B.** Le graphe spécialisé FM/CROSS classe les nouvelles arêtes fermant un cycle instantané Delayed; les autres nouvelles arêtes restent Immediate. Les classes survivantes ne sont pas recalculées. La classe causale d'une route est sticky et persistante : une route survivante conserve sa classe lors d'une transaction ultérieure. Les objets de configuration doivent donc sérialiser au minimum StableRouteID + CausalClass, avec validation que le sous-graphe Immediate reste acyclique.
 
 ### 3.8 ProcessingChain
 Trois emplacements logiques :
@@ -537,8 +537,7 @@ Cette structure peut évoluer; ce qui est normatif est la séparation des respon
 - worst-case stress configurations.
 
 ## 13. Décisions explicitement NON prises ici
-- référence temporelle finale des arêtes retardées : T1 vs T2;
-- implémentation finale du délai fractionnaire si T2 est retenu;
+- validation d'intégration du lecteur fractionnaire Thiran1 et transitions B-T2;
 - choix PCG32 vs xoshiro;
 - modèle chaos;
 - cinq transformations Z manquantes;
@@ -557,12 +556,12 @@ Core Contracts P0 validés. **PASS documentaire.**
 ### ARCH-G1 — Architecture
 Ce document doit être accepté comme architecture cible avant code produit.
 
-### ARCH-G2 — S0 Causality — PARTIELLEMENT PASS
-Stratégie B + classification sticky validées. La référence T1/T2 reste ouverte et nécessite S0.1 avant gel complet du runtime FM/CROSS.
+### ARCH-G2 — S0 Causality — CHOIX ARCHITECTURAL CLOS
+B-T2 et sticky retenus; validation runtime et performances produit encore ouvertes. Voir [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md).
 
 ### ARCH-G3 — Vertical Slice
 MIDI mono → WT simple → 2 OP FM → CROSS → Amp → Output → preset minimal → UI diagnostic.
-La livraison ARCH-G3 inclut dès la première version installable le ZIP et les deux PKG macOS arm64 ainsi que la recette PKG-01 à PKG-08, selon [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Packaging/build/release hors DSP et hors processus audio; aucune livraison VST3 nue. Cette exigence ne débloque pas ARCH-G3.
+La livraison ARCH-G3 inclut dès la première version installable le ZIP et les deux PKG macOS arm64 ainsi que la recette PKG-01 à PKG-08, selon [V1-PACKAGING-RELEASE-CONTRACT.md](V1-PACKAGING-RELEASE-CONTRACT.md). Packaging/build/release hors DSP et hors processus audio; aucune livraison VST3 nue. ARCH-G3 est autorisé par la décision distincte de clôture causale, avec recette obligatoire.
 
 ### ARCH-G4 — Expansion P0
 Seulement après vertical slice et tests.
@@ -570,8 +569,12 @@ Seulement après vertical slice et tests.
 ## 15. Verdict
 Cette architecture réduit le risque principal du projet : que l'UI, le host, les presets et les algorithmes DSP deviennent mutuellement dépendants.
 
-**Recommandation : GO pour S0.1. NO-GO pour la vertical slice tant que T1/T2 et la politique de transition topologique ne sont pas closes.**
+**GO conditionnel pour ARCH-G3 exclusivement. NO-GO ARCH-G4 avant recette de la vertical slice.**
 
 
 ### Révision plateforme — décision utilisateur du 2026-11-25
 Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.
+
+
+## Décision de clôture S0.1 — 2026-11-25
+B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. ARCH-G3 est autorisé sous conditions de recette d'intégration, sans certification de performance. Voir [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md) et [V1-ARCH-G3-MISSION.md](V1-ARCH-G3-MISSION.md). Le NO-GO historique du benchmark M1 reste inchangé; M3 physique avant Beta publique. Les formulations antérieures conditionnant le choix à S0.1 ou au M1 sont historiques et remplacées pour les travaux futurs par cette décision. Aucun GO ARCH-G4 ni release publique.

@@ -2,7 +2,7 @@
 Date : 2026-11-24. Statut : **VALIDÉ**. Aucun code.
 Décision utilisateur : validation intégrale du QCM P0 selon la recommandation **1B 2B 3B 4B 5B 6B 7B 8A 9B 10B 11B 12B 13B 14B 15B 16B 17B 18B 19B 20B 21B 22B 23B 24B 25B 26B 27B 28B 29B 30B**.
 
-Ce contrat ferme les règles fondamentales qui peuvent être décidées sur papier avant l'architecture C++ détaillée. La causalité FM/CROSS n'est PAS fermée ici : elle reste réservée au spike S0.
+Ce contrat ferme les règles fondamentales qui peuvent être décidées sur papier avant l'architecture C++ détaillée. La causalité FM/CROSS est régie séparément par [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md).
 
 ## 1. Voice / Amp / Note–Tail–Drone
 - **P0-C01 Amp placement — B.** L'enveloppe Amp agit sur le signal de synthèse avant les traitements capables de générer des tails, afin que leurs queues puissent continuer après Note Off.
@@ -54,7 +54,7 @@ Ce contrat ferme les règles fondamentales qui peuvent être décidées sur papi
 5. Les protections numériques obligatoires doivent rester distinctes des traitements musicaux.
 6. Le Parameter Registry devient une dépendance architecturale centrale, à créer avant l'implémentation définitive des moteurs.
 7. Les transformations Z inconnues ne peuvent pas être implémentées par extrapolation.
-8. La causalité FM/CROSS reste un résultat expérimental de S0 et ne doit pas être figée ici.
+8. La causalité FM/CROSS relève du contrat causal distinct.
 
 ## 8. Statut des anciens blocages d'audit
 - AUD-P0-03 Voice/Amp/Note Off : **FERMÉ par ce contrat**.
@@ -63,6 +63,10 @@ Ce contrat ferme les règles fondamentales qui peuvent être décidées sur papi
 - AUD-P0-06 Protection/headroom : **FERMÉ au niveau contractuel**; seuils exacts et tests restent à mesurer.
 - AUD-P0-07 Parameter Registry : **FERMÉ au niveau schéma contractuel**; registre concret à produire dans l'architecture.
 - AUD-P0-01 Axe Z : **PARTIELLEMENT FERMÉ**; politique de non-invention et composition verrouillées, cinq transformations historiques toujours manquantes.
-- AUD-P0-02 Causalité FM/CROSS : **OUVERT — S0 obligatoire**.
+- AUD-P0-02 Causalité FM/CROSS : **CHOIX CLOS B-T2 — recette intégration ouverte**.
 
 Aucune validation de ce document n'autorise à déclarer les DSP PASS. Les décisions sont des contrats de conception, pas des résultats de tests.
+
+
+## Décision de clôture S0.1 — 2026-11-25
+B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. ARCH-G3 est autorisé sous conditions de recette d'intégration, sans certification de performance. Voir [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md) et [V1-ARCH-G3-MISSION.md](V1-ARCH-G3-MISSION.md). Le NO-GO historique du benchmark M1 reste inchangé; M3 physique avant Beta publique. Les formulations antérieures conditionnant le choix à S0.1 ou au M1 sont historiques et remplacées pour les travaux futurs par cette décision. Aucun GO ARCH-G4 ni release publique.

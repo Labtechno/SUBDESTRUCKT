@@ -13,8 +13,8 @@ La V1 est cohérente artistiquement et techniquement plausible, mais très ambit
 |---|---|---|
 | Vision / identité sonore | VERT | Cohérente et différenciante |
 | Wavetable XYZ | ORANGE | Architecture claire, catalogue Z incomplet |
-| FM/PM | ORANGE | Contrat riche, causalité non sélectionnée |
-| Cross Engine | ORANGE | Identité forte, dépend du spike causal S0 |
+| FM/PM | ORANGE | Contrat riche, B-T2 retenu; intégration à valider |
+| Cross Engine | ORANGE | Identité forte, B-T2 retenu; intégration à valider |
 | Filtres / Destruction | VERT-ORANGE | Catalogues cohérents, algorithmes candidats non prouvés |
 | Global Modulation | VERT-ORANGE | Contrat solide, budget audio-rate non mesuré |
 | Preset / State | VERT | Modèle logique cohérent; format physique et budgets ouverts |
@@ -30,11 +30,11 @@ Le contrat P0 confirme huit transformations Z visées, deux slots en série avec
 À fermer : noms exacts, domaine d'entrée/sortie, neutralité à zéro, paramètres, préservation fondamentale, compensation de gain, compatibilité audio-rate, comportement DC/Nyquist, ordre de composition et coûts/caches.
 **Gate :** aucune implémentation définitive du WT Engine avant réconciliation du catalogue d'origine.
 
-### AUD-P0-02 — Causalité FM/Cross — PARTIELLEMENT FERMÉ
+### AUD-P0-02 — Causalité FM/Cross — CHOIX CLOS / RECETTE OUVERTE
 **Stratégie B validée** : retard ciblé uniquement sur les arêtes nécessaires pour casser un cycle. **Classification sticky validée** : les routes survivantes conservent leur classe Immediate/Delayed et cette classe est persistée.
-Reste ouvert : référence temporelle T1 vs T2, implémentation du délai fractionnaire, politique finale de transition topologique et benchmark M1.
-Si T2 est retenu : K≥2 obligatoire à 44.1 kHz dans le réseau récursif; T2 s'applique à toutes les arêtes causalement retardées FM/CROSS et seulement elles.
-**Gate : S0.1 obligatoire avant vertical slice.**
+B-T2 retenu; restent ouverts la recette Thiran1, les transitions sûres et la performance physique M3.
+K≥2 permanent à 44.1 kHz; T2 sur toutes les arêtes Delayed FM/CROSS et seulement elles.
+**Gate : ARCH-G3 autorisé sous conditions du contrat causal et de sa recette.**
 
 ### AUD-P0-03 — Cycle de voix / Amp / Note Off — FERMÉ CONTRACTUELLEMENT
 Fermé par [V1-CORE-CONTRACTS-P0.md](V1-CORE-CONTRACTS-P0.md) : Amp avant les générateurs de tails, Note Off sans reset des états DSP, Tail guidé par énergie, états autonomes armés explicitement, Drone via Gate normal, Panic avec rampe anti-click puis purge. Les seuils d'énergie et garde-fous temporels sont des valeurs d'implémentation à mesurer, pas des arbitrages produit.
@@ -130,8 +130,8 @@ Le projet est **sur-dimensionné pour une implémentation monolithique**, mais p
 AUD-P0-03/04/05/06/07 sont fermés par le Core Contract P0. AUD-P0-01 reste partiel uniquement pour les cinq transformations Z historiques manquantes. Ne pas inventer ces cinq algorithmes.
 ### Gate B — Architecture logicielle — FORMALISÉE
 [V1-SOFTWARE-ARCHITECTURE.md](V1-SOFTWARE-ARCHITECTURE.md) formalise Core DSP indépendant du wrapper, Voice/Engine state, Parameter Registry, Event Timeline, Modulation Graph, Asset/State, ownership RT/non-RT et télémétrie. Aucun code produit n'est encore validé.
-### Gate C — Spike S0 causalité — PARTIELLEMENT PASS
-S0 valide la stratégie B. La référence T1/T2 reste ouverte. La mission S0.1 doit étendre les tests aux modes FM supplémentaires, vrai wavetable minimal, resampling temps réel, transitions sticky et benchmark M1.
+### Gate C — Spike S0 causalité — CHOIX CLOS
+S0/S0.1 : B-T2 retenu; NO-GO historique du benchmark M1 conservé. Recette intégration et M3 physique encore requises.
 ### Gate D — Spikes ciblés
 S1 Wavetable/XY/Z, S2 FM/PM, S3 ADAA/wavefolder, S4 Mod Matrix, S5 State/RNG, S6 performance cumulée, S7 prototype ergonomique.
 ### Gate E — Architecture gelée
@@ -142,8 +142,12 @@ Seulement après mesures : contrats finaux, budgets CPU/RAM/latence et plan de d
 - **NO-GO :** développement intégral de SUBDESTRUCKT, UI graphique finale, optimisation prématurée .
 
 ## 9. Prochaine mission recommandée
-**Exécuter S0.1** afin de départager B-T1 et B-T2 avec Linear FM, TZFM, Exponential FM, vraie wavetable minimale, resampling temps réel, classification sticky, sweep de transitions et benchmark M1. Vertical slice interdite avant clôture de S0.1.
+**Exécuter ARCH-G3 exclusivement**, selon la mission dédiée et les conditions du contrat causal.
 
 
 ### Révision plateforme — décision utilisateur du 2026-11-25
 Apple M3 de base devient la configuration matérielle minimale cible, en remplacement du M1. M1 et M2 (y compris leurs variantes) sortent du support officiel, sans obligation de blocage logiciel. M4 et générations ultérieures constituent la classe recommandée, sous réserve de recette; le Mac Studio M4 Max de l'utilisateur est la machine principale de développement et de recette physique. La validation sur M3 physique en hôte VST3 est obligatoire avant Beta publique. Aucun résultat de performance M3 n'est encore disponible. Le benchmark M1 virtualisé S0.1 (run 45591261853, rapport sur la branche expérimentale au commit a85f1947e48b1fd8d5d11a9f27df09b78437e5af) et son verdict NO-GO selon les seuils historiques restent inchangés. Ils ne certifient ni M1 ni M3. Cette révision ne gèle pas T2, ne change pas les seuils historiques, ne clôt pas les autres conditions de causalité et n'autorise pas à elle seule ARCH-G3.
+
+
+## Décision de clôture S0.1 — 2026-11-25
+B-T2 est retenu comme contrat produit, avec minimum permanent K=2 à 44,1 kHz. ARCH-G3 est autorisé sous conditions de recette d'intégration, sans certification de performance. Voir [V1-CAUSAL-CONTRACT.md](V1-CAUSAL-CONTRACT.md) et [V1-ARCH-G3-MISSION.md](V1-ARCH-G3-MISSION.md). Le NO-GO historique du benchmark M1 reste inchangé; M3 physique avant Beta publique. Les formulations antérieures conditionnant le choix à S0.1 ou au M1 sont historiques et remplacées pour les travaux futurs par cette décision. Aucun GO ARCH-G4 ni release publique.
