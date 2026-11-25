@@ -1,0 +1,114 @@
+# SUBDESTRUCKT — S0.1 — benchmark T1/T2 sur Apple Silicon (runner GitHub standard macos-15, arm64, Apple M1 virtualisé).
+# Protocole et seuils fixés avant mesure : spikes/s01/bench/THRESHOLDS.md.
+# Runner standard gratuit pour un dépôt public. Aucune certification temps réel : machine virtuelle.
+name: S0.1 bench Apple Silicon (macos-15 arm64)
+
+on:
+  push:
+    branches: [spike/s0.1-causality-validation]
+    paths:
+      - .github/workflows/s01-bench-m1.yml
+      - spikes/s01/bench/**
+      - spikes/s01/include/**
+      - spikes/s01/scripts/bench_report.py
+      - spikes/s01/Makefile
+  workflow_dispatch:
+
+permissions:
+  contents: write   # publication des résultats bruts sur la branche expérimentale
+
+concurrency:
+  group: s01-bench-m1
+  cancel-in-progress: false
+
+jobs:
+  bench:
+    runs-on: macos-15
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Caractéristiques de la machine (arm64 obligatoire)
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          s() { sysctl -n "$1" 2>/dev/null || echo "n/a"; }
+          {
+            echo "date_utc            : $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "run                 : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID (tentative $GITHUB_RUN_ATTEMPT)"
+            echo "commit              : $GITHUB_SHA"
+            echo "runner              : $RUNNER_NAME, image ${ImageOS:-?} ${ImageVersion:-?}, label macos-15"
+            echo "uname -m            : $(uname -m)"
+            echo "uname -a            : $(uname -a)"
+            echo "macOS               : $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
+            echo "cpu                 : $(s machdep.cpu.brand_string)"
+            echo "hw.ncpu             : $(s hw.ncpu)"
+            echo "hw.physicalcpu      : $(s hw.physicalcpu)"
+            echo "hw.perflevel0 (P)   : $(s hw.perflevel0.physicalcpu) cœurs, $(s hw.perflevel0.name)"
+            echo "hw.perflevel1 (E)   : $(s hw.perflevel1.physicalcpu) cœurs, $(s hw.perflevel1.name)"
+            echo "hw.memsize          : $(( $(s hw.memsize) / 1048576 )) Mio"
+            echo "hw.optional.arm64   : $(s hw.optional.arm64)"
+            echo "kern.hv_vmm_present : $(s kern.hv_vmm_present)  (1 = machine virtuelle)"
+            echo "hw.model            : $(s hw.model)"
+            echo "translated (Rosetta): $(s sysctl.proc_translated)"
+            echo "compilateur         : $(clang++ --version | head -1)"
+            echo "cible clang         : $(clang++ -dumpmachine)"
+            echo "python              : $(python3 --version)"
+          } | tee out/machine.txt
+          test "$(uname -m)" = "arm64"
+          test "$(s sysctl.proc_translated)" != "1"
+
+      - name: Compilation Release ARM64 native (Apple Clang, -O3 -mcpu=apple-m1)
+        working-directory: spikes/s01
+        run: |
+          set -euo pipefail
+          make release-arm64 2>&1 | tee ../../out/build.log
+          for b in build/s01_tests build/s01_bench_matrix; do
+            echo "$b : $(lipo -archs "$b") — $(file -b "$b")" | tee -a ../../out/machine.txt
+          done
+          test "$(lipo -archs build/s01_bench_matrix)" = "arm64"
+
+      - name: Tests de non-régression
+        working-directory: spikes/s01
+        run: |
+          set -euo pipefail
+          ./build/s01_tests 2>&1 | tee ../../out/tests.log
+          tail -1 ../../out/tests.log | tee -a ../../out/machine.txt
+
+      - name: Benchmark matriciel T1/T2 (7 répétitions x 1 s, chauffe 3 s)
+        working-directory: spikes/s01
+        run: |
+          set -euo pipefail
+          /usr/bin/time -l ./build/s01_bench_matrix ../../out 7 1.0 3 2>&1 | tee ../../out/bench.log
+
+      - name: Rapport et seuils
+        working-directory: spikes/s01
+        run: |
+          set -euo pipefail
+          python3 -I scripts/bench_report.py ../../out "Apple M1 virtualisé — runner GitHub macos-15 arm64"
+          cat ../../out/bench_report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: s01-bench-macos15-arm64-${{ github.run_id }}
+          path: out/
+
+      - name: Publication des résultats bruts sur la branche
+        run: |
+          set -euo pipefail
+          dest="spikes/s01/data/m1_gha/run-${GITHUB_RUN_ID}"
+          mkdir -p "$dest"
+          cp out/* "$dest/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          git commit -m "bench(S0.1): résultats macos-15 arm64, run ${GITHUB_RUN_ID}" -m "Source : ${GITHUB_SHA}. $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          for i in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep 5
+          done
+          exit 1
