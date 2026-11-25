@@ -2,6 +2,7 @@
 # SUBDESTRUCKT — assemblage de la livraison : README_FR.txt, CHANGELOG.txt, SHA256SUMS.txt, ZIP versionné.
 # Usage : make_delivery.sh <dossier_paquets> <dossier_livraison> <version> <build> <commit> <macos_min> <resultats.txt> <url_run> <macos_vm>
 set -euo pipefail
+trap 'echo "ECHEC $(basename "$0") ligne $LINENO : $BASH_COMMAND" >&2' ERR
 PK="$1"; DL="$2"; VERSION="$3"; BUILD="$4"; COMMIT="$5"; MIN_MACOS="$6"; RESULTS="$7"; RUN_URL="$8"; VM_OS="$9"
 BUILD_ID="$VERSION-b$BUILD"
 NAME="SUBDESTRUCKT_v${BUILD_ID}_macOS_arm64"

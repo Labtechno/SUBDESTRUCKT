@@ -173,6 +173,11 @@ jobs:
               echo "::warning title=extrait $(basename "$f")::$tailtxt"
             fi
           done
+          for f in out/packaging.log out/delivery.log; do
+            [ -f "$f" ] || continue
+            tailtxt="$(tail -25 "$f" | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+            echo "::notice title=fin de $(basename "$f")::$tailtxt"
+          done
 
       - name: Résumé
         if: always()
@@ -249,7 +254,7 @@ jobs:
         run: |
           set +e
           LLVM="$(brew --prefix llvm)"
-          "$LLVM/bin/clang++" -std=c++17 -O1 -fsanitize=realtime -DSBD_RTSAN -Isource tests/rtsan/negative_control.cpp             -L"$LLVM/lib/c++" -Wl,-rpath,"$LLVM/lib/c++" -o out/rtsan_negative 2>&1 | tail -5
+          "$LLVM/bin/clang++" -std=c++17 -O0 -fsanitize=realtime -DSBD_RTSAN -Isource tests/rtsan/negative_control.cpp             -L"$LLVM/lib/c++" -Wl,-rpath,"$LLVM/lib/c++" -o out/rtsan_negative 2>&1 | tail -5
           ./out/rtsan_negative > out/rtsan_negative.log 2>&1; r=$?
           head -20 out/rtsan_negative.log
           if [ $r != 0 ] && grep -q "RealtimeSanitizer" out/rtsan_negative.log; then
@@ -261,8 +266,10 @@ jobs:
       - name: Annotations RTSan
         if: always()
         run: |
-          lines="$(grep -h "^RESULT " out/rtsan_tests.log 2>/dev/null | awk 'BEGIN{ORS="%0A"} {print}')"
-          [ -n "$lines" ] && echo "::notice title=rtsan::$lines" || true
+          lines="$(grep -h "^RESULT G-18" out/rtsan_tests.log 2>/dev/null | awk 'BEGIN{ORS="%0A"} {print}')"
+          [ -n "$lines" ] && echo "::notice title=rtsan G-18::$lines" || true
+          neg="$(head -12 out/rtsan_negative.log 2>/dev/null | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+          [ -n "$neg" ] && echo "::notice title=rtsan controle negatif (sortie)::$neg" || true
       - name: Artefact
         if: always()
         uses: actions/upload-artifact@v4

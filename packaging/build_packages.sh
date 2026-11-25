@@ -5,6 +5,7 @@
 # livré, signé ad hoc), scripts/installer et scripts/uninstaller (scripts finaux, pour les tests en bac à sable).
 # Aucun certificat : bundle signé ad hoc, paquets non signés, aucune notarisation (build interne).
 set -euo pipefail
+trap 'echo "ECHEC $(basename "$0") ligne $LINENO : $BASH_COMMAND" >&2' ERR
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SRC_BUNDLE="$1"; OUT="$2"; VERSION="$3"; BUILD="$4"; COMMIT="$5"; MIN_MACOS="$6"
 BUILD_ID="$VERSION-b$BUILD"
@@ -25,6 +26,9 @@ ROOT="$WORK/root"
 B="$ROOT/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3"
 mkdir -p "$(dirname "$B")"
 ditto "$SRC_BUNDLE" "$B"
+echo "== etape 1 : bundle livre"
+ls -la "$B/Contents" || true
+mkdir -p "$B/Contents/Resources"
 cp "$HERE/THIRD_PARTY_NOTICES.txt" "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt"
 expect() {  # expect <clé> <valeur attendue>
   local got
@@ -43,6 +47,7 @@ codesign --verify --strict --verbose=2 "$B"
 rm -rf "$OUT/signed" && mkdir -p "$OUT/signed" && ditto "$B" "$OUT/signed/SUBDESTRUCKT.vst3"
 
 # ---- 2. scripts finaux (champs remplacés)
+echo "== etape 2 : scripts"
 for kind in installer uninstaller; do
   d="$OUT/scripts/$kind"
   rm -rf "$d" && mkdir -p "$d"
@@ -52,7 +57,9 @@ for kind in installer uninstaller; do
 done
 
 # ---- 3. paquets composants
+echo "== etape 3 : paquets composants"
 pkgbuild --analyze --root "$ROOT" "$WORK/component.plist"
+plutil -p "$WORK/component.plist"
 /usr/libexec/PlistBuddy -c "Set :0:BundleIsRelocatable false" "$WORK/component.plist"   # jamais relocalisé ailleurs
 /usr/libexec/PlistBuddy -c "Set :0:BundleIsVersionChecked false" "$WORK/component.plist" # le retour arrière est averti par la Distribution
 /usr/libexec/PlistBuddy -c "Set :0:BundleOverwriteAction upgrade" "$WORK/component.plist"
@@ -65,6 +72,7 @@ pkgbuild --nopayload --identifier com.labtechno.subdestruckt.uninstaller --versi
   --scripts "$OUT/scripts/uninstaller" "$WORK/pkgs/subdestruckt-uninstall-component.pkg"
 
 # ---- 4. paquets produits (Distribution + textes français)
+echo "== etape 4 : paquets produits"
 mkdir -p "$WORK/resources"
 for f in "$HERE/resources"/*.html; do subst "$f" "$WORK/resources/$(basename "$f")"; done
 subst "$HERE/distribution/installer.xml.in" "$WORK/installer.xml"
@@ -75,6 +83,7 @@ productbuild --distribution "$WORK/uninstaller.xml" --package-path "$WORK/pkgs" 
   "$OUT/SUBDESTRUCKT_Uninstaller.pkg"
 
 # ---- 5. contrôles des paquets produits
+echo "== etape 5 : controles"
 pkgutil --payload-files "$OUT/SUBDESTRUCKT_Installer.pkg" > "$OUT/installer_payload.txt"
 grep -q "Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3/Contents/MacOS/SUBDESTRUCKT" "$OUT/installer_payload.txt"
 if pkgutil --payload-files "$OUT/SUBDESTRUCKT_Uninstaller.pkg" 2>/dev/null | grep -q "SUBDESTRUCKT.vst3"; then
