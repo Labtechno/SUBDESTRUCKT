@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G3
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,7 +22,8 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate de la vertical slice ARCH-G3. Ce n'est NI une beta NI une version publique.
+STATUT : livraison interne candidate du developpement integre ARCH-G4 (P0/P1). Ce n'est NI une beta NI une version
+publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
 ---------------------------
@@ -30,7 +31,7 @@ STATUT : livraison interne candidate de la vertical slice ARCH-G3. Ce n'est NI u
 - Hotes utilises : hote VST3 de test sans interface (hebergement VST3 de JUCE 9.0.6) et pluginval 1.0.4.
 - AUCUNE DAW n'a ete testee. Aucun test sur Mac physique (M4 Max, M3) n'a encore ete realise : recette utilisateur
   en attente (installation, decouverte dans la DAW, son, MIDI, CROSS, rechargement de projet, desinstallation).
-- Resultats automatiques de cette build : ${n_pass} criteres PASS, ${n_fail} ECHEC (detail : docs/V1-ARCH-G3-REPORT.md
+- Resultats automatiques de cette build : ${n_pass} criteres PASS, ${n_fail} ECHEC (detail : docs/V1-ARCH-G4-REPORT.md
   et journal du run CI).
 - Cible materielle : Apple M3 minimum (non encore certifiee). M1/M2 hors support officiel, sans blocage.
 - macOS ${MIN_MACOS} minimum DECLARE (valeur de compilation, non validee ; seul macOS de la VM CI a ete teste).
@@ -63,22 +64,32 @@ plugin. Journal : /var/log/install.log (lignes « SUBDESTRUCKT[ »).
 
 5. Donnees conservees
 ---------------------
-Aucune donnee personnelle n'est creee par cette build. Les etats du plugin sont enregistres dans vos projets DAW.
+Les etats du plugin sont enregistres dans vos projets DAW. Donnees personnelles creees par le plugin (jamais
+supprimees par le desinstallateur) : presets utilisateur et bibliotheque (~/Library/Application Support/Labtechno/
+SUBDESTRUCKT/Presets) et correspondances MIDI Learn (~/Library/Application Support/Labtechno/SUBDESTRUCKT/midi_learn.txt).
 L'installateur et le desinstallateur ne touchent ni aux projets, ni aux presets, ni aux preferences, ni aux autres
 plugins. Seul /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manifest.txt est cree par l'installation
 (et retire par la desinstallation).
 
-6. Contenu de la tranche et limitations connues
------------------------------------------------
-Contenu : MIDI monophonique (priorite derniere note), un oscillateur wavetable minimal (dent de scie limitee en bande),
-deux operateurs FM en modulation de phase, CROSS bidirectionnel avec contrat causal B-T2 (retard 1/48000 s sur les
-routes Delayed, Thiran1 si fractionnaire), oversampling 2x permanent a 44,1 kHz, ampli ADSR stereo, preset initial,
-UI de diagnostic (non definitive).
-Limitations : pas de pitch bend, d'aftertouch ni de CC hors 120/123 ; pas de LinFM/TZFM/ExpFM, de filtres, de
-destruction, d'axe Z, de matrice globale ni de banques ; topologie modifiable uniquement depuis l'UI de diagnostic
-(pas d'undo/redo) ; aucune promesse d'absence de clic lors des changements de topologie ; aucune performance CPU
-mesuree ni certifiee sur M3/M4 ; latence declaree 32 echantillons a 44,1 kHz (0 ailleurs).
-Le wrapper VST3 de JUCE prend son verrou interne de rappel audio autour du traitement (comportement de JUCE).
+6. Contenu de la build et limitations connues
+---------------------------------------------
+Contenu (fonctions implementees et testees automatiquement ; recette utilisateur sur Mac a venir) :
+- Voix mono Mono/Legato, priorites derniere/basse/haute, sustain, pitch bend Up/Down, pression, CC1/2/11/64,
+  accordage A4 et microtuning 12 classes, Drone (desarme par defaut, restauration sur autorisation), Panic.
+- 5 enveloppes DAHDSR lineaires/exponentielles (Loop), 4 LFO (8 formes, tempo, phase), aleatoires, chaos (Lorenz).
+- Wavetable XYZ : banques 64x16 (7 banques usine + import WAV), Clamp/Wrap/Mirror, Linear/Stepped, Clean/Raw,
+  Linear/Cubic, phases, sync dure/douce, Character, Z deux emplacements (Harmonic Fold, Phase Warp, Spectral Mutation).
+- FM 4 operateurs PM/LinFM/TZFM/ExpFM, 9 formes, ratio/fixe/offset, matrice 4x4, 10 topologies, AC/DC, mute/disable.
+- CROSS : 55 routes avec contrat causal B-T2 sticky, bus FM, directions, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset.
+- Filter & Resonator F1-F4 (3 emplacements) et Destruction N1/D1/Y1/S1/N2/D2/Y2/S2 (6 emplacements), Pre/Post.
+- Matrice globale 64 connexions (Via, courbes, audio-rate 16, macros M1-M4), Randomize/Mutate/Evolve, Undo/Redo,
+  presets usine/utilisateur, Quality Eco/Normal/High, limiteur musical optionnel, UI Performance/Sound Design/Engineering.
+Limitations : 5 transformations Z historiques non implementees (catalogue non retrouve) ; morph spectral non
+implemente ; enveloppes non synchronisables au tempo (regles non arbitrees) ; balance WT/FM de facade non exposee
+(semantique non arbitree) ; editeur graphique de formes absent ; repliement eleve de N1 en repli extreme (utiliser
+Quality High) ; la garde numerique +30 dBFS peut s'engager avec des gains cumules extremes ; aucune promesse
+d'absence de clic lors des changements structurels ; performances non certifiees sur M3/M4 ; graphisme provisoire.
+La latence declaree depend de la configuration (decimation ; + taille FFT si S2 est actif).
 
 7. Signature et notarisation
 ----------------------------
@@ -97,22 +108,22 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — premiere livraison installable (vertical slice ARCH-G3, build interne)
-------------------------------------------------------------------------------------------------------
+${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4 (build interne, non diffusee)
+-----------------------------------------------------------------------------------------
 Ajouts
-- Plugin instrument VST3 arm64 natif : MIDI mono, WT minimal, 2 operateurs FM (PM), CROSS bidirectionnel B-T2,
-  ampli ADSR stereo, preset initial, UI de diagnostic.
-- Graphe FM/CROSS avec classification causale sticky et persistante (routes Immediate/Delayed, StableRouteID).
-- Etat versionne (format 1) : valeurs Base par StableID, topologie (identifiants, classes) ; validation complete au
-  chargement, refus des etats invalides ou d'une version future.
-- Installateur et desinstallateur .pkg (installation systeme, desinstallation ciblee, donnees conservees).
+- Moteurs complets P0/P1 (voir README_FR.txt section 6) : WT XYZ, FM 4 operateurs, CROSS 55 routes B-T2,
+  filtres F1-F4, destruction N1..S2, matrice globale 64, macros, Randomize/Mutate/Evolve, Undo/Redo, presets, Quality.
+- 684 parametres hote (les 22 parametres de 0.1.0-b5 conservent leur identite et leur correspondance).
+- UI fonctionnelle Performance / Sound Design / Engineering, Destination Inspector, moniteurs reels.
 Regressions connues
-- Aucune (premiere version).
+- Aucune sur le perimetre 0.1.0-b5 : rendu bit a bit identique a l'oracle 0.1.0-b5 (test REG-01).
 Compatibilite des etats et presets
-- Format d'etat 1. Premiere version : aucun etat anterieur a migrer.
-- Un etat ecrit par une version future (format > 1) est refuse explicitement par cette version.
+- Format d'etat 2. Les etats 0.1.0-b5 (format 1) sont migres explicitement (rendu identique).
+- Un etat ecrit par cette version (format 2) est REFUSE par 0.1.0-b5 (aucune lecture partielle).
 Retour arriere
-- Sans objet (aucune version anterieure livree).
+- Revenir a 0.1.0-b5 rend illisibles les projets enregistres avec cette version : conservez une copie.
+
+${BUILD_ID%%-*}-b5 — premiere livraison installable (vertical slice ARCH-G3, build interne)
 EOF
 
 (cd "$STAGE" && shasum -a 256 SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt > SHA256SUMS.txt)
