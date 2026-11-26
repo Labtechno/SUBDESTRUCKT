@@ -1,4 +1,5 @@
 #include "StateCodec.h"
+#include "WtAssets.h"
 
 #include <algorithm>
 #include <cmath>
@@ -141,6 +142,43 @@ bool curveValid(const CurvePoints& c) {
   return true;
 }
 
+const char* kB64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+std::string base64(const std::uint8_t* d, std::size_t n) {
+  std::string o;
+  o.reserve((n + 2) / 3 * 4);
+  for (std::size_t i = 0; i < n; i += 3) {
+    const std::uint32_t v = (std::uint32_t(d[i]) << 16) | (i + 1 < n ? std::uint32_t(d[i + 1]) << 8 : 0) | (i + 2 < n ? d[i + 2] : 0);
+    o += kB64[(v >> 18) & 63];
+    o += kB64[(v >> 12) & 63];
+    o += i + 1 < n ? kB64[(v >> 6) & 63] : '=';
+    o += i + 2 < n ? kB64[v & 63] : '=';
+  }
+  return o;
+}
+bool unbase64(const std::string& s, std::vector<std::uint8_t>& out) {
+  if (s.size() % 4) return false;
+  out.clear();
+  out.reserve(s.size() / 4 * 3);
+  auto val = [](char c) -> int {
+    if (c >= 'A' && c <= 'Z') return c - 'A';
+    if (c >= 'a' && c <= 'z') return c - 'a' + 26;
+    if (c >= '0' && c <= '9') return c - '0' + 52;
+    if (c == '+') return 62;
+    if (c == '/') return 63;
+    return -1;
+  };
+  for (std::size_t i = 0; i < s.size(); i += 4) {
+    int v[4];
+    for (int k = 0; k < 4; ++k) v[k] = s[i + k] == '=' ? 0 : val(s[i + k]);
+    if (v[0] < 0 || v[1] < 0 || v[2] < 0 || v[3] < 0) return false;
+    const std::uint32_t x = (std::uint32_t(v[0]) << 18) | (std::uint32_t(v[1]) << 12) | (std::uint32_t(v[2]) << 6) | std::uint32_t(v[3]);
+    out.push_back(static_cast<std::uint8_t>(x >> 16));
+    if (s[i + 2] != '=') out.push_back(static_cast<std::uint8_t>(x >> 8));
+    if (s[i + 3] != '=') out.push_back(static_cast<std::uint8_t>(x));
+  }
+  return true;
+}
+
 }  // namespace
 
 const char* qualityName(Quality q) noexcept {
@@ -190,6 +228,22 @@ bool validateState(const PluginState& s, std::string& error) {
     error = "identifiant de banque invalide";
     return false;
   }
+  if (!s.bankRaw.empty()) {
+    if (s.bankNx < 1 || s.bankNx > 64 || s.bankNy < 1 || s.bankNy > 16 ||
+        s.bankRaw.size() != static_cast<size_t>(s.bankNx) * s.bankNy * 2048 || s.bankName.size() > 64) {
+      error = "banque integree : dimensions invalides";
+      return false;
+    }
+    for (float v : s.bankRaw)
+      if (!std::isfinite(v) || std::fabs(v) > 1e6f) {
+        error = "banque integree : echantillon invalide";
+        return false;
+      }
+    if (userBankId(s.bankNx, s.bankNy, s.bankRaw) != s.bank) {
+      error = "banque integree : integrite (SHA-256) non verifiee";
+      return false;
+    }
+  }
   if (!validateModMatrix(s.mod, error)) return false;
   for (const auto& c : s.lfoCurves)
     if (!curveValid(c)) {
@@ -224,6 +278,9 @@ std::string encodeState(const PluginState& state, const std::string& writer, Sta
     o += "route " + std::to_string(x.id) + " " + nodeName(x.src) + " " + portName(x.dst) + " " +
          std::string(1, classLetter(x.cls)) + "\n";
   o += "bank " + state.bank + "\n";
+  if (!state.bankRaw.empty())
+    o += "bankdata " + std::to_string(state.bankNx) + " " + std::to_string(state.bankNy) + " " + bytesHex(state.bankName) + " " +
+         base64(reinterpret_cast<const std::uint8_t*>(state.bankRaw.data()), state.bankRaw.size() * sizeof(float)) + "\n";
   o += "modnext " + std::to_string(state.mod.nextId) + "\n";
   for (const auto& m : state.mod.routes) {
     o += "mod " + std::to_string(m.id) + " " + modSourceName(m.source) + " " +
@@ -344,6 +401,16 @@ bool decodeState(const std::string& text, PluginState& out, std::string& error) 
     } else if (k == "bank" && !v1) {
       if (w.size() != 2 || !validAssetId(w[1])) return fail("ligne bank invalide");
       s.bank = w[1];
+    } else if (k == "bankdata" && !v1) {
+      std::uint32_t nx = 0, ny = 0;
+      std::vector<std::uint8_t> bytes;
+      if (w.size() != 5 || !parseUnsigned(w[1], nx) || !parseUnsigned(w[2], ny) || !hexBytes(w[3], s.bankName) || !unbase64(w[4], bytes) ||
+          bytes.size() % 4 || nx < 1 || nx > 64 || ny < 1 || ny > 16 || bytes.size() / 4 != static_cast<size_t>(nx) * ny * 2048)
+        return fail("ligne bankdata invalide");
+      s.bankNx = static_cast<int>(nx);
+      s.bankNy = static_cast<int>(ny);
+      s.bankRaw.resize(bytes.size() / 4);
+      std::memcpy(s.bankRaw.data(), bytes.data(), bytes.size());
     } else if (k == "modnext" && !v1) {
       std::uint32_t n = 0;
       if (haveModNext || w.size() != 2 || !parseUnsigned(w[1], n) || n == 0) return fail("ligne modnext invalide");

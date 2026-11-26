@@ -8,6 +8,7 @@
 //   topology next=<n>
 //   route <id> <src> <port> <I|D>                     (triées par identifiant)
 //   bank <assetId>                                    (banque WT référencée)
+//   bankdata <nx> <ny> <nom hex> <float32 LE base64>  (banque utilisateur intégrée ; intégrité : id = SHA-256)
 //   modnext <n>
 //   mod <id> <source> <destStableID> <depthHex> <curve> <C|F> <inv> <offsetHex> <via> <viaHex> <smoothHex> <C|A>
 //       <enabled> <locked> <n> <x0Hex> <y0Hex> ...    (une ligne par connexion de la matrice globale)
@@ -55,6 +56,10 @@ struct PluginState {
   std::vector<Route> routes;
   std::uint32_t nextRouteId = 1;
   std::string bank = "factory:saw";
+  // banque utilisateur intégrée (état autonome) : vide pour une banque usine
+  std::vector<float> bankRaw;
+  int bankNx = 0, bankNy = 0;
+  std::string bankName;
   ModMatrixState mod;
   std::array<std::string, 4> macroNames{"Macro 1", "Macro 2", "Macro 3", "Macro 4"};
   std::array<CurvePoints, 4> lfoCurves{};
@@ -65,6 +70,7 @@ struct PluginState {
   bool hasInstance = true;            // faux pour un preset (section instance absente) ; non comparé
   bool operator==(const PluginState& o) const noexcept {
     return params == o.params && routes == o.routes && nextRouteId == o.nextRouteId && bank == o.bank && mod == o.mod &&
+           bankRaw == o.bankRaw && bankNx == o.bankNx && bankNy == o.bankNy && bankName == o.bankName &&
            macroNames == o.macroNames && lfoCurves == o.lfoCurves && seed == o.seed &&
            streamCounters == o.streamCounters && instance == o.instance;
   }

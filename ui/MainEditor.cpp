@@ -462,6 +462,11 @@ class SoundDesignView : public juce::Component {
   }
   void refreshState() {
     const auto cur = ctx_.proc.currentBank();
+    for (const auto& u2 : UserBanks::ids())
+      if (std::find(bankIds_.begin(), bankIds_.end(), u2) == bankIds_.end()) {
+        bankIds_.push_back(u2);
+        bank_.addItem(juce::String(resolveBank(u2)->name()) + " [user]", static_cast<int>(bankIds_.size()));
+      }
     for (size_t k = 0; k < bankIds_.size(); ++k)
       if (bankIds_[k] == cur) bank_.setSelectedId(static_cast<int>(k) + 1, juce::dontSendNotification);
     wtChain_.refresh();
@@ -699,6 +704,23 @@ class EngineeringView : public juce::Component {
     // banques
     styleLabel(banks_, 12.0f, col::text, true);
     addChildComponent(banks_);
+    for (int cl : {256, 512, 1024, 2048, 4096}) cycle_.addItem("cycle " + juce::String(cl), cl);
+    cycle_.setSelectedId(2048);
+    import_.setButtonText("Importer WAV...");
+    export_.setButtonText("Exporter WAV...");
+    import_.onClick = [this] {
+      chooser_ = std::make_unique<juce::FileChooser>("Importer une banque WAV", juce::File(), "*.wav");
+      chooser_->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles, [this](const juce::FileChooser& fc) {
+        if (fc.getResult() != juce::File()) ctx_.proc.importBankWav(fc.getResult().getFullPathName().toStdString(), cycle_.getSelectedId());
+      });
+    };
+    export_.onClick = [this] {
+      chooser_ = std::make_unique<juce::FileChooser>("Exporter la banque active", juce::File(), "*.wav");
+      chooser_->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles, [this](const juce::FileChooser& fc) {
+        if (fc.getResult() != juce::File()) ctx_.proc.exportBankWav(fc.getResult().withFileExtension("wav").getFullPathName().toStdString());
+      });
+    };
+    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_}) addChildComponent(*b);
     // randomizer
     for (int p = 0; p < 4; ++p) profile_.addItem(randomProfileName(static_cast<RandomProfile>(p)), p + 1);
     profile_.setSelectedId(2);
@@ -791,6 +813,7 @@ class EngineeringView : public juce::Component {
     routesVp_.setVisible(k == 0);
     mods_.setVisible(k == 1);
     banks_.setVisible(k == 2);
+    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_}) b->setVisible(k == 2);
     for (auto* x : std::initializer_list<juce::Component*>{&profile_, &intensity_, &rnd_, &mut_, &evoMode_, &evoRate_, &evoStart_, &evoStop_, &evoReset_, &evoCommit_, &rndInfo_}) x->setVisible(k == 3);
     for (auto& f : fam_) f.setVisible(k == 3);
     for (auto* x : std::initializer_list<juce::Component*>{&presetList_, &load_, &fav_, &saveName_, &saveTags_, &save_, &restore_, &stateInfo_}) x->setVisible(k == 4);
@@ -803,12 +826,15 @@ class EngineeringView : public juce::Component {
     if (current_ == 2) {
       juce::String t = "BANQUES (immuables, partagees, Copy-on-Write)\n\n";
       const auto cur = ctx_.proc.currentBank();
-      for (const auto& id : FactoryBanks::ids()) {
-        auto b = FactoryBanks::get(id);
-        t << (id == cur ? "> " : "  ") << juce::String(id).paddedRight(' ', 20) << juce::String(FactoryBanks::displayName(id)).paddedRight(' ', 18)
+      std::vector<std::string> all = FactoryBanks::ids();
+      for (const auto& u2 : UserBanks::ids()) all.push_back(u2);
+      for (const auto& id : all) {
+        auto b = resolveBank(id);
+        t << (id == cur ? "> " : "  ") << juce::String(id).paddedRight(' ', 22) << juce::String(b->name()).paddedRight(' ', 18)
           << juce::String(b->nx()) << "x" << juce::String(b->ny()) << "  " << juce::String(b->memoryBytes() / 1024) << " Kio" << (b->precise() ? "  (double, reference b5)" : "") << "\n";
       }
-      t << "\nImport/export WAV et editeur de banques : non disponibles dans cette build (voir tracker R16).";
+      t << "\nImport : cycles de N echantillons (choix ci-dessus), jusqu'a 64 x 16 formes, identifiant SHA-256 ; la banque est\n"
+           "integree a l'etat du projet et aux presets. Editeur graphique de formes : non disponible dans cette build.";
       banks_.setText(t, juce::dontSendNotification);
     }
     if (current_ == 3) {
@@ -856,7 +882,14 @@ class EngineeringView : public juce::Component {
     routesVp_.setBounds(r);
     routes_.setSize(std::max(700, r.getWidth() - 14), routes_.getHeight());
     mods_.setBounds(r);
-    banks_.setBounds(r);
+    {
+      auto bb = r;
+      auto row = bb.removeFromTop(28);
+      cycle_.setBounds(row.removeFromLeft(130).reduced(2));
+      import_.setBounds(row.removeFromLeft(150).reduced(2));
+      export_.setBounds(row.removeFromLeft(150).reduced(2));
+      banks_.setBounds(bb);
+    }
     diag_.setBounds(r);
     auto a = r;
     auto l1 = a.removeFromTop(28);
@@ -899,6 +932,9 @@ class EngineeringView : public juce::Component {
   juce::ToggleButton fam_[static_cast<int>(RandomFamily::Count)], fav_, restore_;
   juce::TextButton rnd_, mut_, evoStart_, evoStop_, evoReset_, evoCommit_, load_, save_;
   juce::TextEditor saveName_, saveTags_;
+  juce::ComboBox cycle_;
+  juce::TextButton import_, export_;
+  std::unique_ptr<juce::FileChooser> chooser_;
   int current_ = 0;
 };
 

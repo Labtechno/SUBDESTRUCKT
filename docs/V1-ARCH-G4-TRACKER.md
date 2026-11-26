@@ -88,6 +88,7 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | UNDO-01 | 128 transactions max ; undo/redo restaurent exactement l'état (compteurs RNG compris) ; redo sans tirage ; nouvelle transaction après undo efface le redo ; doublon ignoré |
 | EVO-01 | Evolve : décalages bornés (≤ intensité × échelle × 0,25) en Anchored et Drift ; Anchored : moyenne quadratique < Drift sur 60 s ; Reset -> décalages nuls ; Commit -> Base = Base + décalage, état valide ; hors liste blanche : inchangé |
 | PRE-01 | Bibliothèque : presets usine valides et chargeables ; sauvegarde/rechargement exact (scope preset) ; favori persistant ; fichier corrompu refusé |
+| WTA-01 | SHA-256 : vecteurs FIPS (« abc », chaîne vide) ; WAV float32 écrit puis relu : identique ; import de cycles 2048 : contenu brut exact ; cycle 1024 sinus : forme rééchantillonnée = sinus 2048 à 1e-5 près ; identifiant déterministe ; état avec banque intégrée : aller-retour exact, données altérées refusées (intégrité) |
 | DST-09b | (enregistré après l'échec de DST-09, avant sa mesure) mêmes 48 configurations mais gains de sortie des emplacements ≤ 0 dB et makeup Y1 = 0 dB : 0 NaN, garde jamais déclenchée, 0 allocation. DST-09 reste rapporté tel quel |
 
 ## 4. Matrice d'exigences P0/P1

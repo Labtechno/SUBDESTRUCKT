@@ -18,6 +18,7 @@
 
 #include "core/ModMatrix.h"
 #include "core/PresetOps.h"
+#include "core/WtAssets.h"
 #include "core/Parameters.h"
 #include "core/StateCodec.h"
 #include "core/Topology.h"
@@ -90,6 +91,9 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   ModTxResult modRemove(std::uint32_t id);
   ModMatrixState currentMod() const;
   bool setBank(const std::string& id);
+  // Import WAV (cycles de `cycleLength` échantillons) -> banque utilisateur immuable (id SHA-256), sélectionnée.
+  bool importBankWav(const std::string& path, int cycleLength);
+  bool exportBankWav(const std::string& path);  // contenu brut exact de la banque active (float32)
   std::string currentBank() const;
   void setMacroName(int index, const std::string& name);
   std::array<std::string, 4> macroNames() const;

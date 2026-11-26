@@ -8,6 +8,7 @@
 #include "G4Helper.h"
 #include "TestKit.h"
 #include "core/PresetOps.h"
+#include "core/WtAssets.h"
 
 using namespace sbd;
 
@@ -200,6 +201,57 @@ void testLibrary() {
   tk::result("PRE-01", ok, "bibliotheque : %d presets usine valides et chargeables ; sauvegarde atomique/rechargement exact (scope preset, tags) ; favori persistant ; fichier corrompu refuse", factory);
 }
 
+void testAssets() {
+  bool ok = sha256Hex("abc", 3) == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" &&
+            sha256Hex("", 0) == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+  // WAV float32 : écriture puis lecture identiques
+  const std::string dir = (std::filesystem::temp_directory_path() / "sbd_wta_test").string();
+  std::error_code ec;
+  std::filesystem::create_directories(dir, ec);
+  std::vector<float> sig(2048 * 6);
+  for (size_t i = 0; i < sig.size(); ++i) {
+    const double ph = static_cast<double>(i % 2048) / 2048.0;
+    const int w = static_cast<int>(i / 2048);
+    sig[i] = static_cast<float>(std::sin(2.0 * 3.14159265358979 * ph) * (1.0 - 0.1 * w) + 0.1 * w * std::sin(6.0 * 3.14159265358979 * ph));
+  }
+  std::string err;
+  const std::string wav = dir + "/cycles.wav";
+  std::vector<float> back;
+  double sr = 0.0;
+  ok = ok && writeWavFloat(wav, sig, 48000.0, err) && readWavMono(wav, back, sr, err) && back == sig && sr == 48000.0;
+  // import de cycles 2048 : contenu brut exact ; identifiant déterministe
+  auto b1 = bankFromCycles(sig, 2048, "test", err), b2 = bankFromCycles(sig, 2048, "test", err);
+  ok = ok && b1 && b2 && b1->id() == b2->id() && b1->raw() == sig && b1->nx() == 6 && b1->ny() == 1 && b1->id().rfind("user:", 0) == 0;
+  // cycle 1024 sinus -> sinus 2048
+  std::vector<float> s1(1024 * 2);
+  for (size_t i = 0; i < s1.size(); ++i) s1[i] = static_cast<float>(std::sin(2.0 * 3.14159265358979 * static_cast<double>(i % 1024) / 1024.0));
+  auto b3 = bankFromCycles(s1, 1024, "sin", err);
+  double worst = 0.0;
+  if (b3)
+    for (int i = 0; i < 2048; ++i) worst = std::max(worst, std::fabs(static_cast<double>(b3->raw()[static_cast<size_t>(i)]) - std::sin(2.0 * 3.14159265358979 * i / 2048.0)));
+  ok = ok && b3 && worst < 1e-5;
+  // état avec banque intégrée : aller-retour exact, altération refusée
+  PluginState s = defaultState();
+  s.bank = b1->id();
+  s.bankRaw = b1->raw();
+  s.bankNx = b1->nx();
+  s.bankNy = b1->ny();
+  s.bankName = "test";
+  PluginState d;
+  const std::string txt = encodeState(s, "w", StateScope::Preset);
+  ok = ok && decodeState(txt, d, err) && d.bankRaw == s.bankRaw && d.bank == s.bank;
+  std::string bad = txt;
+  const size_t p = bad.find("bankdata ");
+  const size_t q = bad.find(' ', bad.find(' ', bad.find(' ', bad.find(' ', p) + 1) + 1) + 1) + 10;
+  bad[q] = bad[q] == 'A' ? 'B' : 'A';
+  PluginState junk;
+  ok = ok && !decodeState(bad, junk, err);
+  std::filesystem::remove_all(dir, ec);
+  TK_CHECK(ok);
+  tk::result("WTA-01", ok, "SHA-256 (vecteurs FIPS) ; WAV float32 aller-retour exact ; import cycles 2048 exact, id deterministe %s ; cycle 1024 -> 2048 ecart %.2g (< 1e-5) ; banque integree a l'etat : aller-retour exact, alteration refusee",
+             b1 ? b1->id().c_str() : "-", worst);
+}
+
 }  // namespace
 
 void runStateTests2() {
@@ -208,4 +260,5 @@ void runStateTests2() {
   testUndo();
   testEvolve();
   testLibrary();
+  testAssets();
 }

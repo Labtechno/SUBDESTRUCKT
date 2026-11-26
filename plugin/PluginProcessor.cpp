@@ -160,7 +160,7 @@ void SubdestrucktProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
   engine_.setParameters(bridge_.values());
   engine_.setSeed(seed_);
   engine_.setLfoCurves(lfoCurves_);
-  if (auto b = FactoryBanks::get(bank_)) engine_.setBankImmediate(b);
+  if (auto b = resolveBank(bank_)) engine_.setBankImmediate(b);
   engine_.prepare(sampleRate, samplesPerBlock, instance_.quality);
   CompiledTopology c = routes_.compile();
   c.serial = ++serial_;
@@ -179,7 +179,7 @@ void SubdestrucktProcessor::reprepareLocked() {
   engine_.setParameters(bridge_.values());
   engine_.setSeed(seed_);
   engine_.setLfoCurves(lfoCurves_);
-  if (auto b = FactoryBanks::get(bank_)) engine_.setBankImmediate(b);
+  if (auto b = resolveBank(bank_)) engine_.setBankImmediate(b);
   engine_.prepare(sampleRate_, blockSize_, instance_.quality);
   CompiledTopology c = routes_.compile();
   c.serial = ++serial_;
@@ -283,6 +283,13 @@ PluginState SubdestrucktProcessor::snapshotState() const {
   s.routes = routes_.routes();
   s.nextRouteId = routes_.nextRouteId();
   s.bank = bank_;
+  if (bank_.rfind("user:", 0) == 0)
+    if (auto b = UserBanks::get(bank_)) {  // banque utilisateur : intégrée à l'état (projet/preset autonome)
+      s.bankRaw = b->raw();
+      s.bankNx = b->nx();
+      s.bankNy = b->ny();
+      s.bankName = b->name();
+    }
   s.mod = mod_;
   s.macroNames = macroNames_;
   s.lfoCurves = lfoCurves_;
@@ -338,7 +345,11 @@ bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset
       engine_.setDrone(instance_.drone);
     }
     lastMessage_ = state.sourceVersion < kStateVersion ? "Etat v" + std::to_string(state.sourceVersion) + " migre et charge" : "Etat charge";
-    if (!FactoryBanks::get(bank_)) lastMessage_ += " ; banque absente : " + bank_ + " (reference conservee, lecture Saw)";
+    if (!state.bankRaw.empty() && !resolveBank(state.bank)) {  // banque utilisateur intégrée : reconstruite hors RT
+      std::string e2;
+      if (auto b = WtBank::build(state.bank, state.bankName, state.bankNx, state.bankNy, state.bankRaw, WtBank::Options{}, e2)) UserBanks::add(b);
+    }
+    if (!resolveBank(bank_)) lastMessage_ += " ; banque absente : " + bank_ + " (reference conservee, lecture Saw)";
     publishTopologyLocked();
     publishModLocked();
     publishBankLocked();
@@ -540,7 +551,7 @@ void SubdestrucktProcessor::publishModLocked() {
 
 void SubdestrucktProcessor::publishBankLocked() {
   engine_.bankExchange().collectGarbage();
-  auto b = FactoryBanks::get(bank_);
+  auto b = resolveBank(bank_);
   if (!b) b = FactoryBanks::get("factory:saw");
   engine_.bankExchange().publish(std::make_unique<BankRef>(BankRef{b}));
 }
@@ -602,17 +613,41 @@ bool SubdestrucktProcessor::setBank(const std::string& id) {
   const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
-    if (!FactoryBanks::get(id)) {
+    if (!resolveBank(id)) {
       lastMessage_ = "Banque inconnue : " + id;
       return false;
     }
     bank_ = id;
     publishBankLocked();
-    lastMessage_ = "Banque : " + FactoryBanks::displayName(id);
+    lastMessage_ = "Banque : " + resolveBank(id)->name();
   }
   record(before, "banque");
   notifyState();
   return true;
+}
+
+bool SubdestrucktProcessor::importBankWav(const std::string& path, int cycleLength) {
+  std::vector<float> mono;
+  double sr = 0.0;
+  std::string err;
+  std::shared_ptr<const WtBank> bank;
+  if (readWavMono(path, mono, sr, err)) bank = bankFromCycles(mono, cycleLength, juce::File(path).getFileNameWithoutExtension().toStdString().substr(0, 64), err);
+  if (!bank) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = "Import refuse : " + err;
+    return false;
+  }
+  UserBanks::add(bank);
+  return setBank(bank->id());
+}
+
+bool SubdestrucktProcessor::exportBankWav(const std::string& path) {
+  auto b = resolveBank(currentBank());
+  std::string err;
+  const bool ok = b && writeWavFloat(path, b->raw(), 48000.0, err);
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  lastMessage_ = ok ? "Banque exportee : " + path : "Export refuse : " + err;
+  return ok;
 }
 
 void SubdestrucktProcessor::setMacroName(int index, const std::string& name) {

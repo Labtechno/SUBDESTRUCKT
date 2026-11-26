@@ -4,6 +4,7 @@
 #include <complex>
 
 #include "Widgets.h"
+#include "core/WtAssets.h"
 #include "dsp/Fft.h"
 
 namespace sbd::ui {
@@ -77,7 +78,7 @@ void XYView::refresh() {
   ex_ = t.wtX.load();
   ey_ = t.wtY.load();
   z_ = t.wtZ.load();
-  if (auto b = FactoryBanks::get(proc_.currentBank())) {
+  if (auto b = resolveBank(proc_.currentBank())) {
     nx_ = b->nx();
     ny_ = b->ny();
   }
