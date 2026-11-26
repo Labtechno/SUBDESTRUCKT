@@ -245,10 +245,14 @@ jobs:
         run: |
           set +e -o pipefail
           ./build-rtsan/subdestruckt_core_tests 2>&1 | tee out/rtsan_tests.log; r=${PIPESTATUS[0]}
-          if [ $r = 0 ] && ! grep -q "RealtimeSanitizer" out/rtsan_tests.log; then
+          # RTSan interrompt le processus a la premiere violation : PASS si la suite est allee au bout (ligne de
+          # synthese presente) sans aucun rapport RealtimeSanitizer. Les echecs fonctionnels connus sont juges par
+          # la barriere du job principal (tests/known_failures.txt).
+          if grep -q "^core_tests :" out/rtsan_tests.log && ! grep -q "RealtimeSanitizer" out/rtsan_tests.log; then
             echo "RESULT G-18rt PASS RealtimeSanitizer ($(cat out/rtsan_toolchain.txt)) : 0 violation dans Engine::process sur l'ensemble des tests du coeur" | tee -a out/rtsan_tests.log
           else
-            echo "RESULT G-18rt FAIL RealtimeSanitizer : violation ou echec (code $r)" | tee -a out/rtsan_tests.log
+            echo "RESULT G-18rt FAIL RealtimeSanitizer : violation detectee ou suite interrompue (code $r)" | tee -a out/rtsan_tests.log
+            grep -A12 "RealtimeSanitizer" out/rtsan_tests.log | head -40 || true
             exit 1
           fi
           grep "^RESULT G-18rt" out/rtsan_tests.log >> "$GITHUB_STEP_SUMMARY"
