@@ -57,7 +57,10 @@ float readTyped(const juce::RangedAudioParameter* p, ParamType t) noexcept {
 float ParameterBridge::base(int index) const noexcept {
   const auto i = static_cast<size_t>(index);
   const float hostValue = readTyped(params_[i], paramSpec(index).type);
-  if (hasExact_[i].load(std::memory_order_acquire) && hostValue == hostValueAtRestore_[i].load(std::memory_order_relaxed))
+  // Valeur exacte restaurée conservée tant que l'hôte n'a pas réellement modifié le paramètre : un écho de la même
+  // valeur normalisée (aller-retour float/double de l'hôte, correspondance logarithmique) n'est pas une modification.
+  if (hasExact_[i].load(std::memory_order_acquire) &&
+      std::fabs(params_[i]->getValue() - hostValueAtRestore_[i].load(std::memory_order_relaxed)) <= 1e-6f)
     return exact_[i].load(std::memory_order_relaxed);
   return hostValue;
 }
@@ -68,7 +71,7 @@ void ParameterBridge::setExact(int index, float value) {
   hasExact_[i].store(false, std::memory_order_release);
   p->setValueNotifyingHost(p->convertTo0to1(value));
   exact_[i].store(value, std::memory_order_relaxed);
-  hostValueAtRestore_[i].store(readTyped(p, paramSpec(index).type), std::memory_order_relaxed);
+  hostValueAtRestore_[i].store(p->getValue(), std::memory_order_relaxed);  // valeur normalisée hôte
   hasExact_[i].store(true, std::memory_order_release);
 }
 

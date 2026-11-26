@@ -209,6 +209,7 @@ int main(int argc, char** argv) {
 
   // ---- G-21 : état via l'interface VST3 (IComponent/IEditController), rendu identique après rechargement
   bool stateOk = false;
+  char stateDetail[256] = "instances non creees";
   {
     auto a = create(fmt, d, 48000.0, 256);
     auto b = create(fmt, d, 48000.0, 256);
@@ -234,12 +235,14 @@ int main(int argc, char** argv) {
       const auto rb = render(*b, 48000.0, 256, 72000);
       const bool sameBlob = blobA == blobB;
       stateOk = sameBlob && same(ra, rb) && peak(ra) > 1e-4;
+      std::snprintf(stateDetail, sizeof stateDetail, "%zu octets ; blob identique %d ; rendu identique %d ; crete %.3g",
+                    static_cast<size_t>(blobA.getSize()), sameBlob ? 1 : 0, same(ra, rb) ? 1 : 0, peak(ra));
       std::printf("  etat : %zu octets, blob identique apres rechargement %s, rendu identique %s\n",
                   static_cast<size_t>(blobA.getSize()), sameBlob ? "oui" : "NON", same(ra, rb) ? "oui" : "NON");
     }
   }
   TK_CHECK(stateOk);
-  tk::result(id("G-21").c_str(), stateOk, "etat via VST3 : getState -> nouvelle instance -> setState, etat relu identique et rendu identique bit a bit");
+  tk::result(id("G-21").c_str(), stateOk, "etat via VST3 : getState -> nouvelle instance -> setState, etat relu identique et rendu identique bit a bit (%s)", stateDetail);
 
   // ---- G-19h : deux instances hébergées entrelacées
   bool instOk = false;
