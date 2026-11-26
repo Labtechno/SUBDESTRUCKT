@@ -34,6 +34,7 @@ add_library(subdestruckt_core STATIC
   source/core/Topology.cpp
   source/core/ModMatrix.cpp
   source/core/StateCodec.cpp
+  source/core/PresetOps.cpp
   source/engine/ModRuntime.cpp
   source/engine/Chain.cpp
   source/engine/Engine.cpp)
@@ -66,7 +67,8 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_g4.cpp
     tests/core/test_g4_features.cpp
     tests/core/test_g4_filters.cpp
-    tests/core/test_g4_destruction.cpp)
+    tests/core/test_g4_destruction.cpp
+    tests/core/test_g4_state.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)

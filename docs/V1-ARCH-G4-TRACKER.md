@@ -80,6 +80,12 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | DST-08 | S2 : latence = taille FFT, dry/wet alignés (impulsion, mix 0 : pic à L exactement ; mix 1 : pic du chemin traité ≈ L) ; latence de la chaîne déclarée à l'hôte ; Freeze armé : RMS stable ± 3 dB sur 2 s sans entrée |
 | DST-09 | 6 emplacements, algorithmes et paramètres aléatoires, 4 Fs, 2 s, notes : 0 NaN, garde jamais déclenchée, 0 allocation |
 | DST-10 | Mix 0 (algorithmes sans latence) : sortie identique bit à bit au contournement |
+| ST-RND-01 | Randomize : même seed + compteur -> résultat identique ; compteur différent -> différent ; paramètres verrouillés inchangés ; intensité 0 -> état inchangé (bit à bit, compteur inchangé) ; résultat valide ; familles respectées (paramètres hors famille inchangés) |
+| ST-RND-02 | Mutate : écart normalisé ≤ intensité × échelle du profil × 0,15 pour chaque paramètre continu ; déterministe ; verrous |
+| ST-RND-03 | Transaction refusée (état invalide) : état et compteurs inchangés |
+| UNDO-01 | 128 transactions max ; undo/redo restaurent exactement l'état (compteurs RNG compris) ; redo sans tirage ; nouvelle transaction après undo efface le redo ; doublon ignoré |
+| EVO-01 | Evolve : décalages bornés (≤ intensité × échelle × 0,25) en Anchored et Drift ; Anchored : moyenne quadratique < Drift sur 60 s ; Reset -> décalages nuls ; Commit -> Base = Base + décalage, état valide ; hors liste blanche : inchangé |
+| PRE-01 | Bibliothèque : presets usine valides et chargeables ; sauvegarde/rechargement exact (scope preset) ; favori persistant ; fichier corrompu refusé |
 | DST-09b | (enregistré après l'échec de DST-09, avant sa mesure) mêmes 48 configurations mais gains de sortie des emplacements ≤ 0 dB et makeup Y1 = 0 dB : 0 NaN, garde jamais déclenchée, 0 allocation. DST-09 reste rapporté tel quel |
 
 ## 4. Matrice d'exigences P0/P1
