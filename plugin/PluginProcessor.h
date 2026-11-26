@@ -1,19 +1,22 @@
 // SUBDESTRUCKT — L0 — adaptateur hôte JUCE/VST3 (V1-SOFTWARE-ARCHITECTURE §2 L0, §10).
 //
 // Responsabilités : paramètres hôte (StableID <-> identité hôte, jamais d'indice), MIDI -> événements du cœur,
-// sortie stéréo, état versionné (codec du cœur), latence déclarée, UI de diagnostic.
-// Ne contient ni règle musicale ni algorithme DSP : tout le DSP est dans le cœur (source/), testable sans hôte.
+// transport, sortie stéréo, état versionné (codec du cœur), latence déclarée, éditeur.
+// L'état éditable non-hôte (routes, matrice, banque, noms, courbes, seed, instance) vit dans ControlState, protégé par
+// controlMutex_ (jamais pris par le thread audio) ; il est compilé hors RT puis publié sans verrou vers le moteur.
 // Thread audio : processBlock() n'alloue pas, ne verrouille pas, ne fait aucune I/O (vérifié par tests/wrapper).
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include <array>
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
+#include "core/ModMatrix.h"
 #include "core/Parameters.h"
 #include "core/StateCodec.h"
 #include "core/Topology.h"
@@ -26,17 +29,26 @@ namespace sbd {
 // modifie pas le paramètre. Lecture sans verrou ni allocation (thread audio).
 class ParameterBridge {
  public:
-  void attach(int index, juce::AudioParameterFloat* p) noexcept { params_[static_cast<size_t>(index)] = p; }
-  juce::AudioParameterFloat* param(int index) const noexcept { return params_[static_cast<size_t>(index)]; }
+  void attach(int index, juce::RangedAudioParameter* p) noexcept { params_[static_cast<size_t>(index)] = p; }
+  juce::RangedAudioParameter* param(int index) const noexcept { return params_[static_cast<size_t>(index)]; }
   float base(int index) const noexcept;
   void setExact(int index, float value);  // thread de contrôle
   ParamValues values() const noexcept;
 
  private:
-  std::array<juce::AudioParameterFloat*, kNumParams> params_{};
+  std::array<juce::RangedAudioParameter*, kNumParams> params_{};
   std::array<std::atomic<float>, kNumParams> exact_{};
   std::array<std::atomic<float>, kNumParams> hostValueAtRestore_{};
   std::array<std::atomic<bool>, kNumParams> hasExact_{};
+};
+
+// MIDI Learn : correspondance globale CC -> paramètre, propre à l'utilisateur, jamais dans un preset (P0-C12).
+struct MidiLearnMap {
+  std::array<std::int16_t, 128> ccToParam{};  // -1 = libre
+  MidiLearnMap() { ccToParam.fill(-1); }
+  static std::string defaultPath();
+  bool load(const std::string& path);
+  bool save(const std::string& path) const;
 };
 
 class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
@@ -69,29 +81,84 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
 
   // ---- API de contrôle (thread message / UI), jamais appelée depuis le thread audio
   RouteTable::Result applyTopology(const std::vector<RouteTable::Op>& ops);
+  RouteTable::Result applyFmTopology(int index);
   std::vector<Route> currentRoutes() const;
   std::uint32_t currentNextRouteId() const;
-  std::string lastMessage() const;
-  bool applyState(const PluginState& state);
-  void loadDefaultPreset() { applyState(defaultState()); }
+  ModTxResult modAdd(const ModRoute& r);
+  ModTxResult modUpdate(const ModRoute& r);
+  ModTxResult modRemove(std::uint32_t id);
+  ModMatrixState currentMod() const;
+  bool setBank(const std::string& id);
+  std::string currentBank() const;
+  void setMacroName(int index, const std::string& name);
+  std::array<std::string, 4> macroNames() const;
+  void setLfoCurve(int index, const CurvePoints& c);
+  std::array<CurvePoints, 4> lfoCurves() const;
+  void setQuality(Quality q);
+  Quality quality() const;
+  void setDrone(bool on);
+  bool drone() const;
+  void setDroneRestore(bool allowed);
+  bool droneRestore() const;
+  void requestCrossReset() noexcept { engine_.requestCrossReset(); }
+  void requestManualExcite() noexcept { engine_.requestManualExcite(); }
   void requestPanic() noexcept { panicRequested_.store(true); }
-  std::string encodeCurrentState() const;
+  std::string lastMessage() const;
+  bool applyState(const PluginState& state, bool fromPreset = false);
+  void loadDefaultPreset() { applyState(defaultState(), true); }
+  PluginState snapshotState() const;
+  std::string encodeCurrentState(StateScope scope = StateScope::Daw) const;
+  // Transaction unique sur l'état (Undo/Redo, Randomize...) : fonction appliquée à une copie, validée, appliquée.
+  bool transact(const std::function<bool(PluginState&)>& edit, const std::string& cause);
+  void setMidiLearnTarget(int paramIndex) noexcept { learnTarget_.store(paramIndex); }
+  int midiLearnTarget() const noexcept { return learnTarget_.load(); }
+  MidiLearnMap midiLearn() const;
+  void clearMidiLearn(int cc);
+  void setStateListener(std::function<void()> f);  // notifié (thread message) après tout changement d'état non-hôte
 
   Telemetry& telemetry() noexcept { return engine_.telemetry(); }
   ParameterBridge& parameters() noexcept { return bridge_; }
+  const Engine& engine() const noexcept { return engine_; }
 
  private:
-  void timerCallback() override;          // libération hors RT des topologies retirées
+  void timerCallback() override;          // libération hors RT, latence, MIDI Learn
   void publishTopologyLocked();           // compile + publication lock-free vers le moteur
+  void publishModLocked();
+  void publishBankLocked();
+  void publishCurvesLocked();
+  void reprepareLocked();                 // Quality : reconstruction hors RT (traitement suspendu)
+  void updateLatency();
+  void notifyState();
 
   ParameterBridge bridge_;
   Engine engine_;
   mutable std::mutex controlMutex_;       // protège l'état éditable (jamais pris par le thread audio)
   RouteTable routes_;
+  ModMatrixState mod_;
+  std::string bank_ = "factory:saw";
+  std::array<std::string, 4> macroNames_{"Macro 1", "Macro 2", "Macro 3", "Macro 4"};
+  std::array<CurvePoints, 4> lfoCurves_{};
+  std::uint64_t seed_ = 0x5B0D5EEDULL;
+  std::array<std::uint64_t, 3> streamCounters_{};
+  InstanceState instance_;
   std::string lastMessage_;
-  std::uint64_t serial_ = 0;
+  std::uint64_t serial_ = 0, modSerial_ = 0;
+  double sampleRate_ = 0.0;
+  int blockSize_ = 512;
   std::atomic<bool> panicRequested_{false};
   std::array<MidiEvent, 1024> midi_{};
+  std::function<void()> stateListener_;
+  // MIDI Learn (audio -> message : file sans verrou de taille fixe)
+  MidiLearnMap learn_;
+  std::array<std::atomic<std::int16_t>, 128> learnRt_{};
+  std::atomic<int> learnTarget_{-1};
+  std::atomic<int> learnCaptured_{-1};
+  struct CcEvent {
+    std::int16_t param;
+    float value;
+  };
+  std::array<CcEvent, 256> ccFifo_{};
+  std::atomic<std::uint32_t> ccWrite_{0}, ccRead_{0};
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SubdestrucktProcessor)
 };

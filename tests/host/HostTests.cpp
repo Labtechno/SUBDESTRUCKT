@@ -15,6 +15,7 @@
 #include <sstream>
 
 #include "TestKit.h"
+#include "BuildInfo.h"
 #include "core/Parameters.h"
 
 namespace {
@@ -105,10 +106,10 @@ int main(int argc, char** argv) {
     std::printf("  decouvert : %s / %s / version %s / instrument %d / sorties %d / format %s\n", d.name.toRawUTF8(),
                 d.manufacturerName.toRawUTF8(), d.version.toRawUTF8(), d.isInstrument ? 1 : 0, d.numOutputChannels,
                 d.pluginFormatName.toRawUTF8());
-    found = d.name == "SUBDESTRUCKT" && d.manufacturerName == "Labtechno" && d.isInstrument && d.version == "0.1.0";
+    found = d.name == "SUBDESTRUCKT" && d.manufacturerName == "Labtechno" && d.isInstrument && d.version == SUBDESTRUCKT_VERSION;
   }
   TK_CHECK(found);
-  tk::result(id("G-20a").c_str(), found, "decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version 0.1.0");
+  tk::result(id("G-20a").c_str(), found, "decouverte VST3 : 1 classe SUBDESTRUCKT, fabricant Labtechno, instrument, version " SUBDESTRUCKT_VERSION);
   if (!found) {
     juce::MessageManager::deleteInstance();
     return tk::finish("host_tests");

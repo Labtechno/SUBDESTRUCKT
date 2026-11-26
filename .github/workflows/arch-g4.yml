@@ -1,0 +1,263 @@
+# SUBDESTRUCKT — ARCH-G4 : compilation Release arm64, tests du coeur/wrapper/hote, pluginval, paquets et recette VM.
+# Runners standard gratuits (depot public) : macos-15 arm64 (VM). Aucune recette DAW ni Mac physique ici.
+# Suivi et seuils : docs/V1-ARCH-G4-TRACKER.md. DIFFUSION BINAIRE BLOQUEE (B-04 : licence JUCE, canal conforme,
+# signature) : les paquets sont construits et testes puis NON publies ; l'artefact CI ne contient que des journaux.
+name: ARCH-G4 build, tests, paquets (macos-15 arm64)
+
+on:
+  push:
+    branches: [feature/arch-g4-full-development]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: arch-g4-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  JUCE_TAG: "9.0.6"
+  JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
+  PLUGINVAL_VERSION: "v1.0.4"
+  PLUGINVAL_SHA256: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
+  MIN_MACOS: "14.0"
+  VERSION: "0.2.0"
+
+jobs:
+  build-test-package:
+    runs-on: macos-15
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+    env:
+      BUILD: ${{ github.run_number }}
+      COMMIT: ${{ github.sha }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Machine (arm64 natif obligatoire)
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          s() { sysctl -n "$1" 2>/dev/null || echo "n/a"; }
+          {
+            echo "run            : $RUN_URL"
+            echo "commit         : $COMMIT  build $BUILD"
+            echo "image          : ${ImageOS:-?} ${ImageVersion:-?}"
+            echo "macOS          : $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
+            echo "cpu            : $(s machdep.cpu.brand_string)  ncpu $(s hw.ncpu)  memoire $(( $(s hw.memsize) / 1048576 )) Mio"
+            echo "vm             : kern.hv_vmm_present=$(s kern.hv_vmm_present)  modele $(s hw.model)"
+            echo "arch           : $(uname -m)  rosetta=$(s sysctl.proc_translated)"
+            echo "xcode          : $(xcodebuild -version | tr '\n' ' ')"
+            echo "compilateur    : $(clang++ --version | head -1)"
+            echo "cmake          : $(cmake --version | head -1)"
+          } | tee out/machine.txt
+          test "$(uname -m)" = arm64
+
+      - name: JUCE 9.0.6 (commit épinglé)
+        run: |
+          set -euo pipefail
+          git clone --quiet --depth 1 --branch "$JUCE_TAG" https://github.com/juce-framework/JUCE.git "$RUNNER_TEMP/JUCE"
+          test "$(git -C "$RUNNER_TEMP/JUCE" rev-parse HEAD)" = "$JUCE_SHA"
+          echo "JUCE $JUCE_TAG @ $JUCE_SHA verifie" | tee -a out/machine.txt
+
+      - name: Compilation Release arm64 (cœur, plugin VST3, tests)
+        run: |
+          set -euo pipefail
+          command -v ninja >/dev/null || brew install ninja
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSUBDESTRUCKT_JUCE_DIR="$RUNNER_TEMP/JUCE" \
+            -DSUBDESTRUCKT_BUILD_NUMBER="$BUILD" -DSUBDESTRUCKT_COMMIT="$COMMIT" 2>&1 | tee out/configure.log
+          cmake --build build 2>&1 | tee out/build.log
+
+      - name: Tests du cœur (G-01 à G-19, ARCH-G4)
+        run: set -o pipefail; ./build/subdestruckt_core_tests 2>&1 | tee out/core_tests.log
+
+      - name: Tests du wrapper JUCE (G-06w, G-16w, G-18w, G-19w, G-21w, G-22w)
+        run: |
+          set -o pipefail
+          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log
+
+      - name: Paquets Installer / Uninstaller (bundle livré re-signé ad hoc)
+        run: |
+          set -euo pipefail
+          RAW=build/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3
+          { codesign --verify --strict "$RAW" && echo "signature du bundle brut (post-build JUCE) : valide" \
+            || echo "signature du bundle brut (post-build JUCE) : invalide ou absente (re-signature au packaging)"; } 2>&1 | tee out/packaging.log
+          bash packaging/build_packages.sh "$RAW" out/packages "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" 2>&1 | tee -a out/packaging.log
+          cat out/packages/signature_status.txt | tee -a out/packaging.log
+
+      - name: Bundle VST3 livré (G-24)
+        run: |
+          set +e -uo pipefail
+          B=out/packages/signed/SUBDESTRUCKT.vst3
+          p() { /usr/libexec/PlistBuddy -c "Print :$1" "$B/Contents/Info.plist" 2>/dev/null; }
+          archs="$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT")"
+          codesign --verify --strict --verbose=2 "$B" > out/bundle_codesign.txt 2>&1; sig=$?
+          minos="$(otool -l "$B/Contents/MacOS/SUBDESTRUCKT" | awk '/LC_BUILD_VERSION/{f=1} f&&/minos/{print $2; exit}')"
+          bad=""
+          [ "$archs" = arm64 ] || bad="$bad arch=$archs"
+          [ "$sig" = 0 ] || bad="$bad codesign=$(tr '\n' ' ' < out/bundle_codesign.txt)"
+          [ "$(p CFBundleIdentifier)" = com.labtechno.subdestruckt ] || bad="$bad id=$(p CFBundleIdentifier)"
+          [ "$(p CFBundleShortVersionString)" = "$VERSION" ] || bad="$bad version=$(p CFBundleShortVersionString)"
+          [ "$(p CFBundleVersion)" = "$BUILD" ] || bad="$bad build=$(p CFBundleVersion)"
+          [ "$(p SUBDESTRUCKTBuild)" = "$VERSION-b$BUILD" ] || bad="$bad cleBuild=$(p SUBDESTRUCKTBuild)"
+          [ "$(p SUBDESTRUCKTCommit)" = "$COMMIT" ] || bad="$bad cleCommit=$(p SUBDESTRUCKTCommit)"
+          [ "$minos" = "$MIN_MACOS" ] || bad="$bad minos=$minos"
+          [ -f "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt" ] || bad="$bad mentions-tierces-absentes"
+          detail="arch $archs ; signature ad hoc $([ $sig = 0 ] && echo valide || echo INVALIDE) ; $(p CFBundleIdentifier) $(p CFBundleShortVersionString) build $(p CFBundleVersion) ($(p SUBDESTRUCKTBuild)) ; minos $minos"
+          if [ -z "$bad" ]; then echo "RESULT G-24 PASS bundle livre : $detail" | tee out/bundle.log
+          else echo "RESULT G-24 FAIL bundle livre :$bad" | tee out/bundle.log; fi
+          ls -la "$B/Contents" "$B/Contents/MacOS" "$B/Contents/Resources" >> out/bundle.log
+          [ -z "$bad" ]
+
+      - name: Tests d'hôte VST3 sur le bundle livré (G-19h, G-20, G-21, G-22)
+        run: |
+          set -o pipefail
+          ./build/subdestruckt_host_tests_artefacts/Release/subdestruckt_host_tests \
+            out/packages/signed/SUBDESTRUCKT.vst3 tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/host_tests.log
+
+      - name: pluginval 1.0.4, rigueur 10, sur le bundle livré (G-23)
+        run: |
+          set +e -uo pipefail
+          curl -sfL -o "$RUNNER_TEMP/pluginval.zip" "https://github.com/Tracktion/pluginval/releases/download/$PLUGINVAL_VERSION/pluginval_macOS.zip"
+          echo "$PLUGINVAL_SHA256  $RUNNER_TEMP/pluginval.zip" | shasum -a 256 -c - || { echo "RESULT G-23 FAIL empreinte de pluginval inattendue" | tee out/pluginval_result.log; exit 1; }
+          unzip -q -o "$RUNNER_TEMP/pluginval.zip" -d "$RUNNER_TEMP/pluginval"
+          PV="$RUNNER_TEMP/pluginval/pluginval.app/Contents/MacOS/pluginval"
+          B="$PWD/out/packages/signed/SUBDESTRUCKT.vst3"
+          "$PV" --help > out/pluginval_help.txt 2>&1 || true
+          extra=""
+          grep -q -- "--sample-rates" out/pluginval_help.txt && extra="$extra --sample-rates 44100,48000,88200,96000"
+          grep -q -- "--block-sizes" out/pluginval_help.txt && extra="$extra --block-sizes 32,64,128,256,512"
+          "$PV" --strictness-level 10 --timeout-ms 900000 $extra --validate "$B" > out/pluginval.log 2>&1; r=$?
+          tail -40 out/pluginval.log
+          if [ $r = 0 ]; then
+            echo "RESULT G-23 PASS pluginval $PLUGINVAL_VERSION rigueur 10 (tests d'interface inclus)$extra" | tee out/pluginval_result.log
+          else
+            "$PV" --strictness-level 10 --timeout-ms 900000 --skip-gui-tests $extra --validate "$B" > out/pluginval_nogui.log 2>&1; r2=$?
+            tail -40 out/pluginval_nogui.log
+            echo "RESULT G-23 FAIL pluginval rigueur 10 : echec avec tests d'interface (code $r) ; sans tests d'interface : code $r2" | tee out/pluginval_result.log
+            exit 1
+          fi
+
+      - name: Tests des scripts de paquets (bac à sable)
+        run: set -o pipefail; bash packaging/tests/sandbox_tests.sh out/packages/signed/SUBDESTRUCKT.vst3 out/packages/scripts 2>&1 | tee out/sandbox_tests.log
+
+      - name: Recette des paquets avec l'Installer réel (VM)
+        run: |
+          set -o pipefail
+          bash packaging/tests/system_tests.sh out/packages/SUBDESTRUCKT_Installer.pkg out/packages/SUBDESTRUCKT_Uninstaller.pkg \
+            "$PWD/build/subdestruckt_host_tests_artefacts/Release/subdestruckt_host_tests" "$PWD/tests/host/expected_vst3_param_ids.txt" 2>&1 | tee out/system_tests.log
+
+      - name: Livraison (ZIP, README_FR, CHANGELOG, SHA256SUMS)
+        run: |
+          set -euo pipefail
+          grep -h "^RESULT " out/*.log > out/results.txt
+          bash packaging/make_delivery.sh out/packages out/delivery "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" out/results.txt \
+            "$RUN_URL" "macOS $(sw_vers -productVersion) ($(sw_vers -buildVersion))" 2>&1 | tee out/delivery.log
+
+      - name: Annotations des résultats
+        if: always()
+        run: |
+          set +e
+          for f in out/*.log; do
+            [ -f "$f" ] || continue
+            lines="$(grep -h "^RESULT " "$f" | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+            [ -n "$lines" ] && echo "::notice title=$(basename "$f")::$lines"
+          done
+          for f in out/configure.log out/build.log out/core_tests.log out/wrapper_tests.log out/bundle.log out/host_tests.log out/pluginval.log out/pluginval_nogui.log out/packaging.log out/sandbox_tests.log out/system_tests.log out/delivery.log; do
+            [ -f "$f" ] || continue
+            if grep -q -E "FAIL|error:|ECHEC|FAILED|Error|inattendu" "$f"; then
+              tailtxt="$(grep -E "FAIL|error|ECHEC|FAILED|Error|refus|echec|inattendu" "$f" | tail -25 | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+              echo "::warning title=extrait $(basename "$f")::$tailtxt"
+            fi
+          done
+          for f in out/packaging.log out/delivery.log; do
+            [ -f "$f" ] || continue
+            tailtxt="$(tail -25 "$f" | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+            echo "::notice title=fin de $(basename "$f")::$tailtxt"
+          done
+
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo "## SUBDESTRUCKT ARCH-G4 — build $VERSION-b$BUILD (non publie)"
+            echo '```'; cat out/machine.txt 2>/dev/null; echo '```'
+            echo "| statut | critère |"; echo "|---|---|"
+            grep -h "^RESULT " out/*.log 2>/dev/null | sed -E 's/^RESULT ([^ ]+) (PASS|FAIL) (.*)$/| \2 | **\1** \3 |/'
+            if [ -f out/delivery/NAME ]; then echo; echo "Livraison candidate construite et testee (NON publiee, B-04) : $(cat out/delivery/NAME).zip"; cat out/delivery/*.zip.sha256; fi
+          } >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Artefact CI
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: subdestruckt-arch-g4-logs-b${{ github.run_number }}
+          path: |
+            out/
+            !out/packages/
+            !out/delivery/**/*.zip
+            !out/delivery/**/*.pkg
+            !out/**/*.vst3/**
+          retention-days: 30
+
+  rtsan:
+    name: RealtimeSanitizer (Engine::process)
+    runs-on: macos-15
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: LLVM Homebrew et compilation -fsanitize=realtime
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          brew install llvm ninja 2>&1 | tail -3
+          LLVM="$(brew --prefix llvm)"
+          "$LLVM/bin/clang++" --version | head -1 | tee out/rtsan_toolchain.txt
+          cmake -S . -B build-rtsan -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSUBDESTRUCKT_BUILD_PLUGIN=OFF \
+            -DCMAKE_CXX_COMPILER="$LLVM/bin/clang++" -DCMAKE_C_COMPILER="$LLVM/bin/clang" \
+            -DCMAKE_CXX_FLAGS="-fsanitize=realtime -DSBD_RTSAN" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=realtime -L$LLVM/lib/c++ -Wl,-rpath,$LLVM/lib/c++"
+          cmake --build build-rtsan 2>&1 | tail -20
+      - name: Tests du cœur sous RTSan (G-18rt)
+        run: |
+          set +e -o pipefail
+          ./build-rtsan/subdestruckt_core_tests 2>&1 | tee out/rtsan_tests.log; r=${PIPESTATUS[0]}
+          if [ $r = 0 ] && ! grep -q "RealtimeSanitizer" out/rtsan_tests.log; then
+            echo "RESULT G-18rt PASS RealtimeSanitizer ($(cat out/rtsan_toolchain.txt)) : 0 violation dans Engine::process sur l'ensemble des tests du coeur" | tee -a out/rtsan_tests.log
+          else
+            echo "RESULT G-18rt FAIL RealtimeSanitizer : violation ou echec (code $r)" | tee -a out/rtsan_tests.log
+            exit 1
+          fi
+          grep "^RESULT G-18rt" out/rtsan_tests.log >> "$GITHUB_STEP_SUMMARY"
+      - name: Contrôle négatif RTSan (allocation volontaire détectée)
+        run: |
+          set +e
+          LLVM="$(brew --prefix llvm)"
+          "$LLVM/bin/clang++" -std=c++17 -O0 -fsanitize=realtime -DSBD_RTSAN -Isource tests/rtsan/negative_control.cpp             -L"$LLVM/lib/c++" -Wl,-rpath,"$LLVM/lib/c++" -o out/rtsan_negative 2>&1 | tail -5
+          ./out/rtsan_negative > out/rtsan_negative.log 2>&1; r=$?
+          head -20 out/rtsan_negative.log
+          if [ $r != 0 ] && grep -q "RealtimeSanitizer" out/rtsan_negative.log; then
+            echo "RESULT G-18rt-neg PASS controle negatif : allocation volontaire dans une fonction nonblocking detectee par RTSan (code $r)" | tee -a out/rtsan_tests.log
+          else
+            echo "RESULT G-18rt-neg FAIL controle negatif non detecte (code $r) : RTSan inactif, G-18rt non probant" | tee -a out/rtsan_tests.log
+            exit 1
+          fi
+      - name: Annotations RTSan
+        if: always()
+        run: |
+          lines="$(grep -h "^RESULT G-18" out/rtsan_tests.log 2>/dev/null | awk 'BEGIN{ORS="%0A"} {print}')"
+          [ -n "$lines" ] && echo "::notice title=rtsan G-18::$lines" || true
+          neg="$(head -12 out/rtsan_negative.log 2>/dev/null | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+          [ -n "$neg" ] && echo "::notice title=rtsan controle negatif (sortie)::$neg" || true
+      - name: Artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: subdestruckt-arch-g4-rtsan-${{ github.run_number }}
+          path: out/

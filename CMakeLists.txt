@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G3 vertical slice.
+# SUBDESTRUCKT — ARCH-G4 (developpement integre P0/P1, base vertical slice ARCH-G3).
 # Cible produit : VST3 instrument macOS arm64 natif (M3 cible minimale, M4 Max recette). Cœur DSP sans JUCE,
 # testable sans hôte ; wrapper JUCE 9.0.6 séparé (voir docs/V1-ARCH-G3-PLAN.md).
 cmake_minimum_required(VERSION 3.22)
@@ -8,7 +8,7 @@ if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Cible de deploiement declaree (non validee, voir plan §2)")
 endif()
 
-project(SUBDESTRUCKT VERSION 0.1.0 LANGUAGES C CXX)
+project(SUBDESTRUCKT VERSION 0.2.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -19,7 +19,7 @@ DiagnosticEditor::DiagnosticEditor(SubdestrucktProcessor& p) : juce::AudioProces
   title_.setColour(juce::Label::textColourId, kAccent);
   addAndMakeVisible(title_);
 
-  for (int i = 0; i < kNumParams; ++i) {
+  for (int i = 0; i < kNumV1Params; ++i) {
     auto& row = params_[static_cast<size_t>(i)];
     const auto& spec = paramSpec(i);
     row.label.setText(juce::String(spec.name) + " (" + spec.unit + ")", juce::dontSendNotification);
@@ -34,11 +34,11 @@ DiagnosticEditor::DiagnosticEditor(SubdestrucktProcessor& p) : juce::AudioProces
     addAndMakeVisible(row.slider);
   }
 
-  for (int s = 0; s < kMaxRoutes; ++s) {
+  for (int s = 0; s < kNumV1Routes; ++s) {
     auto& r = routes_[static_cast<size_t>(s)];
     const auto& info = routeSlotInfo(s);
     const char* kind = info.kind == RouteKind::Internal ? "FM" : (info.kind == RouteKind::CrossForward ? "CROSS WT>FM" : "CROSS FM>WT");
-    r.name.setText(juce::String(nodeName(info.src)) + " > " + nodeName(info.dst) + "  [" + kind + "]", juce::dontSendNotification);
+    r.name.setText(juce::String(nodeName(info.src)) + " > " + portName(info.dst) + "  [" + kind + "]", juce::dontSendNotification);
     for (auto* l : {&r.name, &r.status, &r.effective}) {
       l->setFont(mono(12.0f));
       l->setColour(juce::Label::textColourId, kText);
@@ -92,7 +92,7 @@ void DiagnosticEditor::resized() {
   auto left = r.removeFromLeft(r.getWidth() / 2 - 4).reduced(6);
   auto right = r.withTrimmedLeft(8).reduced(6);
 
-  const int rowH = juce::jmax(22, left.getHeight() / kNumParams);
+  const int rowH = juce::jmax(22, left.getHeight() / kNumV1Params);
   for (auto& row : params_) {
     auto line = left.removeFromTop(rowH);
     row.label.setBounds(line.removeFromLeft(170));
@@ -120,7 +120,7 @@ void DiagnosticEditor::resized() {
 
 void DiagnosticEditor::refreshTopology() {
   const auto routes = proc_.currentRoutes();
-  for (int s = 0; s < kMaxRoutes; ++s) {
+  for (int s = 0; s < kNumV1Routes; ++s) {
     const auto& info = routeSlotInfo(s);
     auto& row = routes_[static_cast<size_t>(s)];
     const Route* found = nullptr;
@@ -168,7 +168,7 @@ void DiagnosticEditor::timerCallback() {
      << "   topologie active #" << juce::String(static_cast<juce::int64>(t.activeSerial.load()));
   runtime_.setText(rt, juce::dontSendNotification);
 
-  for (int s = 0; s < kMaxRoutes; ++s)
+  for (int s = 0; s < kNumV1Routes; ++s)
     routes_[static_cast<size_t>(s)].effective.setText(
         "Eff " + fmt(t.effectiveDepth[static_cast<size_t>(s)].load(), 3) + " rad  g " + fmt(t.edgeGain[static_cast<size_t>(s)].load(), 2),
         juce::dontSendNotification);

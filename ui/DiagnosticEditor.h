@@ -34,13 +34,13 @@ class DiagnosticEditor : public juce::AudioProcessorEditor, private juce::Timer 
     juce::Slider slider;
     std::unique_ptr<juce::SliderParameterAttachment> attachment;
   };
-  std::array<ParamRow, kNumParams> params_;
+  std::array<ParamRow, kNumV1Params> params_;  // paramètres v1 (diagnostic)
 
   struct RouteRow {
     juce::Label name, status, effective;
     juce::TextButton add{"+"}, remove{"-"};
   };
-  std::array<RouteRow, kMaxRoutes> routes_;
+  std::array<RouteRow, kNumV1Routes> routes_;  // routes v1 (diagnostic)
 
   juce::Label title_, runtime_, telemetry_, message_;
   juce::TextButton panic_{"Panic"}, init_{"Preset init"};
