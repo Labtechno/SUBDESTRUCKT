@@ -96,45 +96,45 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | # | Exigence | Lot | Statut | CI |
 |---|---|---|---|---|
 | R01 | Registre stable extensible (C23–C27) | F | PASS (CI run 3) | — |
-| R02 | État versionné v2 + migration 0.1.0-b5 | F | PASS (local ; CI à confirmer) | — |
-| R03 | Transactions/ownership hors RT (topologie, matrice, banque, courbes) | F | PASS (local + CI run 7) | — |
-| R04 | Timeline MIDI sample-accurate, ordre C11 étendu (bend/CC/pression) | F | PASS (local) | — |
-| R05 | Mono/Legato, priorités Last/Low/High, sustain | F | PASS (local) | — |
-| R06 | Expressivité : bend Up/Down, pression, CC1/2/11/64, vélocité | F | PASS (local) | — |
+| R02 | État versionné v2 + migration 0.1.0-b5 | F | PASS (CI run 9) | — |
+| R03 | Transactions/ownership hors RT (topologie, matrice, banque, courbes) | F | PASS (CI run 9) | — |
+| R04 | Timeline MIDI sample-accurate, ordre C11 étendu (bend/CC/pression) | F | PASS (CI run 9) | — |
+| R05 | Mono/Legato, priorités Last/Low/High, sustain | F | PASS (CI run 9) | — |
+| R06 | Expressivité : bend Up/Down, pression, CC1/2/11/64, vélocité | F | PASS (CI run 9) | — |
 | R07 | Accordage A4, microtuning 12 classes | F | IMPLEMENTED | — |
-| R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (local) | — |
-| R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (local) | — |
-| R10 | Tail/Drone/Panic | F | PASS (local) | — |
-| R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (local) | — |
-| R12 | WT morph Spectral | WT | TODO | — |
-| R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (local) | — |
-| R14 | WT phase free/retrigger/fixed/random, sync hard/soft (interne/OP) | WT | PASS (local) | — |
+| R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (CI run 9) | — |
+| R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
+| R10 | Tail/Drone/Panic | F | PASS (CI run 9) | — |
+| R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
+| R12 | WT morph Spectral | WT | TODO (morph spectral) | — |
+| R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
+| R14 | WT phase free/retrigger/fixed/random, sync hard/soft (interne/OP) | WT | PASS (CI run 9) | — |
 | R15 | WT Character | WT | IMPLEMENTED | — |
-| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | IMPLEMENTED (import/export WAV, SHA-256, banque intégrée ; éditeur graphique et générateur UI absents) — WTA-01 PASS local | — |
-| R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (local) | — |
-| R18 | Z : 3 transformations attestées | WT | PASS (local) | — |
+| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | IMPLEMENTED (import/export WAV, SHA-256, intégration à l'état ; éditeur/générateur UI absents) — WTA-01 PASS local, CI run 13 | — |
+| R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (CI run 9) | — |
+| R18 | Z : 3 transformations attestées | WT | PASS (CI run 9) | — |
 | R19 | Z : 5 transformations historiques | WT | BLOCKED | — |
-| R20 | FM 4 opérateurs, PM/LinFM/TZFM/ExpFM par destinataire | FM | PASS (local) | — |
-| R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (local) | — |
-| R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (local) | — |
+| R20 | FM 4 opérateurs, PM/LinFM/TZFM/ExpFM par destinataire | FM | PASS (CI run 9) | — |
+| R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (CI run 9) | — |
+| R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (CI run 9) | — |
 | R23 | Matrice 4×4 + 10 topologies préréglées | FM | IMPLEMENTED | — |
 | R24 | ExpFM benchmark | FM | PASS (PERF-02 : ExpFM = coût PM/Lin/TZ) | — |
-| R25 | CROSS 55 routes B-T2 sticky, bus Raw/Normalized, directions | CR | PASS (local) | — |
-| R26 | Sync bidirectionnel, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset | CR | PASS (local) | — |
-| R27 | Destruction N1/D1/Y1/S1 | DST | PASS (local) | — |
-| R28 | Destruction N2/D2/Y2/S2 | DST | PASS (local) | — |
-| R29 | 6 slots, chaînes locales/globale, dry/wet aligné, latence | DST | PASS (local) | — |
-| R30 | Filtres F1/F2 | FLT | PASS (local) | — |
-| R31 | Filtres F3/F4 | FLT | PASS (local) | — |
-| R32 | Pre/Post, excitation, stéréo linked/dual | FLT | PASS (local) | — |
-| R33 | Matrice globale 64, Via, courbes, rates, inactivité, macros | MOD | PASS (local) | — |
-| R34 | RNG PCG32/xoshiro benchmark, chaos 3 modèles | MOD | PASS (local) | — |
+| R25 | CROSS 55 routes B-T2 sticky, bus Raw/Normalized, directions | CR | PASS (CI run 9) | — |
+| R26 | Sync bidirectionnel, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset | CR | PASS (CI run 9) | — |
+| R27 | Destruction N1/D1/Y1/S1 | DST | PASS (CI run 9) | — |
+| R28 | Destruction N2/D2/Y2/S2 | DST | PASS (CI run 9) | — |
+| R29 | 6 slots, chaînes locales/globale, dry/wet aligné, latence | DST | PASS (CI run 9) | — |
+| R30 | Filtres F1/F2 | FLT | PASS (CI run 9) | — |
+| R31 | Filtres F3/F4 | FLT | PASS (CI run 9) | — |
+| R32 | Pre/Post, excitation, stéréo linked/dual | FLT | PASS (CI run 9) | — |
+| R33 | Matrice globale 64, Via, courbes, rates, inactivité, macros | MOD | PASS (CI run 9) | — |
+| R34 | RNG PCG32/xoshiro benchmark, chaos 3 modèles | MOD | PASS (CI run 9) | — |
 | R35 | Suiveurs ×3, Y2 sources | MOD | IMPLEMENTED | — |
-| R36 | Presets : bibliothèque, tags/favoris, import/export | STATE | PASS (local) | — |
-| R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (local) | — |
-| R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (local) | — |
-| R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (local) | — |
-| R40 | Limiteur musical optionnel, garde numérique | Q | IMPLEMENTED | — |
+| R36 | Presets : bibliothèque, tags/favoris, import/export | STATE | PASS (CI run 9) | — |
+| R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (CI run 9) | — |
+| R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (CI run 9) | — |
+| R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (CI run 9) | — |
+| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (CI run 9) | — |
 | R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
 | R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
 | R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
@@ -142,9 +142,9 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (zoom 75–150 %, focus clavier ; DPI/contrastes non mesurés) | — |
 | R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (CI runs 3, 6, 7 : wrapper, hôte, pluginval 10) | — |
 | R47 | MIDI Learn global séparé des presets | PLG | IMPLEMENTED (file audio->message, latence ≤ 33 ms) | — |
-| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (CI VM, non publié) | — |
-| R49 | Manuel HTML édition G4 + assistant de recette | DOC | TODO | — |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | TODO | — |
+| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (CI run 9 : paquets 0.2.0-b9 construits, recette VM PASS ; NON publiés, B-04) | — |
+| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (manuel 0.2.0 construit, contrôles bloquants OK, publié sur gh-pages ; tests Playwright non exécutés) | — |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | TODO (captures créatives Freeze/Glitch R2 non persistées) | — |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -159,12 +159,14 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 
 | 2026-11-26 | UI fonctionnelle | 764ce4f | CI run 7 : build-test-package SUCCESS (UI compilée macOS) ; RTSan FAIL (règle corrigée en 172a0d6) |
 | 2026-11-26 | PERF, banques utilisateur, textes 0.2.0 | f640c5c..775bfdf | Local PASS ; CI en cours |
-| 2026-11-26 | Fusion outillage du manuel (feature/arch-g3-user-manual) | (voir git) | build.py à généraliser |
+| 2026-11-26 | Fusion outillage du manuel (feature/arch-g3-user-manual) | 3a81d8a | — |
+| 2026-11-26 | Manuel 0.2.0 + publication gh-pages (manual/0.2.0) | 573b60a / gh-pages 1631944 | build OK ; CI run 9 (f640c5c) SUCCESS complet (63/65, 2 FAIL documentés) |
+| 2026-11-26 | Rapport final | (ce commit) | docs/V1-ARCH-G4-REPORT.md ; avancement 85,7 % |
 
 ## 6. Prochaine action
-Manuel 0.2.0 : généraliser manual/build.py par version (b5 depuis tests/regression/b5/Parameters.cpp ; 0.2.0 depuis
-ParamTable.inc), adapter tools/manual-audio/render_examples.cpp à l'API G4, créer manual/src/0.2.0 (chapitres,
-recette G4, captures, audio) ; puis rapport final docs/V1-ARCH-G4-REPORT.md.
+Arbitrages du rapport §7 (B-04 en priorité pour la recette physique). Développement possible sans arbitrage : morph
+spectral (R12), captures créatives R2 (R50), éditeur/générateur de formes, OS interne de N1, tests Playwright du manuel,
+vérification des runs CI 13/14.
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
