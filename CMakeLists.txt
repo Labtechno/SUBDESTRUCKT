@@ -74,6 +74,9 @@ if(SUBDESTRUCKT_BUILD_TESTS)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)
+  # Rendu des exemples audio du manuel avec le moteur réel (outil hors produit)
+  add_executable(subdestruckt_manual_render tools/manual-audio/render_examples_g4.cpp)
+  target_link_libraries(subdestruckt_manual_render PRIVATE subdestruckt_core)
 endif()
 
 # ---------------------------------------------------------------- plugin VST3 (L0) + UI de diagnostic

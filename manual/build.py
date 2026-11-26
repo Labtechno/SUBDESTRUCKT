@@ -6,7 +6,8 @@ Usage : python manual/build.py [--version 0.1.0-b5] [--out manual/dist]
 Assemble pour chaque version :  dist/<version>/index.html (manuel), dist/<version>/recette.html (assistant),
 dist/<version>/version.json (manifeste), dist/<version>/schema/results.schema.json, ressources copiées.
 Génère dist/index.html (liste des versions). Effectue des contrôles de cohérence bloquants :
-  - plages / unités / défauts / lissages des 22 paramètres = source/core/Parameters.cpp ;
+  - plages / unités / défauts / lissages des paramètres = registre de la version (0.1.0-b5 : oracle figé
+    tests/regression/b5/Parameters.cpp ; 0.2.0 : source/core/ParamTable.inc, 684 paramètres) ;
   - tout fichier référencé (src, href locaux, audio) existe ; aucun marqueur {{…}} résiduel ;
   - identifiants HTML uniques ; aucune ressource externe (http(s) hors liens de téléchargement listés) ;
   - aucune adresse électronique ; aucun jeton ;
@@ -43,8 +44,44 @@ def fmt_num(v):
     return s.replace(".", ",").replace("-", "−")
 
 
-def parse_param_registry():
-    text = (REPO / "source/core/Parameters.cpp").read_text(encoding="utf-8")
+def parse_param_registry_g4():
+    text = (REPO / "source/core/ParamTable.inc").read_text(encoding="utf-8")
+    rx = re.compile(r'SBD_PARAM\((\w+), "([^"]+)", "([^"]+)", ParamType::(\w+), "([^"]*)", (-?[\d.e+-]+)f, (-?[\d.e+-]+)f, (-?[\d.e+-]+)f, ([\d.]+)f, (true|false), (\d+), Domain::(\w+), [^,]+, (true|false), [^,]+, [^,]+, [^,]+, "([^"]*)", "([^"]*)", (\d+)\)')
+    out = {}
+    for m in rx.finditer(text):
+        _, sid, name, typ, unit, lo, hi, d, sm, auto, ver, dom, rnd, choices, group, stage = m.groups()
+        out[sid] = dict(name=name, unit=unit, type=typ, min=float(lo), max=float(hi), default=float(d), smoothingMs=float(sm),
+                        automatable=auto == "true", version=int(ver), choices=choices.split("|") if choices else [], group=group)
+    if len(out) < 600:
+        fail(f"registre G4 : {len(out)} entrées lues")
+    return out
+
+
+def param_table_g4(reg):
+    rows, group = [], None
+    for sid, r in reg.items():
+        if r["group"] != group:
+            group = r["group"]
+            rows.append(f'<tr class="grp"><th colspan="6" scope="colgroup">{esc(group)}</th></tr>')
+        if r["type"] == "Choice":
+            rng = " / ".join(r["choices"])
+            dft = r["choices"][int(r["default"])]
+        elif r["type"] == "Bool":
+            rng, dft = "Off / On", "On" if r["default"] >= 0.5 else "Off"
+        else:
+            rng, dft = f'{fmt_num(r["min"])} à {fmt_num(r["max"])}', fmt_num(r["default"])
+        rows.append(f'<tr><th scope="row">{esc(r["name"])}</th><td><code>{esc(sid)}</code></td><td>{esc(rng)}</td>'
+                    f'<td>{esc(r["unit"] or "—")}</td><td>{esc(dft)}</td><td>{"oui" if r["automatable"] else "non (structurel)"}</td></tr>')
+    return ('<div class="table-wrap"><table class="params"><caption>Registre complet : ' + str(len(reg)) + ' paramètres, générés depuis '
+            'source/core/ParamTable.inc (identifiants stables)</caption><thead><tr><th scope="col">Paramètre</th><th scope="col">StableID</th>'
+            '<th scope="col">Plage ou choix</th><th scope="col">Unité</th><th scope="col">Défaut</th><th scope="col">Automatisable</th></tr></thead><tbody>'
+            + "".join(rows) + '</tbody></table></div>')
+
+
+def parse_param_registry(kind="b5"):
+    if kind == "g4":
+        return parse_param_registry_g4()
+    text = (REPO / "tests/regression/b5/Parameters.cpp").read_text(encoding="utf-8")
     rx = re.compile(r'\{"([a-z0-9_.]+)", "([^"]+)", "([^"]+)", (-?[\d.]+)f, (-?[\d.]+)f, (-?[\d.]+)f, ([\d.]+)f, (true|false)')
     out = {}
     for m in rx.finditer(text):
@@ -97,7 +134,7 @@ def audio_block(ex_by_id, ids, label):
         btns.append(f'<button type="button" class="btn play" data-src="audio/{e["file"]}" aria-pressed="false"><span class="state" aria-hidden="true">▶</span> {esc(tag)}{esc(e["title"])}</button>')
     meta = " · ".join(f'{ex_by_id[i]["seconds"]:.1f} s' for i in ids)
     return (f'<div class="ab" role="group" aria-label="{esc(label)}"><h4>{esc(label)}</h4><div class="players">{"".join(btns)}</div>'
-            f'<p class="meta">Rendu du moteur réel 0.1.0-b5 · 48 kHz · normalisé à −20 dBFS RMS · {meta} · détails au chapitre 12</p></div>')
+            f'<p class="meta">Rendu du moteur réel {esc(CURRENT["version"])} · 48 kHz · normalisé à −20 dBFS RMS · {meta} · détails au chapitre {CURRENT["audioChapter"]}</p></div>')
 
 
 def audio_catalog(examples, audio_dir):
@@ -121,6 +158,7 @@ def audio_catalog(examples, audio_dir):
 
 
 DEFAULTS = {}
+CURRENT = {"version": "0.1.0-b5", "audioChapter": 12}
 
 
 def exercises_html(exs, ex_by_id):
@@ -205,10 +243,12 @@ def build_version(ver, out_root, meta):
     out.mkdir(parents=True)
     for d in ("css", "js", "assets", "audio", "recette"):
         shutil.copytree(src / d, out / d)
-    reg = parse_param_registry()
+    kind = meta.get("registry", "b5")
+    reg = parse_param_registry(kind)
+    CURRENT.update(version=ver, audioChapter=meta.get("audioChapter", 12))
     DEFAULTS.clear()
     DEFAULTS.update({k: v["default"] for k, v in reg.items()})
-    pdoc = json.loads((src / "parameters.json").read_text(encoding="utf-8"))
+    pdoc = json.loads((src / "parameters.json").read_text(encoding="utf-8")) if kind == "b5" else None
     gl = json.loads((src / "glossary.json").read_text(encoding="utf-8"))
     tests = json.loads((src / "recette/tests.json").read_text(encoding="utf-8"))
     exs = json.loads((src / "exercises.json").read_text(encoding="utf-8"))
@@ -221,14 +261,16 @@ def build_version(ver, out_root, meta):
             if k not in reg or not (reg[k]["min"] <= v <= reg[k]["max"]):
                 fail(f"exemple {e['id']} : paramètre {k}={v} hors registre")
     ids = [t["id"] for t in tests["tests"]]
-    if ids != [f"R-{i:02d}" for i in range(1, 16)] or sorted(sum((g["tests"] for g in tests["groups"]), [])) != ids:
-        fail("tests.json : R-01..R-15 incomplets ou mal groupés")
+    nrec = meta.get("recetteCount", 15)
+    if ids != [f"R-{i:02d}" for i in range(1, nrec + 1)] or sorted(sum((g["tests"] for g in tests["groups"]), [])) != ids:
+        fail(f"tests.json : R-01..R-{nrec:02d} incomplets ou mal groupés")
     if len(exs) < 8:
         fail("moins de 8 exercices")
 
     chapters = sorted((src / "chapters").glob("*.html"))
-    if len(chapters) != 16:
-        fail(f"{len(chapters)} chapitres (16 attendus)")
+    nch = meta.get("chapterCount", 16)
+    if len(chapters) != nch:
+        fail(f"{len(chapters)} chapitres ({nch} attendus)")
     sections = []
     toc = []
     for path in chapters:
@@ -244,7 +286,7 @@ def build_version(ver, out_root, meta):
         t = t.replace("</section>", f'<nav class="chapter-nav" aria-label="Chapitres précédent et suivant">{prev}{nxt}</nav></section>', 1)
         sections[k][1] = t
     body = "\n".join(t for _, t in sections)
-    body = body.replace("{{PARAM_TABLE}}", param_table(reg, pdoc))
+    body = body.replace("{{PARAM_TABLE}}", param_table(reg, pdoc) if kind == "b5" else param_table_g4(reg))
     body = body.replace("{{AUDIO_CATALOG}}", audio_catalog(exdoc["examples"], src / "audio"))
     body = body.replace("{{EXERCISES}}", exercises_html(exs, ex_by_id))
     body = body.replace("{{RECETTE_SUMMARY}}", recette_summary(tests))
@@ -259,7 +301,7 @@ def build_version(ver, out_root, meta):
             .replace("{{TOC}}", toc_html).replace("{{CHAPTERS}}", body).replace("{{GLOSSARY_JSON}}", glossary_js.replace("</", "<\\/")))
 
     rcfg = dict(campaignId=tests["campaignId"], version=ver, buildSha=meta["buildSourceSha"], docSha=meta["documentationSha"],
-                exportFileName="SUBDESTRUCKT_ARCH_G3_RESULTS.json", groups=tests["groups"], tests=tests["tests"])
+                exportFileName=meta.get("exportFileName", "SUBDESTRUCKT_ARCH_G3_RESULTS.json"), groups=tests["groups"], tests=tests["tests"])
     rtpl = (ROOT / "templates/recette.html").read_text(encoding="utf-8")
     rpage = (rtpl.replace("{{VERSION}}", ver).replace("{{BUILD_SHA}}", meta["buildSourceSha"])
              .replace("{{RECETTE_CONFIG}}", json.dumps(rcfg, ensure_ascii=False).replace("</", "<\\/")))
@@ -271,7 +313,7 @@ def build_version(ver, out_root, meta):
     files = sorted(p for p in out.rglob("*") if p.is_file())
     manifest = dict(meta, version=ver, generator="manual/build.py",
                     audioExamples=[dict(id=e["id"], file=f'audio/{e["file"]}', sha256=e["sha256"]) for e in exdoc["examples"]],
-                    screenshot=dict(file="assets/ui_diagnostic_macos.png", sha256=sha256(out / "assets/ui_diagnostic_macos.png")),
+                    screenshot=dict(file=meta.get("screenshot", "assets/ui_diagnostic_macos.png"), sha256=sha256(out / meta.get("screenshot", "assets/ui_diagnostic_macos.png"))),
                     files={str(p.relative_to(out)).replace("\\", "/"): sha256(p) for p in files})
     (out / "version.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     check_output(page, out, "index.html")

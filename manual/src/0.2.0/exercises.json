@@ -1,0 +1,234 @@
+[
+ {
+  "n": 1,
+  "title": "Parcourir une banque",
+  "level": "Débutant",
+  "duration": "5 min",
+  "goal": "Entendre le rôle de X.",
+  "concepts": [
+   "wavetable",
+   "X"
+  ],
+  "start": "Init.",
+  "steps": [
+   "Sound Design : banque Basic Shapes.",
+   "OP1 Level 0.",
+   "Tournez WT X de 0 à 1."
+  ],
+  "values": "Banque Basic · OP1 Level 0",
+  "expected": "Du sinus au carré en passant par triangle et dent de scie.",
+  "listen": "La brillance augmente avec X.",
+  "mistakes": "Oublier de couper OP1 : le FM masque la WT.",
+  "variation": "Essayez Stepped au lieu de Linear.",
+  "ab": [
+   "e02_xy_basic",
+   "e03_xy_square"
+  ]
+ },
+ {
+  "n": 2,
+  "title": "Plier la forme",
+  "level": "Débutant",
+  "duration": "5 min",
+  "goal": "Découvrir Z.",
+  "concepts": [
+   "Z",
+   "Harmonic Fold"
+  ],
+  "start": "Init, OP1 Level 0.",
+  "steps": [
+   "WT ZA Transform : Harmonic Fold.",
+   "Montez WT Z Master doucement."
+  ],
+  "values": "ZA Harmonic Fold · Z 0 → 0,6",
+  "expected": "Des harmoniques apparaissent progressivement, la hauteur ne change pas.",
+  "listen": "Le timbre devient métallique.",
+  "mistakes": "Z Master à 0 : aucune transformation.",
+  "variation": "Placez Phase Warp en ZB.",
+  "audio": "e04_z_fold"
+ },
+ {
+  "n": 3,
+  "title": "FM : PM contre Linear",
+  "level": "Intermédiaire",
+  "duration": "10 min",
+  "goal": "Comparer deux modes FM.",
+  "concepts": [
+   "FM",
+   "PM",
+   "Linear FM"
+  ],
+  "start": "Init, WT Level 0.",
+  "steps": [
+   "OP1 Mod Mode : PM, FM OP2>OP1 à 2.",
+   "Puis Linear FM, profondeur 1."
+  ],
+  "values": "OP2 Ratio 2",
+  "expected": "Deux spectres différents à profondeur comparable.",
+  "listen": "Linear FM fait légèrement dériver la hauteur perçue.",
+  "mistakes": "Pas de route OP2>OP1 dans Réseaux : la profondeur n'agit pas.",
+  "variation": "Essayez Exponential FM.",
+  "ab": [
+   "e07_fm_pm",
+   "e08_fm_lin"
+  ]
+ },
+ {
+  "n": 4,
+  "title": "Une topologie en un clic",
+  "level": "Débutant",
+  "duration": "5 min",
+  "goal": "Changer l'architecture FM.",
+  "concepts": [
+   "topologie"
+  ],
+  "start": "Init.",
+  "steps": [
+   "Sound Design › FM : Topologie FM › Cascade.",
+   "Montez OP3 et OP4 dans la matrice."
+  ],
+  "values": "Cascade",
+  "expected": "Un son plus complexe ; les routes CROSS sont conservées.",
+  "listen": "Comparez avec Parallel.",
+  "mistakes": "Profondeurs à 0 : rien ne change.",
+  "variation": "Hybrid Mesh pour un son chaotique."
+ },
+ {
+  "n": 5,
+  "title": "CROSS dans les deux sens",
+  "level": "Intermédiaire",
+  "duration": "10 min",
+  "goal": "Entendre l'interaction.",
+  "concepts": [
+   "CROSS"
+  ],
+  "start": "Init.",
+  "steps": [
+   "Performance : CROSS Master de 0 à 1.",
+   "Sound Design : CROSS WT>FM puis FM>WT séparément."
+  ],
+  "values": "CROSS Master 0 → 1",
+  "expected": "L'interaction enrichit et durcit le son.",
+  "listen": "Le son vit davantage quand les deux sens sont actifs.",
+  "mistakes": "Confondre CROSS (modulation) et Cross Audio (mélange).",
+  "variation": "Cross Audio Ring à 0,8.",
+  "audio": "e17_cross_ring"
+ },
+ {
+  "n": 6,
+  "title": "Comb accordé",
+  "level": "Intermédiaire",
+  "duration": "10 min",
+  "goal": "Faire chanter un filtre.",
+  "concepts": [
+   "comb",
+   "keytrack"
+  ],
+  "start": "Init.",
+  "steps": [
+   "PROCESS › Global : F2 Comb, Keytrack 1, Feedback 0,85, Mix 0,5.",
+   "Jouez plusieurs notes."
+  ],
+  "values": "F2 Comb · Key 1",
+  "expected": "Une résonance qui suit les notes.",
+  "listen": "Le timbre devient creux et métallique.",
+  "mistakes": "Keytrack à 0 : la résonance reste fixe.",
+  "variation": "Feedback négatif : une octave plus bas.",
+  "audio": "e11_f2_comb"
+ },
+ {
+  "n": 7,
+  "title": "Destruction en chaîne",
+  "level": "Avancé",
+  "duration": "15 min",
+  "goal": "Combiner deux processeurs.",
+  "concepts": [
+   "destruction",
+   "ordre"
+  ],
+  "start": "Init.",
+  "steps": [
+   "PROCESS › Global : Destruction 1 = N1, Destruction 2 = D1.",
+   "Réglez Mix 0,5 sur chacun.",
+   "Basculez le filtre Pre/Post."
+  ],
+  "values": "N1 drive 12 · D1 5 bits",
+  "expected": "Une saturation pliée puis granuleuse.",
+  "listen": "L'ordre change le résultat.",
+  "mistakes": "Gains de sortie trop élevés.",
+  "variation": "Remplacez D1 par S1 Ring.",
+  "ab": [
+   "e14_d1_crush",
+   "e15_s1_ring"
+  ]
+ },
+ {
+  "n": 8,
+  "title": "Moduler avec la matrice",
+  "level": "Intermédiaire",
+  "duration": "10 min",
+  "goal": "Créer une modulation.",
+  "concepts": [
+   "matrice",
+   "LFO",
+   "Inspector"
+  ],
+  "start": "Init.",
+  "steps": [
+   "Cliquez sur FM OP2>OP1.",
+   "Inspector : source LFO1, profondeur 0,4, + Modulation.",
+   "MOD : LFO1 Rate 0,7 Hz."
+  ],
+  "values": "LFO1 → FM OP2>OP1, 0,4",
+  "expected": "Le spectre FM respire.",
+  "listen": "L'anneau bleu montre la valeur effective.",
+  "mistakes": "Choisir une destination discrète : refusée.",
+  "variation": "Rythme Audio, LFO à 200 Hz.",
+  "audio": "e16_mod_lfo"
+ },
+ {
+  "n": 9,
+  "title": "Explorer avec Mutate",
+  "level": "Débutant",
+  "duration": "5 min",
+  "goal": "Trouver des variations.",
+  "concepts": [
+   "Mutate",
+   "Undo"
+  ],
+  "start": "Un preset d'usine.",
+  "steps": [
+   "Engineering › Randomizer : Controlled, intensité 0,3.",
+   "MUTATE plusieurs fois.",
+   "Undo pour revenir."
+  ],
+  "values": "Controlled · 0,3",
+  "expected": "Des variations proches de l'original.",
+  "listen": "Comparez Industrial et Experimental.",
+  "mistakes": "Intensité 0 : aucun changement.",
+  "variation": "Verrouillez CROSS Master depuis l'Inspector."
+ },
+ {
+  "n": 10,
+  "title": "Son tenu avec Drone",
+  "level": "Débutant",
+  "duration": "5 min",
+  "goal": "Tenir une note sans clavier.",
+  "concepts": [
+   "Drone",
+   "PANIC"
+  ],
+  "start": "Doom Fold Comb.",
+  "steps": [
+   "Jouez une note.",
+   "Cochez Drone.",
+   "Relâchez la touche.",
+   "PANIC pour arrêter."
+  ],
+  "values": "Drone on",
+  "expected": "La note continue après le relâchement ; PANIC l'arrête et désarme le Drone.",
+  "listen": "Le son évolue lentement.",
+  "mistakes": "Croire que le preset active le Drone : jamais.",
+  "variation": "Ajoutez un LFO lent sur WT Y."
+ }
+]

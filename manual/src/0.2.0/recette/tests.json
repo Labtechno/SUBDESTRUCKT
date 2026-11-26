@@ -1,0 +1,471 @@
+{
+ "schemaVersion": 1,
+ "campaignId": "SUBDESTRUCKT-ARCH-G4-RECETTE-PHYSIQUE",
+ "source": "manual/src/0.2.0/recette/tests.json",
+ "groups": [
+  {
+   "id": "installation",
+   "title": "Installation",
+   "tests": [
+    "R-01",
+    "R-02",
+    "R-03",
+    "R-04"
+   ]
+  },
+  {
+   "id": "musical",
+   "title": "Validation musicale",
+   "tests": [
+    "R-05",
+    "R-06",
+    "R-07",
+    "R-08",
+    "R-09",
+    "R-10",
+    "R-11"
+   ]
+  },
+  {
+   "id": "technique",
+   "title": "Validation technique",
+   "tests": [
+    "R-12",
+    "R-13",
+    "R-14",
+    "R-15",
+    "R-16"
+   ]
+  },
+  {
+   "id": "packages",
+   "title": "Désinstallation et réinstallation",
+   "tests": [
+    "R-17",
+    "R-18"
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "id": "R-01",
+   "title": "Intégrité de l'archive",
+   "official": {
+    "procedure": "shasum -a 256 du ZIP ; shasum -a 256 -c SHA256SUMS.txt",
+    "expected": "Empreinte identique à celle communiquée ; 4 lignes OK."
+   },
+   "why": "Vérifier que l'archive est exactement celle construite et testée.",
+   "prerequisites": [
+    "Le ZIP reçu par le canal privé et son empreinte.",
+    "Terminal."
+   ],
+   "skills": "Coller une commande dans le Terminal.",
+   "steps": [
+    "Calculez l'empreinte du ZIP et comparez-la à celle communiquée.",
+    "Dézippez, puis shasum -a 256 -c SHA256SUMS.txt."
+   ],
+   "expected": "Empreinte identique à celle communiquée ; 4 lignes OK.",
+   "pass": "Empreinte identique ET 4 lignes OK.",
+   "fail": "Empreinte différente ou ligne FAILED.",
+   "onFail": "Ne pas installer ; signaler les deux empreintes.",
+   "evidenceHint": "Texte des deux commandes."
+  },
+  {
+   "id": "R-02",
+   "title": "Installation et mise à jour",
+   "official": {
+    "procedure": "Installer.pkg par-dessus 0.1.0-b5 ou sur un Mac propre",
+    "expected": "Installation réussie ; bundle présent ; version 0.2.0."
+   },
+   "why": "Vérifier l'installation et la mise à jour.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Fermez les DAW.",
+    "Ouvrez l'Installer et suivez-le.",
+    "Vérifiez /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3."
+   ],
+   "expected": "Installation réussie ; bundle présent ; version 0.2.0.",
+   "pass": "Installation réussie, bundle présent.",
+   "fail": "Échec, message d'erreur, bundle absent.",
+   "onFail": "Noter le message ; joindre /var/log/install.log.",
+   "evidenceHint": "Capture de la fin d'installation."
+  },
+  {
+   "id": "R-03",
+   "title": "Découverte dans la DAW",
+   "official": {
+    "procedure": "Analyse des plugins VST3",
+    "expected": "SUBDESTRUCKT (Labtechno, instrument) listé et instanciable."
+   },
+   "why": "Vérifier la découverte VST3.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Relancez l'analyse des plugins.",
+    "Insérez SUBDESTRUCKT sur une piste instrument.",
+    "Ouvrez l'éditeur."
+   ],
+   "expected": "SUBDESTRUCKT (Labtechno, instrument) listé et instanciable.",
+   "pass": "Plugin trouvé, éditeur affiché.",
+   "fail": "Plugin absent ou plantage.",
+   "onFail": "Noter la DAW et sa version.",
+   "evidenceHint": "Capture de l'éditeur."
+  },
+  {
+   "id": "R-04",
+   "title": "Projet 0.1.0-b5",
+   "official": {
+    "procedure": "Ouvrir un projet enregistré avec 0.1.0-b5",
+    "expected": "Le son est identique ; aucun message d'erreur."
+   },
+   "why": "Vérifier la migration d'état.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ouvrez un projet 0.1.0-b5 existant.",
+    "Écoutez et comparez à votre souvenir ou à un rendu antérieur."
+   ],
+   "expected": "Le son est identique ; aucun message d'erreur.",
+   "pass": "Son identique.",
+   "fail": "Son différent ou état refusé.",
+   "onFail": "Conserver le projet ; noter le message de la barre.",
+   "evidenceHint": "Rendu audio avant/après si disponible."
+  },
+  {
+   "id": "R-05",
+   "title": "Performance",
+   "official": {
+    "procedure": "Espace Performance",
+    "expected": "X, Y, Z, CROSS, macros et FM INDEX agissent audiblement ; aucune commande inactive."
+   },
+   "why": "Vérifier la façade jouable.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Chargez Cross Metal.",
+    "Tournez X, Y, Z, CROSS Master, Macro 1.",
+    "Tournez FM INDEX ; lisez le paramètre affiché dessous."
+   ],
+   "expected": "X, Y, Z, CROSS, macros et FM INDEX agissent audiblement ; aucune commande inactive.",
+   "pass": "Chaque commande agit.",
+   "fail": "Une commande sans effet audible.",
+   "onFail": "Noter la commande.",
+   "evidenceHint": "Courte vidéo ou description."
+  },
+  {
+   "id": "R-06",
+   "title": "Wavetable et banques",
+   "official": {
+    "procedure": "Sound Design › WT",
+    "expected": "Changement de banque, X/Y, Z (3 transformations), Clean/Raw audibles."
+   },
+   "why": "Vérifier le moteur WT.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Choisissez Formants puis Metal Spectra.",
+    "Essayez Harmonic Fold, Phase Warp, Spectral Mutation.",
+    "Comparez Clean et Raw sur une note aiguë."
+   ],
+   "expected": "Changement de banque, X/Y, Z (3 transformations), Clean/Raw audibles.",
+   "pass": "Tout est audible et sans craquement anormal.",
+   "fail": "Silence, craquement, plantage.",
+   "onFail": "Noter le réglage.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-07",
+   "title": "FM 4 opérateurs",
+   "official": {
+    "procedure": "Sound Design › FM",
+    "expected": "Modes PM/Linear/TZ/Exp et topologies changent le son."
+   },
+   "why": "Vérifier le moteur FM.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Topologie Cascade.",
+    "OP1 Mod Mode : PM, Linear FM, Through-Zero FM, Exponential FM."
+   ],
+   "expected": "Modes PM/Linear/TZ/Exp et topologies changent le son.",
+   "pass": "Changements audibles.",
+   "fail": "Absence d'effet ou instabilité.",
+   "onFail": "Noter la topologie.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-08",
+   "title": "CROSS et réseau",
+   "official": {
+    "procedure": "Engineering › Réseaux",
+    "expected": "Ajout/retrait de routes ; classes affichées ; aucune instabilité."
+   },
+   "why": "Vérifier les liaisons et la causalité.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ajoutez OP2>WT.X puis WT>OP3.",
+    "Lisez la classe (Immediate/Delayed).",
+    "Retirez-les en jouant."
+   ],
+   "expected": "Ajout/retrait de routes ; classes affichées ; aucune instabilité.",
+   "pass": "Routes ajoutées et retirées sans plantage.",
+   "fail": "Refus inexpliqué, plantage, bruit.",
+   "onFail": "Noter le message de la barre.",
+   "evidenceHint": "Capture de la liste."
+  },
+  {
+   "id": "R-09",
+   "title": "Filtres",
+   "official": {
+    "procedure": "PROCESS : F1 à F4",
+    "expected": "Chaque type agit ; Excitation (Note) fait résonner F2/F4."
+   },
+   "why": "Vérifier les filtres.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Global : F1 LP12, puis F2 Comb (Key 1), F3, F4 Metal.",
+    "Excitation Note sur F4."
+   ],
+   "expected": "Chaque type agit ; Excitation (Note) fait résonner F2/F4.",
+   "pass": "Effets audibles.",
+   "fail": "Effet absent, auto-oscillation non armée persistante au-delà de 10 s.",
+   "onFail": "Noter le type.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-10",
+   "title": "Destruction",
+   "official": {
+    "procedure": "PROCESS : N1 à S2",
+    "expected": "Chaque processeur agit ; Mix 0 = contournement."
+   },
+   "why": "Vérifier la destruction.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Essayez les 8 processeurs sur Global 1.",
+    "Mix à 0 puis 1."
+   ],
+   "expected": "Chaque processeur agit ; Mix 0 = contournement.",
+   "pass": "Effets audibles, Mix 0 neutre.",
+   "fail": "Effet absent ou plantage.",
+   "onFail": "Noter le processeur.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-11",
+   "title": "Modulation et MIDI",
+   "official": {
+    "procedure": "Inspector et matrice ; pitch bend, molette, pression, sustain",
+    "expected": "Une modulation créée agit ; l'expression MIDI agit."
+   },
+   "why": "Vérifier la modulation et l'expressivité.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Inspector : LFO1 vers WT X.",
+    "Pitch bend, molette (source Mod Wheel), pédale de sustain."
+   ],
+   "expected": "Une modulation créée agit ; l'expression MIDI agit.",
+   "pass": "Effets conformes.",
+   "fail": "Sans effet.",
+   "onFail": "Noter la source.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-12",
+   "title": "Presets, Undo, Randomizer",
+   "official": {
+    "procedure": "Engineering › État et Randomizer",
+    "expected": "Sauvegarde/rechargement ; Undo/Redo ; Mutate reproductible."
+   },
+   "why": "Vérifier l'état.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Sauvegardez un preset, rechargez-le.",
+    "MUTATE puis Undo, Redo."
+   ],
+   "expected": "Sauvegarde/rechargement ; Undo/Redo ; Mutate reproductible.",
+   "pass": "Retour exact ; preset identique.",
+   "fail": "Écart, perte de réglage.",
+   "onFail": "Noter l'étape.",
+   "evidenceHint": "Nom du preset."
+  },
+  {
+   "id": "R-13",
+   "title": "Rechargement de projet",
+   "official": {
+    "procedure": "Enregistrer, fermer, rouvrir le projet",
+    "expected": "Son et réglages identiques ; Drone non réactivé sans autorisation."
+   },
+   "why": "Vérifier l'état DAW.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Modifiez des réglages et une route.",
+    "Enregistrez, fermez, rouvrez."
+   ],
+   "expected": "Son et réglages identiques ; Drone non réactivé sans autorisation.",
+   "pass": "Identique.",
+   "fail": "Différence.",
+   "onFail": "Noter la différence.",
+   "evidenceHint": "Rendu avant/après."
+  },
+  {
+   "id": "R-14",
+   "title": "Fréquences et latence",
+   "official": {
+    "procedure": "44,1 / 48 / 88,2 / 96 kHz ; S2 actif",
+    "expected": "Son correct aux 4 fréquences ; compensation de latence correcte avec S2."
+   },
+   "why": "Vérifier fréquences et PDC.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Changez la fréquence de la DAW.",
+    "Activez S2 sur Global 1 ; vérifiez l'alignement avec une autre piste."
+   ],
+   "expected": "Son correct aux 4 fréquences ; compensation de latence correcte avec S2.",
+   "pass": "Correct.",
+   "fail": "Décalage, silence.",
+   "onFail": "Noter la fréquence.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-15",
+   "title": "Instances et performance",
+   "official": {
+    "procedure": "4 instances, Quality Normal puis High",
+    "expected": "Lecture sans décrochage ; charge affichée cohérente."
+   },
+   "why": "Vérifier la charge sur votre Mac (non certifiante).",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ouvrez 4 instances avec Glitch Lab.",
+    "Lisez la charge CPU (Diagnostics) et celle de la DAW."
+   ],
+   "expected": "Lecture sans décrochage ; charge affichée cohérente.",
+   "pass": "Pas de décrochage.",
+   "fail": "Décrochages audio.",
+   "onFail": "Noter la machine et la taille de bloc.",
+   "evidenceHint": "Valeurs relevées."
+  },
+  {
+   "id": "R-16",
+   "title": "Panic et Drone",
+   "official": {
+    "procedure": "PANIC ; Drone",
+    "expected": "PANIC coupe en moins d'une seconde et désarme le Drone."
+   },
+   "why": "Vérifier la sûreté.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Drone activé, note tenue.",
+    "PANIC."
+   ],
+   "expected": "PANIC coupe en moins d'une seconde et désarme le Drone.",
+   "pass": "Silence et Drone désarmé.",
+   "fail": "Son qui persiste.",
+   "onFail": "Noter le réglage.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-17",
+   "title": "Désinstallation",
+   "official": {
+    "procedure": "Uninstaller.pkg",
+    "expected": "Bundle retiré ; presets et MIDI Learn conservés."
+   },
+   "why": "Vérifier la désinstallation.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Fermez les DAW.",
+    "Lancez l'Uninstaller.",
+    "Vérifiez la conservation de vos presets."
+   ],
+   "expected": "Bundle retiré ; presets et MIDI Learn conservés.",
+   "pass": "Bundle absent, données conservées.",
+   "fail": "Bundle présent ou données perdues.",
+   "onFail": "Joindre /var/log/install.log.",
+   "evidenceHint": "Capture."
+  },
+  {
+   "id": "R-18",
+   "title": "Réinstallation",
+   "official": {
+    "procedure": "Installer.pkg après désinstallation",
+    "expected": "Plugin de nouveau disponible ; projets rechargés."
+   },
+   "why": "Vérifier la réinstallation.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.2.0 installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Réinstallez.",
+    "Rouvrez le projet de R-13."
+   ],
+   "expected": "Plugin de nouveau disponible ; projets rechargés.",
+   "pass": "Fonctionne.",
+   "fail": "Échec.",
+   "onFail": "Noter le message.",
+   "evidenceHint": "Capture."
+  }
+ ]
+}

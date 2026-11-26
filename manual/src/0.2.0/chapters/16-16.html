@@ -1,0 +1,5 @@
+<section class="chapter" id="ch-16">
+<header><p class="kicker">Chapitre 16</p><h1>Exemples audio</h1>
+<p class="lead">Des sons produits par le moteur DSP réel de cette build, avec tous leurs réglages.</p></header>
+<div class="box fact"><span class="tag">Comment ces sons ont été produits</span><ul><li><strong>Moteur :</strong> le cœur DSP non modifié (<code>source/</code>) au commit indiqué dans <code>audio/examples.json</code>, par l'outil <code>tools/manual-audio/render_examples_g4.cpp</code>.</li><li><strong>Format :</strong> WAV 24 bits, mono (stéréo mixée), 48 kHz, Quality Normal.</li><li><strong>Niveau :</strong> partie tenue normalisée à −20 dBFS RMS, crête limitée à −1 dBFS.</li><li><strong>Plateforme de rendu :</strong> Windows (MSVC) à partir des mêmes sources que le plugin macOS ; l'identité échantillon par échantillon avec le plugin macOS n'est pas vérifiée.</li></ul></div>{{AUDIO_CATALOG}}
+</section>
