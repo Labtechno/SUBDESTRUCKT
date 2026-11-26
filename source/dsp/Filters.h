@@ -1,6 +1,13 @@
 // SUBDESTRUCKT — L3 — Filter & Resonator Engine (référentiel §4) : emplacement de filtre.
-// Algorithmes : F1 Morphing Multimode (SVF TPT), F2 Resonant Comb, F3 Nonlinear Resonant Filter, F4 Modal Resonator
-// Bank. Implémentation : Filters.cpp. Aucune boucle filtre -> oscillateur (pas de feedback post-FX).
+// Algorithmes :
+//  F1 Morphing Multimode : SVF TPT (Zavalishin), LP/BP/HP 12/24 dB et Notch, keytracking, résonance jusqu'à
+//     l'auto-oscillation bornée (saturation douce de l'état passe-bande).
+//  F2 Resonant Comb : retard fractionnaire (Lagrange 3), feedback bipolaire, amortissement (passe-bas 1 pôle compensé
+//     en phase pour l'accord), keytracking, désaccord et étalement stéréo en Dual Mono, excitation.
+//  F3 Nonlinear Resonant Filter : SVF TPT avec drive d'entrée, saturation dans la boucle (Character), bias (asymétrie).
+//  F4 Modal Resonator Bank : 1..16 résonateurs à deux pôles (modèles Harmonic/Metal/Membrane/Inharmonic), decay,
+//     damping des modes hauts, brightness, inharmonicité, Freeze (état autonome : seulement si l'emplacement est armé).
+// Aucune boucle filtre -> oscillateur (pas de feedback post-FX). Mémoire préallouée par configure() (hors RT).
 #pragma once
 #include <array>
 #include <cstdint>
@@ -26,39 +33,51 @@ struct FilterContext {
   bool voiceIdle = false;
 };
 
+// Rapports de fréquence des modèles modaux (mode k = 1..16), sans inharmonicité.
+double modalRatio(int model, int k) noexcept;
+
 class FilterSlot {
  public:
   static constexpr int kMaxModes = 16;
-  void configure(double fs);  // hors RT : préallocation (comb : retard maximal à 20 Hz)
+  static constexpr int kCombMax = 16384;
+  void configure(double fs);  // hors RT : préallocation (comb : retard maximal à 20 Hz, fs <= 192 kHz)
   void reset() noexcept;
-  // E : valeurs Effective ; base : StableID <slot>.type
+  // E : valeurs Effective ; base : indice de <slot>.type
   void process(double& L, double& R, const double* E, int base, const FilterContext& c) noexcept;
-  bool selfOscillating() const noexcept { return energy_ > 1e-6; }
+  bool selfOscillating() const noexcept { return autonomous_; }
   double energy() const noexcept { return energy_; }
+  int activeType() const noexcept { return type_; }
+  // Réponse d'un mode (tests) : fréquence et rayon du résonateur k du canal 0.
+  double testModeFreq(int k) const noexcept { return modeFreq_[static_cast<size_t>(k)]; }
 
  private:
   struct Svf {
     double ic1 = 0.0, ic2 = 0.0;
-    void reset() noexcept { ic1 = ic2 = 0.0; }
   };
-  struct Modal {
+  struct Res2 {
     double y1 = 0.0, y2 = 0.0;
   };
-  void switchType(int type) noexcept;
+  double svf(Svf& s, double x, double g, double k, int out, bool saturate, double drive, double bias, double chr) noexcept;
+  double comb(int ch, double x, double delay, double fb, double damp) noexcept;
+  void updateModal(const double* E, int base, double f0) noexcept;
+  void resetStates() noexcept;
   double fs_ = 48000.0;
-  int type_ = 0, pendingType_ = 0, fade_ = 0, fadeLen_ = 1;
+  int type_ = 0, pendingType_ = -1, fade_ = 0, fadeLen_ = 64;
   bool fadingOut_ = false;
-  // F1/F3 : deux étages SVF par canal
-  std::array<std::array<Svf, 2>, 2> svf_{};
-  // F2 : lignes de retard par canal
+  std::array<std::array<Svf, 2>, 2> svf_{};            // [canal][étage]
   std::array<std::vector<double>, 2> comb_;
   std::array<int, 2> combPos_{};
   std::array<double, 2> combLp_{};
-  // F4 : 16 modes par canal (résonateurs à deux pôles)
-  std::array<std::array<Modal, kMaxModes>, 2> modes_{};
-  std::array<double, 2> dcState_{};
+  std::array<std::array<Res2, kMaxModes>, 2> modes_{};  // [canal][mode]
+  std::array<double, kMaxModes> modeA1_{}, modeA2_{}, modeG_{}, modeFreq_{};
+  int numModes_ = 0, modalCounter_ = 0;
+  double modalKey_ = -1.0;
+  std::array<double, 2> excState_{};
   double energy_ = 0.0;
-  double excPending_ = 0.0;
+  bool autonomous_ = false;
+  double idleSeconds_ = 0.0;
+  bool guardFading_ = false;
+  int guardFade_ = 0;
 };
 
 }  // namespace sbd

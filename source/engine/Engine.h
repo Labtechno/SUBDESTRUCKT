@@ -202,6 +202,7 @@ class Engine {
   bool drone_ = false;
   std::atomic<int> droneCmd_{-1};
   std::atomic<bool> crossResetCmd_{false}, exciteCmd_{false};
+  bool noteOnEdge_ = false, manualExcitePending_ = false;
   double f0_ = 261.6255653005986;
 
   // réseau

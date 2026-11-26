@@ -438,6 +438,7 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
     if (!drone_) releaseGateIfIdle();
   }
   if (crossResetCmd_.exchange(false, std::memory_order_acq_rel)) crossReset();
+  if (exciteCmd_.exchange(false, std::memory_order_acq_rel)) manualExcitePending_ = true;
   // publications hors RT : topologie (avec transition), matrice, banque (fondu), courbes
   if (transition_ == Transition::Idle && incoming_ == nullptr && exchange_.canRetire()) {
     if (CompiledTopology* p = exchange_.acquire()) beginTransition(p);
@@ -1104,7 +1105,10 @@ void Engine::tick(double& L, double& R) noexcept {
   cc.noteHz = f0_;
   cc.gate = gate_;
   cc.voiceIdle = !envs_[0].active();
-  cc.manualExcite = false;
+  cc.manualExcite = manualExcitePending_;
+  cc.noteOnEdge = noteOnEdge_;
+  manualExcitePending_ = false;
+  noteOnEdge_ = false;
   cc.bpm = transport_.bpm;
   cc.quality = setup_.quality;
   chainWt_.process(wL, wR, eff_.data(), cc);
@@ -1240,6 +1244,7 @@ int Engine::selectNote() const noexcept {
 
 void Engine::triggerVoice(bool retrigger) noexcept {
   if (!retrigger) return;
+  noteOnEdge_ = true;  // excitation « Note » des filtres/résonateurs
   for (auto& en : envs_) en.noteOn();  // relance depuis le niveau courant
   for (int k = 0; k < 4; ++k) {
     const int o = idx(ParamId::Lfo1Shape) + 6 * k;

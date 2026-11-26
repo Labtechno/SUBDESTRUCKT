@@ -63,6 +63,13 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | RT-G4 | 0 allocation pendant process sur tous les scénarios G4 |
 | RNG-01 | PCG32 : vecteurs de référence (seed 42, seq 54) ; χ² uniformité 1e6 tirages p ∈ [0,001 ; 0,999] pour PCG32 et xoshiro128** ; choix : PCG32 si les deux passent et vitesse ≤ 2× |
 | CHAOS-01 | Lorenz, Rössler, logistique : 1e7 pas à 100 Hz et 0,01 Hz sans NaN, bornés [−1,1], déterministes ; modèle retenu = premier qui passe tout, dans l'ordre Lorenz, Rössler, logistique |
+| FLT-01 | F1 (res 0) : LP12/HP12 à fc = −3,01 ± 0,5 dB ; pente entre 4fc et 8fc : 12 ± 1,5 dB/oct (12 dB), 24 ± 3 (24 dB) ; BP : pic à fc ± 2 % ; Notch : ≤ −30 dB à fc (fc = 1 kHz, 48 kHz) |
+| FLT-02 | F1/F2/F3/F4, 300 configurations aléatoires dont cutoff audio-rate 20 Hz–20 kHz et résonance max, entrée bruit ±1 : 0 NaN/Inf, |y| < 16 |
+| FLT-03 | F2 : pic de résonance (feedback +0,9, damping 0) à fc ± 5 cents pour fc ∈ {40, 110, 440, 1000, 4000} Hz à 48 et 96 kHz |
+| FLT-04 | F4 : fréquences des modes = modèle ± 1 cent (harmonique, f0 = 220 Hz) ; T60 du mode 1 = Decay ± 10 % (Decay = 1 s, damping 0) ; Freeze non armé : aucune persistance après le garde-fou ; armé : énergie conservée |
+| FLT-05 | F3 : drive 0 dB, bias 0, niveau −40 dBFS : réponse = F1 de même mode ± 0,5 dB à fc et 4fc ; THD croissante avec le drive (0, 12, 24 dB) |
+| FLT-06 | Excitation Note : réponse non nulle sans signal d'entrée ; Dual Mono + spread : L ≠ R ; Linked : L == R bit à bit ; Pre/Post : ordre effectif différent mesurable avec un processeur non linéaire |
+| FLT-07 | Changement de type en cours de note : 0 NaN ; 0 allocation |
 
 ## 4. Matrice d'exigences P0/P1
 Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 + PASS×1) / lignes non BLOCKED.
