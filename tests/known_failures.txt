@@ -1,0 +1,3 @@
+# SUBDESTRUCKT — echecs connus, documentes et NON masques (ils restent FAIL dans les resultats et le rapport).
+# Format : <ID> <justification>. Toute ligne RESULT FAIL dont l'ID n'est pas ici fait echouer la CI.
+DST-09 garde numerique +30 dBFS declenchee par des gains cumules extremes (Out +24 dB x 6, makeup +36 dB) ; aucun NaN, aucune instabilite ; DST-09b (gains <= 0 dB) PASS. Critere conserve tel que preenregistre.

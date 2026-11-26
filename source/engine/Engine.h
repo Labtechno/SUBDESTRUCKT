@@ -239,7 +239,23 @@ class Engine {
 
   // traitements
   ProcessingChain chainWt_, chainFm_, chainGl_;
-  std::array<double, 2> alignWt_{}, alignFm_{};
+  // ligne d'alignement à retard variable entier (préallouée)
+  struct AlignDelay {
+    std::vector<double> buf;
+    int pos = 0;
+    void configure(int n) {
+      buf.assign(static_cast<size_t>(n), 0.0);
+      pos = 0;
+    }
+    void process(double& x, int d) noexcept {
+      const int N = static_cast<int>(buf.size());
+      buf[static_cast<size_t>(pos)] = x;
+      x = buf[static_cast<size_t>((pos - d + N) % N)];
+      pos = (pos + 1) % N;
+    }
+  };
+  AlignDelay alignWtL_, alignWtR_, alignFmL_, alignFmR_, alignOutL_, alignOutR_;
+  bool padActive_ = false;
 
   // sortie et sûreté
   std::array<DcGuard, 2> dc_{};

@@ -1,7 +1,17 @@
 // SUBDESTRUCKT — L3 — Destruction Engine (référentiel §3) : emplacement de destruction.
-// Catalogue : N1 Asymmetric Wavefolder, D1 Variable Rate Crusher, Y1 Transient Destroyer, S1 Ring/Frequency Shifter,
-// N2 Feedback Waveshaper, D2 Glitch Buffer, Y2 Envelope Shaper, S2 Spectral Freeze. Implémentation : Destruction.cpp.
-// États indépendants par emplacement ; Dry/Wet par processeur, aligné en latence ; bornes numériques permanentes.
+// Catalogue (candidats R&D, définitions techniques consignées dans docs/V1-ARCH-G4-TRACKER.md) :
+//  N1 Asymmetric Wavefolder : drive, asymétrie, mélange saturation/repli sinus, 1..4 étages, tone ; ADAA1.
+//  D1 Variable Rate Crusher : échantillonnage-blocage 1..128, jitter, 2..16 bits, Raw (repliement) / Controlled
+//     (pré-filtrage), Hold Step/Smooth.
+//  Y1 Transient Destroyer : compresseur/expandeur à genou, gate, accentuation de transitoires, makeup.
+//  S1 Ring/Frequency Shifter : modulation en anneau (sinus/triangle/carré) ou décalage de fréquence (Hilbert IIR).
+//  N2 Feedback Waveshaper : ligne de retard courte bouclée sur un saturateur, amortissement, résonance, bias.
+//  D2 Glitch Buffer : enregistrement circulaire, boucles de segments (taille, position, répétition aléatoire
+//     déterministe, vitesse ±4, feedback, fondu), Freeze.
+//  Y2 Envelope Shaper : détecteur crête/RMS, courbe, profondeur bipolaire, hold ; enveloppe exposée comme source.
+//  S2 Spectral Freeze : STFT 512..4096 (recouvrement 75 %), gel, decay, blur, tilt, dérive de phase, décalage.
+// États indépendants par emplacement ; Dry/Wet par processeur, aligné en latence (S2) ; bornes numériques
+// permanentes ; Freeze/auto-oscillation : persistance après la voix seulement si l'emplacement est armé.
 #pragma once
 #include <array>
 #include <complex>
@@ -33,57 +43,98 @@ struct DestructionContext {
   Quality quality = Quality::Normal;
 };
 
+// Mode anti-repliement de N1 (comparaison DST-01) : 0 naïf, 1 ADAA1.
+void setN1AntiAliasForTest(int mode) noexcept;
+
 class DestructionSlot {
  public:
+  static constexpr int kMaxFft = 4096;
   void configure(double fs, std::uint64_t seed, Quality q);  // hors RT : préallocation pire cas
   void reset() noexcept;
   void process(double& L, double& R, const double* E, int base, const DestructionContext& c) noexcept;
   // Latence (échantillons moteur) de l'algorithme actif (S2 : taille FFT ; autres : 0). Dry/wet aligné en interne.
-  int latency() const noexcept { return latency_; }
+  int latency() const noexcept { return type_ == static_cast<int>(DstType::S2) ? fftSize_ : 0; }
   static int latencyFor(int type, int fftChoice) noexcept;
   double y2Env() const noexcept { return y2Env_; }
-  bool frozen() const noexcept { return frozen_; }
+  bool frozen() const noexcept { return autonomous_; }
+  int activeType() const noexcept { return type_; }
 
  private:
-  void switchType(int type, int fftChoice) noexcept;
+  void resetStates() noexcept;
+  double n1(int ch, double x, const double* P) noexcept;
+  double d1(int ch, double x, const double* P) noexcept;
+  void y1(double& L, double& R, const double* P) noexcept;
+  void s1(double& L, double& R, const double* P) noexcept;
+  double n2(int ch, double x, const double* P, bool armed) noexcept;
+  void d2(double& L, double& R, const double* P, bool armed) noexcept;
+  void y2(double& L, double& R, const double* P) noexcept;
+  void s2(double& L, double& R, const double* P, bool armed) noexcept;
+  void s2Frame(int ch, const double* P, bool freeze) noexcept;
+
   double fs_ = 48000.0;
   Quality quality_ = Quality::Normal;
-  int type_ = 0, pendingType_ = 0, fftChoice_ = 2, pendingFft_ = 2, fade_ = 0, fadeLen_ = 1;
+  int type_ = 0, pendingType_ = -1, fade_ = 0, fadeLen_ = 64;
   bool fadingOut_ = false;
-  int latency_ = 0;
-  bool frozen_ = false;
+  bool autonomous_ = false;
   double y2Env_ = 0.0;
+  double idleSeconds_ = 0.0, energy_ = 0.0;
+  bool guardFading_ = false;
+  int guardFade_ = 0;
   RngStream rng_;
   std::uint64_t seed_ = 0;
-  // états par algorithme (préalloués)
-  struct N1State { double x1 = 0.0, tone = 0.0; double up1 = 0.0, up2 = 0.0; std::array<double, 8> hb{}; };
+
+  // N1
+  struct N1State {
+    std::array<double, 4> prev{};  // ADAA1 : entrée précédente par étage
+    double tone = 0.0, dcx = 0.0, dcy = 0.0;
+  };
   std::array<N1State, 2> n1_{};
-  struct D1State { double held = 0.0, prev = 0.0, phase = 0.0, next = 1.0; };
+  // D1
+  struct D1State {
+    double held = 0.0, prevHeld = 0.0, lp1 = 0.0, lp2 = 0.0;
+    double counter = 0.0, period = 1.0;
+  };
   std::array<D1State, 2> d1_{};
-  struct Y1State { double env = 0.0, fast = 0.0, slow = 0.0, gain = 1.0; };
-  std::array<Y1State, 2> y1_{};
-  struct S1State { double phase = 0.0; double ap[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; double apy[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; double sinPhase = 0.0; };
-  std::array<S1State, 2> s1_{};
-  struct N2State { std::vector<double> buf; int pos = 0; double lp = 0.0, bp = 0.0, low = 0.0; };
+  // Y1 / Y2
+  struct DynState {
+    double env = 0.0, fast = 0.0, slow = 0.0, gate = 1.0, rms = 0.0, hold = 0.0;
+  };
+  DynState y1_{}, y2_{};
+  // S1
+  struct Allpass2 {
+    double x1 = 0.0, x2 = 0.0, y1 = 0.0, y2 = 0.0;
+  };
+  struct Hilbert {
+    std::array<Allpass2, 4> a{}, b{};  // deux branches de passe-tout (différence de phase ~90°)
+    double bDelay = 0.0;               // retard d'un échantillon de la branche B
+  };
+  std::array<Hilbert, 2> hil_{};
+  double s1Phase_ = 0.0;
+  // N2
+  struct N2State {
+    std::vector<double> buf;
+    int pos = 0;
+    double lp = 0.0, ic1 = 0.0, ic2 = 0.0, dcx = 0.0, dcy = 0.0;
+  };
   std::array<N2State, 2> n2_{};
-  struct D2State { std::vector<float> buf; };
-  std::array<D2State, 2> d2_{};
-  int d2Write_ = 0, d2Len_ = 0, d2Remaining_ = 0, d2Count_ = 0;
-  double d2Read_ = 0.0, d2SegStart_ = 0.0;
+  // D2
+  std::array<std::vector<float>, 2> d2Buf_;
+  int d2Len_ = 0, d2Write_ = 0;
+  double d2Read_ = 0.0, d2SegStart_ = 0.0, d2SegLen_ = 0.0, d2SegPos_ = 0.0;
+  double d2Clock_ = 0.0;
   bool d2Looping_ = false;
-  struct Y2State { double fast = 0.0, slow = 0.0, hold = 0.0, rms = 0.0; };
-  std::array<Y2State, 2> y2_{};
   // S2
   struct S2State {
-    std::vector<double> inBuf, outBuf, dryBuf;
-    std::vector<double> mag, phase, frozenMag;
-    int pos = 0, hopCount = 0;
+    std::vector<double> in, out, dry;
+    std::vector<double> mag, phase, inPhase, held;
+    int inPos = 0, outPos = 0, dryPos = 0, hop = 0;
   };
   std::array<S2State, 2> s2_{};
-  Fft fft_;
+  std::array<Fft, 4> ffts_;      // plans 512..4096 préparés hors RT
+  const Fft* fft_ = nullptr;
   std::vector<std::complex<double>> work_;
-  std::vector<double> window_;
-  int fftSize_ = 2048;
+  std::vector<double> window_, tmp_;
+  int fftSize_ = 2048, fftChoice_ = 2;
 };
 
 }  // namespace sbd

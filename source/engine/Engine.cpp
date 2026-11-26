@@ -206,6 +206,8 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   chainWt_.configure(ProcessingChain::Wt, fsE, q);
   chainFm_.configure(ProcessingChain::Fm, fsE, q);
   chainGl_.configure(ProcessingChain::Global, fsE, q);
+  for (auto* a : {&alignWtL_, &alignWtR_, &alignFmL_, &alignFmR_, &alignOutL_, &alignOutR_}) a->configure(2 * DestructionSlot::kMaxFft + 8);
+  padActive_ = false;
 
   // état runtime remis à zéro (non persisté)
   oscPhase_.fill(0.0);
@@ -1113,6 +1115,14 @@ void Engine::tick(double& L, double& R) noexcept {
   cc.quality = setup_.quality;
   chainWt_.process(wL, wR, eff_.data(), cc);
   chainFm_.process(fL, fR, eff_.data(), cc);
+  // alignement des chaînes locales avant Cross Audio (latences de S2), puis complément au multiple de K
+  const int lw = chainWt_.latency(), lf = chainFm_.latency(), lmax = std::max(lw, lf);
+  if (lmax > 0) {
+    alignWtL_.process(wL, lmax - lw);
+    alignWtR_.process(wR, lmax - lw);
+    alignFmL_.process(fL, lmax - lf);
+    alignFmR_.process(fR, lmax - lf);
+  }
   followers_[0].process(0.5 * (wL + wR));
   followers_[1].process(0.5 * (fL + fR));
   // Cross Audio (après chaînes locales alignées, avant global)
@@ -1148,6 +1158,13 @@ void Engine::tick(double& L, double& R) noexcept {
       break;
   }
   chainGl_.process(oL, oR, eff_.data(), cc);
+  const int le = lmax + chainGl_.latency(), K = setup_.oversampling;
+  const int pad = (K - le % K) % K;  // latence totale entière en échantillons hôte
+  if (pad > 0 || padActive_) {
+    padActive_ = pad > 0;
+    alignOutL_.process(oL, pad);
+    alignOutR_.process(oR, pad);
+  }
   followers_[2].process(0.5 * (oL + oR));
   L = oL;
   R = oR;

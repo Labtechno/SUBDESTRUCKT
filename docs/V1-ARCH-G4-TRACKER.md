@@ -70,6 +70,17 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | FLT-05 | F3 : drive 0 dB, bias 0, niveau −40 dBFS : réponse = F1 de même mode ± 0,5 dB à fc et 4fc ; THD croissante avec le drive (0, 12, 24 dB) |
 | FLT-06 | Excitation Note : réponse non nulle sans signal d'entrée ; Dual Mono + spread : L ≠ R ; Linked : L == R bit à bit ; Pre/Post : ordre effectif différent mesurable avec un processeur non linéaire |
 | FLT-07 | Changement de type en cours de note : 0 NaN ; 0 allocation |
+| DST-01 | N1 : fold 0, drive 0 dB, bias 0, sym 0 : NMSE ≤ −40 dB vs entrée (−20 dBFS) retardée d'un demi-échantillon (délai de groupe inhérent à l'ADAA1 ; amendement consigné avant toute mesure) ; THD croissante drive 0/12/24 dB. Comparaison anti-repliement (sinus 3 kHz, 48 kHz, drive 24 dB, fold 1) : naïf, ADAA1, ADAA1 + K×2 ; règle : candidat le moins coûteux avec énergie repliée ≤ −40 dB, sinon le plus bas ; rapporté |
+| DST-02 | D1 : 16 bits, ratio 1, jitter 0 : NMSE ≤ −80 dB ; 4 bits sur sinus pleine échelle : SNR = 25,8 ± 3 dB ; ratio R, Step, Raw : sortie constante par paliers de R échantillons |
+| DST-03 | Y1 : sinus −6 dBFS, seuil −20, ratio 4, knee 0 : sortie −16,5 ± 0,5 dBFS ; gate (−30 dB) sur −50 dBFS : atténuation ≥ 40 dB ; transient +1 : rapport crête attaque/sustain > transient 0 |
+| DST-04 | S1 Ring 100 Hz sur 1 kHz : raies 900/1100, porteuse ≤ −40 dB ; Shift +100 Hz : raie 1100, image 900 ≤ −30 dB |
+| DST-05 | N2 : 200 configurations, fb max, non armé : bornée, finie ; auto-oscillation seulement armée |
+| DST-06 | D2 : Freeze armé : sortie périodique de période = taille ± 1 échantillon ; vitesse −1 : corrélation ≥ 0,9 avec le segment inversé |
+| DST-07 | Y2 : profondeur +1 augmente le rapport attaque/sustain ; source Y2 dans [0,1] |
+| DST-08 | S2 : latence = taille FFT, dry/wet alignés (impulsion, mix 0 : pic à L exactement ; mix 1 : pic du chemin traité ≈ L) ; latence de la chaîne déclarée à l'hôte ; Freeze armé : RMS stable ± 3 dB sur 2 s sans entrée |
+| DST-09 | 6 emplacements, algorithmes et paramètres aléatoires, 4 Fs, 2 s, notes : 0 NaN, garde jamais déclenchée, 0 allocation |
+| DST-10 | Mix 0 (algorithmes sans latence) : sortie identique bit à bit au contournement |
+| DST-09b | (enregistré après l'échec de DST-09, avant sa mesure) mêmes 48 configurations mais gains de sortie des emplacements ≤ 0 dB et makeup Y1 = 0 dB : 0 NaN, garde jamais déclenchée, 0 allocation. DST-09 reste rapporté tel quel |
 
 ## 4. Matrice d'exigences P0/P1
 Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 + PASS×1) / lignes non BLOCKED.
