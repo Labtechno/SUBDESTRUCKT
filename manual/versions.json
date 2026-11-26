@@ -1,0 +1,16 @@
+{
+  "versions": [
+    {
+      "version": "0.1.0-b5",
+      "label": "vertical slice ARCH-G3, build interne",
+      "buildSourceSha": "186fb8644ae9518e3cb5116f4368b45dcea0d430",
+      "documentationSha": "8d2334250994758f2182b18c3a47dd059cb68495",
+      "deliveryZip": "SUBDESTRUCKT_v0.1.0-b5_macOS_arm64.zip",
+      "deliveryZipSha256": "4b37271856ab690c3487df1a7a76dcc9a5c76459dd31c1558ab07766dd4fbe58",
+      "deliveryZipBytes": 2076951,
+      "recetteCampaignId": "SUBDESTRUCKT-ARCH-G3-RECETTE-PHYSIQUE",
+      "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g3-recette.v1",
+      "resultsSchemaVersion": 1
+    }
+  ]
+}

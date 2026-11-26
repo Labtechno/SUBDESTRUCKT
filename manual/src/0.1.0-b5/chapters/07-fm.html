@@ -1,0 +1,80 @@
+<section class="chapter" id="ch-07">
+<header><p class="kicker">Chapitre 7</p><h1>Le moteur FM</h1>
+<p class="lead">Avec seulement deux sinusoïdes, la synthèse FM crée des sons brillants, métalliques ou agressifs. Ce chapitre l'explique pas à pas, à partir des commandes réelles de SUBDESTRUCKT.</p></header>
+
+<h2>L'opérateur</h2>
+<p>Un <strong>opérateur</strong> est un oscillateur sinusoïdal. SUBDESTRUCKT 0.1.0-b5 en a deux, <strong>OP1</strong> et <strong>OP2</strong>. Chacun a deux commandes propres :</p>
+<ul><li><strong>Level</strong> (OP1 Level, OP2 Level, 0 à 1) : son volume dans ce que vous entendez ;</li>
+<li><strong>Ratio</strong> (OP1 Ratio, OP2 Ratio, 0,25 à 16) : sa fréquence = fréquence de la note × ratio. Ratio 1 = même hauteur que la note ; 2 = une octave au-dessus ; 0,5 = une octave en dessous.</li></ul>
+
+<h2>Mélanger ou moduler : deux choses différentes</h2>
+<figure>
+<svg class="diagram" viewBox="0 0 860 220" role="img" aria-labelledby="f7t f7d"><title id="f7t">Trois façons d'utiliser deux opérateurs</title>
+<desc id="f7d">À gauche, un opérateur seul produit une sinusoïde. Au centre, deux opérateurs sont mélangés : on entend deux sinusoïdes superposées. À droite, OP2 module OP1 : on n'entend qu'OP1, mais son timbre est enrichi de nouvelles harmoniques.</desc>
+<g font-size="14">
+<text x="120" y="24" text-anchor="middle">1. Un opérateur seul</text>
+<rect x="70" y="60" width="100" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="120" y="87" text-anchor="middle">OP1</text>
+<path d="M120 104 V150" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#a7)"/><text x="120" y="172" text-anchor="middle" class="d">sinusoïde pure</text>
+<text x="430" y="24" text-anchor="middle">2. Deux opérateurs mélangés</text>
+<rect x="340" y="60" width="80" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="380" y="87" text-anchor="middle">OP1</text>
+<rect x="440" y="60" width="80" height="44" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="480" y="87" text-anchor="middle">OP2</text>
+<path d="M380 104 L430 146 M480 104 L430 146" style="stroke:var(--dim)" stroke-width="2"/><circle cx="430" cy="152" r="8" fill="none" style="stroke:var(--dim)"/><text x="430" y="182" text-anchor="middle" class="d">deux sinusoïdes superposées</text>
+<text x="740" y="24" text-anchor="middle">3. OP2 module OP1</text>
+<rect x="690" y="40" width="100" height="40" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2" stroke-dasharray="5 3"/><text x="740" y="65" text-anchor="middle">OP2 (modulateur)</text>
+<path d="M740 80 V104" style="stroke:var(--cross)" stroke-width="2" marker-end="url(#a7)"/>
+<rect x="690" y="108" width="100" height="40" rx="6" fill="none" style="stroke:var(--fm)" stroke-width="2"/><text x="740" y="133" text-anchor="middle">OP1 (porteur)</text>
+<path d="M740 148 V176" style="stroke:var(--dim)" stroke-width="2" marker-end="url(#a7)"/><text x="740" y="198" text-anchor="middle" class="d">nouvelles harmoniques</text>
+</g><defs><marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text)"/></marker></defs></svg>
+<figcaption><span class="figlabel peda">Schéma pédagogique</span>Mélanger additionne des sons ; moduler transforme un son par un autre.</figcaption></figure>
+<p>Dans le cas 3, on dit qu'OP2 est le <strong>modulateur</strong> et OP1 le <strong>porteur</strong>. Dans le réglage initial, c'est exactement ce qui se passe : OP2 Level vaut 0 (on ne l'entend pas) mais la route <strong>FM OP2>OP1</strong> (profondeur 1 rad) le fait agir sur OP1.</p>
+<div class="box fact"><span class="tag">Important</span><p>Le Level d'un opérateur règle seulement ce que vous <em>entendez</em> de lui. Il ne change pas sa force de modulation : celle-ci est réglée par la profondeur de la route (FM OP2>OP1, etc.). Un opérateur à Level 0 peut moduler à pleine force.</p></div>
+
+<h2>La modulation de phase (PM)</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 utilise la <strong>modulation de phase</strong> (PM) : le modulateur fait avancer et reculer rapidement la position de lecture du porteur dans son cycle. À l'écoute, la PM donne les sons caractéristiques de la « synthèse FM » (c'est d'ailleurs la technique de nombreux synthétiseurs dits FM), mais les deux ne sont pas strictement identiques : ce manuel parle donc de FM pour la famille de sons et de PM pour le calcul réel.</p>
+<p>La <strong>profondeur</strong> de modulation se règle en <strong>radians</strong> (rad), de 0 à 8 : c'est l'amplitude du décalage de phase (2π ≈ 6,28 rad = un cycle complet).</p>
+
+<h2>Profondeur : du son pur au son dense</h2>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e04_fm_faible.svg" alt="Spectre avec modulation faible : peu de raies"><figcaption><span class="figlabel meas">Mesure</span>FM OP2>OP1 = 0,3 rad : quelques raies proches de la fondamentale.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e05_fm_forte.svg" alt="Spectre avec modulation forte : nombreuses raies jusque dans l'aigu"><figcaption><span class="figlabel meas">Mesure</span>FM OP2>OP1 = 4 rad : beaucoup de raies, son brillant.</figcaption></figure>
+</div>
+{{AB:e04_fm_faible|e05_fm_forte|Profondeur : 0,3 rad / 4 rad}}
+<p>Plus la profondeur augmente, plus des raies apparaissent loin de la fondamentale : le son s'enrichit, puis devient agressif.</p>
+
+<h2>Ratio : harmonique ou métallique</h2>
+<p>Les nouvelles raies apparaissent à des écarts égaux à la fréquence du modulateur. Si le ratio du modulateur est un nombre entier (1, 2, 3…), elles tombent sur des harmoniques : le son reste « musical ». S'il ne l'est pas (3,5 ; 1,41…), elles tombent entre les harmoniques : le son devient métallique ou cloche.</p>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e06_ratio_2.svg" alt="Spectre avec ratio 2 : raies régulièrement espacées"><figcaption><span class="figlabel meas">Mesure</span>OP2 Ratio 2.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e07_ratio_3_5.svg" alt="Spectre avec ratio 3,5 : raies inharmoniques"><figcaption><span class="figlabel meas">Mesure</span>OP2 Ratio 3,5 : raies entre les harmoniques.</figcaption></figure>
+</div>
+{{AB:e06_ratio_2|e07_ratio_3_5|OP2 Ratio : 2 / 3,5}}
+
+<h2>Explorer avec une simulation</h2>
+<p>Cette simulation reproduit la formule de modulation de phase de deux sinusoïdes (rapport porteur/modulateur et indice en radians). Elle n'est pas un rendu de SUBDESTRUCKT.</p>
+<div class="demo" data-demo="pm"><canvas aria-label="Forme d'onde d'une sinusoïde modulée en phase"></canvas><canvas class="bars" style="height:110px;margin-top:8px" aria-label="Raies du spectre, en multiples de la note"></canvas>
+<div class="controls">
+<label for="d-rc">Ratio porteur</label><input id="d-rc" name="rc" type="range" min="0.25" max="4" step="0.25" value="1"><span class="readout" data-out="rc"></span>
+<label for="d-rm">Ratio modulateur</label><input id="d-rm" name="rm" type="range" min="0.25" max="8" step="0.25" value="2"><span class="readout" data-out="rm"></span>
+<label for="d-ix">Profondeur</label><input id="d-ix" name="index" type="range" min="0" max="8" step="0.1" value="1" data-unit=" rad"><span class="readout" data-out="index"></span>
+</div></div>
+
+<h2>Les quatre routes FM</h2>
+<div class="table-wrap"><table><thead><tr><th>Route</th><th>Paramètre de profondeur</th><th>Dans le réglage initial</th><th>Effet</th></tr></thead><tbody>
+<tr><td>OP2 > OP1</td><td>FM OP2>OP1 (1 rad)</td><td>présente</td><td>OP2 module OP1 : l'enrichissement FM classique.</td></tr>
+<tr><td>OP1 > OP2</td><td>FM OP1>OP2 (0)</td><td>absente</td><td>OP1 module OP2 (audible si OP2 Level &gt; 0).</td></tr>
+<tr><td>OP1 > OP1</td><td>FM OP1 Self (0)</td><td>absente</td><td>OP1 se module lui-même (feedback) : son plus rugueux, proche d'une dent de scie puis du bruit.</td></tr>
+<tr><td>OP2 > OP2</td><td>FM OP2 Self (0)</td><td>absente</td><td>OP2 se module lui-même.</td></tr></tbody></table></div>
+<p>Une route doit être <strong>présente</strong> (bouton +) pour que sa profondeur agisse. Une route présente avec une profondeur 0 n'a aucun effet audible mais reste en place avec sa classe (chapitre 8).</p>
+
+<h2>Recettes de sons</h2>
+<div class="table-wrap"><table><thead><tr><th>Objectif</th><th>Réglages (à partir de Preset init, WT Level 0, OP1 Level 0.8, CROSS Master 0)</th></tr></thead><tbody>
+<tr><td>Son simple</td><td>FM OP2>OP1 <code>0.2</code></td></tr>
+<tr><td>Son brillant</td><td>FM OP2>OP1 <code>2</code>, OP2 Ratio <code>1</code></td></tr>
+<tr><td>Son métallique</td><td>FM OP2>OP1 <code>2</code>, OP2 Ratio <code>3.5</code></td></tr>
+<tr><td>Son agressif</td><td>FM OP2>OP1 <code>6</code>, OP2 Ratio <code>2</code></td></tr>
+<tr><td>Texture complexe</td><td>ajouter la route OP1 > OP1 (+), FM OP1 Self <code>1.5</code>, FM OP2>OP1 <code>3</code>, OP2 Ratio <code>1.41</code></td></tr></tbody></table></div>
+<p>Ces réglages n'utilisent que les commandes réelles ; les rendus du chapitre 12 en illustrent certains.</p>
+
+<details class="adv"><summary>Équations</summary>
+<p>Pour un porteur de fréquence f<sub>c</sub> modulé par une sinusoïde de fréquence f<sub>m</sub> avec une profondeur I (rad) : y(t) = sin(2π f<sub>c</sub> t + I · sin(2π f<sub>m</sub> t)). Ce signal contient des raies à f<sub>c</sub> ± k·f<sub>m</sub> (k = 0, 1, 2…) d'amplitudes |J<sub>k</sub>(I)| (fonctions de Bessel). Dans SUBDESTRUCKT, la contribution de chaque route est profondeur × sortie de l'oscillateur source, additionnée à la phase de l'oscillateur destination ; la somme des modulations reçues par un oscillateur est bornée à ±32 rad. Test G-10 : raies k = 0 à 3 conformes à |J<sub>k</sub>(1)| à 0,112 dB près.</p></details>
+</section>

@@ -1,0 +1,25 @@
+<section class="chapter" id="ch-13">
+<header><p class="kicker">Chapitre 13</p><h1>Assistant de recette ARCH-G3</h1>
+<p class="lead">La recette physique vérifie, sur un vrai Mac et dans une vraie DAW, ce que les tests automatisés n'ont pas pu vérifier. Quinze tests, regroupés en quatre étapes.</p></header>
+
+<p><a class="btn primary" href="recette.html">Ouvrir l'assistant de recette interactif</a></p>
+
+<h2>Comment fonctionne l'assistant</h2>
+<ul>
+<li>Chaque test commence au statut <strong>PENDING</strong> (à faire). Rien n'est prérempli.</li>
+<li>Pour chaque test, vous choisissez <strong>PASS</strong> (conforme), <strong>FAIL</strong> (non conforme) ou <strong>N/A</strong> (non applicable : une justification est alors obligatoire).</li>
+<li>Vous pouvez ajouter des observations et une référence de preuve (nom d'une capture, d'un enregistrement).</li>
+<li>Vos réponses sont enregistrées automatiquement <strong>sur cet appareil uniquement</strong> (stockage local du navigateur). Rien n'est envoyé automatiquement.</li>
+<li>La <strong>progression</strong> (nombre de tests renseignés) n'est pas une validation : un seul FAIL reste visible en permanence dans la synthèse.</li>
+<li>Quand tous les tests sont renseignés (et les N/A justifiés), vous pouvez <strong>valider</strong> la recette (avec confirmation) ; les réponses sont alors verrouillées, mais vous pouvez rouvrir pour corriger.</li>
+<li>Pour transmettre les résultats : <strong>Exporter</strong> le fichier <code>SUBDESTRUCKT_ARCH_G3_RESULTS.json</code>, <strong>Copier les résultats pour la direction technique</strong>, ou <strong>Partager</strong> (feuille de partage de l'iPhone, si disponible). Le texte JSON reste affiché en dernier recours.</li>
+</ul>
+<div class="box warn"><span class="tag">Attention</span><p>Effacer les données du navigateur (ou utiliser la navigation privée) efface les réponses. Exportez régulièrement. Le bouton « Réinitialiser » efface toute la session après confirmation.</p></div>
+
+<h2>Les quinze tests</h2>
+{{RECETTE_SUMMARY}}
+
+<h2>Ordre conseillé</h2>
+<p>Suivez l'ordre des groupes : Installation → Validation musicale → Validation technique → Validation des paquets. R-13 à R-15 désinstallent puis réinstallent le plugin : faites-les en dernier. Prévoyez environ deux heures.</p>
+<p>Source officielle des critères : <code>docs/V1-ARCH-G3-RECETTE-M4MAX.md</code> (commit <code>8d23342</code>). En cas de divergence, ce document fait foi.</p>
+</section>

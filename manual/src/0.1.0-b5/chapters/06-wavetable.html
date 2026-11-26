@@ -1,0 +1,32 @@
+<section class="chapter" id="ch-06">
+<header><p class="kicker">Chapitre 6</p><h1>Le moteur Wavetable</h1>
+<p class="lead">Une wavetable (« table d'onde ») est un oscillateur qui relit en boucle une forme d'onde mémorisée. Dans 0.1.0-b5, ce moteur est volontairement minimal.</p></header>
+
+<h2>Comprendre</h2>
+<p>Imaginez un disque vinyle de la longueur d'une seule période de son, lu en boucle : plus il tourne vite, plus la note est aiguë. La wavetable stocke une période de forme d'onde (2048 points) et la relit à la vitesse correspondant à la note jouée.</p>
+<div class="box proto"><span class="tag">Ce qui existe dans 0.1.0-b5</span>
+<ul><li><strong>Une seule forme d'onde</strong> : une dent de scie limitée en bande (sans repliement).</li>
+<li>La WT joue <strong>toujours à la hauteur de la note</strong> : il n'y a pas de réglage de transposition ni de ratio pour la WT.</li>
+<li>Une seule commande propre : <strong>WT Level</strong> (son volume dans le mélange, de 0 à 1, 0,5 par défaut).</li>
+<li>Elle peut être <strong>modulée</strong> par OP1 et OP2 (routes CROSS OP1>WT et OP2>WT) et <strong>moduler</strong> OP1 et OP2 (CROSS WT>OP1 et WT>OP2) : chapitre 8.</li></ul>
+<p>Les axes X (choix de la forme), Y (morphing entre tables) et Z (transformations), ainsi que les banques de tables prévues pour la V1, <strong>ne sont pas disponibles</strong>.</p></div>
+
+<h2>Observer</h2>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e02_wt_seule.svg" alt="Forme d'onde dent de scie de la WT"><figcaption><span class="figlabel meas">Mesure</span>La WT seule : une dent de scie.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e02_wt_seule.svg" alt="Spectre harmonique de la WT"><figcaption><span class="figlabel meas">Mesure</span>Toutes les harmoniques, d'amplitude 1/k (la 2<sup>e</sup> à moitié, la 3<sup>e</sup> au tiers…).</figcaption></figure>
+</div>
+<p>La dent de scie contient toutes les harmoniques : c'est un son brillant, « cuivré », point de départ classique pour façonner des timbres.</p>
+
+<h2>Manipuler et écouter</h2>
+<ol class="steps">
+<li><strong>Isoler la WT :</strong> Preset init, puis WT Level <code>0.8</code>, OP1 Level <code>0</code>, CROSS Master <code>0</code>. Jouez des notes graves puis aiguës : le caractère reste le même, seule la hauteur change.</li>
+<li><strong>Doser la WT dans le mélange :</strong> remettez OP1 Level à <code>0.5</code> et faites varier WT Level de 0 à 1 : vous entendez la part de brillance apportée par la WT.</li>
+<li><strong>Déformer la WT par le FM :</strong> voir l'étape 3 de la progression CROSS (chapitre 8).</li>
+</ol>
+{{AUDIO:e02_wt_seule}}
+
+<details class="adv"><summary>Limitation de bande et mip-mapping</summary>
+<p>Une dent de scie idéale contient des harmoniques jusqu'à l'infini. Celles qui dépassent la moitié de la fréquence d'échantillonnage se replieraient en fréquences parasites (repliement). Pour l'éviter, la WT de SUBDESTRUCKT contient <strong>11 versions</strong> de la même dent de scie (un « mip-map »), chacune avec deux fois moins d'harmoniques que la précédente (de 1024 à 1 harmonique). Le moteur choisit et mélange les deux versions adaptées à la vitesse de lecture instantanée, y compris quand une modulation de phase accélère ou ralentit la lecture. La lecture entre deux points de la table est interpolée linéairement.</p>
+<p>Mesuré par les tests automatisés : harmoniques 2 à 10 conformes à 1/k à 0,001 dB près, énergie hors harmoniques −82,8 dB (critère G-09).</p></details>
+</section>

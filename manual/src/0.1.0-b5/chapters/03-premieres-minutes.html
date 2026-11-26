@@ -1,0 +1,64 @@
+<section class="chapter" id="ch-03">
+<header><p class="kicker">Chapitre 3</p><h1>Mes 10 premières minutes avec SUBDESTRUCKT</h1>
+<p class="lead">Un parcours guidé en dix étapes, sans théorie : à chaque étape, une action, les valeurs exactes, ce que vous devez entendre, et quoi faire si ce n'est pas le cas.</p></header>
+
+<div class="box fact"><span class="tag">Avant de commencer</span><p>SUBDESTRUCKT est installé (chapitre 2), votre clavier MIDI est branché, et le volume général de votre système est <strong>bas</strong>. Les curseurs de l'interface se règlent à la souris ; vous pouvez aussi cliquer dans la case de valeur à droite d'un curseur et taper un nombre.</p></div>
+
+<h2>Étape 1 — Ouvrir l'instrument</h2>
+<p><strong>Action :</strong> dans votre DAW, créez une piste instrument avec SUBDESTRUCKT (Labtechno) et ouvrez son interface.</p>
+<p><strong>Résultat attendu :</strong> une fenêtre sombre titrée « SUBDESTRUCKT // diagnostic ARCH-G3 // build 0.1.0-b5 », avec 22 curseurs à gauche et des informations techniques à droite (chapitre 4).</p>
+<p><strong>Si ce n'est pas le cas :</strong> chapitre 14, « Plugin non détecté ».</p>
+
+<h2>Étape 2 — Première note</h2>
+<p><strong>Action :</strong> cliquez sur <strong>Preset init</strong> (sous la liste des routes), puis jouez et tenez une note au milieu du clavier.</p>
+<p><strong>Résultat attendu :</strong> un son immédiat, brillant et légèrement métallique, qui s'éteint en 0,3 s environ quand vous relâchez la touche. En bas à droite, la ligne « Voix » affiche le numéro de la note et « gate on ».</p>
+{{AUDIO:e01_init}}
+<div class="box listen"><span class="tag">À écouter</span><p>Le son est stable tant que vous tenez la touche : c'est normal, aucun mouvement automatique n'existe dans ce prototype (pas de LFO).</p></div>
+<p><strong>Si vous n'entendez rien :</strong> vérifiez que la piste reçoit votre clavier (la ligne « Voix » doit changer quand vous jouez), puis chapitre 14, « Absence de son ».</p>
+
+<h2>Étape 3 — Un volume raisonnable</h2>
+<p><strong>Action :</strong> réglez le volume avec le fader de la piste dans la DAW, ou avec le curseur <strong>Output Gain</strong> (−6 dB par défaut, de −48 à +6 dB).</p>
+<p><strong>Résultat attendu :</strong> la ligne « Crête » affiche le niveau maximal de chaque bloc audio, en dBFS (0 dBFS = maximum numérique). Visez des crêtes autour de −12 à −6 dBFS.</p>
+<div class="box warn"><span class="tag">Attention</span><p>Monter Output Gain au maximum avec des modulations fortes peut produire un son très fort. Réglez toujours le volume de votre système avant d'expérimenter.</p></div>
+
+<h2>Étape 4 — Qu'est-ce qui produit le son ?</h2>
+<p>Trois sources sont mélangées. Leurs volumes sont réglés par trois curseurs :</p>
+<div class="table-wrap"><table><thead><tr><th>Curseur</th><th>Valeur initiale</th><th>Rôle</th></tr></thead><tbody>
+<tr><td>WT Level</td><td>0,5</td><td>volume de la wavetable</td></tr>
+<tr><td>OP1 Level</td><td>0,5</td><td>volume de l'opérateur 1</td></tr>
+<tr><td>OP2 Level</td><td>0</td><td>volume de l'opérateur 2 (muet au départ)</td></tr></tbody></table></div>
+<p>OP2 est muet, mais il travaille quand même : il <em>module</em> OP1 (route « OP2 > OP1 »). Un oscillateur peut agir sur le son sans être entendu directement.</p>
+
+<h2>Étape 5 — La wavetable seule</h2>
+<p><strong>Réglages :</strong> WT Level <code>0.8</code>, OP1 Level <code>0</code>, OP2 Level <code>0</code>, CROSS Master <code>0</code>.</p>
+<p><strong>À entendre :</strong> un son riche et brillant, de type « dent de scie », très stable. C'est la forme d'onde de la WT, sans aucune modulation.</p>
+{{AUDIO:e02_wt_seule}}
+<p><strong>Pourquoi CROSS Master à 0 ?</strong> Dans le réglage initial, OP1 module la WT (route « OP1 > WT »). Mettre CROSS Master à 0 coupe toutes les modulations entre moteurs : vous entendez la WT pure.</p>
+
+<h2>Étape 6 — Le moteur FM seul</h2>
+<p><strong>Réglages :</strong> WT Level <code>0</code>, OP1 Level <code>0.8</code>, OP2 Level <code>0</code>, CROSS Master <code>0</code> (FM OP2>OP1 reste à 1).</p>
+<p><strong>À entendre :</strong> un son plus rond que la WT, avec un caractère « électrique ». C'est OP1, une sinusoïde, enrichie par la modulation de OP2.</p>
+{{AUDIO:e03_fm_seule}}
+
+<h2>Étape 7 — Changer le timbre</h2>
+<p><strong>Action :</strong> faites varier <strong>FM OP2>OP1</strong> de <code>0.3</code> à <code>4</code> en tenant une note.</p>
+<p><strong>À entendre :</strong> à 0,3 le son est presque pur ; plus vous montez, plus il devient brillant et dense. Le volume général change peu : c'est la <em>couleur</em> (le timbre) qui change.</p>
+{{AB:e04_fm_faible|e05_fm_forte|Profondeur de modulation : 0,3 rad / 4 rad}}
+
+<h2>Étape 8 — Les ratios</h2>
+<p><strong>Réglages :</strong> FM OP2>OP1 <code>2</code>, puis OP2 Ratio <code>2</code>, puis <code>3.5</code>.</p>
+<p><strong>À entendre :</strong> avec un ratio entier (2), le son reste « musical » ; avec 3,5, il devient métallique, comme une cloche ou une tôle frappée.</p>
+{{AB:e06_ratio_2|e07_ratio_3_5|OP2 Ratio : 2 / 3,5}}
+
+<h2>Étape 9 — Faire dialoguer les deux moteurs</h2>
+<p><strong>Réglages :</strong> Preset init, puis WT Level <code>0.5</code>, OP1 Level <code>0.5</code>, CROSS WT>OP1 <code>1.5</code>, CROSS OP1>WT <code>1.5</code>. Tenez une note et descendez lentement <strong>CROSS Master</strong> de 1 à 0, puis remontez.</p>
+<p><strong>À entendre :</strong> à 1, les deux moteurs se déforment mutuellement : le son devient rugueux et complexe. À 0, vous retrouvez le simple mélange des deux moteurs, sans coupure ni redémarrage de la note.</p>
+{{AUDIO:e12_bidirectionnel}}
+
+<h2>Étape 10 — Sauvegarder</h2>
+<p><strong>Action :</strong> sauvegardez votre projet dans la DAW.</p>
+<p><strong>Résultat :</strong> tous les réglages de SUBDESTRUCKT (les 22 curseurs et les routes) sont enregistrés <strong>dans le projet</strong>. Il n'existe pas encore de bibliothèque de presets : pour conserver un son, gardez le projet, ou dupliquez la piste.</p>
+<div class="box warn"><span class="tag">Attention</span><p>« Preset init » remet tout à zéro sans confirmation, et il n'y a pas d'annulation (undo) des routes dans ce prototype.</p></div>
+
+<p>Bravo : vous avez parcouru l'essentiel de l'instrument. Le chapitre 4 décrit chaque commande ; les chapitres 5 à 8 expliquent ce que vous venez d'entendre.</p>
+</section>

@@ -1,0 +1,65 @@
+<section class="chapter" id="ch-04">
+<header><p class="kicker">Chapitre 4</p><h1>Découverte complète de l'interface</h1>
+<p class="lead">L'interface de 0.1.0-b5 est une interface de diagnostic : fonctionnelle et précise, pas encore l'interface définitive. Voici chaque zone, chaque commande et chaque indicateur.</p></header>
+
+<figure class="annotated" id="ui-annotated">
+<div class="pins">
+<img class="zoomable" src="assets/ui_diagnostic_macos.png" width="1080" height="720" alt="Interface réelle de SUBDESTRUCKT 0.1.0-b5 sur macOS : 22 curseurs de paramètres à gauche ; à droite la configuration active, la table des huit routes avec classes et valeurs Effective, les boutons Panic et Preset init, et la télémétrie.">
+<a class="pin" href="#ui-1" style="left:55%;top:2.8%" aria-label="Repère 1 : titre et identité de build">1</a>
+<a class="pin" href="#ui-2" style="left:28%;top:12.0%" aria-label="Repère 2 : enveloppe Amp et vélocité">2</a>
+<a class="pin" href="#ui-3" style="left:28%;top:28.8%" aria-label="Repère 3 : Output Gain">3</a>
+<a class="pin" href="#ui-4" style="left:23.5%;top:37.2%" aria-label="Repère 4 : niveaux des oscillateurs">4</a>
+<a class="pin" href="#ui-5" style="left:30%;top:47.6%" aria-label="Repère 5 : ratios des opérateurs">5</a>
+<a class="pin" href="#ui-6" style="left:30%;top:60.2%" aria-label="Repère 6 : profondeurs FM">6</a>
+<a class="pin" href="#ui-7" style="left:30%;top:77%" aria-label="Repère 7 : profondeurs CROSS">7</a>
+<a class="pin" href="#ui-8" style="left:30%;top:91.6%" aria-label="Repère 8 : CROSS Master et intensités">8</a>
+<a class="pin" href="#ui-9" style="left:86%;top:13%" aria-label="Repère 9 : configuration active">9</a>
+<a class="pin" href="#ui-10" style="left:72%;top:17.3%" aria-label="Repère 10 : table des routes">10</a>
+<a class="pin" href="#ui-11" style="left:95.8%;top:51.5%" aria-label="Repère 11 : boutons d'ajout et de retrait des routes">11</a>
+<a class="pin" href="#ui-12" style="left:50.6%;top:50.6%" aria-label="Repère 12 : bouton Panic">12</a>
+<a class="pin" href="#ui-13" style="left:73.6%;top:50.6%" aria-label="Repère 13 : bouton Preset init">13</a>
+<a class="pin" href="#ui-14" style="left:66%;top:54.8%" aria-label="Repère 14 : message et prochain identifiant de route">14</a>
+<a class="pin" href="#ui-15" style="left:60%;top:67.5%" aria-label="Repère 15 : télémétrie et sûreté">15</a>
+</div>
+<figcaption><span class="figlabel real">Capture réelle</span>SUBDESTRUCKT 0.1.0-b5 sur macOS (capture produite par la CI de la build livrée, note 57 jouée à 44,1 kHz). Les repères numérotés sont ajoutés pour ce manuel ; cliquez sur l'image pour l'agrandir sans repères.</figcaption>
+</figure>
+
+<ol class="legend" aria-label="Légende des repères">
+<li id="ui-1"><b>1</b> Titre : nom, numéro de build (0.1.0-b5) et début du commit source. Vérifiez-le en cas de doute sur la version.</li>
+<li id="ui-2"><b>2</b> Enveloppe Amp (Attack, Decay, Sustain, Release) et Amp Velocity : forme du volume de chaque note.</li>
+<li id="ui-3"><b>3</b> Output Gain : volume final, en dB.</li>
+<li id="ui-4"><b>4</b> WT Level, OP1 Level, OP2 Level : volume de chaque oscillateur dans le mélange.</li>
+<li id="ui-5"><b>5</b> OP1 Ratio, OP2 Ratio : hauteur des opérateurs par rapport à la note.</li>
+<li id="ui-6"><b>6</b> FM OP2>OP1, FM OP1>OP2, FM OP1 Self, FM OP2 Self : profondeurs des modulations entre opérateurs.</li>
+<li id="ui-7"><b>7</b> CROSS WT>OP1, WT>OP2, OP1>WT, OP2>WT : profondeurs des modulations entre moteurs.</li>
+<li id="ui-8"><b>8</b> CROSS Master, CROSS WT>FM, CROSS FM>WT : dosage global et par direction de CROSS.</li>
+<li id="ui-9"><b>9</b> Configuration active : fréquences, oversampling K, retard D, lecteur de retard, latence, état de transition (indicateurs, chapitre 10).</li>
+<li id="ui-10"><b>10</b> Table des huit routes possibles : présente ou absente, identifiant, classe causale I ou D, profondeur Effective, gain de transition.</li>
+<li id="ui-11"><b>11</b> Boutons <strong>+</strong> (ajouter la route) et <strong>−</strong> (retirer la route). Un seul est actif à la fois.</li>
+<li id="ui-12"><b>12</b> Panic : coupe immédiatement le son et réinitialise les mémoires internes.</li>
+<li id="ui-13"><b>13</b> Preset init : remet les 22 paramètres et les routes au réglage initial.</li>
+<li id="ui-14"><b>14</b> Dernier message (transaction appliquée ou refusée, état chargé ou refusé) et prochain identifiant de route (nextRouteId).</li>
+<li id="ui-15"><b>15</b> Télémétrie : note jouée, gate, niveau d'enveloppe, crêtes de sortie, compteurs de sûreté.</li>
+</ol>
+
+<h2>Lire les curseurs</h2>
+<p>Chaque ligne de gauche contient : le nom du paramètre suivi de son unité entre parenthèses, un curseur horizontal, et une case de valeur. Vous pouvez faire glisser le curseur, ou cliquer dans la case et taper une valeur. Survoler un nom affiche son identifiant stable (par exemple <code>amp.attack</code>).</p>
+<p>Les unités : <code>s</code> secondes ; <code>lin</code> valeur linéaire de 0 à 1 ; <code>dB</code> décibels ; <code>x f0</code> multiple de la fréquence de la note ; <code>rad</code> radians (unité de profondeur de modulation de phase).</p>
+<div class="box fact"><span class="tag">Valeurs affichées</span><p>Les cases affichent 7 décimales. Une valeur comme −5,9999990 dB pour Output Gain correspond à −6 dB : c'est un arrondi de calcul en virgule flottante, sans effet audible.</p></div>
+
+<h2>Les 22 paramètres</h2>
+<p>Tous les paramètres sont <strong>automatisables</strong> par la DAW et enregistrés dans le projet. Les changements de niveaux, ratios, profondeurs, CROSS, Amp Velocity et Output Gain sont lissés sur 20 ms pour éviter les sauts brusques ; les réglages d'enveloppe s'appliquent immédiatement. Valeurs extraites du registre du code source (<code>source/core/Parameters.cpp</code>) :</p>
+{{PARAM_TABLE}}
+
+<h2>Les commandes qui ne sont pas des paramètres</h2>
+<div class="table-wrap"><table><thead><tr><th>Commande</th><th>Effet</th><th>Automatisable</th></tr></thead><tbody>
+<tr><td>Boutons <strong>+</strong> / <strong>−</strong> des routes</td><td>Ajoutent ou retirent une route de modulation. Les routes sont des éléments de structure : elles ne se changent pas en continu. Chaque ajout reçoit un nouvel identifiant et une classe causale (chapitre 8). Le changement est appliqué par un fondu d'environ 2 × 128 échantillons.</td><td>Non</td></tr>
+<tr><td><strong>Panic</strong></td><td>Rampe vers le silence en 5 ms, puis efface les mémoires internes (historiques de retard, filtre de sortie). Les notes tenues sont relâchées. Équivalent au message MIDI CC120 (All Sound Off).</td><td>Non (mais CC120 via MIDI)</td></tr>
+<tr><td><strong>Preset init</strong></td><td>Remet les 22 paramètres à leur valeur initiale et les routes au réglage initial : OP2>OP1 (id 1, I), WT>OP1 (id 2, I), OP1>WT (id 3, D). Sans confirmation ni annulation.</td><td>Non</td></tr>
+</tbody></table></div>
+<p>La DAW voit aussi un unique programme nommé « Init ». Le plugin expose en outre des paramètres techniques ajoutés par son environnement (JUCE) pour transmettre les contrôleurs MIDI : ce ne sont pas des réglages sonores de SUBDESTRUCKT.</p>
+
+<h2>Paramètres et indicateurs</h2>
+<p>À gauche, tout est <strong>modifiable</strong>. À droite, seuls les boutons + / −, Panic et Preset init agissent ; tout le reste est un <strong>indicateur</strong> (lecture seule), utile pour comprendre ce qui se passe et pour la recette (chapitre 10). Les indicateurs se mettent à jour environ 15 fois par seconde.</p>
+<p>La fenêtre est redimensionnable (de 980 × 680 à 2000 × 1400 points).</p>
+</section>

@@ -1,0 +1,52 @@
+<section class="chapter" id="ch-05">
+<header><p class="kicker">Chapitre 5</p><h1>Comprendre le son</h1>
+<p class="lead">Les notions indispensables pour savoir ce que font les commandes : vibration, fréquence, amplitude, forme d'onde, harmoniques, timbre, phase, modulation, enveloppe et spectre.</p></header>
+
+<div class="box proto"><span class="tag">Simulations</span><p>Les démonstrations animées de ce chapitre sont des <strong>simulations pédagogiques</strong> dessinées par votre navigateur. Elles ne produisent pas de son et ne sont pas des rendus de SUBDESTRUCKT. Les figures marquées « Mesure » sont, elles, calculées à partir de sons réellement produits par le moteur.</p></div>
+
+<h2>Un son est une vibration</h2>
+<p>Un son est une variation rapide de la pression de l'air. Dans un ordinateur, cette variation est représentée par un <strong>signal audio</strong> : une suite de nombres qui montent et descendent autour de zéro. Une <strong>oscillation</strong> est un motif qui se répète.</p>
+
+<h2>Fréquence et hauteur</h2>
+<p>La <strong>fréquence</strong> est le nombre de répétitions par seconde, en hertz (Hz). Nous l'entendons comme la <strong>hauteur</strong> : plus la fréquence est élevée, plus la note est aiguë. Le La du diapason vibre à 440 Hz ; une octave plus haut, 880 Hz.</p>
+<div class="demo" data-demo="sine"><canvas aria-label="Sinusoïde dont la fréquence et l'amplitude suivent les curseurs"></canvas>
+<div class="controls">
+<label for="d-cyc">Fréquence (périodes visibles)</label><input id="d-cyc" name="cycles" type="range" min="1" max="12" step="1" value="3"><span class="readout" data-out="cycles"></span>
+<label for="d-amp">Amplitude</label><input id="d-amp" name="amp" type="range" min="0" max="1" step="0.05" value="0.8"><span class="readout" data-out="amp"></span>
+</div></div>
+
+<h2>Amplitude et volume</h2>
+<p>L'<strong>amplitude</strong> est la taille de l'oscillation. Nous l'entendons comme le volume. Changer l'amplitude ne change pas la hauteur. Dans SUBDESTRUCKT, les curseurs Level, l'enveloppe Amp et Output Gain agissent sur l'amplitude.</p>
+<details class="adv"><summary>Les décibels</summary><p>Le volume est souvent exprimé en décibels (dB), une échelle logarithmique proche de notre perception. −6 dB divise l'amplitude par environ 2 ; −20 dB par 10. En numérique, dBFS prend pour référence le maximum (0 dBFS).</p></details>
+
+<h2>Forme d'onde, harmoniques et timbre</h2>
+<p>Deux sons de même hauteur et de même volume peuvent sonner très différemment : c'est le <strong>timbre</strong>. Il dépend de la <strong>forme d'onde</strong>, c'est-à-dire du dessin d'une période.</p>
+<p>Toute forme d'onde régulière peut être vue comme une somme de sinusoïdes : la <strong>fondamentale</strong> (la note) et des <strong>harmoniques</strong> à 2, 3, 4… fois sa fréquence. Plus il y a d'harmoniques fortes, plus le son est brillant. Ajoutez des harmoniques ci-dessous : la sinusoïde devient peu à peu une dent de scie.</p>
+<div class="demo" data-demo="harmonics"><canvas aria-label="Forme d'onde obtenue en additionnant des harmoniques"></canvas><canvas class="bars" style="height:90px;margin-top:8px" aria-label="Amplitudes des harmoniques additionnées"></canvas>
+<div class="controls"><label for="d-n">Nombre d'harmoniques</label><input id="d-n" name="n" type="range" min="1" max="32" step="1" value="1"><span class="readout" data-out="n"></span></div></div>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e02_wt_seule.svg" alt="Trois périodes de la forme d'onde de la wavetable seule : une dent de scie"><figcaption><span class="figlabel meas">Mesure</span>Forme d'onde de la WT de SUBDESTRUCKT (dent de scie).</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_onde_e08_op1_sans_cross.svg" alt="Trois périodes de la forme d'onde d'OP1 seul : une sinusoïde"><figcaption><span class="figlabel meas">Mesure</span>Forme d'onde d'OP1 seul (sinusoïde).</figcaption></figure>
+</div>
+
+<h2>Le spectre</h2>
+<p>Un <strong>spectre</strong> représente un son selon ses fréquences : chaque pic vertical est une composante. À gauche les graves, à droite les aigus ; plus un pic est haut, plus la composante est forte. Comparez :</p>
+<div class="grid2">
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e08_op1_sans_cross.svg" alt="Spectre d'OP1 seul : une seule raie à 220 Hz"><figcaption><span class="figlabel meas">Mesure</span>OP1 seul : une seule raie, la fondamentale.</figcaption></figure>
+<figure><img class="zoomable" src="assets/fig/mesure_spectre_e02_wt_seule.svg" alt="Spectre de la WT seule : une série d'harmoniques décroissantes"><figcaption><span class="figlabel meas">Mesure</span>WT seule : toutes les harmoniques, de plus en plus faibles.</figcaption></figure>
+</div>
+
+<h2>La phase</h2>
+<p>La <strong>phase</strong> indique où en est une oscillation dans son cycle (de 0 à 360°). Deux signaux identiques mais décalés en phase peuvent se renforcer ou s'annuler quand on les additionne. Faites varier le décalage : la courbe orange est la somme.</p>
+<div class="demo" data-demo="phase"><canvas aria-label="Deux sinusoïdes déphasées et leur somme"></canvas>
+<div class="controls"><label for="d-ph">Décalage de phase</label><input id="d-ph" name="phase" type="range" min="0" max="360" step="5" value="90" data-unit="°"><span class="readout" data-out="phase"></span></div></div>
+<p>À 180°, les deux signaux s'annulent : la somme est plate. Cette notion est au cœur du moteur FM de SUBDESTRUCKT, qui <em>module la phase</em> (chapitre 7).</p>
+
+<h2>Modulation</h2>
+<p>Moduler, c'est faire varier une propriété d'un signal à l'aide d'un autre signal. Si la variation est lente, on entend un mouvement ; si elle est très rapide (à la fréquence d'une note), on entend un <strong>nouveau timbre</strong>. Dans SUBDESTRUCKT 0.1.0-b5, toutes les modulations sont rapides et agissent sur la phase : elles transforment le timbre.</p>
+
+<h2>Enveloppe</h2>
+<p>Une <strong>enveloppe</strong> décrit comment une propriété évolue au cours d'une note : par exemple le volume qui monte à l'attaque puis s'éteint. Chapitre 9.</p>
+
+<details class="adv"><summary>Fréquence d'échantillonnage</summary><p>Un ordinateur représente le son par des <em>échantillons</em> régulièrement espacés : 44 100 par seconde à 44,1 kHz. Ce nombre limite la fréquence la plus aiguë représentable (la moitié : 22 050 Hz à 44,1 kHz). Une fréquence plus haute que cette limite se replie et produit des sons parasites appelés repliement (<em>aliasing</em>). Ne confondez pas la fréquence d'échantillonnage (réglage du projet) et la fréquence d'une note.</p></details>
+</section>

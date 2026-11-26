@@ -1,0 +1,25 @@
+<section class="chapter" id="ch-12">
+<header><p class="kicker">Chapitre 12</p><h1>Exemples audio</h1>
+<p class="lead">Quinze sons produits par le moteur DSP réel de SUBDESTRUCKT 0.1.0-b5, avec tous leurs réglages. Aucun son n'est joué automatiquement ; un seul son joue à la fois.</p></header>
+
+<div class="box fact"><span class="tag">Comment ces sons ont été produits</span>
+<ul>
+<li><strong>Moteur :</strong> le cœur DSP non modifié de SUBDESTRUCKT (<code>source/core</code>, <code>source/dsp</code>, <code>source/engine</code>) au commit source de la build 0.1.0-b5, <code>186fb8644ae9518e3cb5116f4368b45dcea0d430</code>, piloté par un petit programme de rendu hors ligne (<code>tools/manual-audio/render_examples.cpp</code>), sans DAW ni interface.</li>
+<li><strong>Format :</strong> WAV PCM 24 bits, mono, 48 000 Hz (donc K = 1, D = 1 échantillon, lecteur entier exact), blocs de 256 échantillons.</li>
+<li><strong>Jeu :</strong> note MIDI 57 (La2, 220 Hz) sauf mention contraire, vélocité 100, déclenchée à 0,05 s.</li>
+<li><strong>Topologie :</strong> celle de Preset init (OP2>OP1 I, WT>OP1 I, OP1>WT D).</li>
+<li><strong>Niveau :</strong> chaque fichier est multiplié par un gain unique pour que la partie tenue soit à −20 dBFS RMS (crête limitée à −1 dBFS). Les écarts de volume entre exemples ne correspondent donc <em>pas</em> à ce que vous entendrez dans la DAW : le gain appliqué est indiqué pour chaque son. Aucune autre transformation (pas de compression, d'égalisation ni de réverbération).</li>
+<li><strong>Plateforme de rendu :</strong> Windows (compilateur MSVC), à partir des mêmes sources que le plugin macOS. Les rendus n'ont pas été comparés échantillon par échantillon avec le plugin sur Mac : de très légers écarts numériques sont possibles, sans conséquence audible attendue (voir « Points à confirmer », chapitre 16).</li>
+</ul></div>
+
+{{AUDIO_CATALOG}}
+
+<h2>Comparaisons A/B</h2>
+<p>Le bouton A ou B lance le son correspondant ; passer de l'un à l'autre reprend au même instant, pour comparer le timbre sans interruption.</p>
+{{AB:e02_wt_seule|e03_fm_seule|WT seule / FM seule}}
+{{AB:e04_fm_faible|e05_fm_forte|FM faible / FM forte}}
+{{AB:e06_ratio_2|e07_ratio_3_5|Ratio 2 / ratio 3,5}}
+{{AB:e08_op1_sans_cross|e09_cross_wt_vers_fm|OP1 sans CROSS / avec CROSS WT→FM}}
+{{AB:e10_wt_sans_cross|e11_cross_fm_vers_wt|WT sans CROSS / avec CROSS FM→WT}}
+{{AB:e13_env_courte|e14_env_longue|Enveloppe courte / longue}}
+</section>

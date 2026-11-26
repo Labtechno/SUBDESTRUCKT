@@ -1,0 +1,56 @@
+<section class="chapter" id="ch-09">
+<header><p class="kicker">Chapitre 9</p><h1>Enveloppe, voix et sortie</h1>
+<p class="lead">Comment le volume d'une note évolue dans le temps, comment SUBDESTRUCKT choisit la note qui sonne, et ce qui se passe juste avant la sortie audio.</p></header>
+
+<h2>L'enveloppe Amp (ADSR)</h2>
+<p>Quand vous enfoncez une touche, le volume ne passe pas brutalement de 0 au maximum : il suit une <strong>enveloppe</strong> en quatre étapes.</p>
+<div class="table-wrap"><table><thead><tr><th>Étape</th><th>Paramètre</th><th>Plage</th><th>Défaut</th><th>Ce qui se passe</th></tr></thead><tbody>
+<tr><td><strong>A</strong>ttack</td><td>Amp Attack</td><td>0,001 à 5 s</td><td>0,005 s</td><td>montée de 0 au maximum après l'appui</td></tr>
+<tr><td><strong>D</strong>ecay</td><td>Amp Decay</td><td>0,001 à 5 s</td><td>0,25 s</td><td>descente du maximum vers le niveau de maintien</td></tr>
+<tr><td><strong>S</strong>ustain</td><td>Amp Sustain</td><td>0 à 1</td><td>0,8</td><td>niveau tenu tant que la touche reste enfoncée (c'est un niveau, pas une durée)</td></tr>
+<tr><td><strong>R</strong>elease</td><td>Amp Release</td><td>0,001 à 10 s</td><td>0,3 s</td><td>extinction après le relâchement</td></tr></tbody></table></div>
+<div class="demo" data-demo="adsr"><canvas aria-label="Courbe de l'enveloppe ADSR selon les curseurs"></canvas>
+<div class="controls">
+<label for="d-a">Attack</label><input id="d-a" name="a" type="range" min="0.001" max="2" step="0.001" value="0.2" data-unit=" s"><span class="readout" data-out="a"></span>
+<label for="d-d">Decay</label><input id="d-d" name="d" type="range" min="0.001" max="2" step="0.001" value="0.4" data-unit=" s"><span class="readout" data-out="d"></span>
+<label for="d-s">Sustain</label><input id="d-s" name="s" type="range" min="0" max="1" step="0.01" value="0.6"><span class="readout" data-out="s"></span>
+<label for="d-r">Release</label><input id="d-r" name="r" type="range" min="0.001" max="3" step="0.001" value="0.8" data-unit=" s"><span class="readout" data-out="r"></span>
+<label for="d-g">Durée de la touche tenue</label><input id="d-g" name="gate" type="range" min="0.1" max="3" step="0.1" value="1.2" data-unit=" s"><span class="readout" data-out="gate"></span>
+</div><p class="figlabel peda">Simulation pédagogique (forme de l'enveloppe, sans son)</p></div>
+<p>Dans SUBDESTRUCKT, les segments sont <strong>linéaires</strong> (des droites). Les durées sont mesurées sur la pleine échelle : Decay = 0,25 s signifie qu'il faudrait 0,25 s pour descendre de 1 à 0 ; pour descendre de 1 à 0,8, il faut donc 0,05 s. De même, la durée du relâchement est proportionnelle au niveau atteint.</p>
+{{AB:e13_env_courte|e14_env_longue|Enveloppe courte (percussive) / longue (nappe)}}
+<div class="grid2">
+<div class="box try"><span class="tag">Son percussif</span><p>Attack <code>0.001</code>, Decay <code>0.15</code>, Sustain <code>0</code>, Release <code>0.1</code>.</p></div>
+<div class="box try"><span class="tag">Son de nappe</span><p>Attack <code>1</code>, Decay <code>0.5</code>, Sustain <code>0.7</code>, Release <code>1.5</code>.</p></div>
+</div>
+<div class="box fact"><span class="tag">Une seule enveloppe</span><p>Dans 0.1.0-b5, l'enveloppe agit uniquement sur le <strong>volume global</strong>. Elle ne fait pas évoluer le timbre : les profondeurs FM et CROSS restent fixes pendant la note (sauf si vous les automatisez dans la DAW).</p></div>
+
+<h2>La vélocité</h2>
+<p><strong>Amp Velocity</strong> (0 à 1, défaut 1) règle l'influence de la force de frappe sur le volume. Le gain appliqué vaut : 1 − Velocity + Velocity × (vélocité / 127).</p>
+<ul><li>À 0 : toutes les notes ont le même volume, quelle que soit la force de frappe.</li>
+<li>À 1 : une note jouée doucement (vélocité 64) sonne environ deux fois moins fort (−6 dB) qu'une note jouée au maximum (127).</li></ul>
+<p>La vélocité n'agit pas sur le timbre.</p>
+
+<h2>La voix : une note à la fois</h2>
+<p>SUBDESTRUCKT 0.1.0-b5 est <strong>monophonique</strong>, avec <strong>priorité à la dernière note</strong> :</p>
+<ul>
+<li>si vous jouez une nouvelle note alors qu'une autre est tenue, la hauteur saute à la nouvelle note et l'enveloppe repart en attaque <em>depuis son niveau actuel</em> (sans retomber à zéro) ;</li>
+<li>si vous relâchez la note qui sonne alors qu'une autre est encore tenue, la hauteur revient à la note tenue la plus récente, sans relancer l'enveloppe ;</li>
+<li>quand toutes les notes sont relâchées, l'enveloppe passe en Release.</li></ul>
+<p>Les oscillateurs ne sont jamais remis à zéro entre deux notes : leur phase continue. Il n'y a ni glissando (portamento), ni pitch bend, ni aftertouch dans ce prototype. Les messages MIDI CC120 (All Sound Off, équivalent de Panic) et CC123 (All Notes Off, relâche toutes les notes) sont reconnus.</p>
+
+<h2>La sortie</h2>
+<ol class="steps">
+<li><strong>Mélange :</strong> WT Level × WT + OP1 Level × OP1 + OP2 Level × OP2.</li>
+<li><strong>Enveloppe et vélocité</strong> appliquées.</li>
+<li><strong>Retour à la fréquence du projet</strong> (à 44,1 kHz uniquement, après le calcul à 88,2 kHz).</li>
+<li><strong>Output Gain</strong> (−48 à +6 dB, défaut −6 dB, lissé sur 20 ms).</li>
+<li><strong>Garde DC</strong> : un filtre coupe-très-bas (5 Hz) qui retire un éventuel décalage continu.</li>
+<li><strong>Garde numérique</strong> : si le calcul produisait une valeur invalide, la sortie est coupée et l'état interne réinitialisé (compteur « réinit. non finies ») ; une valeur extrême au-delà de +30 dBFS est écrêtée (compteur « garde sortie »).</li>
+<li><strong>Sortie stéréo</strong> : le même signal sur les deux canaux (pas de panoramique ni d'effet stéréo).</li>
+</ol>
+<div class="box warn"><span class="tag">Pas de limiteur</span><p>La garde numérique n'est <strong>pas</strong> un limiteur musical : un signal au-dessus de 0 dBFS reste possible et saturera votre DAW ou votre interface. Gardez des crêtes sous −6 dBFS (indicateur « Crête »).</p></div>
+
+<h2>Panic</h2>
+<p>Le bouton <strong>Panic</strong> (ou le message MIDI CC120) fait descendre le son à zéro en 5 ms, relâche toutes les notes, puis efface les mémoires internes. Les notes suivantes jouent normalement. Utilisez-le si une note reste bloquée ou si un réglage extrême produit un son incontrôlé.</p>
+</section>
