@@ -123,7 +123,7 @@ Compatibilite des etats et presets
 Retour arriere
 - Revenir a 0.1.0-b5 rend illisibles les projets enregistres avec cette version : conservez une copie.
 
-${BUILD_ID%%-*}-b5 — premiere livraison installable (vertical slice ARCH-G3, build interne)
+0.1.0-b5 — premiere livraison installable (vertical slice ARCH-G3, build interne)
 EOF
 
 (cd "$STAGE" && shasum -a 256 SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt > SHA256SUMS.txt)
