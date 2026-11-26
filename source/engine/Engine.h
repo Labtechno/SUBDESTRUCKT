@@ -218,6 +218,10 @@ class Engine {
   // Z / Character
   double zWalkSpeed_ = 0.0, zWalkAmp_ = 0.0, zRmsIn_ = 0.0, zRmsOut_ = 0.0;
   double charHold_ = 0.0;
+  std::array<double, 2> foldPrev_{};          // ADAA1 du repli (par emplacement Z)
+  std::array<double, kNumNodes> lastInc_{};   // incrément de phase du dernier échantillon (sync sous-échantillon)
+  double syncGhostPhase_ = 0.0;
+  int syncFade_ = 0, syncFadeLength_ = 4;
   int charCounter_ = 0;
   CompiledTopology* active_ = nullptr;
   CompiledTopology* incoming_ = nullptr;

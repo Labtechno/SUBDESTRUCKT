@@ -35,6 +35,13 @@ inline double triFold(double u) noexcept {
   if (u < 0) u += 4.0;
   return u <= 2.0 ? u - 1.0 : 3.0 - u;
 }
+// Primitive périodique du repli triangulaire (période 4, moyenne nulle) pour l'anti-repliement ADAA d'ordre 1.
+inline double triFoldF(double u) noexcept {
+  double w = std::fmod(u + 1.0, 4.0);
+  if (w < 0) w += 4.0;
+  w -= 1.0;  // [-1,3)
+  return w <= 1.0 ? 0.5 * w * w - 0.5 : 2.0 * w - 0.5 * w * w - 1.5;
+}
 inline double zCurve(int c, double x) noexcept {
   switch (c) {
     case 1: return x * x;
@@ -191,6 +198,11 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   controlPeriod_ = std::max(1, static_cast<int>(std::lround(fsE / 1000.0)));
   controlCounter_ = 0;
   bankFadeLength_ = std::max(1, static_cast<int>(std::lround(kBankFadeSeconds * fsE)));
+  syncFadeLength_ = std::max(2, static_cast<int>(std::lround(4.0 * fsE / 48000.0)));
+  syncFade_ = 0;
+  syncGhostPhase_ = 0.0;
+  foldPrev_.fill(0.0);
+  lastInc_.fill(0.0);
   chainWt_.configure(ProcessingChain::Wt, fsE, q);
   chainFm_.configure(ProcessingChain::Fm, fsE, q);
   chainGl_.configure(ProcessingChain::Global, fsE, q);
@@ -804,7 +816,15 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
   const int wtSync = ch(ParamId::WtSync), wtSyncSrc = ch(ParamId::WtSyncSrc);
   bool wtSyncEvent = false;
   if (wtSync != 0) wtSyncEvent = wtSyncSrc == 0 ? syncMasterWrapped_ : wrapped_[static_cast<size_t>(wtSyncSrc)];
-  if (wtSync == 1 && wtSyncEvent) oscPhase_[kNodeWT] = 0.0;
+  if (wtSync == 1 && wtSyncEvent) {
+    // position sous-échantillon du cycle maître : la nouvelle phase reprend d * inc (d = temps écoulé depuis le cycle)
+    const double mInc = wtSyncSrc == 0 ? f0 / fsE : std::fabs(lastInc_[static_cast<size_t>(wtSyncSrc)]);
+    const double mPh = wtSyncSrc == 0 ? syncMasterPhase_ : oscPhase_[static_cast<size_t>(wtSyncSrc)];
+    const double dSamples = mInc > 1e-12 ? std::min(mPh / mInc, 1.0) : 0.0;
+    syncGhostPhase_ = oscPhase_[kNodeWT];
+    syncFade_ = syncFadeLength_;
+    oscPhase_[kNodeWT] = dSamples * std::fabs(lastInc_[kNodeWT]);
+  }
   if (wtSync == 2 && wtSyncEvent) wtDirection_ = -wtDirection_;
   if (wtSync != 2) wtDirection_ = 1.0;
 
@@ -869,7 +889,10 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
             zv[s] = e(dp) * zCurve(ch(cp), zm);
             if (zt[s] != 0 && zv[s] > 0.0) anyZ = true;
           }
-          // transformations de phase (ordre de la liste)
+          // transformations de phase (ordre de la liste) ; le repli élargit la bande d'un facteur ~gain : la lecture
+          // est limitée en bande en conséquence (sélection de mip), puis ADAA1 sur le repli
+          for (int s = 0; s < 2; ++s)
+            if (zt[s] == 1 && zv[s] > 0.0) slope *= 1.0 + 7.0 * zv[s];
           for (int s = 0; s < 2; ++s) {
             if (zv[s] <= 0.0) continue;
             if (zt[s] == 2) {  // Phase Warp : coude k, période conservée
@@ -897,10 +920,26 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         const double xpos = e(ParamId::WtX) + acc[kPortWtX], ypos = e(ParamId::WtY) + acc[kPortWtY];
         const double inst = inc + (pm - prevPmWT_) / kTwoPi;
         y = readWt(ph, inst, slope, xpos, ypos);
+        if (syncFade_ > 0) {  // fondu court depuis la trajectoire d'avant la sync (anti-repliement de la discontinuité)
+          double gp = syncGhostPhase_ + pm / kTwoPi;
+          gp -= std::floor(gp);
+          const double yo = readWt(gp, inst, slope, xpos, ypos);
+          const double t = 1.0 - static_cast<double>(syncFade_) / (syncFadeLength_ + 1);
+          y = yo + t * (y - yo);
+          syncGhostPhase_ += inc;
+          syncGhostPhase_ -= std::floor(syncGhostPhase_);
+          --syncFade_;
+        }
         if (anyZ) {
           const double pre = y;
           for (int s = 0; s < 2; ++s)
-            if (zt[s] == 1 && zv[s] > 0.0) y = triFold(y * (1.0 + 7.0 * zv[s]));  // Harmonic Fold
+            if (zt[s] == 1 && zv[s] > 0.0) {  // Harmonic Fold, ADAA d'ordre 1
+              const double u = y * (1.0 + 7.0 * zv[s]);
+              const double du = u - foldPrev_[static_cast<size_t>(s)];
+              y = std::fabs(du) > 1e-9 ? (triFoldF(u) - triFoldF(foldPrev_[static_cast<size_t>(s)])) / du
+                                        : triFold(0.5 * (u + foldPrev_[static_cast<size_t>(s)]));
+              foldPrev_[static_cast<size_t>(s)] = u;
+            }
           y *= ampMul;
           if (ch(ParamId::WtZGain) == 1) {  // compensation de gain : rapport des énergies lissées (50 ms)
             const double a = 1.0 - std::exp(-1.0 / (0.05 * fsE));
@@ -924,6 +963,7 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         }
         prevPmWT_ = pm;
         // avance de phase et détection de cycle (sync, Spectral Mutation)
+        lastInc_[kNodeWT] = inc;
         double p = oscPhase_[kNodeWT] + inc;
         double mutInc = 0.0;
         if (anyZ && ch(ParamId::WtZFund) == 0)
@@ -1009,6 +1049,7 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         mo = y - acState_[static_cast<size_t>(n)];
       }
       modOut_[static_cast<size_t>(n)] = mo;
+      lastInc_[static_cast<size_t>(n)] = inc;
       double p = oscPhase_[static_cast<size_t>(n)] + inc;
       wrapNow[static_cast<size_t>(n)] = p >= 1.0 || p < 0.0;
       oscPhase_[static_cast<size_t>(n)] = p - std::floor(p);
@@ -1336,6 +1377,7 @@ void Engine::purgeStates() noexcept {
   prevPmWT_ = 0.0;
   prevPmOp_.fill(0.0);
   zRmsIn_ = zRmsOut_ = 0.0;
+  foldPrev_.fill(0.0);
   for (auto& l : lines_) l.reset();
   for (auto& p : oscPhase_)
     if (!std::isfinite(p)) p = 0.0;

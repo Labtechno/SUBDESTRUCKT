@@ -25,6 +25,7 @@ void runTopologyTests();
 void runStateTests();
 void runEngineTests();
 void runG4Tests();
+void runG4FeatureTests();
 
 int main() {
   std::printf("SUBDESTRUCKT ARCH-G3 — tests natifs du coeur\n");
@@ -33,5 +34,6 @@ int main() {
   runStateTests();
   runEngineTests();
   runG4Tests();
+  runG4FeatureTests();
   return tk::finish("core_tests");
 }

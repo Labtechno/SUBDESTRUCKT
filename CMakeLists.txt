@@ -54,6 +54,7 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/regression/b5/Topology.cpp
     tests/regression/b5/Decimator.cpp
     tests/regression/b5/Wavetable.cpp
+    tests/regression/b5/StateCodec.cpp
     tests/regression/b5/Engine.cpp)
   target_compile_features(subdestruckt_b5_oracle PUBLIC cxx_std_17)
   add_executable(subdestruckt_core_tests
@@ -62,7 +63,8 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_topology.cpp
     tests/core/test_state.cpp
     tests/core/test_engine.cpp
-    tests/core/test_g4.cpp)
+    tests/core/test_g4.cpp
+    tests/core/test_g4_features.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)
