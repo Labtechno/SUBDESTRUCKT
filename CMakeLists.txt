@@ -26,10 +26,16 @@ configure_file(source/core/BuildInfo.h.in ${CMAKE_CURRENT_BINARY_DIR}/generated/
 # ---------------------------------------------------------------- cœur (L1/L2/L3), sans JUCE
 add_library(subdestruckt_core STATIC
   source/dsp/Wavetable.cpp
+  source/dsp/WtBank.cpp
   source/dsp/Decimator.cpp
+  source/dsp/Filters.cpp
+  source/dsp/Destruction.cpp
   source/core/Parameters.cpp
   source/core/Topology.cpp
+  source/core/ModMatrix.cpp
   source/core/StateCodec.cpp
+  source/engine/ModRuntime.cpp
+  source/engine/Chain.cpp
   source/engine/Engine.cpp)
 target_include_directories(subdestruckt_core PUBLIC source ${CMAKE_CURRENT_BINARY_DIR}/generated)
 target_compile_features(subdestruckt_core PUBLIC cxx_std_17)
@@ -42,14 +48,23 @@ set_target_properties(subdestruckt_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(SUBDESTRUCKT_BUILD_TESTS)
   enable_testing()
+  # Oracle de non-régression : copie figée du moteur 0.1.0-b5 (namespace sbd_b5), jamais modifiée.
+  add_library(subdestruckt_b5_oracle STATIC
+    tests/regression/b5/Parameters.cpp
+    tests/regression/b5/Topology.cpp
+    tests/regression/b5/Decimator.cpp
+    tests/regression/b5/Wavetable.cpp
+    tests/regression/b5/Engine.cpp)
+  target_compile_features(subdestruckt_b5_oracle PUBLIC cxx_std_17)
   add_executable(subdestruckt_core_tests
     tests/core/main.cpp
     tests/core/test_dsp.cpp
     tests/core/test_topology.cpp
     tests/core/test_state.cpp
-    tests/core/test_engine.cpp)
+    tests/core/test_engine.cpp
+    tests/core/test_g4.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
-  target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core)
+  target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)
 endif()
 

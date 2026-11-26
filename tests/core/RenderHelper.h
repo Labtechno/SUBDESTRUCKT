@@ -12,8 +12,8 @@
 
 namespace th {
 
-inline std::shared_ptr<const sbd::SawWavetable> table() {
-  static std::shared_ptr<const sbd::SawWavetable> t = std::make_shared<const sbd::SawWavetable>();
+inline std::shared_ptr<const sbd::WtBank> table() {
+  static std::shared_ptr<const sbd::WtBank> t = sbd::FactoryBanks::get("factory:saw");
   return t;
 }
 

@@ -16,7 +16,7 @@ bool orderIsTopological(const RouteTable& t) {
   std::array<int, kNumNodes> pos{};
   for (int k = 0; k < kNumNodes; ++k) pos[c.order[static_cast<size_t>(k)]] = k;
   for (const auto& r : t.routes())
-    if (r.cls == CausalClass::Immediate && pos[static_cast<size_t>(r.src)] >= pos[static_cast<size_t>(r.dst)]) return false;
+    if (r.cls == CausalClass::Immediate && pos[static_cast<size_t>(r.src)] >= pos[static_cast<size_t>(portNode(r.dst))]) return false;
   return true;
 }
 
@@ -90,7 +90,7 @@ void testRandomSequences() {
       lastNext = t.nextRouteId();
       for (const auto& r : t.routes()) {
         if (r.id == 0 || r.id >= t.nextRouteId()) ++failures;
-        if (r.src == r.dst && r.cls != CausalClass::Delayed) ++failures;
+        if (r.src == portNode(r.dst) && r.cls != CausalClass::Delayed) ++failures;
         for (const auto& b : before)  // survivants : classe inchangée
           if (b.id == r.id && !(b == r)) ++failures;
       }

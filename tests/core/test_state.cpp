@@ -48,7 +48,7 @@ void testDefaultAndRoundTrip() {
     for (int p = 0; p < kNumParams; ++p) {
       const auto& sp = paramSpec(p);
       std::uniform_real_distribution<float> u(sp.minValue, sp.maxValue);
-      s.params.v[static_cast<size_t>(p)] = u(rng);
+      s.params.v[static_cast<size_t>(p)] = sanitize(static_cast<ParamId>(p), u(rng));  // discrets : valeurs entières
     }
     RouteTable t;
     for (int k = 0; k < 6; ++k) {
@@ -72,7 +72,7 @@ void testRefusals() {
   const std::string good = encodeState(d, "test");
   struct Case { const char* name; std::string text; };
   std::vector<Case> cases = {
-      {"version future", replaceLine(good, "SUBDESTRUCKT_STATE", "SUBDESTRUCKT_STATE 2")},
+      {"version future", replaceLine(good, "SUBDESTRUCKT_STATE", "SUBDESTRUCKT_STATE " + std::to_string(kStateVersion + 1))},
       {"en-tete invalide", replaceLine(good, "SUBDESTRUCKT_STATE", "SUBDESTRUKT_STATE 1")},
       {"cycle Immediate", replaceLine(good, "route 3 ", "route 3 OP1 WT I")},
       {"auto-boucle Immediate", replaceLine(good, "route 3 ", "route 3 OP1 OP1 I")},

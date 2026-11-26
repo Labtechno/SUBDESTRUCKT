@@ -1,33 +1,23 @@
 #include "Parameters.h"
 
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+
 namespace sbd {
 
 namespace {
-constexpr ParamCategory C = ParamCategory::Continuous;
-// Ordre = ordre de l'enum (contrôlé par static_assert). L'ordre n'est PAS une identité : seule stableId l'est.
+constexpr ParamCategory categoryFor(ParamType t, bool automatable) {
+  return t == ParamType::Float ? ParamCategory::Continuous
+                               : (automatable ? ParamCategory::Event : ParamCategory::Structural);
+}
+
+// Ordre = ordre de l'enum (même X-macro). L'ordre n'est PAS une identité : seule stableId l'est.
 constexpr ParamSpec kSpecs[kNumParams] = {
-    {"amp.attack", "Amp Attack", "s", 0.001f, 5.0f, 0.005f, 0.0f, true, C, 1, "preset"},
-    {"amp.decay", "Amp Decay", "s", 0.001f, 5.0f, 0.25f, 0.0f, true, C, 1, "preset"},
-    {"amp.sustain", "Amp Sustain", "lin", 0.0f, 1.0f, 0.8f, 0.0f, true, C, 1, "preset"},
-    {"amp.release", "Amp Release", "s", 0.001f, 10.0f, 0.3f, 0.0f, true, C, 1, "preset"},
-    {"amp.velocity", "Amp Velocity", "lin", 0.0f, 1.0f, 1.0f, 20.0f, true, C, 1, "preset"},
-    {"out.gain", "Output Gain", "dB", -48.0f, 6.0f, -6.0f, 20.0f, true, C, 1, "preset"},
-    {"wt.level", "WT Level", "lin", 0.0f, 1.0f, 0.5f, 20.0f, true, C, 1, "preset"},
-    {"op1.level", "OP1 Level", "lin", 0.0f, 1.0f, 0.5f, 20.0f, true, C, 1, "preset"},
-    {"op2.level", "OP2 Level", "lin", 0.0f, 1.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"op1.ratio", "OP1 Ratio", "x f0", 0.25f, 16.0f, 1.0f, 20.0f, true, C, 1, "preset"},
-    {"op2.ratio", "OP2 Ratio", "x f0", 0.25f, 16.0f, 2.0f, 20.0f, true, C, 1, "preset"},
-    {"fm.op2_op1.depth", "FM OP2>OP1", "rad", 0.0f, 8.0f, 1.0f, 20.0f, true, C, 1, "preset"},
-    {"fm.op1_op2.depth", "FM OP1>OP2", "rad", 0.0f, 8.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"fm.op1_op1.depth", "FM OP1 Self", "rad", 0.0f, 8.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"fm.op2_op2.depth", "FM OP2 Self", "rad", 0.0f, 8.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"cross.wt_op1.depth", "CROSS WT>OP1", "rad", 0.0f, 8.0f, 0.5f, 20.0f, true, C, 1, "preset"},
-    {"cross.wt_op2.depth", "CROSS WT>OP2", "rad", 0.0f, 8.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"cross.op1_wt.depth", "CROSS OP1>WT", "rad", 0.0f, 8.0f, 0.5f, 20.0f, true, C, 1, "preset"},
-    {"cross.op2_wt.depth", "CROSS OP2>WT", "rad", 0.0f, 8.0f, 0.0f, 20.0f, true, C, 1, "preset"},
-    {"cross.master", "CROSS Master", "lin", 0.0f, 1.0f, 1.0f, 20.0f, true, C, 1, "preset"},
-    {"cross.fwd", "CROSS WT>FM", "lin", 0.0f, 1.0f, 1.0f, 20.0f, true, C, 1, "preset"},
-    {"cross.rev", "CROSS FM>WT", "lin", 0.0f, 1.0f, 1.0f, 20.0f, true, C, 1, "preset"},
+#define SBD_PARAM(e, sid, nm, ty, un, mn, mx, df, sm, au, ve, dom, ra, rn, sc, hmn, hmx, ch, gr, st) \
+  {sid, nm, un, mn, mx, df, sm, au, categoryFor(ty, au), ve, "preset", ty, dom, ra, rn, sc, hmn, hmx, ch, gr, st},
+#include "ParamTable.inc"
+#undef SBD_PARAM
 };
 }  // namespace
 
@@ -40,6 +30,70 @@ bool findParam(std::string_view stableId, ParamId& out) noexcept {
       return true;
     }
   return false;
+}
+
+int choiceCount(ParamId id) noexcept {
+  const auto& s = paramSpec(id);
+  if (s.type != ParamType::Choice) return 0;
+  int n = 1;
+  for (const char* c = s.choices; *c; ++c) n += (*c == '|');
+  return n;
+}
+
+std::string choiceLabel(ParamId id, int index) {
+  const char* c = paramSpec(id).choices;
+  for (int k = 0; k < index && *c; ++c)
+    if (*c == '|') ++k;
+  const char* e = c;
+  while (*e && *e != '|') ++e;
+  return std::string(c, static_cast<size_t>(e - c));
+}
+
+std::string formatValue(ParamId id, float value) {
+  const auto& s = paramSpec(id);
+  char buf[64];
+  switch (s.type) {
+    case ParamType::Choice: return choiceLabel(id, static_cast<int>(value + 0.5f));
+    case ParamType::Bool: return value >= 0.5f ? "On" : "Off";
+    case ParamType::Int: std::snprintf(buf, sizeof buf, "%d", static_cast<int>(std::lround(value))); return buf;
+    case ParamType::Float: break;
+  }
+  const double a = std::fabs(value);
+  if (a >= 1000.0)
+    std::snprintf(buf, sizeof buf, "%.0f %s", static_cast<double>(value), s.unit);
+  else if (a >= 100.0)
+    std::snprintf(buf, sizeof buf, "%.1f %s", static_cast<double>(value), s.unit);
+  else if (a >= 1.0)
+    std::snprintf(buf, sizeof buf, "%.2f %s", static_cast<double>(value), s.unit);
+  else
+    std::snprintf(buf, sizeof buf, "%.3f %s", static_cast<double>(value), s.unit);
+  return buf;
+}
+
+double toDomain(Domain d, double v) noexcept {
+  switch (d) {
+    case Domain::Oct:
+    case Domain::Time: return std::log2(v > 1e-9 ? v : 1e-9);
+    default: return v;
+  }
+}
+
+double fromDomain(Domain d, double v) noexcept {
+  switch (d) {
+    case Domain::Oct:
+    case Domain::Time: return std::exp2(v);
+    case Domain::Cyc: return v - std::floor(v);
+    default: return v;
+  }
+}
+
+float sanitize(ParamId id, float v) noexcept {
+  const auto& s = paramSpec(id);
+  if (!std::isfinite(v)) v = s.defaultValue;
+  if (s.type != ParamType::Float) v = std::round(v);
+  if (v < s.minValue) v = s.minValue;
+  if (v > s.maxValue) v = s.maxValue;
+  return v;
 }
 
 ParamValues ParamValues::defaults() noexcept {

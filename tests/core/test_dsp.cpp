@@ -10,6 +10,7 @@
 #include "dsp/Decimator.h"
 #include "dsp/Envelope.h"
 #include "dsp/Wavetable.h"
+#include "dsp/WtBank.h"
 #include "engine/Engine.h"
 
 using namespace sbd;
@@ -107,7 +108,7 @@ void testDecimator() {
     tk::info("G-06 K=%d latence declaree=%d, pic de la reponse impulsionnelle a +%d", K, dec.latencyHostSamples(), measured);
     ok = ok && kOk;
   }
-  Engine e(std::make_shared<const SawWavetable>());
+  Engine e(FactoryBanks::get("factory:saw"));
   bool lat = true;
   for (double fs : {44100.0, 48000.0, 88200.0, 96000.0}) {
     e.prepare(fs, 512);
@@ -140,9 +141,9 @@ void testPrimitives() {
   TK_CHECK(a.level() == 0.0 && a.stage() == Adsr::Stage::Idle);
   // table : harmoniques du niveau 0 en 1/k (contrôle direct de la table)
   // cycle unique périodique : DFT sans fenêtre, l'harmonique k tombe exactement sur le bin k
-  SawWavetable t;
-  std::vector<std::complex<double>> c(SawWavetable::kLength);
-  for (int i = 0; i < SawWavetable::kLength; ++i) c[static_cast<size_t>(i)] = t.level(0)[i];
+  const auto t = FactoryBanks::get("factory:saw");
+  std::vector<std::complex<double>> c(WtBank::kLength);
+  for (int i = 0; i < WtBank::kLength; ++i) c[static_cast<size_t>(i)] = t->sample(0, 0, i);
   an::fft(c);
   bool saw = true;
   for (int k = 2; k <= 10; ++k)
