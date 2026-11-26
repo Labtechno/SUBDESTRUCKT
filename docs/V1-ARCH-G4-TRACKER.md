@@ -97,7 +97,7 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 |---|---|---|---|---|
 | R01 | Registre stable extensible (C23–C27) | F | PASS (CI run 3) | — |
 | R02 | État versionné v2 + migration 0.1.0-b5 | F | PASS (local ; CI à confirmer) | — |
-| R03 | Transactions/ownership hors RT (topologie, matrice, banque, courbes) | F | IMPLEMENTED | — |
+| R03 | Transactions/ownership hors RT (topologie, matrice, banque, courbes) | F | PASS (local + CI run 7) | — |
 | R04 | Timeline MIDI sample-accurate, ordre C11 étendu (bend/CC/pression) | F | PASS (local) | — |
 | R05 | Mono/Legato, priorités Last/Low/High, sustain | F | PASS (local) | — |
 | R06 | Expressivité : bend Up/Down, pression, CC1/2/11/64, vélocité | F | PASS (local) | — |
@@ -110,7 +110,7 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (local) | — |
 | R14 | WT phase free/retrigger/fixed/random, sync hard/soft (interne/OP) | WT | PASS (local) | — |
 | R15 | WT Character | WT | IMPLEMENTED | — |
-| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | TODO | — |
+| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | IMPLEMENTED (import/export WAV, SHA-256, banque intégrée ; éditeur graphique et générateur UI absents) — WTA-01 PASS local | — |
 | R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (local) | — |
 | R18 | Z : 3 transformations attestées | WT | PASS (local) | — |
 | R19 | Z : 5 transformations historiques | WT | BLOCKED | — |
@@ -118,7 +118,7 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (local) | — |
 | R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (local) | — |
 | R23 | Matrice 4×4 + 10 topologies préréglées | FM | IMPLEMENTED | — |
-| R24 | ExpFM benchmark | FM | TODO | — |
+| R24 | ExpFM benchmark | FM | PASS (PERF-02 : ExpFM = coût PM/Lin/TZ) | — |
 | R25 | CROSS 55 routes B-T2 sticky, bus Raw/Normalized, directions | CR | PASS (local) | — |
 | R26 | Sync bidirectionnel, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset | CR | PASS (local) | — |
 | R27 | Destruction N1/D1/Y1/S1 | DST | PASS (local) | — |
@@ -135,13 +135,13 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (local) | — |
 | R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (local) | — |
 | R40 | Limiteur musical optionnel, garde numérique | Q | IMPLEMENTED | — |
-| R41 | Benchmark CPU reproductible | Q | TODO | — |
-| R42 | UI Performance | UI | TODO | — |
-| R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | TODO | — |
-| R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | TODO | — |
-| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | TODO | — |
-| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (CI run 3) | — |
-| R47 | MIDI Learn global séparé des presets | PLG | IMPLEMENTED | — |
+| R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
+| R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
+| R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
+| R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
+| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (zoom 75–150 %, focus clavier ; DPI/contrastes non mesurés) | — |
+| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (CI runs 3, 6, 7 : wrapper, hôte, pluginval 10) | — |
+| R47 | MIDI Learn global séparé des presets | PLG | IMPLEMENTED (file audio->message, latence ≤ 33 ms) | — |
 | R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (CI VM, non publié) | — |
 | R49 | Manuel HTML édition G4 + assistant de recette | DOC | TODO | — |
 | R50 | Captures créatives Freeze/Glitch (R2) | STATE | TODO | — |
@@ -157,10 +157,14 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | 2026-11-26 | Destruction N1..S2, alignement latence, barrière CI | (voir git) | Local : DST 11/12 PASS, DST-09 FAIL documenté |
 | 2026-11-26 | State : Randomize/Mutate/Evolve, Undo, presets ; G-15b/c | (voir git) | Local : 6/6 State PASS ; G-15 étendu FAIL documenté, G-15b/c PASS |
 
+| 2026-11-26 | UI fonctionnelle | 764ce4f | CI run 7 : build-test-package SUCCESS (UI compilée macOS) ; RTSan FAIL (règle corrigée en 172a0d6) |
+| 2026-11-26 | PERF, banques utilisateur, textes 0.2.0 | f640c5c..775bfdf | Local PASS ; CI en cours |
+| 2026-11-26 | Fusion outillage du manuel (feature/arch-g3-user-manual) | (voir git) | build.py à généraliser |
+
 ## 6. Prochaine action
-UI fonctionnelle (Performance / Sound Design / Engineering, CROSS central, Inspector, moniteurs) branchée sur l'API de
-contrôle du processeur (PluginProcessor.h) : Undo/Redo, Randomize/Mutate/Evolve, presets, MIDI Learn ; puis import/export
-WT, benchmark CPU, manuel HTML G4, README/CHANGELOG 0.2.0, rapport final.
+Manuel 0.2.0 : généraliser manual/build.py par version (b5 depuis tests/regression/b5/Parameters.cpp ; 0.2.0 depuis
+ParamTable.inc), adapter tools/manual-audio/render_examples.cpp à l'API G4, créer manual/src/0.2.0 (chapitres,
+recette G4, captures, audio) ; puis rapport final docs/V1-ARCH-G4-REPORT.md.
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
