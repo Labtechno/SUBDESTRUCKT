@@ -13,3 +13,7 @@ S0.1 : 87 662 contrôles réussis rapportés sous Apple Clang arm64. Écoute fin
 
 ## Conditions d'intégration
 ARCH-G3 autorisé uniquement pour prototype minimal, avec tests DAG/sticky, cycles créés par union, transactions multiples, profondeur zéro, save/load, undo/redo si exposé, invariance blocs, bornes numériques, déterminisme à configuration fixe, phase du lecteur, latence, transitions, absence d'opérations RT interdites dans périmètre instrumenté. Toute défaillance causale ou de sûreté bloque livraison. Tests non applicables explicitement justifiés. Aucun élargissement aux moteurs complets avant recette. M3 physique et hôte réel obligatoires avant Beta publique; budget CPU produit pas encore normatif. M1 historique non certifié. Aucun résultat de performance M3 inventé.
+
+
+## Clôture ARCH-G3 — recette physique du 25 novembre 2026
+GO ARCH-G3 dans la portée de la tranche 0.1.0-b5, 15/15 PASS déclarés et acceptés par la direction technique. R-08 et R-09 complétés par confirmation explicite : 44,1/48/88,2/96 kHz et PDC à 44,1 kHz. Voir [V1-ARCH-G3-CLOSURE.md](V1-ARCH-G3-CLOSURE.md). Les restrictions antérieures « avant recette » sont levées pour le prototype validé; la préparation d'ARCH-G4 par lots est ouverte, pas l'implémentation monolithique ni la diffusion publique. M3 physique, budget CPU produit, licence JUCE, signature/notarisation et dettes d'intégration restent ouverts. Aucun merge du code ni nouvelle release par cette décision.
