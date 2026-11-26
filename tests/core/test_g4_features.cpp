@@ -771,6 +771,61 @@ void testRngChaos() {
   tk::result("CHAOS-01", chaosOk, "Lorenz/Rossler/logistique : 1e7 pas a 0,01 et 100 Hz, bornes, finis, deterministes ; modele retenu (premier conforme) : %d (0 = Lorenz)", chosen);
 }
 
+// ------------------------------------------------------------------ G-15b / G-15c
+void testBoundsExtended() {
+  for (int variant = 0; variant < 2; ++variant) {
+    std::mt19937_64 rng(0x5EEDBEEFULL + static_cast<unsigned>(variant));
+    int bad = 0;
+    unsigned guard = 0;
+    for (int c = 0; c < 200; ++c) {
+      G4Scenario sc;
+      const double rates[4] = {44100.0, 48000.0, 88200.0, 96000.0};
+      sc.fs = rates[rng() % 4];
+      const int blocks[5] = {32, 64, 128, 256, 512};
+      sc.block = blocks[rng() % 5];
+      sc.samples = static_cast<long long>(sc.fs * 2.0);
+      sc.state = defaultState();
+      const int np = variant == 0 ? kNumV1Params : kNumParams;
+      for (int p = 0; p < np; ++p) {
+        const auto& sp = paramSpec(p);
+        std::uniform_real_distribution<float> u(sp.minValue, sp.maxValue);
+        sc.state.params.v[static_cast<size_t>(p)] = sanitize(static_cast<ParamId>(p), u(rng));
+      }
+      if (variant == 1) {
+        auto& pv = sc.state.params;
+        pv[ParamId::OutGain] = std::min(pv[ParamId::OutGain], 0.0f);
+        for (ParamId f : {ParamId::FltWtOut, ParamId::FltFmOut, ParamId::FltGlOut}) pv[f] = std::min(pv[f], 0.0f);
+        for (int slot = 0; slot < 6; ++slot) {
+          const int b = idx(ParamId::DstWt1Type) + slot * (idx(ParamId::DstWt2Type) - idx(ParamId::DstWt1Type));
+          auto& og = pv.v[static_cast<size_t>(b + 2)];
+          og = std::min(og, 0.0f);
+          pv.v[static_cast<size_t>(b + 22)] = 0.0f;  // Y1 makeup
+        }
+      }
+      RouteTable t;
+      for (int k = 0; k < 8; ++k) {
+        const int slot = static_cast<int>(rng() % (variant == 0 ? kNumV1Routes : kMaxRoutes));
+        if (!t.findPair(routeSlotInfo(slot).src, routeSlotInfo(slot).dst)) t.apply({Op::add(routeSlotInfo(slot).src, routeSlotInfo(slot).dst)});
+      }
+      sc.state.routes = t.routes();
+      sc.state.nextRouteId = t.nextRouteId();
+      for (int e = 0; e < 6; ++e) {
+        const int at = static_cast<int>(rng() % static_cast<unsigned long long>(sc.samples));
+        const int note = 24 + static_cast<int>(rng() % 84);
+        sc.events.push_back(MidiEvent::noteOn(at, note, 1 + static_cast<int>(rng() % 127)));
+        sc.events.push_back(MidiEvent::noteOff(std::min<int>(at + 20000, static_cast<int>(sc.samples - 1)), note));
+      }
+      const auto r = renderG4(sc);
+      guard += r.clamp;
+      if (r.nonFinite != 0 || r.clamp != 0 || !allFinite(r.L)) ++bad;
+    }
+    const bool ok = bad == 0;
+    TK_CHECK(ok);
+    tk::result(variant == 0 ? "G-15b" : "G-15c", ok, "%s : 200 configurations x 2 s : %d en defaut ; garde |y|>32 : %u",
+               variant == 0 ? "espace des 22 parametres v1 (protocole G-15)" : "tous parametres, gains de sortie <= 0 dB", bad, guard);
+  }
+}
+
 }  // namespace
 
 void runG4FeatureTests() {
@@ -785,6 +840,7 @@ void runG4FeatureTests() {
   testFm();
   testCrossEtc();
   testRngChaos();
+  testBoundsExtended();
   TK_CHECK(allocTotal() == 0);
   tk::result("RT-G4", allocTotal() == 0, "allocations pendant Engine::process sur l'ensemble des rendus G4 : %lld (seuil 0)", allocTotal());
 }
