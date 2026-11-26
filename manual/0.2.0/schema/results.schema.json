@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "subdestruckt/manual/results.schema.json",
+  "title": "SUBDESTRUCKT — résultats de la recette ARCH-G3 (SUBDESTRUCKT_ARCH_G3_RESULTS.json)",
+  "type": "object",
+  "required": ["schemaVersion", "campaignId", "product", "version", "buildSha", "documentationSha", "sessionId", "startedAt", "updatedAt",
+               "globalStatus", "counts", "configuration", "results", "generalObservations", "finalValidation"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "campaignId": {"const": "SUBDESTRUCKT-ARCH-G3-RECETTE-PHYSIQUE"},
+    "product": {"const": "SUBDESTRUCKT"},
+    "version": {"type": "string"},
+    "buildSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "documentationSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sessionId": {"type": "string"},
+    "startedAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": "string", "format": "date-time"},
+    "globalStatus": {"enum": ["en cours", "en cours — avec FAIL", "terminée — avec FAIL", "terminée — aucun FAIL"]},
+    "counts": {
+      "type": "object",
+      "required": ["total", "filled", "pass", "fail", "pending", "na", "naWithoutJustification"],
+      "properties": {
+        "total": {"const": 15}, "filled": {"type": "integer"}, "pass": {"type": "integer"}, "fail": {"type": "integer"},
+        "pending": {"type": "integer"}, "na": {"type": "integer"}, "naWithoutJustification": {"type": "integer"}
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "required": ["machine", "macos", "daw", "dawVersion", "audioInterface", "sampleRatesTested", "bufferSizes"],
+      "properties": {
+        "machine": {"type": "string"}, "macos": {"type": "string"}, "daw": {"type": "string"}, "dawVersion": {"type": "string"},
+        "audioInterface": {"type": "string"},
+        "sampleRatesTested": {"type": "array", "items": {"enum": ["44100", "48000", "88200", "96000"]}, "uniqueItems": true},
+        "bufferSizes": {"type": "string"}
+      }
+    },
+    "results": {
+      "type": "object",
+      "propertyNames": {"pattern": "^R-(0[1-9]|1[0-5])$"},
+      "minProperties": 15, "maxProperties": 15,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "observations", "naJustification", "evidence", "updatedAt"],
+        "properties": {
+          "status": {"enum": ["PENDING", "PASS", "FAIL", "N/A"]},
+          "observations": {"type": "string"},
+          "naJustification": {"type": "string", "description": "obligatoire (non vide) pour valider si status = N/A"},
+          "evidence": {"type": "string", "description": "référence de preuve : nom de capture, de fichier…"},
+          "updatedAt": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "generalObservations": {"type": "string"},
+    "finalValidation": {
+      "type": "object",
+      "required": ["validated", "validatedAt", "statusAtValidation"],
+      "properties": {"validated": {"type": "boolean"}, "validatedAt": {"type": ["string", "null"]}, "statusAtValidation": {"type": ["string", "null"]}}
+    },
+    "client": {"type": "object", "description": "informations techniques du navigateur (userAgent, disponibilité du stockage)"}
+  }
+}
