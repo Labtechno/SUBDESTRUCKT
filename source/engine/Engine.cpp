@@ -563,6 +563,7 @@ void Engine::renderSegment(int a, int b, float* outL, float* outR, double* tap) 
       --panicLeft_;
     }
     const float fl = static_cast<float>(y[0]), fr = static_cast<float>(y[1]);
+    if ((scopeCounter_++ & 1) == 0) telemetry_.scope.push(0.5f * (fl + fr));  // capture décimée (moniteur)
     outL[a + h] = fl;
     outR[a + h] = fr;
     blockPeakL_ = std::max(blockPeakL_, std::fabs(fl));
@@ -1446,6 +1447,11 @@ void Engine::publishTelemetry() noexcept {
   t.wtY.store(static_cast<float>(e(ParamId::WtY)), std::memory_order_relaxed);
   t.wtZ.store(static_cast<float>(e(ParamId::WtZ)), std::memory_order_relaxed);
   for (int s = 0; s < kNumModSources; ++s) t.sources[static_cast<size_t>(s)].store(static_cast<float>(src_[static_cast<size_t>(s)]), std::memory_order_relaxed);
+  for (int k = 0; k < mod_->numDests; ++k) {
+    const auto d = static_cast<size_t>(mod_->dests[static_cast<size_t>(k)]);
+    t.effective[d].store(static_cast<float>(eff_[d]), std::memory_order_relaxed);
+  }
+  for (int i = 0; i < kNumParams; ++i) t.modulated[static_cast<size_t>(i)].store(modulated_[static_cast<size_t>(i)] ? 1 : 0, std::memory_order_relaxed);
   for (int s = 0; s < kMaxRoutes; ++s) {
     t.effectiveDepth[static_cast<size_t>(s)].store(static_cast<float>(testEffectiveDepth(s)), std::memory_order_relaxed);
     float g = 0.0f;

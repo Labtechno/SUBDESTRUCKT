@@ -267,6 +267,7 @@ class Engine {
   float blockPeakL_ = 0.0f, blockPeakR_ = 0.0f;
   std::uint32_t nonFinite_ = 0, clampHits_ = 0, pmClampHits_ = 0, dropped_ = 0, panics_ = 0, limiterHits_ = 0;
   double tailEnergy_ = 0.0;
+  std::uint32_t scopeCounter_ = 0;
 
   // tests
   bool poison_ = false;

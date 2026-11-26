@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "BuildInfo.h"
-#include "ui/DiagnosticEditor.h"
+#include "ui/MainEditor.h"
 
 namespace sbd {
 
@@ -119,12 +119,20 @@ bool MidiLearnMap::save(const std::string& path) const {
 }
 
 // ---------------------------------------------------------------- processeur
+static std::string presetDir() {
+  return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+      .getChildFile("Labtechno").getChildFile("SUBDESTRUCKT").getChildFile("Presets").getFullPathName().toStdString();
+}
+
 SubdestrucktProcessor::SubdestrucktProcessor()
     : juce::AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      engine_(FactoryBanks::get("factory:saw")) {
+      engine_(FactoryBanks::get("factory:saw")),
+      library_(presetDir()) {
+  gestures_.owner = this;
   for (int i = 0; i < kNumParams; ++i) {
     auto param = makeParameter(i);
     bridge_.attach(i, param.get());
+    param->addListener(&gestures_);
     addParameter(param.release());
   }
   const PluginState initial = defaultState();  // preset minimal
@@ -136,7 +144,10 @@ SubdestrucktProcessor::SubdestrucktProcessor()
   startTimerHz(30);
 }
 
-SubdestrucktProcessor::~SubdestrucktProcessor() { stopTimer(); }
+SubdestrucktProcessor::~SubdestrucktProcessor() {
+  stopTimer();
+  for (int i = 0; i < kNumParams; ++i) bridge_.param(i)->removeListener(&gestures_);
+}
 
 bool SubdestrucktProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const {
   return layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo() && layouts.getMainInputChannelSet().isDisabled();
@@ -189,7 +200,11 @@ void SubdestrucktProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     buffer.clear();
     return;
   }
-  engine_.setParameters(bridge_.values());
+  ParamValues pv = bridge_.values();
+  if (evolveActive_.load(std::memory_order_acquire))
+    for (int i = 0; i < kNumParams; ++i)
+      if (evolvedOn_[static_cast<size_t>(i)].load(std::memory_order_relaxed)) pv.v[static_cast<size_t>(i)] = evolved_[static_cast<size_t>(i)].load(std::memory_order_relaxed);
+  engine_.setParameters(pv);
   TransportInfo tr;
   if (auto* ph = getPlayHead()) {
     if (const auto pos = ph->getPosition()) {
@@ -258,7 +273,7 @@ double SubdestrucktProcessor::getTailLengthSeconds() const {
   return static_cast<double>(bridge_.base(static_cast<int>(ParamId::AmpRelease)));
 }
 
-juce::AudioProcessorEditor* SubdestrucktProcessor::createEditor() { return new DiagnosticEditor(*this); }
+juce::AudioProcessorEditor* SubdestrucktProcessor::createEditor() { return new ui::MainEditor(*this); }
 
 // ---------------------------------------------------------------- état
 PluginState SubdestrucktProcessor::snapshotState() const {
@@ -340,7 +355,8 @@ bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset
 }
 
 bool SubdestrucktProcessor::transact(const std::function<bool(PluginState&)>& edit, const std::string& cause) {
-  PluginState s = snapshotState();
+  const PluginState before = snapshotState();
+  PluginState s = before;
   if (!edit(s)) return false;
   std::string err;
   if (!validateState(s, err)) {
@@ -349,12 +365,139 @@ bool SubdestrucktProcessor::transact(const std::function<bool(PluginState&)>& ed
     return false;
   }
   s.hasInstance = false;  // une transaction d'édition ne modifie pas la préférence d'instance
-  return applyState(s, true);
+  const bool ok = applyState(s, true);
+  if (ok) record(before, cause);
+  return ok;
+}
+
+void SubdestrucktProcessor::record(const PluginState& before, const std::string& cause) {
+  if (applyingHistory_) return;
+  undo_.push(before, snapshotState(), cause);
+  dirty_.store(true);
+}
+
+void SubdestrucktProcessor::GestureListener::parameterGestureChanged(int, bool starting) {
+  if (!juce::MessageManager::existsAndIsCurrentThread()) return;  // gestes : thread message uniquement
+  auto& o = *owner;
+  if (starting) {
+    if (o.gestureDepth_++ == 0) o.gestureBefore_ = std::make_unique<PluginState>(o.snapshotState());
+  } else if (o.gestureDepth_ > 0 && --o.gestureDepth_ == 0 && o.gestureBefore_) {
+    o.record(*o.gestureBefore_, "geste");
+    o.gestureBefore_.reset();
+  }
+}
+
+bool SubdestrucktProcessor::undo() {
+  const PluginState* s = undo_.undo();
+  if (!s) return false;
+  const PluginState copy = *s;
+  applyingHistory_ = true;
+  const bool ok = applyState(copy, true);
+  applyingHistory_ = false;
+  return ok;
+}
+
+bool SubdestrucktProcessor::redo() {
+  const PluginState* s = undo_.redo();
+  if (!s) return false;
+  const PluginState copy = *s;
+  applyingHistory_ = true;
+  const bool ok = applyState(copy, true);
+  applyingHistory_ = false;
+  return ok;
+}
+
+bool SubdestrucktProcessor::canUndo() const { return undo_.canUndo(); }
+bool SubdestrucktProcessor::canRedo() const { return undo_.canRedo(); }
+std::string SubdestrucktProcessor::undoLabel() const { return undo_.undoCause(); }
+std::string SubdestrucktProcessor::redoLabel() const { return undo_.redoCause(); }
+
+bool SubdestrucktProcessor::randomize(const RandomOptions& o) {
+  return transact([&](PluginState& s) { return randomizeState(s, o).ok; }, "Randomize");
+}
+
+bool SubdestrucktProcessor::mutate(const RandomOptions& o) {
+  return transact([&](PluginState& s) { return mutateState(s, o).ok; }, "Mutate");
+}
+
+void SubdestrucktProcessor::evolveStart(const RandomOptions& o, EvolveMode m, float rateHz) {
+  evolver_.start(snapshotState(), o, m, rateHz);
+  evolveActive_.store(true, std::memory_order_release);
+}
+
+void SubdestrucktProcessor::evolveStop() {
+  evolver_.stop();
+  evolveActive_.store(false, std::memory_order_release);
+  for (auto& f : evolvedOn_) f.store(false);
+}
+
+void SubdestrucktProcessor::evolveReset() {
+  evolver_.reset();
+  for (auto& f : evolvedOn_) f.store(false);
+}
+
+bool SubdestrucktProcessor::evolveCommit() {
+  const Evolver ev = evolver_;
+  const bool ok = transact([&](PluginState& s) { return ev.commit(s); }, "Evolve Commit");
+  if (ok) evolveReset();
+  return ok;
+}
+
+bool SubdestrucktProcessor::evolveRunning() const { return evolver_.running(); }
+
+std::vector<PresetInfo> SubdestrucktProcessor::presets() const { return library_.list(); }
+
+bool SubdestrucktProcessor::loadPreset(const PresetInfo& info) {
+  PluginState s;
+  std::string err;
+  if (!library_.load(info, s, err)) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = "Preset refuse : " + err;
+    return false;
+  }
+  const PluginState before = snapshotState();
+  if (!applyState(s, true)) return false;
+  record(before, "preset : " + info.name);
+  {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    presetName_ = info.name;
+  }
+  dirty_.store(false);
+  notifyState();
+  return true;
+}
+
+bool SubdestrucktProcessor::savePreset(const std::string& name, const std::vector<std::string>& tags) {
+  std::string err;
+  if (!library_.save(name, snapshotState(), tags, err)) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = "Sauvegarde refusee : " + err;
+    return false;
+  }
+  {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    presetName_ = PresetLibrary::sanitizeName(name);
+    lastMessage_ = "Preset sauvegarde : " + presetName_;
+  }
+  dirty_.store(false);
+  notifyState();
+  return true;
+}
+
+bool SubdestrucktProcessor::setPresetFavorite(const PresetInfo& info, bool fav) {
+  std::string err;
+  return library_.setFavorite(info, fav, err);
+}
+
+std::string SubdestrucktProcessor::presetName() const {
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  return presetName_;
 }
 
 // ---------------------------------------------------------------- topologie, matrice, banque, courbes
 RouteTable::Result SubdestrucktProcessor::applyTopology(const std::vector<RouteTable::Op>& ops) {
   RouteTable::Result res;
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     res = routes_.apply(ops);
@@ -365,7 +508,10 @@ RouteTable::Result SubdestrucktProcessor::applyTopology(const std::vector<RouteT
       lastMessage_ = "Transaction refusee : " + res.error;
     }
   }
-  if (res.ok) notifyState();
+  if (res.ok) {
+    record(before, "topologie");
+    notifyState();
+  }
   return res;
 }
 
@@ -406,41 +552,54 @@ void SubdestrucktProcessor::publishCurvesLocked() {
 
 ModTxResult SubdestrucktProcessor::modAdd(const ModRoute& r) {
   ModTxResult res;
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     res = sbd::modAdd(mod_, r);
     if (res.ok) publishModLocked();
     lastMessage_ = res.ok ? "Modulation ajoutee" : "Modulation refusee : " + res.error;
   }
-  if (res.ok) notifyState();
+  if (res.ok) {
+    record(before, "matrice : ajout");
+    notifyState();
+  }
   return res;
 }
 
 ModTxResult SubdestrucktProcessor::modUpdate(const ModRoute& r) {
   ModTxResult res;
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     res = sbd::modUpdate(mod_, r);
     if (res.ok) publishModLocked();
     lastMessage_ = res.ok ? "Modulation modifiee" : "Modulation refusee : " + res.error;
   }
-  if (res.ok) notifyState();
+  if (res.ok) {
+    record(before, "matrice : modification");
+    notifyState();
+  }
   return res;
 }
 
 ModTxResult SubdestrucktProcessor::modRemove(std::uint32_t id) {
   ModTxResult res;
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     res = sbd::modRemove(mod_, id);
     if (res.ok) publishModLocked();
     lastMessage_ = res.ok ? "Modulation retiree" : "Modulation refusee : " + res.error;
   }
-  if (res.ok) notifyState();
+  if (res.ok) {
+    record(before, "matrice : retrait");
+    notifyState();
+  }
   return res;
 }
 
 bool SubdestrucktProcessor::setBank(const std::string& id) {
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     if (!FactoryBanks::get(id)) {
@@ -451,16 +610,19 @@ bool SubdestrucktProcessor::setBank(const std::string& id) {
     publishBankLocked();
     lastMessage_ = "Banque : " + FactoryBanks::displayName(id);
   }
+  record(before, "banque");
   notifyState();
   return true;
 }
 
 void SubdestrucktProcessor::setMacroName(int index, const std::string& name) {
   if (index < 0 || index > 3) return;
+  const PluginState before = snapshotState();
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     macroNames_[static_cast<size_t>(index)] = name.substr(0, 64);
   }
+  record(before, "nom de macro");
   notifyState();
 }
 
@@ -610,6 +772,18 @@ void SubdestrucktProcessor::timerCallback() {
     ++r;
   }
   ccRead_.store(r, std::memory_order_release);
+  const double now = juce::Time::getMillisecondCounterHiRes() * 1e-3;
+  const double dt = lastTimer_ > 0.0 ? std::min(0.2, now - lastTimer_) : 1.0 / 30.0;
+  lastTimer_ = now;
+  if (evolver_.running()) {
+    evolver_.step(dt);
+    for (int i = 0; i < kNumParams; ++i) {
+      const auto id = static_cast<ParamId>(i);
+      const float base = bridge_.base(i), v = evolver_.apply(id, base);
+      evolved_[static_cast<size_t>(i)].store(v, std::memory_order_relaxed);
+      evolvedOn_[static_cast<size_t>(i)].store(v != base, std::memory_order_relaxed);
+    }
+  }
   updateLatency();
 }
 

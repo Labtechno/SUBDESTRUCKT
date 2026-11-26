@@ -17,7 +17,7 @@
 
 #include "TestKit.h"
 #include "plugin/PluginProcessor.h"
-#include "ui/DiagnosticEditor.h"
+#include "ui/MainEditor.h"
 
 void* operator new(std::size_t n) {
   if (tk::countingAllocations().load(std::memory_order_relaxed)) tk::allocationCount().fetch_add(1);
@@ -257,23 +257,34 @@ void snapshotEditor(const std::string& path) {
     midi.clear();
   }
   std::unique_ptr<juce::AudioProcessorEditor> ed(p.createEditorIfNeeded());
-  auto* diag = dynamic_cast<sbd::DiagnosticEditor*>(ed.get());
-  if (diag == nullptr) {
+  auto* main = dynamic_cast<sbd::ui::MainEditor*>(ed.get());
+  if (main == nullptr) {
     tk::info("UI : editeur indisponible");
     return;
   }
-  diag->setSize(1080, 720);
-  diag->refreshNow();
-  const auto img = diag->createComponentSnapshot(diag->getLocalBounds(), true, 1.0f);
-  juce::File f(juce::String::fromUTF8(path.c_str()));
-  f.deleteFile();
-  bool ok = false;
-  {
-    juce::FileOutputStream os(f);
-    juce::PNGImageFormat png;
-    ok = os.openedOk() && png.writeImageToStream(img, os);
+  main->setSize(1440, 900);
+  // captures reelles des trois espaces (et des sous-onglets principaux)
+  const struct {
+    int space, tab;
+    const char* suffix;
+  } views[] = {{0, 0, ""}, {1, 0, "_sound_process"}, {1, 1, "_sound_mod"}, {2, 0, "_eng_network"}, {2, 1, "_eng_mod"}, {2, 3, "_eng_random"}, {2, 5, "_eng_diag"}};
+  for (const auto& v : views) {
+    main->showSubTab(v.space, v.tab);
+    main->refreshNow();
+    const auto img = main->createComponentSnapshot(main->getLocalBounds(), true, 1.0f);
+    std::string out = path;
+    const size_t dot = out.rfind(".png");
+    if (dot != std::string::npos) out.insert(dot, v.suffix);
+    juce::File f(juce::String::fromUTF8(out.c_str()));
+    f.deleteFile();
+    bool ok = false;
+    {
+      juce::FileOutputStream os(f);
+      juce::PNGImageFormat png;
+      ok = os.openedOk() && png.writeImageToStream(img, os);
+    }
+    tk::info("UI : capture %dx%d -> %s (%s)", img.getWidth(), img.getHeight(), out.c_str(), ok ? "ecrite" : "ECHEC d'ecriture");
   }
-  tk::info("UI : capture %dx%d -> %s (%s)", img.getWidth(), img.getHeight(), path.c_str(), ok ? "ecrite" : "ECHEC d'ecriture");
 }
 
 }  // namespace

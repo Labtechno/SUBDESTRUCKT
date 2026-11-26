@@ -62,6 +62,8 @@ struct Telemetry {
   std::array<std::atomic<float>, kMaxRoutes> edgeGain{};        // gain de transition par slot (0 si absent)
   std::atomic<float> wtX{0.0f}, wtY{0.0f}, wtZ{0.0f};          // positions Effective
   std::array<std::atomic<float>, kNumModSources> sources{};     // valeurs des sources de modulation
+  std::array<std::atomic<float>, kNumParams> effective{};       // valeur Effective des destinations modulées
+  std::array<std::atomic<std::uint8_t>, kNumParams> modulated{};  // 1 si la destination est modulée (matrice active)
 
   // performance (mesurée par le wrapper, hors moteur)
   std::atomic<float> cpuLoad{0.0f};  // durée de traitement / durée du bloc (dernier bloc)

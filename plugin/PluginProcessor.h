@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "core/ModMatrix.h"
+#include "core/PresetOps.h"
 #include "core/Parameters.h"
 #include "core/StateCodec.h"
 #include "core/Topology.h"
@@ -116,6 +117,28 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   void clearMidiLearn(int cc);
   void setStateListener(std::function<void()> f);  // notifié (thread message) après tout changement d'état non-hôte
 
+  // ---- Undo/Redo (pile d'instance, non sauvegardée), Randomizer, presets
+  bool undo();
+  bool redo();
+  bool canUndo() const;
+  bool canRedo() const;
+  std::string undoLabel() const;
+  std::string redoLabel() const;
+  bool randomize(const RandomOptions& o);
+  bool mutate(const RandomOptions& o);
+  void evolveStart(const RandomOptions& o, EvolveMode m, float rateHz);
+  void evolveStop();
+  void evolveReset();
+  bool evolveCommit();
+  bool evolveRunning() const;
+  std::vector<PresetInfo> presets() const;
+  bool loadPreset(const PresetInfo& info);
+  bool savePreset(const std::string& name, const std::vector<std::string>& tags);
+  bool setPresetFavorite(const PresetInfo& info, bool fav);
+  std::string presetName() const;
+  bool dirty() const noexcept { return dirty_.load(); }
+  std::string presetDirectory() const { return library_.directory(); }
+
   Telemetry& telemetry() noexcept { return engine_.telemetry(); }
   ParameterBridge& parameters() noexcept { return bridge_; }
   const Engine& engine() const noexcept { return engine_; }
@@ -129,6 +152,27 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   void reprepareLocked();                 // Quality : reconstruction hors RT (traitement suspendu)
   void updateLatency();
   void notifyState();
+  void record(const PluginState& before, const std::string& cause);  // transaction Undo (hors application d'historique)
+
+  // gestes hôte/UI : un geste continu = une transaction Undo (arbitrage 5B)
+  struct GestureListener : juce::AudioProcessorParameter::Listener {
+    SubdestrucktProcessor* owner = nullptr;
+    void parameterValueChanged(int, float) override { owner->dirty_.store(true, std::memory_order_relaxed); }  // RT-safe
+    void parameterGestureChanged(int index, bool starting) override;
+  } gestures_;
+  UndoStack undo_;
+  bool applyingHistory_ = false;
+  std::unique_ptr<PluginState> gestureBefore_;
+  int gestureDepth_ = 0;
+  std::string gestureCause_;
+  Evolver evolver_;
+  std::array<std::atomic<float>, kNumParams> evolved_{};
+  std::array<std::atomic<bool>, kNumParams> evolvedOn_{};
+  std::atomic<bool> evolveActive_{false};
+  double lastTimer_ = 0.0;
+  PresetLibrary library_;
+  std::string presetName_ = "Init (0.1.0-b5)";
+  std::atomic<bool> dirty_{false};
 
   ParameterBridge bridge_;
   Engine engine_;

@@ -26,7 +26,10 @@ juce_add_plugin(SUBDESTRUCKT
 
 set(SUBDESTRUCKT_WRAPPER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/plugin/PluginProcessor.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/ui/DiagnosticEditor.cpp)
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/DiagnosticEditor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/Widgets.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/Monitors.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/MainEditor.cpp)
 
 set(SUBDESTRUCKT_JUCE_DEFINITIONS
   JUCE_WEB_BROWSER=0
