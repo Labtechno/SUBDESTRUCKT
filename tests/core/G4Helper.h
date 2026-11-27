@@ -28,7 +28,7 @@ struct G4Scenario {
 struct G4Render {
   std::vector<float> L, R;
   long long allocations = 0;
-  std::uint32_t nonFinite = 0, clamp = 0;
+  std::uint32_t nonFinite = 0, clamp = 0, elp = 0;
   EngineSetup setup;
 };
 
@@ -88,6 +88,7 @@ inline G4Render renderG4(const G4Scenario& s) {
   }
   r.nonFinite = eng.telemetry().nonFiniteResets.load();
   r.clamp = eng.telemetry().outputClampHits.load();
+  r.elp = eng.telemetry().elpHits.load();
   allocTotal() += r.allocations;
   return r;
 }

@@ -105,6 +105,7 @@ class Engine {
   // ---- crochets de test (sans effet en usage normal)
   void testSetPoison(bool on) noexcept { poison_ = on; }
   void testSetReverseOrder(bool on) noexcept { reverseOrder_ = on; }
+  Envelope::Stage testEnvStage(int k) const noexcept { return envs_[static_cast<size_t>(k)].stage(); }
   void testInjectNaN() noexcept { lines_[kNodeOP1].poisonForTest(std::numeric_limits<double>::quiet_NaN()); }
   long long testOverlapSamples() const noexcept { return overlapSamples_; }
   double testEffectiveDepth(int slot) const noexcept;
@@ -134,7 +135,7 @@ class Engine {
   void noteOff(int note) noexcept;
   void releaseGateIfIdle() noexcept;
   int selectNote() const noexcept;
-  void triggerVoice(bool retrigger) noexcept;
+  void triggerVoice(bool retrigger, bool gateOpened, bool newNote) noexcept;
   void updateF0() noexcept;
   void beginTransition(CompiledTopology* incoming) noexcept;
   void swapToIncoming() noexcept;
@@ -265,7 +266,8 @@ class Engine {
   bool panicActive_ = false;
   int panicLeft_ = 0, panicLength_ = 1;
   float blockPeakL_ = 0.0f, blockPeakR_ = 0.0f;
-  std::uint32_t nonFinite_ = 0, clampHits_ = 0, pmClampHits_ = 0, dropped_ = 0, panics_ = 0, limiterHits_ = 0;
+  std::uint32_t nonFinite_ = 0, clampHits_ = 0, pmClampHits_ = 0, dropped_ = 0, panics_ = 0, limiterHits_ = 0, elpHits_ = 0;
+  double envBpm_ = 120.0;
   double tailEnergy_ = 0.0;
   std::uint32_t scopeCounter_ = 0;
 

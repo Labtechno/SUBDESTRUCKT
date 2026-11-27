@@ -684,3 +684,14 @@ macro3 Float 2
 macro4 Float 2
 out.limiter Bool 2
 out.ceiling Float 2
+perf.balance Float 3
+amp.trigger Choice 3
+amp.sync Bool 3
+env.wt.trigger Choice 3
+env.wt.sync Bool 3
+env.fm.trigger Choice 3
+env.fm.sync Bool 3
+env.aux1.trigger Choice 3
+env.aux1.sync Bool 3
+env.aux2.trigger Choice 3
+env.aux2.sync Bool 3

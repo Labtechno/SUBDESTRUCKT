@@ -1,6 +1,6 @@
 # SUBDESTRUCKT — Registre des paramètres (généré)
 
-Généré par `tools/gen_params.py` depuis la table compilée. 684 paramètres. Ne pas éditer.
+Généré par `tools/gen_params.py` depuis la table compilée. 695 paramètres. Ne pas éditer.
 
 | # | StableID | Nom | Type | Unité | Min | Max | Défaut | Auto | Rates | Domaine | Version |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -117,8 +117,8 @@ Généré par `tools/gen_params.py` depuis la table compilée. 684 paramètres. 
 | 110 | `wt.z` | WT Z Master | Float | lin | 0.0 | 1.0 | 0.0 | oui | CA | Lin | 2 |
 | 111 | `wt.x_bound` | WT X Boundary | Choice (Clamp / Wrap / Mirror) | — | 0 | 2 | 0 | non | E | Disc | 2 |
 | 112 | `wt.y_bound` | WT Y Boundary | Choice (Clamp / Wrap / Mirror) | — | 0 | 2 | 0 | non | E | Disc | 2 |
-| 113 | `wt.x_morph` | WT X Morph | Choice (Linear / Stepped) | — | 0 | 1 | 0 | non | E | Disc | 2 |
-| 114 | `wt.y_morph` | WT Y Morph | Choice (Linear / Stepped) | — | 0 | 1 | 0 | non | E | Disc | 2 |
+| 113 | `wt.x_morph` | WT X Morph | Choice (Linear / Stepped / Spectral) | — | 0 | 2 | 0 | non | E | Disc | 2 |
+| 114 | `wt.y_morph` | WT Y Morph | Choice (Linear / Stepped / Spectral) | — | 0 | 2 | 0 | non | E | Disc | 2 |
 | 115 | `wt.interp` | WT Interpolation | Choice (Linear / Cubic) | — | 0 | 1 | 0 | non | E | Disc | 2 |
 | 116 | `wt.render` | WT Clean/Raw | Choice (Clean / Raw) | — | 0 | 1 | 0 | oui | E | Disc | 2 |
 | 117 | `wt.coarse` | WT Coarse | Float | st | -48.0 | 48.0 | 0.0 | oui | CA | Semi | 2 |
@@ -688,3 +688,14 @@ Généré par `tools/gen_params.py` depuis la table compilée. 684 paramètres. 
 | 681 | `macro4` | Macro 4 | Float | lin | 0.0 | 1.0 | 0.0 | oui | CA | Lin | 2 |
 | 682 | `out.limiter` | Musical Limiter | Bool | — | 0 | 1 | 0 | non | E | Disc | 2 |
 | 683 | `out.ceiling` | Limiter Ceiling | Float | dB | -24.0 | 0.0 | -0.3 | oui | C | Db | 2 |
+| 684 | `perf.balance` | WT/FM Balance | Float | bip | -1.0 | 1.0 | 0.0 | oui | CA | Lin | 3 |
+| 685 | `amp.trigger` | Amp Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
+| 686 | `amp.sync` | Amp Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
+| 687 | `env.wt.trigger` | ENV WT Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
+| 688 | `env.wt.sync` | ENV WT Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
+| 689 | `env.fm.trigger` | ENV FM Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
+| 690 | `env.fm.sync` | ENV FM Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
+| 691 | `env.aux1.trigger` | ENV AUX1 Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
+| 692 | `env.aux1.sync` | ENV AUX1 Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
+| 693 | `env.aux2.trigger` | ENV AUX2 Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
+| 694 | `env.aux2.sync` | ENV AUX2 Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |

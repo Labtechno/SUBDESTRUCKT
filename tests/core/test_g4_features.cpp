@@ -107,7 +107,7 @@ void testStateV2() {
   const std::string good = encodeState(s, "w", StateScope::Daw);
   const std::string m = std::string("mod 899 lfo1 wt.x");
   const std::vector<std::pair<const char*, std::string>> cases = {
-      {"version future", replaceLine(good, "SUBDESTRUCKT_STATE", "SUBDESTRUCKT_STATE 3")},
+      {"version future", replaceLine(good, "SUBDESTRUCKT_STATE", "SUBDESTRUCKT_STATE " + std::to_string(kStateVersion + 1))},
       {"scope inconnu", replaceLine(good, "scope", "scope other")},
       {"scope manquant", replaceLine(good, "scope", "")},
       {"parametre discret non entier", replaceLine(good, "param voice.mode", "param voice.mode 0x3f000000 0.5")},

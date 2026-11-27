@@ -30,6 +30,7 @@ void runFilterTests();
 void runDestructionTests();
 void runStateTests2();
 void runPerfTests();
+void runG41Tests();
 
 int main() {
   std::printf("SUBDESTRUCKT ARCH-G3 — tests natifs du coeur\n");
@@ -42,6 +43,7 @@ int main() {
   runFilterTests();
   runDestructionTests();
   runStateTests2();
+  runG41Tests();
   runPerfTests();
   return tk::finish("core_tests");
 }

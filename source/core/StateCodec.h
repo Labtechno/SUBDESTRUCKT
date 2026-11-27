@@ -1,6 +1,6 @@
 // SUBDESTRUCKT — L1 — état persistant versionné (preset + état DAW).
 //
-// Format texte v2 (UTF-8, une entrée par ligne, ARCH-G4) :
+// Format texte v3 (UTF-8, une entrée par ligne ; v3 = v2 + paramètres de version 3, ARCH-G4.1) :
 //   SUBDESTRUCKT_STATE 2
 //   writer <identité de build>                        (informatif, ignoré)
 //   scope preset|daw                                  (daw : inclut la section instance)
@@ -32,7 +32,7 @@
 
 namespace sbd {
 
-constexpr int kStateVersion = 2;
+constexpr int kStateVersion = 3;
 
 
 struct CurvePoints {

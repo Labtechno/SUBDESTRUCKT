@@ -35,7 +35,7 @@ jobs:
       COMMIT: ${{ github.sha }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Machine (arm64 natif obligatoire)
         run: |
@@ -209,7 +209,7 @@ jobs:
 
       - name: Artefact CI
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: subdestruckt-arch-g4-logs-b${{ github.run_number }}
           path: |
@@ -228,7 +228,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: LLVM Homebrew et compilation -fsanitize=realtime
         run: |
           set -euo pipefail
@@ -278,7 +278,7 @@ jobs:
           [ -n "$neg" ] && echo "::notice title=rtsan controle negatif (sortie)::$neg" || true
       - name: Artefact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: subdestruckt-arch-g4-rtsan-${{ github.run_number }}
           path: out/

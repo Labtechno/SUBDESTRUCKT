@@ -132,8 +132,8 @@ F("WtY", "wt.y", "WT Y", "pos", 0.0, 1.0, 0.0, rates="CA", **W)
 F("WtZ", "wt.z", "WT Z Master", "lin", 0.0, 1.0, 0.0, rates="CA", **W)
 C("WtXBound", "wt.x_bound", "WT X Boundary", ["Clamp", "Wrap", "Mirror"], **W)
 C("WtYBound", "wt.y_bound", "WT Y Boundary", ["Clamp", "Wrap", "Mirror"], **W)
-C("WtXMorph", "wt.x_morph", "WT X Morph", ["Linear", "Stepped"], **W)
-C("WtYMorph", "wt.y_morph", "WT Y Morph", ["Linear", "Stepped"], **W)
+C("WtXMorph", "wt.x_morph", "WT X Morph", ["Linear", "Stepped", "Spectral"], **W)
+C("WtYMorph", "wt.y_morph", "WT Y Morph", ["Linear", "Stepped", "Spectral"], **W)
 C("WtInterp", "wt.interp", "WT Interpolation", ["Linear", "Cubic"], **W)
 C("WtRender", "wt.render", "WT Clean/Raw", ["Clean", "Raw"], auto=True, **W)
 F("WtCoarse", "wt.coarse", "WT Coarse", "st", -48.0, 48.0, 0.0, dom="Semi", rates="CA", **W)
@@ -323,6 +323,16 @@ for n in range(1, 5):
 B("OutLimiter", "out.limiter", "Musical Limiter", rnd=False, group="out", stage=5)
 F("OutCeiling", "out.ceiling", "Limiter Ceiling", "dB", -24.0, 0.0, -0.3, dom="Db", rates="C", rnd=False, group="out",
   stage=5)
+
+
+# ------------------------------------------------------------------ v3 (ARCH-G4.1) — ajout en fin de liste uniquement
+V3 = dict(ver=3)
+F("PerfBalance", "perf.balance", "WT/FM Balance", "bip", -1.0, 1.0, 0.0, rates="CA", rnd=False, group="perf", stage=1, **V3)
+for key, label in (("amp", "Amp"), ("env.wt", "ENV WT"), ("env.fm", "ENV FM"), ("env.aux1", "ENV AUX1"), ("env.aux2", "ENV AUX2")):
+    E = "".join(w.capitalize() for w in key.replace(".", " ").split())
+    g = "env.amp" if key == "amp" else key
+    C(f"{E}Trigger", f"{key}.trigger", f"{label} Trigger", ["Voice", "Note", "Gate"], group=g, **V3)
+    B(f"{E}Sync", f"{key}.sync", f"{label} Tempo Sync", group=g, **V3)
 
 
 # ------------------------------------------------------------------ sorties

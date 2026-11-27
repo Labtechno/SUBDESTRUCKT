@@ -1,4 +1,2 @@
 # SUBDESTRUCKT — echecs connus, documentes et NON masques (ils restent FAIL dans les resultats et le rapport).
 # Format : <ID> <justification>. Toute ligne RESULT FAIL dont l'ID n'est pas ici fait echouer la CI.
-DST-09 garde numerique +30 dBFS declenchee par des gains cumules extremes (Out +24 dB x 6, makeup +36 dB) ; aucun NaN, aucune instabilite ; DST-09b (gains <= 0 dB) PASS. Critere conserve tel que preenregistre.
-G-15 espace de parametres etendu aux etages de gain ARCH-G4 : 1/200 configuration declenche la garde +30 dBFS (9 echantillons), 0 NaN ; G-15b (espace v1) et G-15c (gains <= 0 dB) rapportes separement ; arbitrage B-05.

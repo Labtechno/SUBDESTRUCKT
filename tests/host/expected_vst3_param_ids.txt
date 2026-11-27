@@ -685,3 +685,14 @@ macro3 1065737703
 macro4 1065737704
 out.limiter 414312200
 out.ceiling 898582045
+perf.balance 237631703
+amp.trigger 925293454
+amp.sync 607540357
+env.wt.trigger 238483272
+env.wt.sync 394289931
+env.fm.trigger 1199008562
+env.fm.sync 138708833
+env.aux1.trigger 1480544792
+env.aux1.sync 952269371
+env.aux2.trigger 1820573977
+env.aux2.sync 980898522

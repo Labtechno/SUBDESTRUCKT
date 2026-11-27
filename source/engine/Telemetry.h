@@ -53,6 +53,7 @@ struct Telemetry {
   std::atomic<std::uint32_t> droppedEvents{0};
   std::atomic<std::uint32_t> panics{0};
   std::atomic<std::uint32_t> limiterHits{0};
+  std::atomic<std::uint32_t> elpHits{0};  // SPEC-HR-01 : engagements de la protection d'extrême niveau
 
   // topologie, matrice et Effective
   std::atomic<std::uint64_t> activeSerial{0};

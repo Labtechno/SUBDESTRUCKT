@@ -10,6 +10,7 @@ constexpr double kPmBound = 32.0;             // borne DSP dure de la somme PM d
 constexpr double kLinBound = 8.0;             // LinFM/TZFM : ±800 % de la fréquence porteuse
 constexpr double kExpBound = 4.0;             // ExpFM : ±4 octaves
 constexpr double kOutputGuard = 32.0;         // garde numérique de sortie (+30 dBFS) ; > 0 dBFS reste autorisé
+constexpr double kElpThreshold = 16.0;        // SPEC-HR-01 : début de la protection d'extrême niveau (+24 dBFS)
 constexpr int kTransitionHostSamples = 128;   // candidat initial du contrat causal (128 échantillons hôte)
 constexpr double kPanicSeconds = 0.005;       // rampe anti-clic du Panic
 constexpr double kDcCutoffHz = 5.0;           // garde DC de sortie
@@ -326,15 +327,26 @@ void Engine::setLfoCurves(const std::array<CurvePoints, 4>& curves) {
   }
 }
 
+// Synchronisation tempo optionnelle (règle ARCH-G4.1, provisoire) : les durées Delay/Attack/Hold/Decay/Release sont
+// lues en noires (1 = une noire) et converties au tempo courant ; un changement de BPM est pris en compte au bloc
+// suivant (sans saut de niveau : seules les pentes changent). Sans transport valide : 120 bpm.
 void Engine::applyEnvelopeParameters() noexcept {
   const auto& b = base_;
-  envs_[0].setParameters(b[ParamId::AmpDelay], b[ParamId::AmpAttack], b[ParamId::AmpHold], b[ParamId::AmpDecay],
-                         b[ParamId::AmpSustain], b[ParamId::AmpRelease], b.choice(ParamId::AmpCurve) == 1, false);
+  const double spb = 60.0 / (transport_.bpm > 1.0 ? transport_.bpm : 120.0);
+  const double ka = b.flag(ParamId::AmpSync) ? spb : 1.0;
+  if (ka == 1.0)
+    envs_[0].setParameters(b[ParamId::AmpDelay], b[ParamId::AmpAttack], b[ParamId::AmpHold], b[ParamId::AmpDecay],
+                           b[ParamId::AmpSustain], b[ParamId::AmpRelease], b.choice(ParamId::AmpCurve) == 1, false);
+  else
+    envs_[0].setParameters(ka * b[ParamId::AmpDelay], ka * b[ParamId::AmpAttack], ka * b[ParamId::AmpHold], ka * b[ParamId::AmpDecay],
+                           b[ParamId::AmpSustain], ka * b[ParamId::AmpRelease], b.choice(ParamId::AmpCurve) == 1, false);
   static constexpr ParamId kFirst[4] = {ParamId::EnvWtDelay, ParamId::EnvFmDelay, ParamId::EnvAux1Delay, ParamId::EnvAux2Delay};
+  static constexpr ParamId kSync[4] = {ParamId::EnvWtSync, ParamId::EnvFmSync, ParamId::EnvAux1Sync, ParamId::EnvAux2Sync};
   for (int k = 0; k < 4; ++k) {
     const int o = idx(kFirst[k]);
+    const double kt = b.flag(kSync[k]) ? spb : 1.0;
     auto v = [&](int d) { return static_cast<double>(b.v[static_cast<size_t>(o + d)]); };
-    envs_[static_cast<size_t>(k + 1)].setParameters(v(0), v(1), v(2), v(3), v(4), v(5), v(6) >= 0.5, v(7) >= 0.5);
+    envs_[static_cast<size_t>(k + 1)].setParameters(kt * v(0), kt * v(1), kt * v(2), kt * v(3), v(4), kt * v(5), v(6) >= 0.5, v(7) >= 0.5);
   }
 }
 
@@ -366,6 +378,10 @@ void Engine::setParameters(const ParamValues& base) noexcept {
 void Engine::process(float* outL, float* outR, int numSamples, const MidiEvent* events, int numEvents,
                      double* preDcTap) noexcept SBD_NONBLOCKING {
   if (numSamples <= 0) return;
+  if (transport_.bpm != envBpm_) {  // tempo modifié : durées synchronisées recalculées (sans allocation)
+    envBpm_ = transport_.bpm;
+    applyEnvelopeParameters();
+  }
   if (!setup_.supported) {
     for (int i = 0; i < numSamples; ++i) {
       outL[i] = outR[i] = 0.0f;
@@ -533,6 +549,15 @@ void Engine::renderSegment(int a, int b, float* outL, float* outR, double* tap) 
       }
     }
     for (int c = 0; c < 2; ++c) {
+      // SPEC-HR-01 (proposée, à arbitrer) : au-delà de +24 dBFS, saturation douce asymptotique vers +30 dBFS ;
+      // inactive en dessous (aucune opération) ; chaque engagement est compté et signalé.
+      const double ay = std::fabs(y[c]);
+      if (ay > kElpThreshold && std::isfinite(ay)) {
+        const double r = kOutputGuard - kElpThreshold;
+        const double m = kElpThreshold + r * std::tanh((ay - kElpThreshold) / r) * (1.0 - 1e-9);
+        y[c] = y[c] > 0.0 ? m : -m;
+        ++elpHits_;
+      }
       if (muteRest_) {
         y[c] = 0.0;
       } else if (y[c] > kOutputGuard) {
@@ -1103,6 +1128,16 @@ void Engine::tick(double& L, double& R) noexcept {
   const double g = env * velGain;
   double wL = wt * g, wR = wL;
   double fL = fmL * g, fR = fmR * g;
+  // Balance WT/FM (Performance) : gains audio des moteurs, sans effet sur la modulation, la topologie ni les phases.
+  // Centre = mixage existant (aucune opération) ; -1 = WT seule ; +1 = FM seul ; jamais d'amplification (gains <= 1).
+  const double bal = e(ParamId::PerfBalance);
+  if (bal > 0.0) {
+    wL *= 1.0 - bal;
+    wR *= 1.0 - bal;
+  } else if (bal < 0.0) {
+    fL *= 1.0 + bal;
+    fR *= 1.0 + bal;
+  }
   ChainContext cc;
   cc.fs = setup_.engineRate;
   cc.noteHz = f0_;
@@ -1260,10 +1295,17 @@ int Engine::selectNote() const noexcept {
   return n;
 }
 
-void Engine::triggerVoice(bool retrigger) noexcept {
+void Engine::triggerVoice(bool retrigger, bool gateOpened, bool newNote) noexcept {
+  // Déclenchement par enveloppe : Voice = règle de la voix (Mono/Legato, défaut, comportement 0.2.0), Note = toute
+  // nouvelle note, Gate = ouverture du gate seulement. Relance toujours depuis le niveau courant (aucun saut).
+  static constexpr ParamId kTrig[5] = {ParamId::AmpTrigger, ParamId::EnvWtTrigger, ParamId::EnvFmTrigger, ParamId::EnvAux1Trigger, ParamId::EnvAux2Trigger};
+  for (int k = 0; k < 5; ++k) {
+    const int m = ch(kTrig[k]);
+    const bool go = m == 1 ? newNote : (m == 2 ? gateOpened : retrigger);
+    if (go) envs_[static_cast<size_t>(k)].noteOn();
+  }
   if (!retrigger) return;
   noteOnEdge_ = true;  // excitation « Note » des filtres/résonateurs
-  for (auto& en : envs_) en.noteOn();  // relance depuis le niveau courant
   for (int k = 0; k < 4; ++k) {
     const int o = idx(ParamId::Lfo1Shape) + 6 * k;
     if (eff_[static_cast<size_t>(o + 5)] >= 0.5) lfos_[static_cast<size_t>(k)].resetPhase(0.0);
@@ -1358,7 +1400,7 @@ void Engine::noteOn(int note, int velocity) noexcept {
   // Mono : relance à chaque note qui devient la note jouée ; Legato : relance seulement sans note tenue
   const bool retrigger = legato ? !wasGate : changed;
   updateF0();
-  triggerVoice(retrigger);
+  triggerVoice(retrigger, !wasGate, true);
 }
 
 void Engine::noteOff(int note) noexcept {
@@ -1440,6 +1482,7 @@ void Engine::publishTelemetry() noexcept {
   t.droppedEvents.store(dropped_, std::memory_order_relaxed);
   t.panics.store(panics_, std::memory_order_relaxed);
   t.limiterHits.store(limiterHits_, std::memory_order_relaxed);
+  t.elpHits.store(elpHits_, std::memory_order_relaxed);
   t.activeSerial.store(active_->serial, std::memory_order_relaxed);
   t.modSerial.store(mod_->serial, std::memory_order_relaxed);
   t.transitionPhase.store(static_cast<int>(transition_), std::memory_order_relaxed);

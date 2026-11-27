@@ -91,6 +91,21 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | WTA-01 | SHA-256 : vecteurs FIPS (« abc », chaîne vide) ; WAV float32 écrit puis relu : identique ; import de cycles 2048 : contenu brut exact ; cycle 1024 sinus : forme rééchantillonnée = sinus 2048 à 1e-5 près ; identifiant déterministe ; état avec banque intégrée : aller-retour exact, données altérées refusées (intégrité) |
 | DST-09b | (enregistré après l'échec de DST-09, avant sa mesure) mêmes 48 configurations mais gains de sortie des emplacements ≤ 0 dB et makeup Y1 = 0 dB : 0 NaN, garde jamais déclenchée, 0 allocation. DST-09 reste rapporté tel quel |
 
+### 3bis. Critères ARCH-G4.1 (enregistrés le 2026-11-27, avant toute mesure)
+| ID | Critère et seuil |
+|---|---|
+| BAL-01 | Balance WT/FM au centre : sortie bit à bit identique à l'absence de balance ; à −1 : contribution FM nulle (sortie = WT seule, bit à bit) ; à +1 : WT nulle ; profondeurs de modulation, topologie et phases inchangées (rendu CROSS du moteur non audible identique) ; aucun gain > 1 |
+| ENV-02 | Déclenchement Voice (défaut) = comportement 0.2.0 bit à bit ; Note : relance à chaque note-on même en Legato ; Gate : relance seulement à l'ouverture du gate même en Mono ; relance sans saut de niveau (|Δ| ≤ pas d'attaque) ; Sync : durées en temps (noires) — attaque de 1 noire à 120 bpm = 0,5 s ± 1 échantillon, à 90 bpm = 0,667 s ± 1 ; changement de BPM pris en compte au bloc suivant |
+| SPEC-HR-01 | (spécification proposée, à arbitrer) Protection d'extrême niveau ELP : au-delà de +24 dBFS (|y| > 16) en sortie, saturation douce asymptotique vers +30 dBFS ; inactive en dessous (bit à bit) ; engagements comptés et signalés (télémétrie, mètre). Garde numérique +30 dBFS conservée |
+| HR-01 | Sous +24 dBFS : sortie bit à bit identique au moteur sans ELP (REG-01 + 50 configurations aléatoires à gains ≤ 0 dB) |
+| HR-02 | Protocoles G-15 et DST-09 inchangés, sous SPEC-HR-01 : 0 NaN, garde +30 dBFS jamais déclenchée, engagements ELP rapportés. Les FAIL historiques de G-15/DST-09 (commit c741fb8) restent consignés |
+| N1-02 | N1 hybride ADAA1 + suréchantillonnage interne (Eco : ×1, Normal : ×2, High : ×4) : énergie repliée (3,1 kHz, drive 24, fold 1, 48 kHz) Normal ≥ 3 dB et High ≥ 6 dB meilleure que ADAA1 seul ; latence déclarée = latence mesurée (impulsion) ; dry/wet aligné (mix 0,5 sur impulsion : un seul pic) ; cas modéré (1 kHz, drive 12, fold 0,5) rapporté |
+| WT-SM-01 | Morph spectral : aux points de grille = forme (NMSE ≤ −60 dB) ; deux formes de même spectre d'amplitude en opposition de phase : milieu spectral RMS ≥ 0,7 × RMS des extrémités (morph linéaire : ≤ 0,05) ; aucune allocation ; aucune FFT par échantillon |
+| CAP-01 | Captures R2 : capture D2 (segment) et S2 (spectre) sans allocation RT ; aller-retour d'état exact (SHA-256 vérifié, altération refusée) ; restauration : contenu identique ; un preset ne rétablit jamais Arm/Freeze armé ni Drone ; état DAW : armements restaurés seulement avec l'autorisation d'instance |
+| AUD-01 | Audit des commandes : chaque paramètre continu ou discret modifie la sortie dans au moins un contexte d'activation documenté, sinon il figure dans une liste d'exceptions justifiées |
+| MT-01 | Microtuning : Custom, +50 cents sur La : fréquence × 2^(50/1200) ± 0,1 cent ; Equal : offsets ignorés ; A4 = 432 Hz respecté |
+| FOL-01 | Suiveurs : source dans [0, ~1] proportionnelle au niveau de la chaîne mesurée ; route suiveur WT -> cutoff global active et efficace |
+
 ## 4. Matrice d'exigences P0/P1
 Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 + PASS×1) / lignes non BLOCKED.
 | # | Exigence | Lot | Statut | CI |
