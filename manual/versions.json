@@ -52,7 +52,7 @@
    "version": "0.3.1",
    "label": "developpement integre ARCH-G4.2, securite des etats autonomes, compilation locale securisee, aucun binaire diffuse",
    "buildSourceSha": "49bfa0c6abfacc965ce0a92521a51656e5077cef",
-   "documentationSha": "49bfa0c6abfacc965ce0a92521a51656e5077cef",
+   "documentationSha": "0ab245eee883031ce82611dbe4576d0bca4056a8",
    "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
    "deliveryZipSha256": "",
    "deliveryZipBytes": 0,
