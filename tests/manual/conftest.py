@@ -13,7 +13,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 
 DIST = Path(__file__).resolve().parents[2] / "manual" / "dist"
-VERSION = "0.1.0-b5"
+VERSION = os.environ.get("MANUAL_VERSION", "0.1.0-b5")  # édition testée (voir manual/versions.json)
 
 
 class _Quiet(http.server.SimpleHTTPRequestHandler):

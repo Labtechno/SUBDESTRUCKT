@@ -21,7 +21,7 @@ env:
   PLUGINVAL_VERSION: "v1.0.4"
   PLUGINVAL_SHA256: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
   MIN_MACOS: "14.0"
-  VERSION: "0.2.0"
+  VERSION: "0.3.0"
 
 jobs:
   build-test-package:
@@ -86,7 +86,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -h "^RESULT .* FAIL " out/*.log > out/fails.txt || true
-          known="$(grep -v '^#' tests/known_failures.txt | awk '{print $1}' | sort -u)"
+          known="$( (grep -v '^#' tests/known_failures.txt || true) | awk 'NF {print $1}' | sort -u)"  # liste vide autorisee
           unexpected=0
           while read -r line; do
             id="$(echo "$line" | awk '{print $2}')"
@@ -284,3 +284,30 @@ jobs:
         with:
           name: subdestruckt-arch-g4-rtsan-${{ github.run_number }}
           path: out/
+
+  manual-playwright:
+    # Manuel HTML : construction (controles bloquants) et tests Playwright (Chromium, WebKit profil iPhone) de chaque
+    # edition publiee. Runner Linux standard gratuit. WebKit Linux n'est pas Safari iOS (pas de certification iPhone).
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Outils (Playwright, pytest, jsonschema)
+        run: |
+          python -m pip install --quiet playwright pytest jsonschema
+          python -m playwright install --with-deps chromium webkit
+      - name: Construction du manuel
+        run: python manual/build.py
+      - name: Tests Playwright par edition
+        run: |
+          set -o pipefail
+          status=0
+          for v in $(python -c "import json;print(' '.join(x['version'] for x in json.load(open('manual/versions.json'))['versions']))"); do
+            echo "== edition $v"
+            MANUAL_VERSION="$v" python -m pytest tests/manual -q -rx -p no:cacheprovider 2>&1 | tee "manual_$v.log" || status=1
+            tail -1 "manual_$v.log" | sed "s/^/::notice title=manuel $v::/"
+          done
+          exit $status

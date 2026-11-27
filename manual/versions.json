@@ -29,6 +29,24 @@
       "audioChapter": 16,
       "screenshot": "assets/ui_performance.png",
       "exportFileName": "SUBDESTRUCKT_ARCH_G4_RESULTS.json"
+    },
+    {
+      "version": "0.3.0",
+      "label": "developpement integre ARCH-G4.1, compilation locale, aucun binaire diffuse",
+      "buildSourceSha": "4f7a49cf24b7d3f0d222aa76044b7d5b95d4ccf1",
+      "documentationSha": "4f7a49cf24b7d3f0d222aa76044b7d5b95d4ccf1",
+      "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
+      "deliveryZipSha256": "",
+      "deliveryZipBytes": 0,
+      "recetteCampaignId": "SUBDESTRUCKT-ARCH-G41-RECETTE-PHYSIQUE",
+      "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g41-recette.v1",
+      "resultsSchemaVersion": 1,
+      "registry": "g4",
+      "recetteCount": 24,
+      "chapterCount": 18,
+      "audioChapter": 16,
+      "screenshot": "assets/ui_performance.png",
+      "exportFileName": "SUBDESTRUCKT_ARCH_G41_RESULTS.json"
     }
   ]
 }

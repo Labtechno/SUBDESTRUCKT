@@ -7,7 +7,7 @@
                "globalStatus", "counts", "configuration", "results", "generalObservations", "finalValidation"],
   "properties": {
     "schemaVersion": {"const": 1},
-    "campaignId": {"const": "SUBDESTRUCKT-ARCH-G3-RECETTE-PHYSIQUE"},
+    "campaignId": {"type": "string", "pattern": "^SUBDESTRUCKT-ARCH-G[0-9]+-RECETTE-PHYSIQUE$"},
     "product": {"const": "SUBDESTRUCKT"},
     "version": {"type": "string"},
     "buildSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
@@ -20,7 +20,7 @@
       "type": "object",
       "required": ["total", "filled", "pass", "fail", "pending", "na", "naWithoutJustification"],
       "properties": {
-        "total": {"const": 15}, "filled": {"type": "integer"}, "pass": {"type": "integer"}, "fail": {"type": "integer"},
+        "total": {"type": "integer", "minimum": 15, "maximum": 99}, "filled": {"type": "integer"}, "pass": {"type": "integer"}, "fail": {"type": "integer"},
         "pending": {"type": "integer"}, "na": {"type": "integer"}, "naWithoutJustification": {"type": "integer"}
       }
     },
@@ -36,8 +36,8 @@
     },
     "results": {
       "type": "object",
-      "propertyNames": {"pattern": "^R-(0[1-9]|1[0-5])$"},
-      "minProperties": 15, "maxProperties": 15,
+      "propertyNames": {"pattern": "^R-[0-9]{2}$"},
+      "minProperties": 15, "maxProperties": 99,
       "additionalProperties": {
         "type": "object",
         "required": ["status", "observations", "naJustification", "evidence", "updatedAt"],

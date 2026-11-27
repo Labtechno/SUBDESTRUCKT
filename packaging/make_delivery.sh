@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.1
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,7 +22,7 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate du developpement integre ARCH-G4 (P0/P1). Ce n'est NI une beta NI une version
+STATUT : livraison interne candidate du developpement integre ARCH-G4.1 (P0/P1). Ce n'est NI une beta NI une version
 publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
@@ -108,8 +108,27 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4 (build interne, non diffusee)
------------------------------------------------------------------------------------------
+${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.1 (build interne, non diffusee)
+-------------------------------------------------------------------------------------------
+Ajouts
+- Balance WT/FM (Performance) ; morph spectral X/Y ; editeur de formes, generateur procedural, bibliotheque .sdwt.
+- Enveloppes : declenchement Voice/Note/Gate, synchronisation au tempo (regles provisoires).
+- Captures Glitch D2 / Freeze S2 dans l'etat (integrite SHA-256), sauvegarde DAW autonome.
+- N1 : suréchantillonnage interne par Quality (Eco x1, Normal x2, High x4) avec latence declaree et compensee.
+- Protection d'extreme niveau SPEC-HR-01 (proposee) au-dela de +24 dBFS, comptee et signalee (ELP).
+- 695 parametres hote (11 ajoutes en fin de registre, format d'etat 3).
+Corrections
+- Suiveurs d'enveloppe : temps Attack/Release desormais appliques (suiveurs instantanes auparavant).
+- Modulation de Output Gain et du plafond du limiteur desormais effective.
+Changements de son volontaires (projets 0.2.0)
+- N1 en Quality Normal/High (choisir Eco pour le N1 de 0.2.0) ; routes depuis les suiveurs ; modulation de sortie.
+Securite des etats
+- Un preset externe n'arme jamais un comportement autonome (armements remis a zero et signales).
+Compatibilite
+- Format d'etat 3 ; etats 1 et 2 migres (b5 : rendu identique, REG-01). Un etat 3 est refuse par 0.2.0 et 0.1.0-b5.
+
+0.2.0 — developpement integre ARCH-G4 (build interne, non diffusee)
+------------------------------------------------------------------
 Ajouts
 - Moteurs complets P0/P1 (voir README_FR.txt section 6) : WT XYZ, FM 4 operateurs, CROSS 55 routes B-T2,
   filtres F1-F4, destruction N1..S2, matrice globale 64, macros, Randomize/Mutate/Evolve, Undo/Redo, presets, Quality.

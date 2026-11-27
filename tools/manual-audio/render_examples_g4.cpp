@@ -1,4 +1,4 @@
-// SUBDESTRUCKT — rendu des exemples audio du manuel 0.2.0 avec le moteur DSP réel (source/, non modifié).
+// SUBDESTRUCKT — rendu des exemples audio du manuel (0.2.0, 0.3.0) avec le moteur DSP réel (source/, non modifié).
 // Usage : subdestruckt_manual_render <dossier_sortie> <commit_source>
 // Chaque exemple : état complet (PluginState), stéréo mixée en mono, 48 kHz, WAV PCM 24 bits. Niveau : RMS aligné à
 // -20 dBFS sur la partie tenue (gain unique par fichier), crête vérifiée < -1 dBFS. examples.json décrit chaque rendu
@@ -27,6 +27,7 @@ struct Example {
   PluginState state;
   std::string automation;
   std::function<void(ParamValues&, double)> automate;
+  Quality quality = Quality::Normal;
 };
 
 void writeWav24(const std::string& path, const std::vector<double>& x, int sr) {
@@ -61,7 +62,7 @@ std::vector<double> render(const Example& e, double fs) {
   eng.setParameters(p);
   eng.setSeed(e.state.seed);
   eng.setLfoCurves(e.state.lfoCurves);
-  eng.prepare(fs, 256, Quality::Normal);
+  eng.prepare(fs, 256, e.quality);
   RouteTable t;
   std::string err;
   t.assign(e.state.routes, e.state.nextRouteId, err);
@@ -198,6 +199,35 @@ int main(int argc, char** argv) {
     s.params[ParamId::CrossAudioMode] = 2.0f;
     s.params[ParamId::CrossAudioAmount] = 0.8f;
     add("e17_cross_ring", "Cross Audio Ring (WT x FM, 0,8)", s);
+  }
+  // ---- ARCH-G4.1 (0.3.0)
+  {
+    PluginState s = bare();
+    s.bank = "factory:metal";
+    s.params[ParamId::WtY] = 0.35f;
+    add("e18_morph_linear", "WT : balayage X en morph Linear (banque Metal Spectra)", s, 45);
+    ex.back().automate = [](ParamValues& p, double t) { p[ParamId::WtX] = static_cast<float>(std::min(1.0, t / 2.2)); };
+    s.params[ParamId::WtXMorph] = 2.0f;
+    add("e19_morph_spectral", "WT : meme balayage X en morph Spectral", s, 45);
+    ex.back().automate = [](ParamValues& p, double t) { p[ParamId::WtX] = static_cast<float>(std::min(1.0, t / 2.2)); };
+  }
+  {
+    PluginState s = bare();  // source sinusoïdale aiguë : le repliement n'est pas masqué par d'autres partiels
+    s.bank = "factory:basic";
+    s.params[ParamId::WtX] = 0.0f;
+    s.params[ParamId::DstGl1Type] = 1.0f;
+    s.params[ParamId::DstGl1N1Drive] = 24.0f;
+    s.params[ParamId::DstGl1N1Fold] = 1.0f;
+    add("e20_n1_eco", "N1 extreme sur sinus 3,1 kHz (drive 24, fold 1), Quality Eco (ADAA1 seul)", s, 103);
+    ex.back().quality = Quality::Eco;
+    add("e21_n1_high", "N1 extreme sur sinus 3,1 kHz (drive 24, fold 1), Quality High (OS interne x4 + ADAA1)", s, 103);
+    ex.back().quality = Quality::High;
+  }
+  {
+    PluginState s = defaultState();
+    s.params[ParamId::CrossMaster] = 1.0f;
+    add("e22_balance", "Balance WT/FM : de -1 (WT seule) a +1 (FM seul), CROSS inchange", s, 50);
+    ex.back().automate = [](ParamValues& p, double t) { p[ParamId::PerfBalance] = static_cast<float>(std::clamp(-1.0 + t / 1.1, -1.0, 1.0)); };
   }
   for (const auto& fp : factoryPresets()) {
     if (fp.first.name == "Init (0.1.0-b5)") continue;

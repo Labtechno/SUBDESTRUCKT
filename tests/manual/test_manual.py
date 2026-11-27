@@ -14,9 +14,18 @@ from pathlib import Path
 import jsonschema
 import pytest
 
+from conftest import VERSION
+
 ROOT = Path(__file__).resolve().parents[2]
 S01_KEY = "labtechno.recette.SUBDESTRUCKT-S01-FINAL.v1"
-KEY = "labtechno.subdestruckt.manual.arch-g3-recette.v1"
+META = next(v for v in json.loads((ROOT / "manual/versions.json").read_text(encoding="utf-8"))["versions"] if v["version"] == VERSION)
+KEY = META["recetteStorageKey"]
+B5 = VERSION == "0.1.0-b5"
+NREC = META.get("recetteCount", 15)
+_SRC = ROOT / "manual/src" / VERSION
+TESTS = json.loads((_SRC / "recette/tests.json").read_text(encoding="utf-8"))
+REC_IDS = [i for g in TESTS["groups"] for i in g["tests"]]
+REC_GROUPS = [g["title"] for g in TESTS["groups"]]
 SCHEMA = json.loads((ROOT / "manual/schema/results.schema.json").read_text(encoding="utf-8"))
 
 
@@ -28,8 +37,8 @@ def goto(page, url):
 # ---------------------------------------------------------------- manuel : structure et chargement
 def test_manual_loads_without_errors_all(page, manual_url):
     goto(page, manual_url + "index.html")
-    assert page.locator("section.chapter").count() == 16
-    assert page.locator("nav.toc a[data-chapter]").count() == 16
+    assert page.locator("section.chapter").count() == META.get("chapterCount", 16)
+    assert page.locator("nav.toc a[data-chapter]").count() == META.get("chapterCount", 16)
     assert page.errors == []
 
 
@@ -104,7 +113,7 @@ def test_collapsible_sections(chromium_page, manual_url):
 
 def test_lightbox_zoom(page, manual_url):
     goto(page, manual_url + "index.html#ch-04")
-    img = page.locator("#ui-annotated img.zoomable")
+    img = page.locator("#ui-annotated img.zoomable" if B5 else "#ch-04 img.zoomable").first
     img.scroll_into_view_if_needed()
     img.click(position={"x": 8, "y": 30})  # hors repères
     assert page.locator("#lightbox").get_attribute("open") is not None
@@ -113,6 +122,8 @@ def test_lightbox_zoom(page, manual_url):
 
 
 def test_annotated_screenshot_is_real_and_has_15_pins(chromium_page, manual_url):
+    if not B5:
+        pytest.skip("capture annotée à 15 repères : propre à l'édition 0.1.0-b5")
     pg = chromium_page
     goto(pg, manual_url + "index.html#ch-04")
     assert pg.locator("#ui-annotated .pin").count() == 15
@@ -129,8 +140,15 @@ def test_annotated_screenshot_is_real_and_has_15_pins(chromium_page, manual_url)
 def test_all_22_parameters_documented(chromium_page, manual_url):
     pg = chromium_page
     goto(pg, manual_url + "index.html")
+    if not B5:  # éditions G4 : registre complet (ParamTable.inc), une ligne par paramètre
+        reg = re.findall(r'SBD_PARAM\([A-Za-z0-9]+, "([^"]+)"', (ROOT / "source/core/ParamTable.inc").read_text(encoding="utf-8"))
+        assert len(reg) >= 684
+        assert pg.locator("table.params tbody tr:not(.grp)").count() == len(reg)
+        for sid in (reg[0], reg[len(reg) // 2], reg[-1]):
+            assert pg.locator("table.params").get_by_text(sid, exact=True).count() >= 1, sid
+        return
     reg = re.findall(r'\{"([a-z0-9_.]+)", "([^"]+)", "([^"]+)", (-?[\d.]+)f, (-?[\d.]+)f, (-?[\d.]+)f',
-                     (ROOT / "source/core/Parameters.cpp").read_text(encoding="utf-8"))
+                     (ROOT / "tests/regression/b5/Parameters.cpp").read_text(encoding="utf-8"))  # registre b5 fige (oracle)
     assert len(reg) == 22
     for sid, *_ in reg:
         assert pg.locator(f"[id='p-{sid}']").count() == 1, sid
@@ -193,9 +211,10 @@ def test_print_stylesheet(chromium_page, manual_url):
 # ---------------------------------------------------------------- audio
 def test_audio_files_match_manifest(manual_url):
     man = json.loads(urllib.request.urlopen(manual_url + "version.json").read())
-    assert man["buildSourceSha"] == "186fb8644ae9518e3cb5116f4368b45dcea0d430"
-    assert man["documentationSha"] == "8d2334250994758f2182b18c3a47dd059cb68495"
-    assert len(man["audioExamples"]) == 15
+    assert man["buildSourceSha"] == META["buildSourceSha"]
+    assert man["documentationSha"] == META["documentationSha"]
+    expected = 15 if B5 else len(json.loads((_SRC / "audio/examples.json").read_text(encoding="utf-8"))["examples"])
+    assert len(man["audioExamples"]) == expected
     for e in man["audioExamples"]:
         data = urllib.request.urlopen(manual_url + e["file"]).read()
         assert data[:4] == b"RIFF" and data[8:12] == b"WAVE"
@@ -225,7 +244,7 @@ def test_exclusive_playback_and_ab_switch(chromium_page, manual_url):
     t = pg.evaluate("""() => { const btns = Array.from(document.querySelectorAll('button.play')).filter(x => x._audio && !x._audio.paused);
        return btns.map(x => x._audio.currentTime); }""")
     assert len(t) == 1 and t[0] > 0.8, t  # un seul son, repris au même instant
-    other = pg.locator("#ch-12 button.play").first
+    other = pg.locator(f"#ch-{META.get('audioChapter', 12):02d} button.play").first
     other.click()
     pg.wait_for_timeout(200)
     assert pg.evaluate("Array.from(document.querySelectorAll('button.play')).filter(x => x._audio && !x._audio.paused).length") == 1
@@ -234,6 +253,8 @@ def test_exclusive_playback_and_ab_switch(chromium_page, manual_url):
 
 
 def test_demos_render_and_react(chromium_page, manual_url):
+    if not B5:
+        pytest.skip("simulations pédagogiques interactives : présentes dans l'édition 0.1.0-b5 seulement")
     pg = chromium_page
     goto(pg, manual_url + "index.html#ch-05")
     for kind in ("sine", "phase", "harmonics", "adsr", "pm"):
@@ -258,18 +279,21 @@ def fresh_recette(page, manual_url):
 
 def test_recette_initial_state_all(page, manual_url):
     fresh_recette(page, manual_url)
-    assert page.locator(".tcard").count() == 15
+    assert page.locator(".tcard").count() == NREC
     ids = page.locator(".tcard").evaluate_all("els => els.map(e => e.id)")
-    assert ids == [f"R-{i:02d}" for i in range(1, 16)]
-    assert page.locator("input[type=radio][value=PENDING]:checked").count() == 15
+    assert ids == ([f"R-{i:02d}" for i in range(1, 16)] if B5 else REC_IDS)
+    assert page.locator("input[type=radio][value=PENDING]:checked").count() == NREC
     assert page.locator("textarea[id^=obs-]").evaluate_all("els => els.every(e => e.value === '')")
     assert page.locator("#cfg-machine").input_value() == ""
     assert page.locator("#validateBtn").is_disabled()
-    assert page.locator("h2").all_text_contents()[1:5] == ["Installation", "Validation musicale", "Validation technique", "Validation des paquets"]
+    expected_groups = ["Installation", "Validation musicale", "Validation technique", "Validation des paquets"] if B5 else REC_GROUPS
+    assert page.locator("h2").all_text_contents()[1:1 + len(expected_groups)] == expected_groups
     assert page.errors == []
 
 
 def test_recette_storage_key_distinct_from_s01(chromium_page, manual_url):
+    if VERSION == "0.2.0":  # défaut connu, documenté (rapport ARCH-G4.1) ; édition publiée laissée intacte
+        pytest.xfail("0.2.0 : store.js réutilise la clé de stockage de l'édition 0.1.0-b5 (corrigé à partir de 0.3.0)")
     pg = chromium_page
     fresh_recette(pg, manual_url)
     pg.evaluate(f"localStorage.setItem('{S01_KEY}', 'S01-SENTINEL')")
@@ -292,12 +316,12 @@ def test_recette_fail_never_hidden_and_progress_distinct(chromium_page, manual_u
     fresh_recette(pg, manual_url)
     set_status(pg, "R-01", "PASS")
     set_status(pg, "R-02", "FAIL")
-    assert "2 / 15" in pg.text_content("#progressText")
+    assert f"2 / {NREC}" in pg.text_content("#progressText")
     assert "pas une validation" in pg.text_content("#progressText")
     assert "FAIL" in pg.text_content("#globalStatus")
     assert pg.locator("#failList").is_visible() and "R-02" in pg.text_content("#failList")
-    for i in range(3, 16):
-        set_status(pg, f"R-{i:02d}", "PASS")
+    for rid in REC_IDS[2:]:
+        set_status(pg, rid, "PASS")
     assert "avec FAIL" in pg.text_content("#globalStatus")
     assert pg.locator("#failList").is_visible()
 
@@ -305,13 +329,14 @@ def test_recette_fail_never_hidden_and_progress_distinct(chromium_page, manual_u
 def test_recette_na_requires_justification(chromium_page, manual_url):
     pg = chromium_page
     fresh_recette(pg, manual_url)
-    for i in range(1, 15):
-        set_status(pg, f"R-{i:02d}", "PASS")
-    set_status(pg, "R-15", "N/A")
-    assert pg.locator("#na-R-15").is_visible()
+    last = REC_IDS[-1]
+    for rid in REC_IDS[:-1]:
+        set_status(pg, rid, "PASS")
+    set_status(pg, last, "N/A")
+    assert pg.locator(f"#na-{last}").is_visible()
     assert pg.locator("#validateBtn").is_disabled()
-    assert "justification manquante" in pg.text_content("#b-R-15")
-    pg.fill("#na-R-15", "Désinstallateur non relancé : machine partagée.")
+    assert "justification manquante" in pg.text_content(f"#b-{last}")
+    pg.fill(f"#na-{last}", "Test non réalisable : machine partagée.")
     assert pg.locator("#validateBtn").is_enabled()
 
 
@@ -331,9 +356,9 @@ def test_recette_persistence_correction_validation_lock(chromium_page, manual_ur
     assert pg.locator("#obs-R-03").input_value() == "Plugin absent de la liste."
     # correction d'une réponse
     set_status(pg, "R-03", "PASS")
-    for i in range(1, 16):
-        if i != 3:
-            set_status(pg, f"R-{i:02d}", "PASS")
+    for rid in REC_IDS:
+        if rid != "R-03":
+            set_status(pg, rid, "PASS")
     pg.once("dialog", lambda d: d.dismiss())
     pg.click("#validateBtn")
     assert not pg.evaluate("window.__sbdRecette.doc.finalValidation.validated")
@@ -357,7 +382,7 @@ def test_recette_reset_requires_confirmation(chromium_page, manual_url):
     pg.once("dialog", lambda d: d.accept())
     pg.click("#resetBtn")
     pg.wait_for_load_state("load")
-    assert pg.locator("input[type=radio][value=PENDING]:checked").count() == 15
+    assert pg.locator("input[type=radio][value=PENDING]:checked").count() == NREC
 
 
 def test_recette_export_json_matches_schema(chromium_page, manual_url):
@@ -369,11 +394,11 @@ def test_recette_export_json_matches_schema(chromium_page, manual_url):
     with pg.expect_download() as dl:
         pg.click("#exportBtn")
     d = dl.value
-    assert d.suggested_filename == "SUBDESTRUCKT_ARCH_G3_RESULTS.json"
+    assert d.suggested_filename == META.get("exportFileName", "SUBDESTRUCKT_ARCH_G3_RESULTS.json")
     doc = json.loads(Path(d.path()).read_text(encoding="utf-8"))
     jsonschema.validate(doc, SCHEMA)
-    assert doc["buildSha"] == "186fb8644ae9518e3cb5116f4368b45dcea0d430"
-    assert doc["counts"] == {"total": 15, "filled": 2, "pass": 1, "fail": 0, "pending": 13, "na": 1, "naWithoutJustification": 0}
+    assert doc["buildSha"] == META["buildSourceSha"]
+    assert doc["counts"] == {"total": NREC, "filled": 2, "pass": 1, "fail": 0, "pending": NREC - 2, "na": 1, "naWithoutJustification": 0}
     assert doc["results"]["R-09"]["naJustification"].startswith("PDC")
     assert json.loads(pg.input_value("#json")) == doc
 
@@ -408,7 +433,8 @@ def test_recette_storage_unavailable_fallback(pw, manual_url):
 def test_versions_index(chromium_page, base_url):
     pg = chromium_page
     goto(pg, base_url + "index.html" if base_url.startswith("http://127.") else base_url)
-    assert pg.locator("a[href='0.1.0-b5/']").count() == 1
+    for v in json.loads((ROOT / "manual/versions.json").read_text(encoding="utf-8"))["versions"]:
+        assert pg.locator(f"a[href='{v['version']}/']").count() == 1, v["version"]
 
 
 S01_EXPECTED = Path(__file__).with_name("s01_expected.json")

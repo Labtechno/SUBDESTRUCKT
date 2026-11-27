@@ -301,6 +301,7 @@ def build_version(ver, out_root, meta):
             .replace("{{TOC}}", toc_html).replace("{{CHAPTERS}}", body).replace("{{GLOSSARY_JSON}}", glossary_js.replace("</", "<\\/")))
 
     rcfg = dict(campaignId=tests["campaignId"], version=ver, buildSha=meta["buildSourceSha"], docSha=meta["documentationSha"],
+                storageKey=meta.get("recetteStorageKey"),
                 exportFileName=meta.get("exportFileName", "SUBDESTRUCKT_ARCH_G3_RESULTS.json"), groups=tests["groups"], tests=tests["tests"])
     rtpl = (ROOT / "templates/recette.html").read_text(encoding="utf-8")
     rpage = (rtpl.replace("{{VERSION}}", ver).replace("{{BUILD_SHA}}", meta["buildSourceSha"])
