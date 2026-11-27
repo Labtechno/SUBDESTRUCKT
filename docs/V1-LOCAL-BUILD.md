@@ -43,16 +43,10 @@ CI (machine virtuelle) et Windows ne certifient ni M3 ni M4 Max.
 
 ## 5. Journal de recette TRANSPORT AUTHORIZATION
 
-Créez le fichier vide `~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_diagnostics.on` ; chaque instance écrit
-alors ses événements (transport observé, hors temps réel, autorisations et leur source, suspensions, révocations,
-captures appliquées) dans `ta_log.txt` du même dossier. Supprimez le fichier d'activation après la recette.
-
-## 6. Recette 0.3.3 (ARCH-G4.3-R1)
-
-Ordre conseillé après installation : R-01..R-05 (installation, version 0.3.3 affichée), R-26 Reason 14, R-27 Ableton
-Live, R-28 exports hors ligne (TRANSPORT AUTHORIZATION), R-29 écoute Z (Tilt avec et sans Gain Compensation, Shift),
-R-30 écoute A/B des captures R2 (`docs/r1-audio/`). Résultats : bouton d'export du manuel 0.3.3
-(`SUBDESTRUCKT_ARCH_G43R1_RESULTS.json`). Un hôte simulé ne remplace pas ces essais.
+Créez le fichier vide `~/Library/Labtechno/SUBDESTRUCKT/ta_diagnostics.on` ; chaque instance écrit alors ses
+événements (transport observé, hors temps réel, autorisations et leur source, suspensions, révocations, captures
+appliquées) dans `~/Library/Labtechno/SUBDESTRUCKT/ta_log.txt` (chemin corrigé le 2026-11-27 :
+`userApplicationDataDirectory` = `~/Library` sur macOS ; voir `docs/V1-DSP-FINAL-LOCK.md` §4). Supprimez le fichier d'activation après la recette.
 
 ## 6. Recette 0.3.3 (ARCH-G4.3-R1)
 

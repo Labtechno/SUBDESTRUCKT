@@ -49,7 +49,8 @@ restitution est en attente (aucune perte). Restitution S2 à une autre fréquenc
 
 Aucune allocation, aucun verrou, aucun accès disque, aucune FFT de reconstruction dans le callback pour l'autorisation ;
 commandes atomiques ; journal d'événements SPSC (256 entrées, débordement compté) vidé par le thread message ; fichier
-`ta_log.txt` écrit seulement si `ta_diagnostics.on` existe (dossier `Application Support/Labtechno/SUBDESTRUCKT`).
+`ta_log.txt` écrit seulement si `ta_diagnostics.on` existe (dossier `~/Library/Labtechno/SUBDESTRUCKT` sur macOS,
+chemin corrigé le 2026-11-27, voir `docs/V1-DSP-FINAL-LOCK.md` §4).
 `authorizeAutonomy()` (thread de contrôle) ne publie plus de captures : c'est une commande atomique.
 
 ## 5. Limites non résolubles par l'API (JUCE 9.0.6 / VST3)

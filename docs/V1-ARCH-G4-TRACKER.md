@@ -135,6 +135,14 @@ A-G43-02), ZC-13R (Scatter, A-G43-03), R2-02R (A-G43-04), ZA-01/02 (audit). Crit
 HT-02/03. Nouvel échec documenté : R2-02R (a) (source Metal, résolution du gel S2). Défauts réels corrigés : Tilt
 (niveau), Shift (continuité aux bornes et phase). Version 0.3.3. Rapport : `docs/V1-ARCH-G4.3-R1-REPORT.md`.
 
+### 3sexies. DSP FINAL LOCK (2026-11-27) et ARCH-UI-04
+DSP FINAL LOCK prononcé par le propriétaire avec acceptation des risques résiduels : `docs/V1-DSP-FINAL-LOCK.md`
+(référence 0.3.3, SHA 0469c4d, build 263311915). R-26 Reason 14 : GO déclaré (14 critères, 7 instances, réserve D2
+Repeat levée) ; Drone après réouverture collective : non consigné. R-27 Ableton Live : RETIRÉ (compatibilité non
+certifiée). R-28, R-29, R-30 : NON EXÉCUTÉS jusqu'à leur terme, risques acceptés — aucun n'est PASS. Chemins du journal
+TA corrigés (`~/Library/Labtechno/SUBDESTRUCKT/`). ARCH-UI-04 (interface SYMBIOTIC INDUSTRIAL) autorisée ; mission UI
+seule, `source/` verrouillé.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -224,11 +232,10 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.3-R1 : Tilt à énergie constante, continuité Shift, tests HT/ZC-05R/ZC-13R/R2-02R/ZA, 0.3.3 | 2985901 | — |
 | 2026-11-27 | G4.3-R1 : manuel 0.3.3, campagne G431, documentationSha ; SHA livré 0469c4da6181eaa000bfc402b70b97e1dfef989b | 937ac6d, f1793ee, 0469c4d | run 44 SUCCESS |
 | 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport ; documentationSha | c7b8573, 97100b0 | run 41 : job manuel en échec (documentationSha vide ; titre S0.1 dynamique) ; **run 42 (45992835990) SUCCESS complet, SHA livré 97100b0** |
+| 2026-11-27 | DSP FINAL LOCK : consignation, chemins du journal TA corrigés, contrat ARCH-UI-03 importé de main (9a07d76, sélectif) | (ce commit) | documentaire, aucun changement de code |
 
 ## 6. Prochaine action
-Recette physique 0.3.3 sur Mac Studio M4 Max (`docs/V1-LOCAL-BUILD.md`) : R-26 Reason 14, R-27 Ableton Live, R-28
-exports, R-29 écoute Z, R-30 écoute A/B R2 ; décision sur la restriction d'ordre inter-domaines Z (rapport G4.3-R1 §9) ;
-acceptation de la licence JUCE Starter par le propriétaire. Puis verdict C. ARCH-UI-04 : autorisation requise.
+ARCH-UI-04 en cours (voir §3sexies ; rapport `docs/V1-ARCH-UI-04-REPORT.md` à la clôture).
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
