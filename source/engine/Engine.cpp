@@ -215,6 +215,10 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   chainFm_.configure(ProcessingChain::Fm, fsE, q);
   chainGl_.configure(ProcessingChain::Global, fsE, q);
   for (auto* a : {&alignWtL_, &alignWtR_, &alignFmL_, &alignFmR_, &alignOutL_, &alignOutR_}) a->configure(2 * DestructionSlot::kMaxFft + 8);
+  for (int k = 0; k < 6; ++k) {  // tampons de capture préalloués (pire cas D2 : 2,05 s stéréo)
+    captureBuf_[static_cast<size_t>(k)].assign(static_cast<size_t>(2 * DestructionSlot::captureCapacity(fsE)), 0.0f);
+    captureReady_[static_cast<size_t>(k)].store(false);
+  }
   padActive_ = false;
 
   // état runtime remis à zéro (non persisté)
@@ -286,6 +290,20 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   telemetry_.quality.store(static_cast<int>(q));
   publishTelemetry();
   return setup_.supported;
+}
+
+bool Engine::fetchCapture(int slot, CaptureAsset& out) {
+  if (slot < 0 || slot > 5 || !captureReady_[static_cast<size_t>(slot)].load(std::memory_order_acquire)) return false;
+  const int n = captureFrames_[static_cast<size_t>(slot)], kind = captureKind_[static_cast<size_t>(slot)];
+  out = CaptureAsset{};
+  out.slot = slot;
+  out.kind = kind;
+  out.sampleRate = setup_.engineRate;
+  out.frames = n;
+  const auto& b = captureBuf_[static_cast<size_t>(slot)];
+  out.data.assign(b.begin(), b.begin() + 2 * n);
+  captureReady_[static_cast<size_t>(slot)].store(false, std::memory_order_release);
+  return n > 0;
 }
 
 void Engine::setSeed(std::uint64_t seed) {
@@ -464,6 +482,45 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
   }
   if (crossResetCmd_.exchange(false, std::memory_order_acq_rel)) crossReset();
   if (exciteCmd_.exchange(false, std::memory_order_acq_rel)) manualExcitePending_ = true;
+  // captures R2 : copie cohérente à une frontière de bloc, dans les tampons préalloués (aucune allocation)
+  if (const std::uint32_t req = captureReq_.exchange(0, std::memory_order_acq_rel)) {
+    for (int k = 0; k < 6; ++k)
+      if ((req & (1u << k)) && !captureReady_[static_cast<size_t>(k)].load(std::memory_order_acquire)) {
+        auto& buf = captureBuf_[static_cast<size_t>(k)];
+        int kind = 0;
+        captureFrames_[static_cast<size_t>(k)] = slotAt(k).captureInto(buf.data(), static_cast<int>(buf.size()), kind);
+        captureKind_[static_cast<size_t>(k)] = kind;
+        captureReady_[static_cast<size_t>(k)].store(true, std::memory_order_release);
+      }
+  }
+  // restauration des captures : différée jusqu'à ce que l'emplacement exécute l'algorithme visé (D2/S2) hors
+  // transition, pour que le changement structurel n'efface pas le contenu ; abandon après ~2 s (type différent).
+  if (!pendingCaptures_ && captureExchange_.canRetire()) {
+    pendingCaptures_ = captureExchange_.acquire();
+    captureApplied_ = 0;
+    captureWait_ = 0;
+  }
+  if (pendingCaptures_) {
+    const auto& items = pendingCaptures_->items;
+    bool all = true;
+    for (size_t i = 0; i < items.size() && i < 32; ++i) {
+      if (captureApplied_ & (1u << i)) continue;
+      const auto& c = items[i];
+      DestructionSlot& sl = slotAt(c.slot);
+      const int want = c.kind == 0 ? static_cast<int>(DstType::D2) : static_cast<int>(DstType::S2);
+      if (sl.activeType() == want && sl.settled()) {
+        sl.restoreFrom(c.data.data(), c.frames, c.kind, c.sampleRate);
+        captureApplied_ |= 1u << i;
+      } else {
+        all = false;
+      }
+    }
+    captureWait_ += n;
+    if (all || captureWait_ > static_cast<long long>(2.0 * setup_.engineRate)) {
+      captureExchange_.retire(pendingCaptures_);
+      pendingCaptures_ = nullptr;
+    }
+  }
   // publications hors RT : topologie (avec transition), matrice, banque (fondu), courbes
   if (transition_ == Transition::Idle && incoming_ == nullptr && exchange_.canRetire()) {
     if (CompiledTopology* p = exchange_.acquire()) beginTransition(p);

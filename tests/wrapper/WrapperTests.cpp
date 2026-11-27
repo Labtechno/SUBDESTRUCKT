@@ -160,7 +160,7 @@ void testState() {
   juce::MemoryBlock after;
   b.getStateInformation(after);
   const bool refused = before == after && juce::String(b.lastMessage()).startsWith("Etat refuse");
-  const std::string future = "SUBDESTRUCKT_STATE 2\nend\n";
+  const std::string future = "SUBDESTRUCKT_STATE " + std::to_string(kStateVersion + 1) + "\nend\n";
   b.setStateInformation(future.data(), static_cast<int>(future.size()));
   juce::MemoryBlock after2;
   b.getStateInformation(after2);
@@ -244,6 +244,51 @@ void testPanicRequest() {
   tk::result("G-16w", ok, "Panic demande par l'UI : transmis au moteur comme evenement de securite (offset 0)");
 }
 
+// CAP-02w : sauvegarde DAW autonome d'un gel D2 armé (capture à la sauvegarde), restauration dans une autre instance.
+void testCapturesWrapper() {
+  auto setP = [](SubdestrucktProcessor& p, ParamId id, float v) {
+    auto* q = p.parameters().param(idx(id));
+    q->setValueNotifyingHost(q->convertTo0to1(v));
+  };
+  SubdestrucktProcessor a;
+  a.prepareToPlay(48000.0, 256);
+  setP(a, ParamId::DstGl1Type, static_cast<float>(DstType::D2));
+  setP(a, ParamId::DstGl1Arm, 1.0f);
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  midi.addEvent(juce::MidiMessage::noteOn(1, 52, static_cast<juce::uint8>(120)), 0);
+  for (int i = 0; i < 300; ++i) {
+    if (i == 150) setP(a, ParamId::DstGl1D2Freeze, 1.0f);
+    buf.clear();
+    a.processBlock(buf, midi);
+    midi.clear();
+  }
+  // sauvegarde : la capture est demandée ; le bloc audio suivant la réalise (hôte simulé : même thread)
+  a.requestCapture(4);
+  buf.clear();
+  a.processBlock(buf, midi);
+  const bool got = a.collectCaptures(1u << 4) == (1u << 4);
+  juce::MemoryBlock blob;
+  a.getStateInformation(blob);
+  const bool inBlob = juce::String(static_cast<const char*>(blob.getData()), blob.getSize()).contains("capture 4 D2");
+  SubdestrucktProcessor b;
+  b.prepareToPlay(48000.0, 256);
+  b.setStateInformation(blob.getData(), static_cast<int>(blob.getSize()));
+  const bool same = b.captures() == a.captures() && !b.captures().empty();
+  double e = 0.0;
+  for (int i = 0; i < 100; ++i) {
+    buf.clear();
+    b.processBlock(buf, midi);
+    if (i >= 50)
+      for (int k = 0; k < 256; ++k) e += static_cast<double>(buf.getSample(0, k)) * buf.getSample(0, k);
+  }
+  const bool sounds = e > 1e-3;
+  const bool ok = got && inBlob && same && sounds;
+  TK_CHECK(ok);
+  tk::result("CAP-02w", ok, "sauvegarde DAW d'un gel D2 arme : capture %d, presente dans l'etat %d, restauree a l'identique %d, gel rejoue sans entree %d (energie %.3g)",
+             got, inBlob, same, sounds, e);
+}
+
 // Capture PNG de l'UI de diagnostic (contrôle visuel, non bloquant) après quelques blocs joués à 44,1 kHz.
 void snapshotEditor(const std::string& path) {
   SubdestrucktProcessor p;
@@ -303,6 +348,7 @@ int main(int argc, char** argv) {
   testInstances();
   std::fprintf(stderr, "[panic]\n");
   testPanicRequest();
+  testCapturesWrapper();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

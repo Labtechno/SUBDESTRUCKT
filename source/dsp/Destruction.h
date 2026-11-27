@@ -77,8 +77,15 @@ class DestructionSlot {
   }
   static int latencyFor(int type, int fftChoice, Quality q = Quality::Normal) noexcept;
   double y2Env() const noexcept { return y2Env_; }
+  // Captures R2 (thread audio, sans allocation) : copie dans un tampon préalloué ; renvoie le nombre de trames/bins
+  // (0 si l'algorithme actif n'est ni D2 ni S2). kind : 0 D2, 1 S2.
+  int captureInto(float* dst, int capacity, int& kind) const noexcept;
+  // Restauration (thread audio, sans allocation) : rééchantillonnage linéaire si la fréquence diffère.
+  void restoreFrom(const float* src, int frames, int kind, double srcRate) noexcept;
+  static int captureCapacity(double fs) noexcept { return static_cast<int>(std::ceil(2.05 * fs)) + 8; }
   bool frozen() const noexcept { return autonomous_; }
   int activeType() const noexcept { return type_; }
+  bool settled() const noexcept { return pendingType_ < 0 && !fadingOut_; }
 
  private:
   void resetStates() noexcept;

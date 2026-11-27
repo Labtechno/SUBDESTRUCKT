@@ -105,6 +105,11 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   bool drone() const;
   void setDroneRestore(bool allowed);
   bool droneRestore() const;
+  // Captures créatives R2 (Glitch D2 / Freeze S2) : demande au thread audio, collecte, effacement.
+  void requestCapture(int slot);
+  std::uint32_t collectCaptures(std::uint32_t mask);
+  void clearCapture(int slot);
+  std::vector<CaptureAsset> captures() const;
   void requestCrossReset() noexcept { engine_.requestCrossReset(); }
   void requestManualExcite() noexcept { engine_.requestManualExcite(); }
   void requestPanic() noexcept { panicRequested_.store(true); }
@@ -189,6 +194,7 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::uint64_t seed_ = 0x5B0D5EEDULL;
   std::array<std::uint64_t, 3> streamCounters_{};
   InstanceState instance_;
+  std::vector<CaptureAsset> captures_;
   std::string lastMessage_;
   std::uint64_t serial_ = 0, modSerial_ = 0;
   double sampleRate_ = 0.0;

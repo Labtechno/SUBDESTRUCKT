@@ -210,6 +210,21 @@ PluginState defaultState() {
   return s;
 }
 
+static const ParamId kArms[9] = {ParamId::FltWtArm, ParamId::FltFmArm, ParamId::FltGlArm, ParamId::DstWt1Arm, ParamId::DstWt2Arm,
+                                 ParamId::DstFm1Arm, ParamId::DstFm2Arm, ParamId::DstGl1Arm, ParamId::DstGl2Arm};
+void disarmAutonomous(PluginState& s) noexcept {
+  for (ParamId a : kArms) s.params[a] = 0.0f;
+}
+bool anyArmed(const PluginState& s) noexcept {
+  for (ParamId a : kArms)
+    if (s.params.flag(a)) return true;
+  return false;
+}
+
+static std::string captureSha(const CaptureAsset& c) {
+  return sha256Hex(c.data.data(), c.data.size() * sizeof(float)).substr(0, 16);
+}
+
 bool validateState(const PluginState& s, std::string& error) {
   for (int i = 0; i < kNumParams; ++i) {
     const auto& spec = paramSpec(i);
@@ -245,6 +260,25 @@ bool validateState(const PluginState& s, std::string& error) {
     }
   }
   if (!validateModMatrix(s.mod, error)) return false;
+  for (size_t i = 0; i < s.captures.size(); ++i) {
+    const auto& c = s.captures[i];
+    const bool sizeOk = c.kind == 0 ? (c.frames >= 1 && c.frames <= 2 * 400000 && c.data.size() == static_cast<size_t>(c.frames) * 2)
+                                    : (c.frames >= 257 && c.frames <= 2049 && c.data.size() == static_cast<size_t>(c.frames) * 2);
+    if (c.slot < 0 || c.slot > 5 || (c.kind != 0 && c.kind != 1) || !sizeOk || !(c.sampleRate >= 8000.0 && c.sampleRate <= 768000.0)) {
+      error = "capture invalide";
+      return false;
+    }
+    for (size_t j = 0; j < i; ++j)
+      if (s.captures[j].slot == c.slot) {
+        error = "capture dupliquee pour un emplacement";
+        return false;
+      }
+    for (float v : c.data)
+      if (!std::isfinite(v) || std::fabs(v) > 1e4f || (c.kind == 1 && v < 0.0f)) {
+        error = "capture : valeur invalide";
+        return false;
+      }
+  }
   for (const auto& c : s.lfoCurves)
     if (!curveValid(c)) {
       error = "courbe LFO invalide";
@@ -298,6 +332,12 @@ std::string encodeState(const PluginState& state, const std::string& writer, Sta
     o += "lfocurve " + std::to_string(k + 1) + " " + std::to_string(c.n);
     for (int j = 0; j < c.n; ++j) o += " " + hex32(c.x[static_cast<size_t>(j)]) + " " + hex32(c.y[static_cast<size_t>(j)]);
     o += "\n";
+  }
+  for (const auto& c : state.captures) {
+    std::uint64_t fsb;
+    std::memcpy(&fsb, &c.sampleRate, 8);
+    o += "capture " + std::to_string(c.slot) + " " + (c.kind == 0 ? "D2" : "S2") + " " + hex64(fsb) + " " + std::to_string(c.frames) + " " +
+         captureSha(c) + " " + base64(reinterpret_cast<const std::uint8_t*>(c.data.data()), c.data.size() * sizeof(float)) + "\n";
   }
   o += "seed " + hex64(state.seed) + " " + hex64(state.streamCounters[0]) + " " + hex64(state.streamCounters[1]) + " " +
        hex64(state.streamCounters[2]) + "\n";
@@ -411,6 +451,22 @@ bool decodeState(const std::string& text, PluginState& out, std::string& error) 
       s.bankNy = static_cast<int>(ny);
       s.bankRaw.resize(bytes.size() / 4);
       std::memcpy(s.bankRaw.data(), bytes.data(), bytes.size());
+    } else if (k == "capture" && !v1) {
+      CaptureAsset c;
+      std::uint32_t slot = 0, frames = 0;
+      std::uint64_t fsb = 0;
+      std::vector<std::uint8_t> bytes;
+      if (w.size() != 7 || !parseUnsigned(w[1], slot) || (w[2] != "D2" && w[2] != "S2") || !parseHex64(w[3], fsb) ||
+          !parseUnsigned(w[4], frames) || !unbase64(w[6], bytes) || bytes.size() % 4)
+        return fail("ligne capture invalide");
+      c.slot = static_cast<int>(slot);
+      c.kind = w[2] == "D2" ? 0 : 1;
+      std::memcpy(&c.sampleRate, &fsb, 8);
+      c.frames = static_cast<int>(frames);
+      c.data.resize(bytes.size() / 4);
+      std::memcpy(c.data.data(), bytes.data(), bytes.size());
+      if (captureSha(c) != w[5]) return fail("capture : integrite (SHA-256) non verifiee");
+      s.captures.push_back(std::move(c));
     } else if (k == "modnext" && !v1) {
       std::uint32_t n = 0;
       if (haveModNext || w.size() != 2 || !parseUnsigned(w[1], n) || n == 0) return fail("ligne modnext invalide");

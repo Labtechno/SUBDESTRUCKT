@@ -1,5 +1,9 @@
 #include "PluginProcessor.h"
 
+#include <algorithm>
+#include <chrono>
+#include <thread>
+
 #include <fstream>
 #include <sstream>
 
@@ -296,6 +300,7 @@ PluginState SubdestrucktProcessor::snapshotState() const {
   s.seed = seed_;
   s.streamCounters = streamCounters_;
   s.instance = instance_;
+  s.captures = captures_;
   return s;
 }
 
@@ -304,6 +309,21 @@ std::string SubdestrucktProcessor::encodeCurrentState(StateScope scope) const {
 }
 
 void SubdestrucktProcessor::getStateInformation(juce::MemoryBlock& destData) {
+  // sauvegarde DAW autonome : capture des emplacements D2/S2 armés (gel en cours) avant l'encodage ; attente bornée
+  // (50 ms) d'une frontière de bloc audio, sinon la dernière capture connue est conservée.
+  std::uint32_t want = 0;
+  for (int k = 0; k < 6; ++k) {
+    const int b = idx(ParamId::DstWt1Type) + k * static_cast<int>(DstOff::Count);
+    const int t = static_cast<int>(bridge_.values().v[static_cast<size_t>(b)] + 0.5f);
+    if ((t == static_cast<int>(DstType::D2) || t == static_cast<int>(DstType::S2)) &&
+        bridge_.values().v[static_cast<size_t>(b + static_cast<int>(DstOff::Arm))] >= 0.5f)
+      want |= 1u << k;
+  }
+  if (want) {
+    for (int k = 0; k < 6; ++k)
+      if (want & (1u << k)) engine_.requestCapture(k);
+    for (int i = 0; i < 25 && collectCaptures(want) != want; ++i) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
   const std::string text = encodeCurrentState(StateScope::Daw);
   destData.replaceAll(text.data(), text.size());
 }
@@ -318,6 +338,8 @@ void SubdestrucktProcessor::setStateInformation(const void* data, int sizeInByte
     lastMessage_ = "Etat refuse : " + err;
     return;
   }
+  // projet DAW : restauration fidèle, armements compris (état propre de l'utilisateur) ; seuls les presets externes
+  // sont désarmés (loadPreset) et Drone reste soumis à l'autorisation locale.
   applyState(s, false);
 }
 
@@ -337,6 +359,11 @@ bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset
     lfoCurves_ = state.lfoCurves;
     seed_ = state.seed;
     streamCounters_ = state.streamCounters;
+    captures_ = state.captures;
+    if (!captures_.empty()) {
+      engine_.captureExchange().collectGarbage();
+      engine_.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{captures_}));
+    }
     if (!fromPreset && state.hasInstance) {
       instance_.quality = state.instance.quality;
       instance_.droneRestore = state.instance.droneRestore;
@@ -466,9 +493,16 @@ bool SubdestrucktProcessor::loadPreset(const PresetInfo& info) {
     lastMessage_ = "Preset refuse : " + err;
     return false;
   }
+  // un preset externe ne peut jamais armer un comportement autonome (filtres auto-oscillants, gels D2/S2/N2)
+  const bool hadArms = anyArmed(s);
+  disarmAutonomous(s);
   const PluginState before = snapshotState();
   if (!applyState(s, true)) return false;
   record(before, "preset : " + info.name);
+  if (hadArms) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ += " ; armements du preset ignores (a rearmer manuellement)";
+  }
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     presetName_ = info.name;
@@ -738,6 +772,33 @@ bool SubdestrucktProcessor::drone() const {
   std::lock_guard<std::mutex> lock(controlMutex_);
   return instance_.drone;
 }
+std::uint32_t SubdestrucktProcessor::collectCaptures(std::uint32_t mask) {
+  std::uint32_t got = 0;
+  for (int k = 0; k < 6; ++k) {
+    if (!(mask & (1u << k))) continue;
+    CaptureAsset c;
+    if (!engine_.fetchCapture(k, c)) continue;
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    captures_.erase(std::remove_if(captures_.begin(), captures_.end(), [k](const CaptureAsset& a) { return a.slot == k; }), captures_.end());
+    captures_.push_back(std::move(c));
+    std::sort(captures_.begin(), captures_.end(), [](const CaptureAsset& a, const CaptureAsset& b) { return a.slot < b.slot; });
+    got |= 1u << k;
+  }
+  return got;
+}
+
+void SubdestrucktProcessor::requestCapture(int slot) { engine_.requestCapture(slot); }
+
+void SubdestrucktProcessor::clearCapture(int slot) {
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  captures_.erase(std::remove_if(captures_.begin(), captures_.end(), [slot](const CaptureAsset& a) { return a.slot == slot; }), captures_.end());
+}
+
+std::vector<CaptureAsset> SubdestrucktProcessor::captures() const {
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  return captures_;
+}
+
 bool SubdestrucktProcessor::droneRestore() const {
   std::lock_guard<std::mutex> lock(controlMutex_);
   return instance_.droneRestore;

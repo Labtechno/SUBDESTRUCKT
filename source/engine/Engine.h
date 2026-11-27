@@ -61,6 +61,11 @@ struct TransportInfo {
   double ppq = 0.0;  // position en noires au début du bloc
 };
 
+// Captures R2 à restaurer (préparées hors RT, publiées au thread audio).
+struct CaptureSet {
+  std::vector<CaptureAsset> items;
+};
+
 // Référence de banque publiée vers le thread audio (le shared_ptr est libéré hors RT au retrait).
 struct BankRef {
   std::shared_ptr<const WtBank> bank;
@@ -97,6 +102,10 @@ class Engine {
   void setDrone(bool on) noexcept { droneCmd_.store(on ? 1 : 0, std::memory_order_release); }
   void requestCrossReset() noexcept { crossResetCmd_.store(true, std::memory_order_release); }
   void requestManualExcite() noexcept { exciteCmd_.store(true, std::memory_order_release); }
+  // Captures R2 : demande (tout thread) ; lecture du résultat (thread de contrôle) quand il est prêt.
+  void requestCapture(int slot) noexcept { captureReq_.fetch_or(1u << slot, std::memory_order_acq_rel); }
+  bool fetchCapture(int slot, CaptureAsset& out);
+  SpscExchange<CaptureSet>& captureExchange() noexcept { return captureExchange_; }
 
   // ---- RT
   void setParameters(const ParamValues& base) noexcept;  // valeurs Base -> cibles des rampes
@@ -161,6 +170,15 @@ class Engine {
   SpscExchange<CompiledMod> modExchange_;
   SpscExchange<BankRef> bankExchange_;
   SpscExchange<std::array<CurvePoints, 4>> curveExchange_;
+  SpscExchange<CaptureSet> captureExchange_;
+  std::atomic<std::uint32_t> captureReq_{0};
+  CaptureSet* pendingCaptures_ = nullptr;
+  std::uint32_t captureApplied_ = 0;
+  long long captureWait_ = 0;
+  std::array<std::atomic<bool>, 6> captureReady_{};
+  std::array<std::vector<float>, 6> captureBuf_;
+  std::array<int, 6> captureFrames_{}, captureKind_{};
+  DestructionSlot& slotAt(int k) noexcept { return (k < 2 ? chainWt_ : (k < 4 ? chainFm_ : chainGl_)).slot(k % 2); }
   Decimator decL_{1}, decR_{1};
   std::vector<double> engineL_, engineR_, hostL_, hostR_;
   std::array<MidiEvent, kMaxEvents> events_{};

@@ -34,6 +34,7 @@ class ProcessingChain {
   static int latencyFor(int location, const ParamValues& p, double fs, Quality q = Quality::Normal) noexcept;
   double y2Env(int slot) const noexcept { return dst_[static_cast<size_t>(slot)].y2Env(); }
   bool autonomousActive() const noexcept;
+  DestructionSlot& slot(int k) noexcept { return dst_[static_cast<size_t>(k)]; }
   void tailGuardPurge() noexcept;  // garde-fou temporel des états non armés
 
  private:

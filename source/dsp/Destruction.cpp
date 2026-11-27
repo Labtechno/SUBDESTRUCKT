@@ -557,6 +557,66 @@ void DestructionSlot::s2(double& L, double& R, const double* P, bool) noexcept {
   }
 }
 
+// ---------------------------------------------------------------- captures R2
+int DestructionSlot::captureInto(float* dst, int capacity, int& kind) const noexcept {
+  if (type_ == static_cast<int>(DstType::D2)) {
+    kind = 0;
+    const int N = d2Len_;
+    // segment bouclé si une boucle est active, sinon le dernier segment enregistré
+    const int len = static_cast<int>(std::min<double>(d2Looping_ ? d2SegLen_ : std::max(8.0, d2SegLen_ > 0 ? d2SegLen_ : 0.25 * fs_), capacity / 2));
+    const double start = d2Looping_ ? d2SegStart_ : static_cast<double>(d2Write_ - len);
+    for (int i = 0; i < len; ++i) {
+      double p = start + i;
+      p -= std::floor(p / N) * N;
+      const auto k = static_cast<size_t>(p);
+      dst[2 * i] = d2Buf_[0][k];
+      dst[2 * i + 1] = d2Buf_[1][k];
+    }
+    return len;
+  }
+  if (type_ == static_cast<int>(DstType::S2)) {
+    kind = 1;
+    const int B = fftSize_ / 2 + 1;
+    if (2 * B > capacity) return 0;
+    for (int ch = 0; ch < 2; ++ch)
+      for (int k = 0; k < B; ++k) dst[ch * B + k] = static_cast<float>(s2_[static_cast<size_t>(ch)].held[static_cast<size_t>(k)]);
+    return B;
+  }
+  return 0;
+}
+
+void DestructionSlot::restoreFrom(const float* src, int frames, int kind, double srcRate) noexcept {
+  if (kind == 0 && frames > 0) {
+    const double ratio = srcRate / fs_;
+    const int len = std::min(d2Len_ - 8, static_cast<int>(frames / ratio));
+    for (int i = 0; i < len; ++i) {
+      const double p = i * ratio;
+      const int a = std::min(static_cast<int>(p), frames - 1), b = std::min(a + 1, frames - 1);
+      const double f = p - a;
+      for (int ch = 0; ch < 2; ++ch)
+        d2Buf_[static_cast<size_t>(ch)][static_cast<size_t>(i)] = static_cast<float>(src[2 * a + ch] + f * (src[2 * b + ch] - src[2 * a + ch]));
+    }
+    d2SegStart_ = 0.0;
+    d2SegLen_ = len;
+    d2SegPos_ = 0.0;
+    d2Write_ = len % d2Len_;
+    d2Looping_ = true;  // le contenu restauré est le segment courant ; sa persistance reste soumise au Freeze armé
+  } else if (kind == 1 && frames > 1) {
+    const int B = fftSize_ / 2 + 1;
+    const double srcN = 2.0 * (frames - 1);
+    for (int ch = 0; ch < 2; ++ch)
+      for (int k = 0; k < B; ++k) {
+        const double hz = k * fs_ / fftSize_;
+        const double sp = hz * srcN / srcRate;  // bin source de même fréquence
+        const int a = std::min(static_cast<int>(sp), frames - 1), b = std::min(a + 1, frames - 1);
+        const double f = std::min(1.0, sp - a);
+        const double m = src[ch * frames + a] + f * (src[ch * frames + b] - src[ch * frames + a]);
+        s2_[static_cast<size_t>(ch)].held[static_cast<size_t>(k)] = m * fftSize_ / srcN;  // normalisation de taille
+        s2_[static_cast<size_t>(ch)].mag[static_cast<size_t>(k)] = s2_[static_cast<size_t>(ch)].held[static_cast<size_t>(k)];
+      }
+  }
+}
+
 // ---------------------------------------------------------------- traitement commun
 void DestructionSlot::process(double& L, double& R, const double* E, int base, const DestructionContext& c) noexcept {
   const double* P = E + base;

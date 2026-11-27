@@ -3,11 +3,13 @@
 #include <cmath>
 #include "Analysis.h"
 #include <cstdio>
+#include <memory>
 #include <random>
 #include <vector>
 
 #include "G4Helper.h"
 #include "TestKit.h"
+#include "core/StateCodec.h"
 #include "core/WtAssets.h"
 #include "dsp/Destruction.h"
 
@@ -332,6 +334,87 @@ void testSpectralMorph() {
              grid, em, e0, lm);
 }
 
+// ------------------------------------------------------------------ CAP-01 : captures créatives R2
+struct CapRun {
+  double rms = 0.0;
+  long long alloc = 0;
+};
+CapRun capRender(int type, bool note, const CaptureAsset* restore, CaptureAsset* grab) {
+  ParamValues p = ParamValues::defaults();
+  p[ParamId::DstGl1Type] = static_cast<float>(type);
+  p[ParamId::DstGl1Arm] = 1.0f;
+  p[ParamId::DstGl1Mix] = 1.0f;
+  Engine e(FactoryBanks::get("factory:saw"));
+  e.setParameters(p);
+  e.prepare(48000, 256);
+  float L[256], R[256];
+  CapRun out;
+  MidiEvent on = MidiEvent::noteOn(0, 52, 120), off = MidiEvent::noteOff(0, 52);
+  if (restore) {
+    e.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{{*restore}}));
+  }
+  double acc = 0.0;
+  long n = 0;
+  for (int b = 0; b < 600; ++b) {
+    const MidiEvent* ev = nullptr;
+    int ne = 0;
+    if (note && b == 0) ev = &on, ne = 1;
+    if (note && b == 200) ev = &off, ne = 1;  // ~1 s puis relâchement : le gel armé persiste
+    if (grab && b == 300) e.requestCapture(4);
+    if (type == static_cast<int>(DstType::D2) && (b == 150 || (b == 0 && !note))) {  // gel activé pendant la note
+      p[ParamId::DstGl1D2Freeze] = 1.0f;
+      e.setParameters(p);
+    }
+    tk::allocationCount().store(0);
+    e.process(L, R, 256, ev, ne);
+    out.alloc += tk::allocationCount().load();
+    if (b >= 400)
+      for (int i = 0; i < 256; ++i, ++n) acc += static_cast<double>(L[i]) * L[i];
+  }
+  if (grab) e.fetchCapture(4, *grab);
+  out.rms = std::sqrt(acc / std::max(1L, n));
+  return out;
+}
+
+void testCaptures() {
+  const int D2 = static_cast<int>(DstType::D2), S2 = static_cast<int>(DstType::S2);
+  CaptureAsset cd, cs;
+  const auto refD = capRender(D2, true, nullptr, &cd), refS = capRender(S2, true, nullptr, &cs);
+  const auto silD = capRender(D2, false, nullptr, nullptr), silS = capRender(S2, false, nullptr, nullptr);
+  const auto resD = capRender(D2, false, &cd, nullptr), resS = capRender(S2, false, &cs, nullptr);
+  const bool grabbed = cd.frames > 0 && cd.kind == 0 && cs.frames == 2048 / 2 + 1 && cs.kind == 1;
+  auto ratioDb = [](double a, double b) { return 20.0 * std::log10((a + 1e-12) / (b + 1e-12)); };
+  const double dD = ratioDb(resD.rms, refD.rms), dS = ratioDb(resS.rms, refS.rms);
+  const bool restored = silD.rms < 1e-6 && silS.rms < 1e-6 && std::fabs(dD) <= 3.0 && std::fabs(dS) <= 3.0;
+  // état : encodage, décodage identique, intégrité, refus d'une capture altérée
+  PluginState st = defaultState();
+  st.captures = {cd, cs};
+  st.captures[0].slot = 4;
+  st.captures[1].slot = 5;
+  const std::string txt = encodeState(st, "test", StateScope::Preset);
+  PluginState back;
+  std::string err;
+  const bool rt = decodeState(txt, back, err) && back.captures == st.captures;
+  std::string bad = txt;
+  const size_t at = bad.find("capture 4 D2");
+  const size_t pos = bad.find(static_cast<char>(10), at) - 5;
+  bad[pos] = bad[pos] == 'A' ? 'B' : 'A';
+  PluginState b2;
+  const bool integ = !decodeState(bad, b2, err);
+  // protection : un preset armé est désarmé au chargement
+  PluginState armed = defaultState();
+  armed.params[ParamId::DstGl1Arm] = 1.0f;
+  armed.params[ParamId::FltWtArm] = 1.0f;
+  const bool was = anyArmed(armed);
+  disarmAutonomous(armed);
+  const bool prot = was && !anyArmed(armed);
+  const long long alloc = refD.alloc + refS.alloc + resD.alloc + resS.alloc;
+  const bool ok = grabbed && restored && rt && integ && prot && alloc == 0;
+  TK_CHECK(ok);
+  tk::result("CAP-01", ok, "captures R2 : D2 %d trames, S2 %d bins ; restauration sans entree : D2 %.1f dB, S2 %.1f dB vs original (+-3 ; sans capture : silence) ; etat aller-retour %d, capture alteree refusee %d ; preset arme desarme %d ; allocations RT %lld",
+             cd.frames, cs.frames, dD, dS, rt, integ, prot, alloc);
+}
+
 }  // namespace
 
 void runG41Tests() {
@@ -343,4 +426,5 @@ void runG41Tests() {
   testFollowers();
   testN1Hybrid();
   testSpectralMorph();
+  testCaptures();
 }
