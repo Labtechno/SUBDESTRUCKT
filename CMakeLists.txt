@@ -8,7 +8,7 @@ if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Cible de deploiement declaree (non validee, voir plan §2)")
 endif()
 
-project(SUBDESTRUCKT VERSION 0.3.2 LANGUAGES C CXX)
+project(SUBDESTRUCKT VERSION 0.3.3 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -79,7 +79,8 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_g43.cpp
     tests/core/test_g43_ta.cpp
     tests/core/test_g43_d2.cpp
-    tests/core/test_g43_z.cpp)
+    tests/core/test_g43_z.cpp
+    tests/core/test_g43r1.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   # pile du thread principal alignée sur macOS (8 Mo) : plusieurs tests instancient le moteur sur la pile (Windows : 1 Mo)

@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 / G4.3-R1 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -129,6 +129,12 @@ Résultats : `docs/V1-ARCH-G4.3-REPORT.md`. Point de reprise MSVC : le suivi des
 un répertoire de build recréé (`ninja -t deps` VALID) ; l'ancien `build-local` hérité de G4.2 produisait des objets
 périmés. Tests : `tests/expected_results.txt` (inventaire) à compléter pour tout nouveau critère (INV-01 en CI).
 
+### 3quinquies. Critères ARCH-G4.3-R1 (enregistrés le 2026-11-27, commit 58bf858, avant toute mesure)
+Texte : `docs/V1-ARCH-G4.3-R1-SPEC.md` : HT-01..08 (Harmonic Tilt à énergie constante, A-G43-01), ZC-05R (Shift,
+A-G43-02), ZC-13R (Scatter, A-G43-03), R2-02R (A-G43-04), ZA-01/02 (audit). Critère remplacé : ZC-15 (clause Tilt) par
+HT-02/03. Nouvel échec documenté : R2-02R (a) (source Metal, résolution du gel S2). Défauts réels corrigés : Tilt
+(niveau), Shift (continuité aux bornes et phase). Version 0.3.3. Rapport : `docs/V1-ARCH-G4.3-R1-REPORT.md`.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -151,7 +157,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | PASS (G4.1 : WTA-01, WT-ED-01, WT-ED-02w (générateur, éditeur, .sdwt, UI Banques)) | run 33 |
 | R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (CI run 9) | — |
 | R18 | Z : 3 transformations attestées | WT | PASS (CI run 9) | — |
-| R19 | Z : 5 transformations du catalogue validé | WT | IMPLEMENTED (G4.3 : Tilt, Mask, Focus, Shift, Scatter ; ZC-05 et ZC-13 c FAIL documentés ; A-G43-01/02) | G4.3 |
+| R19 | Z : 5 transformations du catalogue validé | WT | IMPLEMENTED (G4.3-R1 : Tilt corrigé HT-01..08, Shift ZC-05R, Scatter ZC-13R ; restriction d'ordre inter-domaines non acceptée ; écoute R-29) | G4.3-R1 |
 | R20 | FM 4 opérateurs, PM/LinFM/TZFM/ExpFM par destinataire | FM | PASS (CI run 9) | — |
 | R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (CI run 9) | — |
 | R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (CI run 9) | — |
@@ -182,7 +188,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | run 37 |
 | R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.3 : paquets 0.3.2 en CI, NON publiés ; compilation locale LB-01..13, barrière exhaustive) | G4.3 |
 | R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.3 : manuel 0.3.2, 29 tests de recette dont R-26..R-29, contrôles bloquants + Playwright) | G4.3 |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.3 : AUT, TA, R2-01/03/04/05 PASS ; R2-02 FAIL documenté (restitution entre fréquences) ; recette physique R-21/R-25/R-28) | G4.3 |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.3-R1 : R2-02R (b)(c)(e) PASS, (a) FAIL documenté (Metal, résolution S2) ; WAV A/B ; écoute R-30 et recette physique à faire) | G4.3-R1 |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -214,12 +220,14 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.3 : critères avant mesure, empreintes 0.3.1 (msvc-x64, clang-arm64) | 2a228d4 | CI run 39 SUCCESS (empreintes publiées en annotation) |
 | 2026-11-27 | G4.3 : TRANSPORT AUTHORIZATION, purge Panic | 528a000 | Local : TA 24/24, TA-xxw 9/9 |
 | 2026-11-27 | G4.3 : D2 Legacy/Regenerative, Z, R2, topologie par défaut, barrière exhaustive, LB-08..13, 0.3.2 | d7dcc22 | CI run 40 SUCCESS |
+| 2026-11-27 | G4.3-R1 : spécification corrective avant mesure | 58bf858 | — |
+| 2026-11-27 | G4.3-R1 : Tilt à énergie constante, continuité Shift, tests HT/ZC-05R/ZC-13R/R2-02R/ZA, 0.3.3 | (livraison) | rapport G4.3-R1 §14 |
 | 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport ; documentationSha | c7b8573, 97100b0 | run 41 : job manuel en échec (documentationSha vide ; titre S0.1 dynamique) ; **run 42 (45992835990) SUCCESS complet, SHA livré 97100b0** |
 
 ## 6. Prochaine action
-Recette physique 0.3.2 sur Mac Studio M4 Max (compilation locale au SHA livré : `docs/V1-LOCAL-BUILD.md`) : R-26 Reason 14,
-R-27 Ableton Live, R-28 exports, R-29 écoute ; puis verdict C (DSP FINAL LOCK). Arbitrages : A-G43-01, A-G43-02,
-acceptation de la licence JUCE Starter par le propriétaire. ARCH-UI-04 non commencé (autorisation requise).
+Recette physique 0.3.3 sur Mac Studio M4 Max (`docs/V1-LOCAL-BUILD.md`) : R-26 Reason 14, R-27 Ableton Live, R-28
+exports, R-29 écoute Z, R-30 écoute A/B R2 ; décision sur la restriction d'ordre inter-domaines Z (rapport G4.3-R1 §9) ;
+acceptation de la licence JUCE Starter par le propriétaire. Puis verdict C. ARCH-UI-04 : autorisation requise.
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |

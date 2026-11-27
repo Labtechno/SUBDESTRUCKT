@@ -7,6 +7,7 @@
 #pragma once
 #include <cmath>
 #include <complex>
+#include <algorithm>
 #include <cstdint>
 
 namespace sbd {
@@ -58,21 +59,76 @@ inline double gain(ZType t, int h, double v, double sigma) noexcept {
   }
 }
 
+// Contrôle de crête désactivé (tests des fonctions pures) : un foncteur de crête renvoie la crête du cycle à bande lue
+// resynthétisé depuis des coefficients ; une valeur négative désactive le contrôle.
+struct NoPeak {
+  double operator()(const std::complex<double>*) const noexcept { return -1.0; }
+};
+struct UnitBand {
+  double operator()(int) const noexcept { return 1.0; }
+};
+constexpr double kTiltPeakRatio = 2.0;  // κ : élévation de crête maximale par étage Tilt (+6,02 dB), ARCH-G4.3-R1
+
+struct StageStats {
+  double energyFactor = 1.0;  // produit des facteurs énergétiques des réductions de crête (Tilt)
+  int peakReductions = 0;
+};
+
+// Harmonic Tilt (ARCH-G4.3-R1, A-G43-01) : pondération h^(vλ) puis normalisation de l'énergie de la bande lue sur le
+// domaine D (h >= 2 si la fondamentale est protégée), puis contrôle de crête (κ). Redistribution, jamais amplification.
+template <typename Band, typename Peak>
+inline void tiltStage(std::complex<double>* c, std::complex<double>* work, double v, double sigma, bool fund, Band band, Peak peak,
+                      StageStats* st) noexcept {
+  const int h0 = fund ? 2 : 1;
+  for (int h = 0; h <= kH + 1; ++h) work[h] = c[h];  // entrée de l'étage (pour la crête de référence)
+  double ein = 0.0, et = 0.0;
+  for (int h = h0; h <= kH; ++h) {
+    const double b = band(h);
+    c[h] *= gain(ZType::Tilt, h, v, sigma);
+    if (b <= 0.0) continue;
+    ein += b * b * std::norm(work[h]);
+    et += b * b * std::norm(c[h]);
+  }
+  if (!(ein > 1e-24 * (ein + et)) || !(et > 0.0) || !std::isfinite(et)) {  // énergie nulle ou négligeable : identité
+    for (int h = h0; h <= kH; ++h) c[h] = work[h];
+    return;
+  }
+  const double sc = std::sqrt(ein / et);
+  for (int h = h0; h <= kH; ++h) c[h] *= sc;
+  const double pin = peak(work);
+  if (!(pin > 0.0)) return;  // contrôle désactivé (foncteur neutre) ou entrée nulle
+  const double pout = peak(c), lim = kTiltPeakRatio * pin;
+  if (!(pout > lim)) return;
+  // réduction de gain continue des rangs de D : la crête est convexe en alpha (somme fondamentale + alpha x reste), la
+  // sécante depuis alpha = 0 (crête de la fondamentale seule, <= 2 pin) garantit crête(alpha) <= lim sans itération
+  const double p0 = fund ? std::abs(work[1]) * std::max(0.0, band(1)) : 0.0;
+  const double alpha = std::max(0.0, std::min(1.0, (lim - p0) / (pout - p0)));
+  for (int h = h0; h <= kH; ++h) c[h] *= alpha;
+  if (st) {
+    st->energyFactor *= alpha * alpha;
+    ++st->peakReductions;
+  }
+}
+
 // applique une transformation à c[1..kH] (c[0] ignoré) ; work : tampon de kH + 2 coefficients
-inline void apply(ZType t, std::complex<double>* c, std::complex<double>* work, double v, double sigma) noexcept {
+template <typename Band = UnitBand, typename Peak = NoPeak>
+inline void applyStage(ZType t, std::complex<double>* c, std::complex<double>* work, double v, double sigma, bool fund = false,
+                       Band band = Band{}, Peak peak = Peak{}, StageStats* st = nullptr) noexcept {
   if (!(v > 0.0)) return;
   switch (t) {
-    case ZType::Tilt:
+    case ZType::Tilt: tiltStage(c, work, v, sigma, fund, band, peak, st); break;
     case ZType::Mask:
     case ZType::Focus:
       for (int h = 1; h <= kH; ++h) c[h] *= gain(t, h, v, sigma);
       break;
     case ZType::Shift: {
+      // balayage de rang (A-G43-02) ; ARCH-G4.3-R1 : rangs virtuels nuls en 0 et kH + 1 (extinction continue aux bornes)
+      // et phase interpolée sur l'arc le plus court (continuité en k ; amplitude interpolée inchangée)
       const double k = shiftRanks(v, sigma);
       for (int h = 0; h <= kH + 1; ++h) work[h] = h >= 1 && h <= kH ? c[h] : std::complex<double>(0.0, 0.0);
       for (int h = 1; h <= kH; ++h) {
         const double src = h - k;
-        if (src < 1.0 || src > kH) {
+        if (!(src > 0.0) || !(src < kH + 1.0)) {
           c[h] = 0.0;
           continue;
         }
@@ -84,8 +140,17 @@ inline void apply(ZType t, std::complex<double>* c, std::complex<double>* work, 
         }
         const std::complex<double> a = work[i], b = work[i + 1];
         const double ma = std::abs(a), mb = std::abs(b), m = (1.0 - f) * ma + f * mb;
-        const std::complex<double> z = (1.0 - f) * a + f * b;  // moyenne circulaire pondérée par l'amplitude
-        const double ph = std::norm(z) > 1e-18 * (m * m + 1e-300) ? std::arg(z) : std::arg(f < 0.5 ? a : b);
+        double ph;
+        if (ma <= 0.0) {
+          ph = std::arg(b);
+        } else if (mb <= 0.0) {
+          ph = std::arg(a);
+        } else {
+          const double pa = std::arg(a);
+          double d = std::arg(b) - pa;
+          d -= 6.283185307179586 * std::floor((d + 3.141592653589793) / 6.283185307179586);  // [-pi ; pi[
+          ph = pa + f * d;
+        }
         c[h] = std::polar(m, ph);
       }
       break;
@@ -96,15 +161,23 @@ inline void apply(ZType t, std::complex<double>* c, std::complex<double>* work, 
     default: break;
   }
 }
+inline void apply(ZType t, std::complex<double>* c, std::complex<double>* work, double v, double sigma) noexcept {
+  applyStage(t, c, work, v, sigma);
+}
 
-// Chaîne complète appliquée par le moteur : transformations spectrales dans l'ordre des emplacements, préservation de
-// la fondamentale (c1 = c1 d'origine), compensation exacte de l'énergie (Parseval) sur la bande lue, fondamentale
-// préservée exclue, gain borné [0,25 ; 4]. orig : coefficients d'entrée (non modifiés) ; band(h) : gain de bande lue.
-template <typename Band>
+// Chaîne complète appliquée par le moteur : transformations spectrales dans l'ordre des emplacements (Tilt : énergie
+// constante et contrôle de crête intrinsèques), préservation de la fondamentale (c1 = c1 d'origine), compensation exacte
+// de l'énergie (Parseval) sur la bande lue, fondamentale préservée exclue, gain borné [0,25 ; 4] ; son énergie cible
+// intègre les réductions de crête des étages Tilt (aucune double compensation). orig : coefficients d'entrée (non
+// modifiés) ; band(h) : gain de bande lue ; peak : crête du cycle à bande lue (NoPeak : contrôle désactivé).
+template <typename Band, typename Peak = NoPeak>
 inline double process(std::complex<double>* c, const std::complex<double>* orig, std::complex<double>* work, const int* zt,
-                      const double* zv, const double* zs, bool fund, bool gainComp, Band band) noexcept {
+                      const double* zv, const double* zs, bool fund, bool gainComp, Band band, Peak peak = Peak{},
+                      StageStats* stats = nullptr) noexcept {
+  StageStats local;
+  StageStats* st = stats ? stats : &local;
   for (int s = 0; s < 2; ++s)
-    if (zSpectral(zt[s]) && zv[s] > 0.0) apply(static_cast<ZType>(zt[s]), c, work, zv[s], zs[s]);
+    if (zSpectral(zt[s]) && zv[s] > 0.0) applyStage(static_cast<ZType>(zt[s]), c, work, zv[s], zs[s], fund, band, peak, st);
   if (fund) c[1] = orig[1];
   double gc = 1.0;
   if (gainComp) {
@@ -115,6 +188,7 @@ inline double process(std::complex<double>* c, const std::complex<double>* orig,
       ein += g * g * std::norm(orig[h]);
       eout += g * g * std::norm(c[h]);
     }
+    ein *= st->energyFactor;
     gc = eout > 1e-30 ? std::min(4.0, std::max(0.25, std::sqrt(ein / eout))) : 1.0;
     for (int h = fund ? 2 : 1; h <= kH; ++h) c[h] *= gc;
   }

@@ -68,8 +68,9 @@ struct Rig {
   std::vector<float> L, R;
   std::vector<TaEvent> log;
   long long alloc = 0;
-  explicit Rig(const ParamValues& pv, double fs = 48000.0, int blk = 256, Quality q = Quality::Normal) : p(pv), block(blk) {
-    e = std::make_unique<Engine>(FactoryBanks::get("factory:saw"));
+  explicit Rig(const ParamValues& pv, double fs = 48000.0, int blk = 256, Quality q = Quality::Normal, const char* bank = "factory:saw")
+      : p(pv), block(blk) {
+    e = std::make_unique<Engine>(FactoryBanks::get(bank));
     e->setParameters(p);
     e->prepare(fs, blk, q);
   }
@@ -705,10 +706,10 @@ ParamValues s2Params(double decay, bool frozen, bool armedSlot = true) {
   return p;
 }
 
-CaptureAsset makeS2Capture(double fs, double decay) {
-  Rig r(s2Params(decay, false), fs);
+CaptureAsset makeS2Capture(double fs, double decay, const char* bank = "factory:saw", int note = 45) {
+  Rig r(s2Params(decay, false), fs, 256, Quality::Normal, bank);
   const int blocks = static_cast<int>(std::lround(0.5 * fs / 256));
-  r.step(tinfo(TransportObs::Unknown), {MidiEvent::noteOn(0, 45, 110)});
+  r.step(tinfo(TransportObs::Unknown), {MidiEvent::noteOn(0, note, 110)});
   r.run(blocks, tinfo(TransportObs::Unknown));
   r.p = s2Params(decay, true);
   r.run(blocks, tinfo(TransportObs::Unknown));
@@ -944,6 +945,136 @@ void testR2() {
   }
 }
 
+
+// ------------------------------------------------------------------ R2-02R (ARCH-G4.3-R1) : restitution inter-Fs
+void writeWav24(const std::string& path, const std::vector<float>& L, const std::vector<float>& R, size_t a, size_t n, double fs, double gain) {
+  FILE* f = std::fopen(path.c_str(), "wb");
+  if (!f) return;
+  const std::uint32_t sr = static_cast<std::uint32_t>(fs), data = static_cast<std::uint32_t>(n * 6);
+  auto u32 = [&](std::uint32_t v) { std::fwrite(&v, 4, 1, f); };
+  auto u16 = [&](std::uint16_t v) { std::fwrite(&v, 2, 1, f); };
+  std::fwrite("RIFF", 1, 4, f);
+  u32(36 + data);
+  std::fwrite("WAVEfmt ", 1, 8, f);
+  u32(16), u16(1), u16(2), u32(sr), u32(sr * 6), u16(6), u16(24);
+  std::fwrite("data", 1, 4, f);
+  u32(data);
+  for (size_t i = a; i < a + n && i < L.size(); ++i)
+    for (const auto* x : {&L, &R}) {
+      const long s = std::lround(std::fmax(-1.0, std::fmin(1.0, (*x)[i] * gain)) * 8388607.0);
+      const unsigned char b[3] = {static_cast<unsigned char>(s & 0xff), static_cast<unsigned char>((s >> 8) & 0xff), static_cast<unsigned char>((s >> 16) & 0xff)};
+      std::fwrite(b, 1, 3, f);
+    }
+  std::fclose(f);
+}
+
+void testR2Resolution() {
+  const double rates[4] = {44100.0, 48000.0, 88200.0, 96000.0};
+  struct Src {
+    const char* name;
+    const char* bank;
+    int note;
+  };
+  const Src srcs[2] = {{"scie note 45", "factory:saw", 45}, {"Metal note 52", "factory:metal", 52}};
+  const char* wavDir = std::getenv("SBD_R2_WAV_DIR");
+  double worstTotal = 0.0, worstWeighted = 0.0, worstStrong = 0.0;
+  bool exact = true, ok = true;
+  std::string fails, listing;
+  int combos = 0;
+  for (const auto& src : srcs) {
+    for (double fc : rates) {
+      const CaptureAsset c = makeS2Capture(fc, 1.0, src.bank, src.note);
+      // référence : capture restituée à sa propre fréquence
+      Rig ref(s2Params(1.0, true), fc, 256, Quality::Normal, src.bank);
+      publish(*ref.e, {c}, true);
+      ref.run(static_cast<int>(1.2 * fc / 256), tinfo(TransportObs::Stopped));
+      ref.e->requestCapture(5);
+      ref.step(tinfo(TransportObs::Stopped));
+      CaptureAsset back;
+      if (!(ref.e->fetchCapture(5, back) && back.data == c.data)) exact = false;  // (e) Fr = Fc
+      const size_t ra = activation(ref) + static_cast<size_t>(0.2 * fc), rn = static_cast<size_t>(0.1 * fc);
+      const auto br = bands(ref.L, ref.R, ra, rn, fc);
+      struct Wav {
+        double fr;
+        std::vector<float> L, R;
+        size_t act;
+      };
+      std::vector<Wav> wavs;
+      for (double fr : rates) {
+        if (fr == fc) continue;
+        ++combos;
+        Rig o(s2Params(1.0, true), fr, 256, Quality::Normal, src.bank);
+        publish(*o.e, {c}, true);
+        o.run(static_cast<int>(1.2 * fr / 256), tinfo(TransportObs::Stopped));
+        const size_t oa = activation(o) + static_cast<size_t>(0.2 * fr), on = static_cast<size_t>(0.1 * fr);
+        const auto bo = bands(o.L, o.R, oa, on, fr);
+        const double binc = fc * Engine::oversamplingFor(fc) / 2048.0, binr = fr * Engine::oversamplingFor(fr) / 2048.0, bin = std::max(binc, binr);
+        const double fmax = 0.45 * std::min(fc, fr);
+        double mx = 0.0;
+        for (double v : br) mx = std::max(mx, v);
+        double et = 0.0, eo = 0.0, wacc = 0.0, wsum = 0.0, strong = 0.0, etAll = 0.0, eoAll = 0.0;
+        std::string lowList;
+        for (size_t k = 0; k < br.size() && k < bo.size(); ++k) {  // descriptif : toutes bandes (50 Hz - fmax)
+          const double fcb = 1000.0 * std::pow(2.0, (static_cast<int>(k) - 13) / 3.0);
+          if (fcb * std::pow(2.0, 1.0 / 6.0) > fmax) continue;
+          etAll += br[k] / (0.1 * fc);
+          eoAll += bo[k] / (0.1 * fr);
+        }
+        for (size_t k = 0; k < br.size() && k < bo.size(); ++k) {
+          const double fcb = 1000.0 * std::pow(2.0, (static_cast<int>(k) - 13) / 3.0);
+          const double lo = fcb / std::pow(2.0, 1.0 / 6.0), hi = fcb * std::pow(2.0, 1.0 / 6.0);
+          if (fcb < 200.0 || hi > fmax) continue;
+          const double er = br[k] / (0.1 * fc), eob = bo[k] / (0.1 * fr);
+          et += er;
+          eo += eob;
+          if (br[k] < mx * 1e-6 || bo[k] <= 0.0) continue;
+          const double d = 10.0 * std::log10(eob / er), lvl = 10.0 * std::log10(br[k] / mx);
+          const bool resolvable = (hi - lo) >= 8.0 * bin;
+          if (resolvable) {
+            wacc += er * d * d;
+            wsum += er;
+            if (lvl >= -20.0) strong = std::max(strong, std::fabs(d));
+          }
+          if ((!resolvable || lvl < -20.0) && std::fabs(d) > 1.0 && lowList.size() < 300) {
+            char b[96];
+            std::snprintf(b, sizeof b, " %.0fHz(%.0fdB,%.1fbins,%+.1fdB)", fcb, lvl, (hi - lo) / bin, d);
+            lowList += b;
+          }
+        }
+        const double total = std::fabs(10.0 * std::log10(eo / et)), weighted = wsum > 0.0 ? std::sqrt(wacc / wsum) : 0.0;
+        worstTotal = std::max(worstTotal, total);
+        worstWeighted = std::max(worstWeighted, weighted);
+        worstStrong = std::max(worstStrong, strong);
+        const bool good = total <= 1.0 && weighted <= 0.5 && strong <= 1.0;
+        ok = ok && good;
+        char b[400];
+        std::snprintf(b, sizeof b, " [%s %.1f->%.1f kHz : total %.2f dB (toutes bandes %+.2f dB), pondere %.2f dB, pire bande resoluble forte %.2f dB%s%s]", src.name, fc / 1000.0,
+                      fr / 1000.0, total, 10.0 * std::log10(eoAll / etAll), weighted, strong, lowList.empty() ? "" : " ; hors tolerance non resolubles/faibles :", lowList.c_str());
+        std::printf("  R2-02R%s\n", b);
+        if (!good) fails += b;
+        if (listing.size() < 2400) listing += b;
+        if (wavDir && src.bank[8] == 's' && fc == 48000.0) wavs.push_back(Wav{fr, o.L, o.R, activation(o)});
+      }
+      // (f) WAV A/B : capture 48 kHz, scie ; même gain pour tous les fichiers du groupe (aucune normalisation indépendante)
+      if (wavDir && src.bank[8] == 's' && fc == 48000.0) {
+        double pk = peak(ref.L);
+        for (auto& w : wavs) pk = std::max(pk, peak(w.L));
+        const double g = 0.5 / std::max(pk, 1e-9);
+        writeWav24(std::string(wavDir) + "/r2ab_capture48k_restore48k_reference.wav", ref.L, ref.R, activation(ref), static_cast<size_t>(fc), fc, g);
+        for (auto& w : wavs) {
+          char name[160];
+          std::snprintf(name, sizeof name, "/r2ab_capture48k_restore%.1fk.wav", w.fr / 1000.0);
+          writeWav24(std::string(wavDir) + name, w.L, w.R, w.act, static_cast<size_t>(w.fr), w.fr, g);  // 1 s depuis l'activation
+        }
+      }
+    }
+  }
+  const bool all = ok && exact;
+  TK_CHECK(all);
+  tk::result("R2-02R", all, "restitution inter-Fs (Decay 1, 2 sources, %d couples Fc->Fr, 44,1/48/88,2/96 kHz) : (a) energie totale pire %.2f dB (<= 1,0) ; (b) ecart pondere par l'energie (bandes resolubles >= 8 bins) pire %.2f dB (<= 0,5) ; (c) bandes resolubles a >= -20 dB : pire %.2f dB (<= 1,0) ; (e) Fr = Fc exact %d ; (d) detail :%s%s",
+             combos, worstTotal, worstWeighted, worstStrong, exact, listing.c_str(), fails.empty() ? "" : (" ; ECHECS :" + fails).c_str());
+}
+
 }  // namespace
 
 void runG43TaTests() {
@@ -955,5 +1086,6 @@ void runG43TaTests() {
   testTransportAuthorization(caps);
   std::printf("[ARCH-G4.3 : captures R2]\n");
   testR2();
+  testR2Resolution();
 }
 

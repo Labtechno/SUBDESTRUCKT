@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.3
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.3-R1
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,7 +22,7 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate du developpement integre ARCH-G4.3 (DSP FINAL LOCK, recette physique en attente). Ce n'est NI une beta NI une version
+STATUT : livraison interne candidate ARCH-G4.3-R1 (correction DSP finale, recette physique en attente). Ce n'est NI une beta NI une version
 publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
@@ -108,8 +108,20 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.3 (build interne, non diffusee)
+${BUILD_ID} (commit ${COMMIT}) — correction DSP ARCH-G4.3-R1 (build interne, non diffusee)
 -------------------------------------------------------------------------------------------
+Wavetable Z
+- Harmonic Tilt redistribue l'energie au lieu de l'amplifier : energie de la bande lue constante (meme sans Gain
+  Compensation) et elevation de crete bornee a +6 dB par etage (reduction de gain continue, sans ecretage). Le son
+  sombre/brillant est conserve ; le NIVEAU de Tilt change par rapport a 0.3.2 (plus de crete a +30..+79 dBFS).
+- Harmonic Shift : balayage conserve ; extinction progressive aux bornes du spectre et phase interpolee continument
+  (supprime des sauts lorsque la profondeur traverse certaines valeurs). Spectre d'amplitude inchange.
+- Phase Scatter inchange.
+Captures R2 : restitution entre frequences d'echantillonnage inchangee (recette A/B complementaire).
+Compatibilite : 703 parametres, format d'etat 4, projets 0.3.x lus ; seuls les sons utilisant Tilt ou Shift changent.
+
+0.3.2 — developpement integre ARCH-G4.3 (build interne, non diffusee)
+---------------------------------------------------------------------
 TRANSPORT AUTHORIZATION (a valider dans Reason 14 et Ableton Live, exports compris)
 - Un projet ouvert a l'arret garde ses etats autonomes suspendus ; le lancement de la LECTURE (ou de
   l'enregistrement) les autorise automatiquement ; un export hors temps reel aussi. Bouton Autoriser conserve.
@@ -123,8 +135,8 @@ D2 Glitch Buffer : mode de Feedback par emplacement LEGACY / REGENERATIVE
   (rendu historique inchange). Format d'etat 4 (les versions anterieures refusent ces etats).
 Wavetable Z : catalogue de huit transformations
 - Ajouts : Harmonic Tilt, Harmonic Mask, Harmonic Focus, Harmonic Shift, Phase Scatter, et un reglage Shape par
-  emplacement Z. Fold, Warp et Mutation inchanges. Attention : Harmonic Tilt brillant sans compensation de gain peut
-  produire des niveaux tres eleves (protection ELP engagee) : arbitrage en cours.
+  emplacement Z. Fold, Warp et Mutation inchanges. Harmonic Tilt brillant sans compensation de gain pouvait produire
+  des niveaux tres eleves (corrige en 0.3.3).
 Parametres : 703 (695 historiques inchanges + 8 ajoutes en fin) ; identifiants VST3 historiques inchanges.
 
 0.3.1 — developpement integre ARCH-G4.2 (build interne, non diffusee)

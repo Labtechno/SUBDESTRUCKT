@@ -155,6 +155,7 @@ class Engine {
   double testF0() const noexcept { return f0_; }
   long long testSpectralResynth() const noexcept { return smResynth_; }
   long long testSpectralBlends() const noexcept { return smBlends_; }
+  long long testTiltReductions() const noexcept { return smTiltReductions_; }
 
  private:
   enum class Transition { Idle = 0, FadeOut = 1, FadeIn = 2 };
@@ -290,6 +291,8 @@ class Engine {
   bool zSpecActive_ = false;
   std::array<double, 8> smBlendKey_{};  // clé de la combinaison des formes en cache (smOrig_)
   long long smResynth_ = 0, smBlends_ = 0;  // compteurs de test (resynthèses, combinaisons recalculées)
+  long long smTiltReductions_ = 0;           // réductions de crête de Harmonic Tilt (ARCH-G4.3-R1)
+  std::vector<std::complex<double>> smPeakWork_;  // FFT de mesure de crête (préallouée)
   std::array<double, 2> foldPrev_{};          // ADAA1 du repli (par emplacement Z)
   std::array<double, kNumNodes> lastInc_{};   // incrément de phase du dernier échantillon (sync sous-échantillon)
   double syncGhostPhase_ = 0.0;

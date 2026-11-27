@@ -215,6 +215,7 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   smCoef_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
   smOrig_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
   smZWork_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
+  smPeakWork_.assign(WtBank::kLength, std::complex<double>(0.0, 0.0));
   zSpecActive_ = false;
   smBlendKey_.fill(0.0);
   if (smFft_.size() != WtBank::kLength) smFft_.init(WtBank::kLength);
@@ -1022,7 +1023,24 @@ void Engine::spectralUpdate(double x, double y, double absInc, const int* zt, co
       smOrig_[static_cast<size_t>(h)] = c[h];
     }
     auto band = [&](int h) { return morphSpectral ? (h <= H ? 1.0 : 0.0) : (h <= hLo ? 1.0 : (h <= hHi ? 1.0 - wPart : 0.0)); };
-    zspec::process(c, smOrig_.data(), smZWork_.data(), zt, zv, zs, ch(ParamId::WtZFund) == 1, ch(ParamId::WtZGain) == 1, band);
+    // crête du cycle à bande lue (contrôle de crête de Harmonic Tilt, ARCH-G4.3-R1) : FFT inverse dans un tampon préalloué
+    auto peak = [&](const std::complex<double>* q) {
+      std::fill(smPeakWork_.begin(), smPeakWork_.end(), std::complex<double>(0.0, 0.0));
+      for (int h = 1; h <= WtBank::kHarmonics; ++h) {
+        const double g = band(h);
+        if (g <= 0.0) continue;
+        const std::complex<double> v = q[h] * (0.5 * N * g);
+        smPeakWork_[static_cast<size_t>(h)] = v;
+        if (h < N / 2) smPeakWork_[static_cast<size_t>(N - h)] = std::conj(v);
+      }
+      smFft_.transform(smPeakWork_.data(), true);
+      double pk = 0.0;
+      for (int i = 0; i < N; ++i) pk = std::max(pk, std::fabs(smPeakWork_[static_cast<size_t>(i)].real()));
+      return pk / N;
+    };
+    zspec::StageStats zst;
+    zspec::process(c, smOrig_.data(), smZWork_.data(), zt, zv, zs, ch(ParamId::WtZFund) == 1, ch(ParamId::WtZGain) == 1, band, peak, &zst);
+    smTiltReductions_ += zst.peakReductions;
     for (int h = 1; h <= WtBank::kHarmonics; ++h) {
       const double g = band(h);
       if (g <= 0.0) continue;
