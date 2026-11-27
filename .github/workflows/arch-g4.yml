@@ -90,10 +90,12 @@ jobs:
           unexpected=0
           while read -r line; do
             id="$(echo "$line" | awk '{print $2}')"
-            if echo "$known" | grep -qx -- "$id"; then echo "echec connu (documente) : $line"; else echo "ECHEC NON ATTENDU : $line"; unexpected=1; fi
+            if echo "$known" | grep -qx -- "$id"; then echo "echec connu (documente) : $line"; else echo "ECHEC NON ATTENDU : $line"; echo "::error title=ECHEC $id::${line:0:900}"; unexpected=1; fi
           done < out/fails.txt
           crash="$(cat out/core_exit.txt)"
-          if ! grep -q "core_tests :" out/core_tests.log; then echo "tests du coeur interrompus (code $crash)"; unexpected=1; fi
+          if ! grep -q "core_tests :" out/core_tests.log; then echo "tests du coeur interrompus (code $crash)"; echo "::error title=core_tests interrompus::code $crash ; derniere ligne : $(tail -1 out/core_tests.log | cut -c1-300)"; unexpected=1; fi
+          # controles echoues (TK_CHECK) : localisation publique pour le diagnostic
+          grep -h "ECHEC " out/*.log | head -20 | while read -r l; do echo "::warning title=controle::${l:0:300}"; done || true
           exit $unexpected
 
       - name: Paquets Installer / Uninstaller (bundle livré re-signé ad hoc)
