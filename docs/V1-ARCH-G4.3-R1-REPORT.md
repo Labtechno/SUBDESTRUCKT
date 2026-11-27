@@ -9,7 +9,7 @@ format d'état 4 inchangé, 703 StableID inchangés. Critères écrits avant mes
 
 | Verdict | Statut | Motif |
 |---|---|---|
-| **A. Correction DSP automatisée** | **PASS** | Harmonic Tilt corrigé (HT-01..08 PASS, plus aucun engagement ELP dans les scénarios historiques) ; Harmonic Shift : deux défauts réels de continuité démontrés puis corrigés (ZC-05R PASS) ; Phase Scatter clos (ZC-13R PASS) ; non-régression complète ; CI macOS verte (§14). Réserve documentée : R2-02R (a) FAIL (source Metal, résolution du gel S2), énergie toutes bandes conservée |
+| **A. Correction DSP automatisée** | **PASS** | Harmonic Tilt corrigé (HT-01..08 PASS, plus aucun engagement ELP dans les scénarios historiques) ; Harmonic Shift : deux défauts réels de continuité démontrés puis corrigés (ZC-05R PASS) ; Phase Scatter clos (ZC-13R PASS) ; non-régression complète ; CI macOS run 44 verte (§14). Réserve documentée : R2-02R (a) FAIL (source Metal, résolution du gel S2), énergie toutes bandes conservée |
 | **B. Recette privée sur Mac physique** | **GO conditionnel** | Conditions : acceptation de la licence JUCE Starter par le propriétaire lui-même (éligibilité à confirmer ; aucune acceptation par l'agent) ; compilation locale au SHA livré |
 | **C. DSP FINAL LOCK définitif** | **EN ATTENTE** | recette physique Reason 14 et Ableton Live (TRANSPORT AUTHORIZATION, exports R-26..R-28), écoute A/B R2 (R-30) et Z (R-29) ; décision du propriétaire sur la restriction d'ordre inter-domaines Z (§9) |
 
@@ -22,8 +22,10 @@ format d'état 4 inchangé, 703 StableID inchangés. Critères écrits avant mes
 
 ## 2. SHA
 
-Commits R1 : 58bf858 (spécification), puis le commit de correction et de livraison. **SHA livré : voir §14** (dernier
-commit de code et de manuel, CI verte) ; les commits ultérieurs ne touchent que ce rapport et le tracker.
+Commits R1 : `58bf858` (spécification, avant mesure) ; `2985901` (correction DSP, tests, rendus de recette, 0.3.3) ;
+`937ac6d` (manuel 0.3.3, audio rendu à `2985901`, contrats, procédure) ; `f1793ee` (identifiant de campagne conforme
+au schéma) ; `0469c4d` (documentationSha). **SHA livré : `0469c4da6181eaa000bfc402b70b97e1dfef989b`**
+— CI run 44 SUCCESS. Les commits ultérieurs ne touchent que ce rapport et le tracker.
 
 ## 3. Correction mathématique de Harmonic Tilt
 
@@ -170,7 +172,15 @@ R-30, recette physique).
 
 ## 14. CI
 
-Voir l'addendum en fin de rapport.
+Run 44 (https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46038461205), SHA `0469c4d`, **SUCCESS** sur les
+4 jobs : `build-test-package` (macOS arm64 : cœur et wrapper complets, barrière exhaustive PASS — seuls les échecs
+connus documentés, dont le nouveau R2-02R et le critère remplacé ZC-15 —, golden arm64, bundle 0.3.3-b44 arm64 signé
+ad hoc, pluginval v1.0.4 rigueur 10 aux 4 fréquences × 5 tailles de bloc PASS, hôte VST3, paquets, bac à sable
+d'installation, livraison réextraite et vérifiée, artefacts limités aux journaux) ; `RealtimeSanitizer` (G-18 0
+allocation, G-18rt 0 violation, contrôle négatif détecté) ; `local-build-script` (LB-01..13 PASS) ; `manual-playwright`
+(éditions 0.1.0-b5 à 0.3.3 : 0.3.3 46 passés, 4 ignorés). Localement (Windows MSVC) : cœur 169 critères, 16 contrôles en
+échec tous rattachés aux échecs connus, barrière PASS ; wrapper 33 critères (AUT-02 seul) ; LB 13/13 ; Playwright
+0.3.2 et 0.3.3 verts.
 
 ## 15. Compilation et installation
 

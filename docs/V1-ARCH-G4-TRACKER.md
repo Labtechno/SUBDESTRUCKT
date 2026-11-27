@@ -221,7 +221,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.3 : TRANSPORT AUTHORIZATION, purge Panic | 528a000 | Local : TA 24/24, TA-xxw 9/9 |
 | 2026-11-27 | G4.3 : D2 Legacy/Regenerative, Z, R2, topologie par défaut, barrière exhaustive, LB-08..13, 0.3.2 | d7dcc22 | CI run 40 SUCCESS |
 | 2026-11-27 | G4.3-R1 : spécification corrective avant mesure | 58bf858 | — |
-| 2026-11-27 | G4.3-R1 : Tilt à énergie constante, continuité Shift, tests HT/ZC-05R/ZC-13R/R2-02R/ZA, 0.3.3 | (livraison) | rapport G4.3-R1 §14 |
+| 2026-11-27 | G4.3-R1 : Tilt à énergie constante, continuité Shift, tests HT/ZC-05R/ZC-13R/R2-02R/ZA, 0.3.3 | 2985901 | — |
+| 2026-11-27 | G4.3-R1 : manuel 0.3.3, campagne G431, documentationSha ; SHA livré 0469c4da6181eaa000bfc402b70b97e1dfef989b | 937ac6d, f1793ee, 0469c4d | run 44 SUCCESS |
 | 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport ; documentationSha | c7b8573, 97100b0 | run 41 : job manuel en échec (documentationSha vide ; titre S0.1 dynamique) ; **run 42 (45992835990) SUCCESS complet, SHA livré 97100b0** |
 
 ## 6. Prochaine action
