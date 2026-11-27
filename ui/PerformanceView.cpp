@@ -274,7 +274,7 @@ class PerformanceView : public SpaceView {
   juce::String tabName(int) const override { return "PERFORMANCE"; }
   void showTab(int) override {}
   int currentTab() const override { return 0; }
-  juce::Point<int> minimumSize() const override { return {1080, 720}; }
+  juce::Point<int> minimumSize() const override { return {1080, 812}; }  // colonne WT/FM : deux NEXUS XL + FM contextuel
 
   // Deux commandes FM contextuelles : profondeur de la route interne principale vers une porteuse (« FM INDEX ») et
   // auto-boucle de cette porteuse (« FM FEEDBACK »). Paramètres existants uniquement (arbitrage UI 1C) ; libellés
@@ -323,6 +323,7 @@ class PerformanceView : public SpaceView {
       fmInfo_.setText(t, juce::dontSendNotification);
       resized();
     }
+    authorize_.setVisible(ctx_.proc.autonomySuspended());  // état courant dès la construction / restauration
     const auto names = ctx_.proc.macroNames();
     for (int k = 0; k < 4; ++k)
       if (!names_[k].isBeingEdited()) names_[k].setText(names[static_cast<size_t>(k)], juce::dontSendNotification);

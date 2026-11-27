@@ -41,9 +41,14 @@ class MainEditor : public juce::AudioProcessorEditor, private juce::Timer {
   juce::Component& panicButton() { return panic_; }
   juce::Component& barComponent() { return bar_; }
   juce::Component* currentView();
-  juce::Viewport& viewport() { return vp_; }
+  juce::Viewport& viewport() { return vps_[space_]; }
   InspectorPanel& inspector() { return *inspector_; }
   int barHeight() const { return barH_; }
+  // disposition contextuelle immédiate (algorithmes, sous-contextes) puis rafraîchissement complet
+  void refreshLayout();
+  // commandes liées actuellement visibles dans l'éditeur (inventaire de couverture)
+  std::vector<BoundControl*> visibleControls();
+  bool isVisibleInEditor(const juce::Component* c) const;
 
  private:
   void timerCallback() override;
@@ -65,7 +70,9 @@ class MainEditor : public juce::AudioProcessorEditor, private juce::Timer {
   NeuralCell drone_;
   // contenu (mis à l'échelle par le zoom, défilement local si la taille logique est insuffisante)
   juce::Component content_;
-  juce::Viewport vp_;
+  // un viewport par espace, vues attachées en permanence (visibilité seule) : aucun re-parentage, donc aucun
+  // changement transitoire de LookAndFeel ni recréation de sous-composants lors de la navigation
+  juce::Viewport vps_[3];
   std::unique_ptr<SpaceView> views_[3];
   std::unique_ptr<InspectorPanel> inspector_;
   int space_ = 0, barH_ = tok::barH;

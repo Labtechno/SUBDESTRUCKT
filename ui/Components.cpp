@@ -754,10 +754,15 @@ void NeuralCell::tick() {
   else setCellState(CellState::Active);
 }
 
+// zone du libellé : partagée par le dessin et par la mesure de troncature (UI04-CLIP)
+static juce::Rectangle<float> cellTextArea(juce::Rectangle<int> b) {
+  return b.toFloat().reduced(1.5f).withTrimmedLeft(22.0f).reduced(2.0f, 1.0f).withTrimmedRight(40.0f);
+}
+
 bool NeuralCell::textFits() const {
   juce::StringArray lines;
   float sz = 0.0f;
-  return layoutLabel(caption_, getWidth() - 34.0f, 2, tok::fontLabel, lines, sz);
+  return layoutLabel(caption_, cellTextArea(getLocalBounds()).getWidth(), 2, tok::fontLabel, lines, sz);
 }
 
 void NeuralCell::paintButton(juce::Graphics& g, bool over, bool down) {
@@ -779,13 +784,13 @@ void NeuralCell::paintButton(juce::Graphics& g, bool over, bool down) {
   g.setColour(lit ? c : tok::titanium);
   if (state_ == CellState::Armed) g.drawEllipse(led, 1.6f);  // ARMÉ : anneau ; ACTIF : disque plein
   else g.fillEllipse(led);
-  auto text = r.withTrimmedLeft(22.0f).reduced(2.0f, 1.0f);
+  auto text = cellTextArea(getLocalBounds());
   const char* st = state_ == CellState::Off ? "OFF" : state_ == CellState::Armed ? "ARMÉ" : state_ == CellState::Refused ? "REFUS" : state_ == CellState::Disabled ? "—" : "ACTIF";
   if (id_ != ParamId::Count && !isAutonomyArm(id_) && state_ == CellState::Active) st = "ON";
   const float sw = 40.0f;
   g.setFont(numFont(9.5f, true));
   g.setColour(lit ? tok::text : tok::textDim);
-  g.drawText(juce::String::fromUTF8(st), text.removeFromRight(sw), juce::Justification::centredRight, false);
+  g.drawText(juce::String::fromUTF8(st), juce::Rectangle<float>(text.getRight(), text.getY(), sw, text.getHeight()), juce::Justification::centredRight, false);
   drawLabel(g, caption_, text, 2, tok::fontLabel, isEnabled() ? tok::text : tok::textMute, juce::Justification::centredLeft);
   if (hasKeyboardFocus(false)) {
     g.setColour(tok::focus);
@@ -1003,9 +1008,9 @@ void ParamPanel::paint(juce::Graphics& g) {
     g.fillRect(h.second.getX(), h.second.getY() + 8, 8, 2);
     g.setColour(tok::textDim);
     g.setFont(uiFont(tok::fontLabel, true));
-    g.drawText(h.first.toUpperCase(), h.second.withTrimmedLeft(12), juce::Justification::centredLeft, false);
+    g.drawText(h.first, h.second.withTrimmedLeft(12), juce::Justification::centredLeft, false);
     g.setColour(tok::panelEdge);
-    const int tw = static_cast<int>(juce::GlyphArrangement::getStringWidth(uiFont(tok::fontLabel, true), h.first.toUpperCase()));
+    const int tw = static_cast<int>(juce::GlyphArrangement::getStringWidth(uiFont(tok::fontLabel, true), h.first));
     g.drawHorizontalLine(h.second.getY() + 9, static_cast<float>(h.second.getX() + 20 + tw), static_cast<float>(h.second.getRight()));
   }
 }

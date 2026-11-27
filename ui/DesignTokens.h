@@ -51,7 +51,7 @@ constexpr Cell nexusXL{132, 150};    // NEXUS XL : commandes Performance majeure
 constexpr Cell nexusS{84, 96};       // NEXUS S : édition courante
 constexpr Cell nexusMicro{64, 74};   // NEXUS Micro : matrices, réseaux, listes denses
 constexpr Cell track1{168, 46};      // SYNAPTIC TRACK (sélection discrète)
-constexpr Cell cell1{120, 40};       // NEURAL CELL (interrupteur / action)
+constexpr Cell cell1{168, 40};       // NEURAL CELL (interrupteur / action) : libellé sur deux lignes + état
 constexpr Cell plasmaV{48, 150};     // PLASMA CHANNEL vertical
 constexpr Cell plasmaH{220, 40};     // PLASMA CHANNEL horizontal
 

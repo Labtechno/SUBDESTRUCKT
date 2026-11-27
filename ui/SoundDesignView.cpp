@@ -76,6 +76,7 @@ class ContextColumn : public Plate {
     }
   }
   int numTabs() const { return tabs_.count(); }
+  juce::String tabName(int k) const { return tabs_.name(k); }
   void setTab(int k) {
     tabs_.setCurrent(k);
     refresh(true);
@@ -423,8 +424,9 @@ class SoundDesignView : public SpaceView {
     refreshState();
   }
   juce::String subContextName(int tab, int sub) const override {
-    if (tab == 0) return "WT " + juce::String(std::min(sub, 4)) + " / CROSS " + juce::String(std::min(sub, 3)) + " / FM " + juce::String(sub);
-    if (tab == 2) return "ENV " + juce::String(std::min(sub, 4)) + " / LFO " + juce::String(std::min(sub, 3));
+    auto nm = [](const ContextColumn& c, int k) { return c.tabName(std::min(k, c.numTabs() - 1)); };
+    if (tab == 0) return "WT " + nm(wt_, sub) + " | CROSS " + nm(cross_, sub) + " | FM " + nm(fm_, sub);
+    if (tab == 2) return "ENV " + nm(env_, sub) + " | " + nm(lfo_, sub);
     return {};
   }
 
@@ -449,9 +451,10 @@ class SoundDesignView : public SpaceView {
       const bool a = wtChain_.refresh(), b = fmChain_.refresh(), c = glChain_.refresh();
       juce::ignoreUnused(a, b, c);
       const auto pv = ctx_.proc.parameters().values();
-      flowText_ = juce::String::fromUTF8("WT › balance › [chaîne WT]  ┐\n") + juce::String::fromUTF8("FM › balance › [chaîne FM]  ┘ › Cross Audio (") +
+      flowText_ = juce::String::fromUTF8("( WT › balance › [chaîne WT] )  +  ( FM › balance › [chaîne FM] )  ›  Cross Audio (") +
                   juce::String(choiceLabel(ParamId::CrossAudioMode, pv.choice(ParamId::CrossAudioMode))) +
-                  juce::String::fromUTF8(") › [chaîne globale] › sortie   ·   latence hôte ") + juce::String(ctx_.proc.getLatencySamples()) + juce::String::fromUTF8(" éch.");
+                  juce::String::fromUTF8(")  ›  [chaîne globale]  ›  sortie\nbalance WT/FM post-Amp avant les chaînes  ·  latence déclarée à l'hôte ") +
+                  juce::String(ctx_.proc.getLatencySamples()) + juce::String::fromUTF8(" éch.");
       flow_.repaint();
     }
     if (tab_ == 2) {

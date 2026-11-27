@@ -7,9 +7,10 @@ namespace sbd::ui {
 
 namespace {
 bool visibleIn(const juce::Component* c, const juce::Component* root) {
+  // la racine (éditeur) n'est visible qu'une fois placée par l'hôte : seule la chaîne de ses descendants compte
   for (; c != nullptr; c = c->getParentComponent()) {
-    if (!c->isVisible()) return false;
     if (c == root) return true;
+    if (!c->isVisible()) return false;
   }
   return false;
 }
@@ -269,9 +270,12 @@ MainEditor::MainEditor(SubdestrucktProcessor& p)
   views_[1] = makeSoundDesignView(ctx_);
   views_[2] = makeEngineeringView(ctx_);
   inspector_ = std::make_unique<InspectorPanel>(ctx_);
-  vp_.setScrollBarsShown(true, true);
-  vp_.setScrollBarThickness(10);
-  content_.addAndMakeVisible(vp_);
+  for (int k = 0; k < 3; ++k) {
+    vps_[k].setScrollBarsShown(true, true);
+    vps_[k].setScrollBarThickness(10);
+    vps_[k].setViewedComponent(views_[k].get(), false);
+    content_.addChildComponent(vps_[k]);
+  }
   addAndMakeVisible(content_);
   addAndMakeVisible(*inspector_);
   juce::Component::SafePointer<MainEditor> safe(this);
@@ -291,7 +295,7 @@ MainEditor::MainEditor(SubdestrucktProcessor& p)
 MainEditor::~MainEditor() {
   stopTimer();
   proc_.setStateListener(nullptr);
-  vp_.setViewedComponent(nullptr, false);
+  for (auto& v : vps_) v.setViewedComponent(nullptr, false);
   setLookAndFeel(nullptr);
 }
 
@@ -314,7 +318,7 @@ juce::String MainEditor::contextName(int s, int t, int sub) const {
 void MainEditor::showSpace(int k) {
   space_ = juce::jlimit(0, 2, k);
   spaces_.setCurrent(space_);
-  vp_.setViewedComponent(views_[space_].get(), false);
+  for (int i = 0; i < 3; ++i) vps_[i].setVisible(i == space_);
   views_[space_]->refreshState();
   layoutContent();
 }
@@ -329,6 +333,21 @@ void MainEditor::showSubContext(int s, int tab, int sub) {
   showSubTab(s, tab);
   views_[space_]->showSubContext(tab, sub);
   layoutContent();
+}
+
+void MainEditor::refreshLayout() {
+  views_[space_]->refreshState();
+  layoutContent();
+  timerCallback();
+}
+
+bool MainEditor::isVisibleInEditor(const juce::Component* c) const { return visibleIn(c, this); }
+
+std::vector<BoundControl*> MainEditor::visibleControls() {
+  std::vector<BoundControl*> v;
+  for (auto* b : ctx_.registry)
+    if (visibleIn(&b->asComponent(), this) && !b->asComponent().getBounds().isEmpty()) v.push_back(b);
+  return v;
 }
 
 void MainEditor::setZoomPercent(int pct) {
@@ -405,14 +424,15 @@ void MainEditor::layoutContent() {
   const int lw = static_cast<int>(r.getWidth() / zoomF_), lh = static_cast<int>(r.getHeight() / zoomF_);
   content_.setBounds(0, 0, lw, lh);
   content_.setTransform(juce::AffineTransform::scale(zoomF_).translated(static_cast<float>(r.getX()), static_cast<float>(r.getY())));
-  vp_.setBounds(0, 0, lw, lh);
-  auto* v = views_[space_].get();
-  const auto mn = views_[space_]->minimumSize();
-  const int sb = vp_.getScrollBarThickness();
-  int w = std::max(mn.x, lw), h = std::max(mn.y, lh);
-  if (w > lw) h = std::max(mn.y, lh - sb);
-  if (h > lh) w = std::max(mn.x, lw - sb);
-  v->setBounds(0, 0, w, h);
+  for (int i = 0; i < 3; ++i) {
+    vps_[i].setBounds(0, 0, lw, lh);
+    const auto mn = views_[i]->minimumSize();
+    const int sb = vps_[i].getScrollBarThickness();
+    int w = std::max(mn.x, lw), h = std::max(mn.y, lh);
+    if (w > lw) h = std::max(mn.y, lh - sb);
+    if (h > lh) w = std::max(mn.x, lw - sb);
+    views_[i]->setBounds(0, 0, w, h);
+  }
 }
 
 void MainEditor::resized() {

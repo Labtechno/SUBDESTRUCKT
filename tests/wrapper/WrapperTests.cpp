@@ -1029,6 +1029,14 @@ void testTransportWrapper() {
   tk::result("TA-20w", gTaWrapAlloc == 0, "processBlock avec playhead (ARRET, LECTURE, INCONNU, hors temps reel, CC120/123) : %lld allocation(s)", gTaWrapAlloc);
 }
 
+// ARCH-UI-04 (tests/wrapper/Ui04Tests.cpp)
+void testUi04Coverage(const std::string& mapPath);
+void testUi04Layout();
+void testUi04Behaviour();
+void testUi04Runtime();
+void testUi04Operations();
+void snapshotUi04(const std::string& prefix);
+
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
   // profil MIDI Learn isolé : les tests n'écrivent jamais dans le profil réel de l'utilisateur
@@ -1050,6 +1058,12 @@ int main(int argc, char** argv) {
   testCapturesWrapper();
   testBankEditingWrapper();
   testUiCoherence();
+  std::fprintf(stderr, "[ARCH-UI-04 : interface SYMBIOTIC INDUSTRIAL]\n");
+  testUi04Coverage(argc > 3 ? argv[3] : "");
+  testUi04Layout();
+  testUi04Behaviour();
+  testUi04Runtime();
+  testUi04Operations();
   std::fprintf(stderr, "[ARCH-G4.2 : autonomie, MIDI Learn]\n");
   testAutonomyWrapper();
   testMidiLearn(learnProfile);
@@ -1058,6 +1072,9 @@ int main(int argc, char** argv) {
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);
+    std::string prefix = argv[2];
+    if (prefix.size() > 4 && prefix.compare(prefix.size() - 4, 4, ".png") == 0) prefix.resize(prefix.size() - 4);
+    snapshotUi04(prefix + "_ui04");
   }
   return tk::finish("wrapper_tests");
 }

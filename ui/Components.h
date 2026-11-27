@@ -248,6 +248,7 @@ class TabStrip : public juce::Component {
   void setCurrent(int k);
   int current() const { return current_; }
   int count() const { return names_.size(); }
+  juce::String name(int k) const { return names_[k]; }
   std::function<void(int)> onChange;
   void paint(juce::Graphics&) override;
   void mouseDown(const juce::MouseEvent&) override;

@@ -77,10 +77,10 @@ jobs:
           ./build/subdestruckt_core_tests 2>&1 | tee out/core_tests.log; echo "${PIPESTATUS[0]}" > out/core_exit.txt
           true  # verdict a la barriere finale (echecs connus documentes : tests/known_failures.txt)
 
-      - name: Tests du wrapper JUCE (G-06w, G-16w, G-18w, G-19w, G-21w, G-22w)
+      - name: Tests du wrapper JUCE (G-06w, G-16w, G-18w, G-19w, G-21w, G-22w, ARCH-UI-04 UI04-*)
         run: |
           set +e -o pipefail
-          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log; echo "${PIPESTATUS[0]}" > out/wrapper_exit.txt
+          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png out/ui04_map.tsv 2>&1 | tee out/wrapper_tests.log; echo "${PIPESTATUS[0]}" > out/wrapper_exit.txt
           true  # ARCH-G4.2 : verdict a la barriere finale, comme le coeur (echec non documente ou interruption : bloquant)
 
       - name: Barrière des résultats (exhaustive, ARCH-G4.3 LB-10 ; échecs connus bornés à leur portée)
