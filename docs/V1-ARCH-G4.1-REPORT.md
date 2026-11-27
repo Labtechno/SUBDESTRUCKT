@@ -166,8 +166,8 @@ ZIP locaux si demandé). Coût nul. Le manuel 0.3.0 (chapitre 2) décrit la proc
 
 ## 10. Références
 
-- Commits ARCH-G4.1 : `efeee24` … (voir `git log c741fb8..HEAD`). SHA final et run CI : @FINAL@
-- Manuel 0.3.0 : @MANUAL@
+- Commits ARCH-G4.1 : `efeee24` … (voir `git log c741fb8..HEAD`). SHA final et run CI : `4b17df5` ; CI run 33 (45932784500) **SUCCESS complet** : build-test-package (cœur, wrapper, barrière sans échec connu, paquets 0.3.0, hôte, pluginval 1.0.4 rigueur 10 à 4 Fs et 5 tailles de bloc, bac à sable, recette VM), RTSan, manual-playwright (0.3.0 : 46 PASS ; 0.2.0 : 44 PASS + 2 xfail ; 0.1.0-b5 : 47 PASS + 1 xfail, défauts documentés §5)
+- Manuel 0.3.0 : https://labtechno.github.io/SUBDESTRUCKT/manual/0.3.0/ (gh-pages `3a75990` ; vérifié en ligne : 46 PASS Playwright) ; éditions 0.1.0-b5, 0.2.0 et S0.1 inchangées
 - « Hooks de sécurité » : aucun hook Git dans le dépôt ni dans la configuration Claude Code ; le contrôle de sûreté
   intégré a bloqué une suppression `rm -f` et un téléchargement authentifié de journaux CI (refus respectés).
 - Node.js : actions `checkout@v5`, `upload-artifact@v6`, `setup-python@v6` (Node 24) ; plus d'avertissement Node 20
