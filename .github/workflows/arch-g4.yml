@@ -211,7 +211,7 @@ jobs:
 
       - name: Artefact CI
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: subdestruckt-arch-g4-logs-b${{ github.run_number }}
           path: |
@@ -280,7 +280,7 @@ jobs:
           [ -n "$neg" ] && echo "::notice title=rtsan controle negatif (sortie)::$neg" || true
       - name: Artefact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: subdestruckt-arch-g4-rtsan-${{ github.run_number }}
           path: out/
