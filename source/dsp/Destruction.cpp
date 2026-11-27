@@ -68,6 +68,13 @@ int n1LatencyFor(Quality q) noexcept {
 
 void HalfbandOs::configure(const std::vector<double>& h) {
   h_ = h;
+  nz_.clear();
+  hz_.clear();
+  for (size_t i = 0; i < h.size(); ++i)
+    if (h[i] != 0.0) {  // demi-bande : une prise sur deux est nulle (sautée, résultat identique bit à bit)
+      nz_.push_back(static_cast<int>(i));
+      hz_.push_back(h[i]);
+    }
   bu_.assign(h.size(), 0.0);
   bd_.assign(h.size(), 0.0);
   reset();
@@ -81,10 +88,11 @@ double HalfbandOs::push(std::vector<double>& buf, int& pos, double x) noexcept {
   const int N = static_cast<int>(buf.size());
   buf[static_cast<size_t>(pos)] = x;
   double y = 0.0;
-  int k = pos;
-  for (int i = 0; i < N; ++i) {
-    y += h_[static_cast<size_t>(i)] * buf[static_cast<size_t>(k)];
-    k = k == 0 ? N - 1 : k - 1;
+  const int M = static_cast<int>(nz_.size());
+  for (int j = 0; j < M; ++j) {
+    int k = pos - nz_[static_cast<size_t>(j)];
+    if (k < 0) k += N;
+    y += hz_[static_cast<size_t>(j)] * buf[static_cast<size_t>(k)];
   }
   pos = (pos + 1) % N;
   return y;

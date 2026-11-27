@@ -61,7 +61,8 @@ class HalfbandOs {
 
  private:
   double push(std::vector<double>& buf, int& pos, double x) noexcept;
-  std::vector<double> h_, bu_, bd_;
+  std::vector<double> h_, hz_, bu_, bd_;
+  std::vector<int> nz_;
   int pu_ = 0, pd_ = 0;
 };
 

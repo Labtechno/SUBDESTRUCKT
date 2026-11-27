@@ -2,6 +2,7 @@
 // CPU produit n'est pas normatif (arbitrage ouvert). Une mesure sur VM CI ou sur PC de développement ne certifie ni
 // le M3 ni le M4 Max. Facteur temps réel = durée de traitement / durée audio (mono-instance, un cœur).
 #include <chrono>
+#include <functional>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -122,4 +123,59 @@ void runPerfTests() {
     modes += buf;
   }
   tk::result("PERF-02", true, "matrice FM 16 routes a 48 kHz, facteur temps reel par mode (benchmark ExpFM, sans seuil) :%s", modes.c_str());
+  // PERF-03 (ARCH-G4.1) : Eco / Normal / High mesurés séparément (48 kHz, état stress), et coût marginal par composant
+  // (état initial + un composant ; facteur temps réel x 1000 = millièmes du temps réel). Sans seuil, machine de test.
+  std::string q3;
+  for (Quality q : {Quality::Eco, Quality::Normal, Quality::High}) {
+    std::snprintf(buf, sizeof buf, " %s init %.4f stress %.4f ;", qualityName(q), measure(def, 48000.0, q, 2.0), measure(stress, 48000.0, q, 2.0));
+    q3 += buf;
+  }
+  struct Comp {
+    const char* name;
+    std::function<void(PluginState&)> f;
+  };
+  const std::vector<Comp> comps = {
+      {"WT morph spectral", [](PluginState& s) { s.bank = "factory:harmonic"; s.params[ParamId::WtXMorph] = 2.0f; s.params[ParamId::WtX] = 0.4f; }},
+      {"WT morph spectral X module (LFO 2 Hz)", [](PluginState& s) {
+         s.bank = "factory:harmonic";
+         s.params[ParamId::WtXMorph] = 2.0f;
+         s.params[ParamId::Lfo1Rate] = 2.0f;
+         ModRoute r;
+         r.source = ModSource::Lfo1;
+         r.dest = ParamId::WtX;
+         r.depth = 0.5f;
+         modAdd(s.mod, r);
+       }},
+      {"WT Z (fold+warp)", [](PluginState& s) { s.params[ParamId::WtZAType] = 1.0f; s.params[ParamId::WtZBType] = 2.0f; s.params[ParamId::WtZ] = 0.5f; }},
+      {"N1 (OS interne)", [](PluginState& s) { s.params[ParamId::DstGl1Type] = 1.0f; }},
+      {"S2 FFT 4096", [](PluginState& s) { s.params[ParamId::DstGl1Type] = 8.0f; s.params[ParamId::DstGl1S2Fft] = 3.0f; }},
+      {"F4 modal 16", [](PluginState& s) { s.params[ParamId::FltGlType] = 4.0f; s.params[ParamId::FltGlModes] = 16.0f; }},
+      {"16 mod audio-rate", [](PluginState& s) {
+         for (int k = 0; k < 16; ++k) {
+           ModRoute r;
+           r.source = ModSource::Lfo1;
+           r.dest = k % 2 ? ParamId::WtX : ParamId::FltGlCutoff;
+           r.depth = 0.01f * (k + 1);
+           r.rate = ModRate::Audio;
+           modAdd(s.mod, r);
+         }
+       }},
+      {"ExpFM 4 op", [](PluginState& s) {
+         for (ParamId mp : {ParamId::Op1Mode, ParamId::Op2Mode, ParamId::Op3Mode, ParamId::Op4Mode}) s.params[mp] = 3.0f;
+         s.params[ParamId::Op2Level] = s.params[ParamId::Op3Level] = s.params[ParamId::Op4Level] = 0.2f;
+       }},
+  };
+  std::string c3;
+  for (Quality q : {Quality::Eco, Quality::Normal, Quality::High}) {
+    const double b0 = measure(def, 48000.0, q, 1.0);
+    c3 += std::string(" [") + qualityName(q) + " base " + std::to_string(static_cast<int>(1000 * b0 + 0.5));
+    for (const auto& c : comps) {
+      PluginState s = def;
+      c.f(s);
+      std::snprintf(buf, sizeof buf, ", %s +%.1f", c.name, 1000.0 * (measure(s, 48000.0, q, 1.0) - b0));
+      c3 += buf;
+    }
+    c3 += "]";
+  }
+  tk::result("PERF-03", true, "48 kHz, facteur temps reel par Quality :%s cout marginal (millièmes du temps reel) :%s", q3.c_str(), c3.c_str());
 }

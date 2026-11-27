@@ -246,7 +246,8 @@ class Engine {
   std::vector<std::complex<double>> smWork_;
   Fft smFft_;
   int smCounter_ = 0;
-  bool smValid_ = false;
+  bool smValid_ = false, smSettled_ = false;
+  std::array<double, 7> smKey_{};
   std::array<double, 2> foldPrev_{};          // ADAA1 du repli (par emplacement Z)
   std::array<double, kNumNodes> lastInc_{};   // incrément de phase du dernier échantillon (sync sous-échantillon)
   double syncGhostPhase_ = 0.0;

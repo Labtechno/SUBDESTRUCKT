@@ -864,6 +864,19 @@ void Engine::spectralUpdate(double x, double y, double absInc) noexcept {
   int H = WtBank::kHarmonics;
   if (!raw && absInc > 1e-12) H = std::max(1, std::min(H, static_cast<int>(0.5 / absInc)));
   const int N = WtBank::kLength;
+  // optimisation (ARCH-G4.1, PERF-03) : position, poids et bande inchangés -> table identique, resynthèse sautée
+  const std::array<double, 7> key{static_cast<double>(wv[0] * 4096 + wv[1]), static_cast<double>(wv[2] * 4096 + wv[3]), wt[0], wt[1], wt[2],
+                                  static_cast<double>(H), static_cast<double>(reinterpret_cast<std::uintptr_t>(&B))};
+  if (smValid_ && key == smKey_) {
+    if (!smSettled_) {
+      std::copy(smB_.begin(), smB_.end(), smA_.begin());  // fondu terminé : départ = arrivée
+      smSettled_ = true;
+    }
+    smCounter_ = kSpectralPeriod - 1;
+    return;
+  }
+  smKey_ = key;
+  smSettled_ = false;
   std::fill(smWork_.begin(), smWork_.end(), std::complex<double>(0.0, 0.0));
   for (int h = 1; h <= H; ++h) {
     double m = 0.0, re = 0.0, im = 0.0;
