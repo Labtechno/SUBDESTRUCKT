@@ -64,6 +64,7 @@ std::shared_ptr<const WtBank> WtBank::build(const std::string& id, const std::st
   }
   double bankPeak = 0.0;
   for (double p : level0Peak) bankPeak = std::max(bankPeak, p);
+  (void)0;
   for (int w = 0; w < W; ++w) {
     double g = 1.0;
     if (opt.normalize == WtNormalize::PerWave && level0Peak[static_cast<size_t>(w)] > 1e-12) g = 1.0 / level0Peak[static_cast<size_t>(w)];
@@ -75,7 +76,25 @@ std::shared_ptr<const WtBank> WtBank::build(const std::string& id, const std::st
       t[kLength] = t[0];  // échantillon de garde
     }
   }
+  b->computeSpectra();
   return b;
+}
+
+void WtBank::computeSpectra() {
+  const int W = nx_ * ny_;
+  specMag_.assign(static_cast<size_t>(W) * kHarmonics, 0.0f);
+  specPh_.assign(static_cast<size_t>(W) * kHarmonics, 0.0f);
+  Fft fft(kLength);
+  std::vector<std::complex<double>> x(kLength);
+  for (int w = 0; w < W; ++w) {
+    for (int i = 0; i < kLength; ++i) x[static_cast<size_t>(i)] = sample(w, 0, i);
+    fft.transform(x.data(), false);
+    for (int h = 1; h <= kHarmonics && h < kLength / 2 + 1; ++h) {
+      const auto v = x[static_cast<size_t>(h)] * (2.0 / kLength);
+      specMag_[static_cast<size_t>(w) * kHarmonics + static_cast<size_t>(h - 1)] = static_cast<float>(std::abs(v));
+      specPh_[static_cast<size_t>(w) * kHarmonics + static_cast<size_t>(h - 1)] = static_cast<float>(std::arg(v));
+    }
+  }
 }
 
 std::shared_ptr<const WtBank> WtBank::buildB5Saw(const std::string& id, const std::string& name) {
@@ -89,6 +108,7 @@ std::shared_ptr<const WtBank> WtBank::buildB5Saw(const std::string& id, const st
     for (int i = 0; i <= kLength; ++i) b->mipsD_[static_cast<size_t>(L) * kStride + static_cast<size_t>(i)] = t.level(L)[i];
   b->raw_.resize(kLength);
   for (int i = 0; i < kLength; ++i) b->raw_[static_cast<size_t>(i)] = static_cast<float>(t.level(0)[i]);
+  b->computeSpectra();
   return b;
 }
 

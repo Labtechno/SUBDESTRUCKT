@@ -17,6 +17,7 @@ constexpr double kDcCutoffHz = 5.0;           // garde DC de sortie
 constexpr double kSmoothingSeconds = 0.020;   // rampes des paramètres continus
 constexpr double kAcCutoffHz = 5.0;           // couplage AC des sorties de modulation (option par source)
 constexpr double kBankFadeSeconds = 0.003;    // fondu du WT lors d'un changement de banque
+constexpr int kSpectralPeriod = 128;          // morph spectral : période de resynthèse (échantillons moteur)
 
 double dbToGain(double db) { return std::pow(10.0, db / 20.0); }
 inline double clampd(double v, double lo, double hi) noexcept { return v < lo ? lo : (v > hi ? hi : v); }
@@ -199,6 +200,12 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   controlPeriod_ = std::max(1, static_cast<int>(std::lround(fsE / 1000.0)));
   controlCounter_ = 0;
   bankFadeLength_ = std::max(1, static_cast<int>(std::lround(kBankFadeSeconds * fsE)));
+  smA_.assign(WtBank::kStride, 0.0);
+  smB_.assign(WtBank::kStride, 0.0);
+  smWork_.assign(WtBank::kLength, std::complex<double>(0.0, 0.0));
+  if (smFft_.size() != WtBank::kLength) smFft_.init(WtBank::kLength);
+  smCounter_ = 0;
+  smValid_ = false;
   syncFadeLength_ = std::max(2, static_cast<int>(std::lround(4.0 * fsE / 48000.0)));
   syncFade_ = 0;
   syncGhostPhase_ = 0.0;
@@ -737,10 +744,97 @@ void Engine::evaluateModulation() noexcept {
   }
 }
 
+bool Engine::spectralActive() const noexcept {
+  return (ch(ParamId::WtXMorph) == 2 || ch(ParamId::WtYMorph) == 2) && bank_->numWaves() > 1;
+}
+
+// Morph spectral (ARCH-G4.1) : la forme morphée est resynthétisée hors chemin par échantillon, toutes les
+// kSpectralPeriod échantillons moteur, à partir des spectres préparés de la banque (amplitudes interpolées, phases par
+// moyenne circulaire pondérée), limitée en bande d'après la fréquence instantanée (Clean) ; fondu linéaire entre la
+// table précédente et la nouvelle. Aucune allocation, aucune FFT par échantillon.
+void Engine::spectralUpdate(double x, double y, double absInc) noexcept {
+  if (smCounter_ > 0) {
+    --smCounter_;
+    return;
+  }
+  const WtBank& B = *bank_;
+  const int nx = B.nx(), ny = B.ny();
+  auto axis = [](double v, int n, int bound, int& i0, int& i1, double& f) {
+    if (n == 1) {
+      i0 = i1 = 0;
+      f = 0.0;
+      return;
+    }
+    double p;
+    if (bound == 1) {
+      p = (v - std::floor(v)) * n;
+      i0 = std::min(static_cast<int>(p), n - 1);
+      i1 = (i0 + 1) % n;
+    } else {
+      if (bound == 2) {
+        const double u = std::fmod(std::fabs(v), 2.0);
+        v = u <= 1.0 ? u : 2.0 - u;
+      }
+      p = clampd(v, 0.0, 1.0) * (n - 1);
+      i0 = std::min(static_cast<int>(p), n - 1);
+      i1 = std::min(i0 + 1, n - 1);
+    }
+    f = p - i0;
+  };
+  int x0, x1, y0, y1;
+  double fx, fy;
+  axis(x, nx, ch(ParamId::WtXBound), x0, x1, fx);
+  axis(y, ny, ch(ParamId::WtYBound), y0, y1, fy);
+  if (ch(ParamId::WtXMorph) == 1) fx = fx >= 0.5 ? 1.0 : 0.0;  // Stepped respecté par axe
+  if (ch(ParamId::WtYMorph) == 1) fy = fy >= 0.5 ? 1.0 : 0.0;
+  const int wv[4] = {y0 * nx + x0, y0 * nx + x1, y1 * nx + x0, y1 * nx + x1};
+  const double wt[4] = {(1 - fx) * (1 - fy), fx * (1 - fy), (1 - fx) * fy, fx * fy};
+  int dom = 0;
+  for (int k = 1; k < 4; ++k)
+    if (wt[k] > wt[dom]) dom = k;
+  const bool raw = ch(ParamId::WtRender) == 1;
+  int H = WtBank::kHarmonics;
+  if (!raw && absInc > 1e-12) H = std::max(1, std::min(H, static_cast<int>(0.5 / absInc)));
+  const int N = WtBank::kLength;
+  std::fill(smWork_.begin(), smWork_.end(), std::complex<double>(0.0, 0.0));
+  for (int h = 1; h <= H; ++h) {
+    double m = 0.0, re = 0.0, im = 0.0;
+    for (int k = 0; k < 4; ++k) {
+      if (wt[k] <= 0.0) continue;
+      const double mk = B.specMag(wv[k])[h - 1], pk = B.specPhase(wv[k])[h - 1];
+      m += wt[k] * mk;
+      re += wt[k] * mk * std::cos(pk);
+      im += wt[k] * mk * std::sin(pk);
+    }
+    const double ph = (re * re + im * im) > 1e-18 * (m * m + 1e-300) ? std::atan2(im, re) : B.specPhase(wv[dom])[h - 1];
+    const std::complex<double> c = std::polar(0.5 * m * N, ph);
+    smWork_[static_cast<size_t>(h)] = c;
+    if (h < N / 2) smWork_[static_cast<size_t>(N - h)] = std::conj(c);
+  }
+  smFft_.transform(smWork_.data(), true);
+  std::swap(smA_, smB_);  // la table cible précédente devient la table de départ
+  for (int i = 0; i < N; ++i) smB_[static_cast<size_t>(i)] = smWork_[static_cast<size_t>(i)].real() / N;
+  smB_[static_cast<size_t>(N)] = smB_[0];
+  if (!smValid_) {
+    smA_ = smB_;  // première table : pas de fondu depuis le silence (copie dans un tampon préalloué de même taille)
+    smValid_ = true;
+  }
+  smCounter_ = kSpectralPeriod - 1;
+}
+
 double Engine::readWt(double phase, double inc, double slope, double x, double y) const noexcept {
   const WtBank& B = *bank_;
   const bool raw = ch(ParamId::WtRender) == 1, cubic = ch(ParamId::WtInterp) == 1;
   const int nx = B.nx(), ny = B.ny();
+  if (smValid_ && spectralActive()) {
+    const double t = 1.0 - static_cast<double>(smCounter_) / kSpectralPeriod;
+    const double xx = phase * WtBank::kLength;
+    int i = std::min(static_cast<int>(xx), WtBank::kLength - 1);
+    const double f = xx - i;
+    const double a = smA_[static_cast<size_t>(i)] + f * (smA_[static_cast<size_t>(i + 1)] - smA_[static_cast<size_t>(i)]);
+    const double b = smB_[static_cast<size_t>(i)] + f * (smB_[static_cast<size_t>(i + 1)] - smB_[static_cast<size_t>(i)]);
+    return a + t * (b - a);
+  }
   const double absInc = std::fabs(inc) * slope;
   if (nx == 1 && ny == 1) return B.read(0, phase, absInc, raw, cubic);
   auto axis = [](double v, int n, int bound, int morph, int& i0, int& i1, double& f) {
@@ -948,6 +1042,8 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         }
         const double xpos = e(ParamId::WtX) + acc[kPortWtX], ypos = e(ParamId::WtY) + acc[kPortWtY];
         const double inst = inc + (pm - prevPmWT_) / kTwoPi;
+        if (spectralActive()) spectralUpdate(xpos, ypos, std::fabs(inc) * slope);
+        else smValid_ = false;
         y = readWt(ph, inst, slope, xpos, ypos);
         if (syncFade_ > 0) {  // fondu court depuis la trajectoire d'avant la sync (anti-repliement de la discontinuité)
           double gp = syncGhostPhase_ + pm / kTwoPi;

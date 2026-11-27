@@ -9,6 +9,7 @@
 #include "RenderHelper.h"
 #include "TestKit.h"
 #include "core/StateCodec.h"
+#include "core/WtAssets.h"
 #include "engine/Engine.h"
 
 namespace g4 {
@@ -39,7 +40,7 @@ inline long long& allocTotal() {
 
 inline G4Render renderG4(const G4Scenario& s) {
   G4Render r;
-  auto bank = FactoryBanks::get(s.state.bank);
+  auto bank = resolveBank(s.state.bank);
   Engine eng(bank ? bank : FactoryBanks::get("factory:saw"));
   ParamValues p = s.state.params;
   eng.setParameters(p);

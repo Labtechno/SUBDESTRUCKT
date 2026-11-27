@@ -8,6 +8,7 @@
 
 #include "G4Helper.h"
 #include "TestKit.h"
+#include "core/WtAssets.h"
 #include "dsp/Destruction.h"
 
 using namespace sbd;
@@ -289,6 +290,48 @@ void testN1Hybrid() {
              e.alias, e.ns, n.alias, n.ns, h.alias, h.ns, em.alias, nm.alias, hm.alias, lat, n1LatencyFor(Quality::Normal), n1LatencyFor(Quality::High));
 }
 
+// ------------------------------------------------------------------ WT-SM-01 : morph spectral
+void testSpectralMorph() {
+  // deux formes de même spectre d'amplitude, en opposition de phase
+  std::vector<float> raw(2 * 2048);
+  for (int i = 0; i < 2048; ++i) {
+    const double th = kTwoPi * i / 2048.0;
+    const float v = static_cast<float>(0.6 * std::sin(th) + 0.3 * std::sin(3.0 * th + 0.4));
+    raw[static_cast<size_t>(i)] = v;
+    raw[static_cast<size_t>(2048 + i)] = -v;
+  }
+  std::string err;
+  auto bank = WtBank::build(userBankId(2, 1, raw), "opp", 2, 1, raw, WtBank::Options{}, err);
+  UserBanks::add(bank);
+  auto rd = [&](float x, int morph) {
+    G4Scenario sc;
+    sc.samples = 24000;
+    sc.state = bareState();
+    sc.state.bank = bank->id();
+    sc.state.params[ParamId::WtLevel] = 0.5f;
+    sc.state.params[ParamId::WtX] = x;
+    sc.state.params[ParamId::WtXMorph] = static_cast<float>(morph);
+    sc.state.params[ParamId::WtRender] = 1.0f;  // Raw : bande pleine, comparaison directe aux formes
+    sc.events = {MidiEvent::noteOn(0, 45, 127)};
+    Engine eng(bank);
+    (void)eng;
+    return sc;
+  };
+  auto render = [&](float x, int morph) {
+    G4Scenario sc = rd(x, morph);
+    // renderG4 résout la banque par l'identifiant (registre utilisateur)
+    return renderG4(sc).L;
+  };
+  const auto lin0 = render(0.0f, 0), sp0 = render(0.0f, 2);
+  const auto linMid = render(0.5f, 0), spMid = render(0.5f, 2);
+  const double e0 = rms(lin0, 4800, 24000), em = rms(spMid, 4800, 24000), lm = rms(linMid, 4800, 24000);
+  const double grid = nmseDb(std::vector<float>(sp0.begin() + 4800, sp0.end()), std::vector<float>(lin0.begin() + 4800, lin0.end()));
+  const bool ok = grid <= -60.0 && em >= 0.7 * e0 && lm <= 0.05 * e0;
+  TK_CHECK(ok);
+  tk::result("WT-SM-01", ok, "morph spectral : point de grille NMSE %.1f dB (<= -60) ; milieu de formes en opposition de phase : RMS spectral %.3f vs extremite %.3f (>= 0,7x), lineaire %.4f (<= 0,05x)",
+             grid, em, e0, lm);
+}
+
 }  // namespace
 
 void runG41Tests() {
@@ -299,4 +342,5 @@ void runG41Tests() {
   testMicrotuning();
   testFollowers();
   testN1Hybrid();
+  testSpectralMorph();
 }

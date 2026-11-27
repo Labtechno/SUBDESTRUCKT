@@ -45,6 +45,10 @@ class WtBank {
     return precise_ ? mipsD_[o] : static_cast<double>(mipsF_[o]);
   }
   bool precise() const noexcept { return precise_; }
+  // Spectre harmonique (h = 1..1024) de chaque forme, préparé hors RT : morph spectral.
+  static constexpr int kHarmonics = 1024;
+  const float* specMag(int wave) const noexcept { return &specMag_[static_cast<size_t>(wave) * kHarmonics]; }
+  const float* specPhase(int wave) const noexcept { return &specPh_[static_cast<size_t>(wave) * kHarmonics]; }
   std::size_t memoryBytes() const noexcept {
     return mipsF_.size() * sizeof(float) + mipsD_.size() * sizeof(double) + raw_.size() * sizeof(float);
   }
@@ -63,6 +67,8 @@ class WtBank {
   bool precise_ = false;
   std::vector<float> mipsF_;
   std::vector<double> mipsD_;
+  std::vector<float> specMag_, specPh_;
+  void computeSpectra();
 };
 
 // ---------------------------------------------------------------- générateur procédural (hors RT, déterministe)

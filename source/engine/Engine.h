@@ -12,6 +12,7 @@
 // process() n'alloue pas, ne verrouille pas, ne fait aucune I/O.
 #pragma once
 #include <array>
+#include <complex>
 #include <atomic>
 #include <limits>
 #include <memory>
@@ -24,6 +25,7 @@
 #include "../dsp/CausalDelay.h"
 #include "../dsp/Decimator.h"
 #include "../dsp/Envelope.h"
+#include "../dsp/Fft.h"
 #include "../dsp/ModSources.h"
 #include "../dsp/WtBank.h"
 #include "Chain.h"
@@ -129,6 +131,8 @@ class Engine {
   double finalize(int dest, double acc) const noexcept;
   void evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept;
   double readWt(double phase, double inc, double slope, double x, double y) const noexcept;
+  bool spectralActive() const noexcept;
+  void spectralUpdate(double x, double y, double absInc) noexcept;
   double readOpWave(int op, int wave, double phase, double inc) const noexcept;
   void handleEvent(const MidiEvent& e) noexcept;
   void noteOn(int note, int velocity) noexcept;
@@ -220,6 +224,11 @@ class Engine {
   // Z / Character
   double zWalkSpeed_ = 0.0, zWalkAmp_ = 0.0, zRmsIn_ = 0.0, zRmsOut_ = 0.0;
   double charHold_ = 0.0;
+  std::vector<double> smA_, smB_;                 // morph spectral : tables de départ et d'arrivée (préallouées)
+  std::vector<std::complex<double>> smWork_;
+  Fft smFft_;
+  int smCounter_ = 0;
+  bool smValid_ = false;
   std::array<double, 2> foldPrev_{};          // ADAA1 du repli (par emplacement Z)
   std::array<double, kNumNodes> lastInc_{};   // incrément de phase du dernier échantillon (sync sous-échantillon)
   double syncGhostPhase_ = 0.0;
