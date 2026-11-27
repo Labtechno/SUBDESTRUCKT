@@ -29,6 +29,7 @@
 #include <map>
 #include <set>
 #include <thread>
+#include <typeinfo>
 
 #include "TestKit.h"
 #include "core/StateCodec.h"
@@ -330,6 +331,12 @@ void testUi04Layout() {
     auto fxHeap = std::make_unique<Fixture>();  // processeur complet : sur le tas (pile Windows 1 Mo, ASan)
     auto& fx = *fxHeap;
     auto& m = *fx.m;
+    ModRoute route;  // une route globale : les lignes de la matrice existent pendant la navigation
+    route.source = ModSource::Lfo3;
+    route.dest = ParamId::WtZ;
+    route.depth = 0.1f;
+    fx.p.modAdd(route);
+    m.refreshNow();
     struct Counter : juce::AudioProcessorParameter::Listener {
       int changes = 0, gestures = 0;
       void parameterValueChanged(int, float) override { ++changes; }
@@ -351,15 +358,29 @@ void testUi04Layout() {
             ++views;
           }
         }
+    // une navigation ne détruit aucun composant (pointeurs conservés par l'hôte, l'accessibilité ou un test)
+    std::vector<juce::Component*> before;
+    collect(m, before);
+    std::vector<juce::Component::SafePointer<juce::Component>> guards(before.begin(), before.end());
+    std::vector<std::string> names;
+    for (auto* c : before) names.push_back(std::string(typeid(*c).name()) + " '" + c->getTitle().toStdString() + "' " + c->getHelpText().toStdString());
+    for (const auto& c : contexts(m)) show(m, c);
+    m.setZoomPercent(100);
+    for (const auto& c : contexts(m)) show(m, c);
+    for (int k = 0; k < kNumParams; k += 3) m.selectParam(static_cast<ParamId>(k));  // sélection : aucune destruction non plus
+    m.refreshNow();
+    int destroyed = 0;
+    for (size_t k = 0; k < guards.size(); ++k)
+      if (guards[k] == nullptr && destroyed++ < 6) tk::info("UI04-NAV : detruit par la navigation : %s", names[k].c_str());
     for (int k = 0; k < kNumParams; k += 3) m.selectParam(static_cast<ParamId>(k));
     m.refreshNow();
     juce::MemoryBlock b;
     fx.p.getStateInformation(b);
     for (int i = 0; i < kNumParams; ++i) fx.p.parameters().param(i)->removeListener(&cnt);
-    const bool ok = a == b && cnt.changes == 0 && cnt.gestures == 0 && fx.p.canUndo() == undo0;
+    const bool ok = a == b && cnt.changes == 0 && cnt.gestures == 0 && fx.p.canUndo() == undo0 && destroyed == 0;
     TK_CHECK(ok);
-    tk::result("UI04-NAV", ok, "%d vues (contextes x 3 tailles x 4 zooms x Inspector ouvert/ferme) + %d selections Inspector : ecritures %d, gestes %d, etat identique %d, pile Undo inchangee %d",
-               views, (kNumParams + 2) / 3, cnt.changes, cnt.gestures, a == b, fx.p.canUndo() == undo0);
+    tk::result("UI04-NAV", ok, "%d vues (contextes x 3 tailles x 4 zooms x Inspector ouvert/ferme) + %d selections Inspector : ecritures %d, gestes %d, etat identique %d, pile Undo inchangee %d ; composants detruits par la navigation %d / %zu",
+               views, (kNumParams + 2) / 3, cnt.changes, cnt.gestures, a == b, fx.p.canUndo() == undo0, destroyed, guards.size());
   }
   // UI04-CLIP / UI04-PANIC
   {

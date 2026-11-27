@@ -691,7 +691,7 @@ class EngineeringView : public SpaceView {
     vis({&caps_, &capNow_}, tab_ == 9);
     for (auto& cc : capClear_) cc->setVisible(tab_ == 9);
     if (tab_ == 5) refreshPresets();
-    if (tab_ == 2) modPage_.rebuild(true);
+    if (tab_ == 2) modPage_.rebuild(false);  // navigation : aucune destruction de composant (reconstruction seulement si les routes changent)
     resized();
     tick();
   }

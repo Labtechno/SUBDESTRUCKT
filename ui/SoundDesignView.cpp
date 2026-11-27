@@ -50,13 +50,19 @@ class ContextColumn : public Plate {
  public:
   using GroupsFn = std::function<Groups(int tab, const ParamValues&)>;
   using DecorateFn = std::function<void(juce::Component&, const ParamValues&)>;
+  // un panneau par volet local, conservé (visibilité seule) : changer de volet ne détruit aucune commande ; seul un
+  // changement d'état (algorithme, mode) reconstruit le panneau du volet concerné
   ContextColumn(UiContext& c, juce::String title, juce::Colour accent, juce::StringArray tabs, GroupsFn fn, Density d = Density::S)
-      : Plate(std::move(title), accent), ctx_(c), tabs_(accent), scroll_(c, d), fn_(std::move(fn)) {
+      : Plate(std::move(title), accent), ctx_(c), tabs_(accent), fn_(std::move(fn)) {
     tabs_.setTabs(tabs);
     tabs_.onChange = [this](int) { refresh(true); };
-    scroll_.panel.setAccent(accent);
+    for (int k = 0; k < std::max(1, tabs.size()); ++k) {
+      panels_.push_back(std::make_unique<ScrollPanel>(c, d));
+      panels_.back()->panel.setAccent(accent);
+      addChildComponent(*panels_.back());
+    }
+    last_.resize(panels_.size());
     if (tabs.size() > 1) addAndMakeVisible(tabs_);
-    addAndMakeVisible(scroll_);
   }
   void setDecorate(DecorateFn f) { decorate_ = std::move(f); }
   void setHeader(juce::Component* h, int height) {
@@ -84,14 +90,23 @@ class ContextColumn : public Plate {
   int tab() const { return tabs_.current(); }
   void refresh(bool relayout = false) {
     const auto pv = ctx_.proc.parameters().values();
-    const auto g = fn_(tabs_.current(), pv);
-    if (g != last_) {
-      last_ = g;
-      scroll_.panel.setGroups(g);
+    const int t = juce::jlimit(0, static_cast<int>(panels_.size()) - 1, tabs_.current());
+    const auto g = fn_(t, pv);
+    auto& panel = panels_[static_cast<size_t>(t)]->panel;
+    if (g != last_[static_cast<size_t>(t)]) {
+      last_[static_cast<size_t>(t)] = g;
+      panel.setGroups(g);
       relayout = true;
     }
+    for (size_t k = 0; k < panels_.size(); ++k) {
+      const bool v = static_cast<int>(k) == t;
+      if (panels_[k]->isVisible() != v) {
+        panels_[k]->setVisible(v);
+        relayout = true;
+      }
+    }
     if (decorate_)
-      for (auto& c : scroll_.panel.controls()) decorate_(*c, pv);
+      for (auto& c : panel.controls()) decorate_(*c, pv);
     if (relayout) resized();
   }
   void resized() override {
@@ -105,18 +120,20 @@ class ContextColumn : public Plate {
       banner_->setBounds(r.removeFromTop(bannerH_));
       r.removeFromTop(4);
     }
-    scroll_.setBounds(r);
-    scroll_.resized();
+    for (auto& p : panels_) {
+      p->setBounds(r);
+      p->resized();
+    }
   }
   TabStrip& tabStrip() { return tabs_; }
 
  private:
   UiContext& ctx_;
   TabStrip tabs_;
-  ScrollPanel scroll_;
+  std::vector<std::unique_ptr<ScrollPanel>> panels_;
   GroupsFn fn_;
   DecorateFn decorate_;
-  Groups last_;
+  std::vector<Groups> last_;
   juce::Component *header_ = nullptr, *banner_ = nullptr;
   int headerH_ = 0, bannerH_ = 0;
 };

@@ -1,5 +1,7 @@
 #include "MainEditor.h"
 
+#include <map>
+
 #include "BuildInfo.h"
 #include "core/StateCodec.h"
 
@@ -26,7 +28,9 @@ struct InspectorPanel::Impl {
   ActionCell pin, lock, reset, learn, entry, add;
   juce::ComboBox src, rate;
   juce::Slider depth;
-  std::unique_ptr<juce::Component> alias;
+  juce::Component* alias = nullptr;
+  // alias conservés (visibilité seule) : une sélection ne détruit jamais une commande existante
+  std::map<int, std::unique_ptr<juce::Component>> aliases;
   std::vector<std::unique_ptr<ActionCell>> removes;
   std::vector<std::uint32_t> removeIds;
 };
@@ -51,10 +55,10 @@ InspectorPanel::InspectorPanel(UiContext& c) : impl_(std::make_unique<Impl>(c)),
   };
   m.reset.setTooltip(juce::String::fromUTF8("Remet la valeur Base au défaut du registre (geste hôte, Undo)"));
   m.reset.onClick = [this] {
-    if (auto* b = asBound(impl_->alias.get())) b->userSet(paramSpec(id_).defaultValue);
+    if (auto* b = asBound(impl_->alias)) b->userSet(paramSpec(id_).defaultValue);
   };
   m.entry.onClick = [this] {
-    if (auto* cc = dynamic_cast<ContinuousControl*>(impl_->alias.get())) cc->beginNumericEntry();
+    if (auto* cc = dynamic_cast<ContinuousControl*>(impl_->alias)) cc->beginNumericEntry();
   };
   m.learn.onClick = [this] { ctx_.proc.setMidiLearnTarget(idx(id_)); };
   for (int s = 1; s < kNumModSources; ++s) m.src.addItem(modSourceLabel(static_cast<ModSource>(s)), s);
@@ -93,13 +97,19 @@ void InspectorPanel::show(ParamId id) {
   if (id == id_ && m.alias) return;
   id_ = id;
   ctx_.inspected = id;
-  m.alias = makeControl(ctx_, id, Density::S);
-  addAndMakeVisible(*m.alias);
+  if (m.alias) m.alias->setVisible(false);
+  auto& slot = m.aliases[idx(id)];
+  if (!slot) {
+    slot = makeControl(ctx_, id, Density::S);
+    addChildComponent(*slot);
+  }
+  m.alias = slot.get();
+  m.alias->setVisible(true);
   m.lock.setToggleState(ctx_.random.locks.count(id) > 0, juce::dontSendNotification);
   const bool mod = paramModulatable(id);
   for (auto* c : std::initializer_list<juce::Component*>{&m.src, &m.rate, &m.depth, &m.add}) c->setEnabled(mod);
   m.learn.setEnabled(MidiLearnMap::learnableParam(idx(id)));
-  m.entry.setEnabled(dynamic_cast<ContinuousControl*>(m.alias.get()) != nullptr);
+  m.entry.setEnabled(dynamic_cast<ContinuousControl*>(m.alias) != nullptr);
   refresh();
   resized();
 }
