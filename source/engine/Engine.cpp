@@ -123,6 +123,7 @@ Engine::~Engine() {
   delete mod_;
   delete activeBankRef_;
   delete pendingBank_;
+  delete retained_;
 }
 
 int Engine::oversamplingFor(double hostRate, Quality q) noexcept {
@@ -221,6 +222,13 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   for (int k = 0; k < 6; ++k) {  // tampons de capture préalloués (pire cas D2 : 2,05 s stéréo)
     captureBuf_[static_cast<size_t>(k)].assign(static_cast<size_t>(2 * DestructionSlot::captureCapacity(fsE)), 0.0f);
     captureReady_[static_cast<size_t>(k)].store(false);
+  }
+  // re-préparation (fréquence, taille de bloc, Quality, réactivation) : l'autorisation et les captures retenues sont
+  // conservées ; les tampons DSP étant remis à zéro, les captures retenues seront réappliquées sous autorisation
+  if (retained_) {
+    captureApplyPending_ = !retained_->items.empty();
+    captureApplied_ = 0;
+    captureWait_ = 0;
   }
   padActive_ = false;
 
@@ -411,7 +419,7 @@ void Engine::setParameters(const ParamValues& base) noexcept {
 }
 
 void Engine::applyAutonomyMask() noexcept {
-  const bool ok = autonomyAuth_.load(std::memory_order_acquire);
+  const bool ok = auth_.authorized();
   for (ParamId a : kAutonomyArms) {
     const auto i = static_cast<size_t>(a);
     cur_[i] = eff_[i] = ok ? base_.v[i] : 0.0;
@@ -427,6 +435,21 @@ bool Engine::anyArmConfigured() const noexcept {
 void Engine::process(float* outL, float* outR, int numSamples, const MidiEvent* events, int numEvents,
                      double* preDcTap) noexcept SBD_NONBLOCKING {
   if (numSamples <= 0) return;
+  // TRANSPORT AUTHORIZATION (ARCH-G4.3) : évaluée une fois par bloc hôte ; un Panic du bloc domine toute autorisation
+  {
+    bool panicInBlock = false;
+    for (int i = 0; i < numEvents; ++i)
+      if (events[i].type == MidiEvent::Type::AllSoundOff) panicInBlock = true;
+    const TransportObs obs = !transport_.valid ? TransportObs::Unknown : (transport_.playing ? TransportObs::Rolling : TransportObs::Stopped);
+    const bool was = auth_.authorized();
+    if (auth_.beginBlock(obs, transport_.recording, transport_.offline, panicInBlock, taClock_, taLog_) && retained_) {
+      captureApplyPending_ = true;  // nouvelle autorisation : restitution des captures retenues (une fois)
+      captureApplied_ = 0;
+      captureWait_ = 0;
+    }
+    if (was && !auth_.authorized() && drone_) releaseGateIfIdle();  // suspension : le Drone ne maintient plus le Gate
+    taClock_ += static_cast<std::uint64_t>(numSamples);
+  }
   if (transport_.bpm != envBpm_) {  // tempo modifié : durées synchronisées recalculées (sans allocation)
     envBpm_ = transport_.bpm;
     applyEnvelopeParameters();
@@ -518,33 +541,46 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
         captureReady_[static_cast<size_t>(k)].store(true, std::memory_order_release);
       }
   }
-  // restauration des captures : différée jusqu'à ce que l'emplacement exécute l'algorithme visé (D2/S2) hors
-  // transition, pour que le changement structurel n'efface pas le contenu ; abandon après ~2 s (type différent).
-  if (!pendingCaptures_ && captureExchange_.canRetire()) {
-    pendingCaptures_ = captureExchange_.acquire();
-    captureApplied_ = 0;
-    captureWait_ = 0;
+  // captures R2 (ARCH-G4.3) : l'ensemble publié hors RT est RETENU par le thread audio (l'ancien est retiré) ; il est
+  // appliqué seulement sous autorisation, une fois par autorisation (et après re-préparation), différé jusqu'à ce que
+  // l'emplacement exécute l'algorithme visé (D2/S2) hors transition ; abandon après ~2 s (type différent).
+  if (captureExchange_.hasPending() && captureExchange_.canRetire()) {
+    if (CaptureSet* incoming = captureExchange_.acquire()) {
+      if (retained_) captureExchange_.retire(retained_);
+      retained_ = incoming;
+      captureApplyPending_ = incoming->apply && !incoming->items.empty();
+      captureApplied_ = 0;
+      captureWait_ = 0;
+    }
   }
-  if (pendingCaptures_) {
-    const auto& items = pendingCaptures_->items;
+  if (retained_ && captureApplyPending_ && auth_.authorized()) {
+    const auto& items = retained_->items;
     bool all = true;
     for (size_t i = 0; i < items.size() && i < 32; ++i) {
       if (captureApplied_ & (1u << i)) continue;
       const auto& c = items[i];
+      if (c.slot < 0 || c.slot > 5) {
+        captureApplied_ |= 1u << i;
+        continue;
+      }
+      // capture = contenu d'un gel armé : appliquée seulement si l'emplacement est armé et autorisé (un preset
+      // désarmé ou un emplacement non armé ne rejoue jamais un contenu mémorisé)
+      if (eff_[static_cast<size_t>(idx(ParamId::DstWt1Arm) + c.slot * static_cast<int>(DstOff::Count))] < 0.5) {
+        captureApplied_ |= 1u << i;
+        continue;
+      }
       DestructionSlot& sl = slotAt(c.slot);
       const int want = c.kind == 0 ? static_cast<int>(DstType::D2) : static_cast<int>(DstType::S2);
       if (sl.activeType() == want && sl.settled()) {
         sl.restoreFrom(c.data.data(), c.frames, c.kind, c.sampleRate);
         captureApplied_ |= 1u << i;
+        taLog_.push(TaEvent{taClock_, TaEventType::CaptureApplied, auth_.source(), auth_.generation()});
       } else {
         all = false;
       }
     }
     captureWait_ += n;
-    if (all || captureWait_ > static_cast<long long>(2.0 * setup_.engineRate)) {
-      captureExchange_.retire(pendingCaptures_);
-      pendingCaptures_ = nullptr;
-    }
+    if (all || captureWait_ > static_cast<long long>(2.0 * setup_.engineRate)) captureApplyPending_ = false;
   }
   // publications hors RT : topologie (avec transition), matrice, banque (fondu), courbes
   if (transition_ == Transition::Idle && incoming_ == nullptr && exchange_.canRetire()) {
@@ -606,6 +642,9 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
       chainWt_.reset();
       chainFm_.reset();
       chainGl_.reset();
+      // ARCH-G4.3 : lignes d'alignement de latence (S2/N1) purgées aussi : sans cela, l'audio antérieur au Panic qu'elles
+      // retiennent (jusqu'à 2 x 4096 échantillons) ressortait après la rampe et réexcitait les filtres
+      for (auto* a : {&alignWtL_, &alignWtR_, &alignFmL_, &alignFmR_, &alignOutL_, &alignOutR_}) a->reset();
       panicActive_ = false;
     }
   }
@@ -1528,10 +1567,10 @@ void Engine::handleEvent(const MidiEvent& ev) noexcept {
       sustained_.fill(false);
       gate_ = false;
       drone_ = false;
-      if (anyArmConfigured()) {  // AUT-05 : le Panic retire l'autorisation ; la configuration reste intacte
-        autonomyAuth_.store(false, std::memory_order_release);
-        applyAutonomyMask();
-      }
+      // Panic (ARCH-G4.3, RF-01) : révocation systématique et verrou ; la configuration reste intacte
+      auth_.panic(taClock_, taLog_);
+      captureApplyPending_ = false;
+      applyAutonomyMask();
       for (auto& en : envs_) en.noteOff();
       panicActive_ = true;
       panicLeft_ = panicLength_;
@@ -1540,7 +1579,7 @@ void Engine::handleEvent(const MidiEvent& ev) noexcept {
     case MidiEvent::Type::AllNotesOff:
       stackSize_ = 0;
       sustained_.fill(false);
-      if (!drone_) {
+      if (!droneEff()) {
         gate_ = false;
         for (auto& en : envs_) en.noteOff();
       }
@@ -1628,7 +1667,7 @@ void Engine::noteOff(int note) noexcept {
 }
 
 void Engine::releaseGateIfIdle() noexcept {
-  if (drone_ || stackSize_ > 0 || !gate_) return;  // Drone maintient le Gate normal (P0-C05)
+  if (droneEff() || stackSize_ > 0 || !gate_) return;  // Drone autorisé maintient le Gate normal (P0-C05)
   gate_ = false;
   for (auto& en : envs_) en.noteOff();
 }
@@ -1672,7 +1711,17 @@ void Engine::publishTelemetry() noexcept {
   t.currentNote.store(gate_ ? currentNote_ : -1, std::memory_order_relaxed);
   t.gate.store(gate_, std::memory_order_relaxed);
   t.drone.store(drone_, std::memory_order_relaxed);
-  t.autonomySuspended.store(!autonomyAuth_.load(std::memory_order_relaxed) && anyArmConfigured(), std::memory_order_relaxed);
+  t.autonomySuspended.store(!auth_.authorized() && (anyArmConfigured() || drone_), std::memory_order_relaxed);
+  t.autonomyAuthorized.store(auth_.authorized(), std::memory_order_relaxed);
+  t.autonomyLatched.store(auth_.latched(), std::memory_order_relaxed);
+  t.autonomySource.store(static_cast<int>(auth_.source()), std::memory_order_relaxed);
+  t.transportState.store(static_cast<int>(auth_.lastKnown()), std::memory_order_relaxed);
+  t.offline.store(auth_.offline(), std::memory_order_relaxed);
+  t.authGrants.store(auth_.grants(), std::memory_order_relaxed);
+  t.authRevocations.store(auth_.revocations(), std::memory_order_relaxed);
+  t.authGeneration.store(auth_.generation(), std::memory_order_relaxed);
+  t.taDropped.store(taLog_.dropped(), std::memory_order_relaxed);
+  capturesPendingPub_.store(retained_ != nullptr && captureApplyPending_, std::memory_order_release);
   t.envelope.store(static_cast<float>(envs_[0].level()), std::memory_order_relaxed);
   t.peakL.store(blockPeakL_, std::memory_order_relaxed);
   t.peakR.store(blockPeakR_, std::memory_order_relaxed);

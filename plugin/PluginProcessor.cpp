@@ -225,13 +225,20 @@ void SubdestrucktProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     for (int i = 0; i < kNumParams; ++i)
       if (evolvedOn_[static_cast<size_t>(i)].load(std::memory_order_relaxed)) pv.v[static_cast<size_t>(i)] = evolved_[static_cast<size_t>(i)].load(std::memory_order_relaxed);
   engine_.setParameters(pv);
+  // Transport (ARCH-G4.3, TRANSPORT AUTHORIZATION) : INCONNU si l'hôte ne fournit ni playhead ni position, ou si le
+  // contexte VST3 est absent (JUCE 9.0.6 le remet à zéro : temps = 0/0, non fini) ; jamais assimilé à un ARRÊT.
   TransportInfo tr;
+  tr.offline = isNonRealtime();  // VST3 : processMode == kOffline, mis à jour à chaque process()
   if (auto* ph = getPlayHead()) {
     if (const auto pos = ph->getPosition()) {
-      tr.valid = true;
-      tr.playing = pos->getIsPlaying();
-      if (const auto bpm = pos->getBpm()) tr.bpm = *bpm;
-      if (const auto ppq = pos->getPpqPosition()) tr.ppq = *ppq;
+      const auto secs = pos->getTimeInSeconds();
+      if (!secs.hasValue() || std::isfinite(*secs)) {
+        tr.valid = true;
+        tr.playing = pos->getIsPlaying();
+        tr.recording = pos->getIsRecording();
+        if (const auto bpm = pos->getBpm()) tr.bpm = *bpm;
+        if (const auto ppq = pos->getPpqPosition()) tr.ppq = *ppq;
+      }
     }
   }
   engine_.setTransport(tr);
@@ -330,7 +337,8 @@ void SubdestrucktProcessor::getStateInformation(juce::MemoryBlock& destData) {
   std::uint32_t want = 0;
   // instance suspendue (AUT-06) : aucune capture du tampon d'exécution (vide ou non autorisé) ; les captures restaurées
   // sont conservées telles quelles
-  for (int k = 0; k < 6 && engine_.autonomyAuthorized(); ++k) {
+  // captures retenues non encore restituées (autorisation récente) : conservées telles quelles (aucune perte)
+  for (int k = 0; k < 6 && engine_.autonomyAuthorized() && !engine_.capturesPending(); ++k) {
     const int b = idx(ParamId::DstWt1Type) + k * static_cast<int>(DstOff::Count);
     const int t = static_cast<int>(bridge_.values().v[static_cast<size_t>(b)] + 0.5f);
     if ((t == static_cast<int>(DstType::D2) || t == static_cast<int>(DstType::S2)) &&
@@ -356,14 +364,16 @@ void SubdestrucktProcessor::setStateInformation(const void* data, int sizeInByte
     lastMessage_ = "Etat refuse : " + err;
     return;
   }
-  // projet DAW / duplication d'instance : configuration restaurée fidèlement, armements compris (G-21w) ; l'activation
-  // autonome est suspendue (autorisation locale retirée, captures retenues) jusqu'à l'action Autoriser (AUT-02/03).
-  // Drone reste soumis à son autorisation de projet (drone_restore).
-  if (anyArmed(s) || !s.captures.empty()) engine_.setAutonomyAuthorized(false);
+  // projet DAW / duplication d'instance : configuration restaurée fidèlement, armements compris (G-21w) ; l'exécution
+  // autonome est suspendue (nouvelle génération, captures retenues par le moteur) jusqu'à une autorisation : début de
+  // lecture ou d'enregistrement, rendu hors temps réel, ou action explicite (TRANSPORT AUTHORIZATION, ARCH-G4.3).
+  // Drone : `drone_restore` décide de restaurer la configuration du Drone, jamais son exécution (RF-03).
+  const bool autonomous = anyArmed(s) || !s.captures.empty() || (s.hasInstance && s.instance.droneRestore && s.instance.drone);
+  if (autonomous) engine_.setAutonomyAuthorized(false);
   applyState(s, false);
-  if (!engine_.autonomyAuthorized() && (anyArmed(s) || !s.captures.empty())) {
+  if (autonomous) {
     std::lock_guard<std::mutex> lock(controlMutex_);
-    lastMessage_ += " ; etats autonomes suspendus : Autoriser pour les activer";
+    lastMessage_ += " ; etats autonomes suspendus jusqu'a la lecture (ou Autoriser)";
   }
 }
 
@@ -384,12 +394,9 @@ bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset
     seed_ = state.seed;
     streamCounters_ = state.streamCounters;
     captures_ = state.captures;
-    // captures R2 : injectées dans le DSP seulement si l'activation autonome est autorisée ; sinon retenues (AUT)
-    capturesHeld_ = !captures_.empty() && !engine_.autonomyAuthorized();
-    if (!captures_.empty() && !capturesHeld_) {
-      engine_.captureExchange().collectGarbage();
-      engine_.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{captures_}));
-    }
+    // captures R2 : préparées ici (hors RT) et publiées au moteur, qui les retient et ne les applique que sous
+    // autorisation, à une frontière de bloc (ARCH-G4.3) ; ensemble vide publié pour effacer les captures précédentes
+    publishCapturesLocked(true);
     if (!fromPreset && state.hasInstance) {
       instance_.quality = state.instance.quality;
       instance_.droneRestore = state.instance.droneRestore;
@@ -873,6 +880,7 @@ std::uint32_t SubdestrucktProcessor::collectCaptures(std::uint32_t mask) {
     captures_.erase(std::remove_if(captures_.begin(), captures_.end(), [k](const CaptureAsset& a) { return a.slot == k; }), captures_.end());
     captures_.push_back(std::move(c));
     std::sort(captures_.begin(), captures_.end(), [](const CaptureAsset& a, const CaptureAsset& b) { return a.slot < b.slot; });
+    publishCapturesLocked(false);  // contenu déjà présent dans les tampons : retenu, non réappliqué
     got |= 1u << k;
   }
   return got;
@@ -888,17 +896,22 @@ void SubdestrucktProcessor::requestCapture(int slot) {
 }
 
 void SubdestrucktProcessor::authorizeAutonomy() {
+  // autorisation explicite (Autoriser, clic d'armement ou de Drone dans l'éditeur) : commande atomique lue par le
+  // thread audio à la frontière de bloc suivante (captures déjà retenues par le moteur : aucune allocation ici)
+  engine_.setAutonomyAuthorized(true);
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
-    engine_.setAutonomyAuthorized(true);
-    if (!captures_.empty()) {  // contenu créatif restitué à partir des captures conservées
-      engine_.captureExchange().collectGarbage();
-      engine_.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{captures_}));
-    }
-    capturesHeld_ = false;
     lastMessage_ = "Etats autonomes autorises";
   }
   notifyState();
+}
+
+void SubdestrucktProcessor::publishCapturesLocked(bool apply) {
+  engine_.captureExchange().collectGarbage();
+  auto set = std::make_unique<CaptureSet>();
+  set->items = captures_;
+  set->apply = apply;
+  engine_.captureExchange().publish(std::move(set));
 }
 
 bool SubdestrucktProcessor::autonomySuspended() const {
@@ -907,12 +920,13 @@ bool SubdestrucktProcessor::autonomySuspended() const {
   cfg.params = bridge_.values();
   if (anyArmed(cfg)) return true;
   std::lock_guard<std::mutex> lock(controlMutex_);
-  return capturesHeld_ || !captures_.empty();
+  return instance_.drone || !captures_.empty();
 }
 
 void SubdestrucktProcessor::clearCapture(int slot) {
   std::lock_guard<std::mutex> lock(controlMutex_);
   captures_.erase(std::remove_if(captures_.begin(), captures_.end(), [slot](const CaptureAsset& a) { return a.slot == slot; }), captures_.end());
+  publishCapturesLocked(false);
 }
 
 std::vector<CaptureAsset> SubdestrucktProcessor::captures() const {
@@ -992,6 +1006,41 @@ void SubdestrucktProcessor::updateLatency() {
 
 void SubdestrucktProcessor::timerCallback() { serviceMessageThread(); }
 
+std::string SubdestrucktProcessor::taFlagPath() {
+  return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+      .getChildFile("Labtechno").getChildFile("SUBDESTRUCKT").getChildFile("ta_diagnostics.on").getFullPathName().toStdString();
+}
+std::string SubdestrucktProcessor::taLogPath() {
+  return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+      .getChildFile("Labtechno").getChildFile("SUBDESTRUCKT").getChildFile("ta_log.txt").getFullPathName().toStdString();
+}
+
+std::vector<std::string> SubdestrucktProcessor::taRecentEvents() const {
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  return taRecent_;
+}
+
+void SubdestrucktProcessor::drainTaLogLocked() {
+  // journal TRANSPORT AUTHORIZATION : consommé hors RT ; fichier seulement si le drapeau d'activation existe
+  if (taFlagPoll_-- <= 0) {
+    taFlagPoll_ = 30;
+    taFileOn_ = juce::File(taFlagPath()).existsAsFile();
+  }
+  TaEvent e;
+  std::ofstream out;
+  while (engine_.taLog().pop(e)) {
+    char line[200];
+    std::snprintf(line, sizeof line, "%p t=%llu %s source=%s generation=%u fs=%.0f", static_cast<void*>(this),
+                  static_cast<unsigned long long>(e.sample), taEventName(e.type), authSourceName(e.source), e.generation, sampleRate_);
+    taRecent_.emplace_back(line);
+    if (taRecent_.size() > 64) taRecent_.erase(taRecent_.begin());
+    if (taFileOn_) {
+      if (!out.is_open()) out.open(taLogPath(), std::ios::app);
+      if (out) out << juce::Time::getCurrentTime().toISO8601(true).toStdString() << " " << line << '\n';
+    }
+  }
+}
+
 void SubdestrucktProcessor::serviceMessageThread() {
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
@@ -999,6 +1048,14 @@ void SubdestrucktProcessor::serviceMessageThread() {
     engine_.modExchange().collectGarbage();
     engine_.bankExchange().collectGarbage();
     engine_.curveExchange().collectGarbage();
+    engine_.captureExchange().collectGarbage();
+    drainTaLogLocked();
+    // Panic (P0-C06) : le Drone désarmé par le moteur l'est aussi dans la configuration d'instance
+    const std::uint32_t pn = engine_.telemetry().panics.load(std::memory_order_relaxed);
+    if (pn != lastPanics_) {
+      lastPanics_ = pn;
+      instance_.drone = false;
+    }
     const int cap = learnCaptured_.exchange(-1, std::memory_order_acq_rel);
     if (cap >= 0) {
       const int target = learnRt_[static_cast<size_t>(cap)].load();

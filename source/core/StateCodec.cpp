@@ -218,6 +218,11 @@ bool base64Decode(const std::string& text, std::vector<std::uint8_t>& out) { ret
 void disarmAutonomous(PluginState& s) noexcept {
   for (ParamId a : kArms) s.params[a] = 0.0f;
 }
+bool isAutonomyArm(ParamId id) noexcept {
+  for (ParamId a : kArms)
+    if (a == id) return true;
+  return false;
+}
 bool anyArmed(const PluginState& s) noexcept {
   for (ParamId a : kArms)
     if (s.params.flag(a)) return true;

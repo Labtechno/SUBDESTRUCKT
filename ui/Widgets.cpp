@@ -116,6 +116,12 @@ ParamControl::ParamControl(SubdestrucktProcessor& p, ParamId id, SelectFn onSele
     toggle_->setTitle(s.name);
     toggle_->setHelpText(s.stableId);
     bAtt_ = std::make_unique<juce::ButtonParameterAttachment>(*param, *toggle_, nullptr);
+    // armement autonome mis en marche par un clic dans l'éditeur : intention explicite de l'utilisateur, qui vaut
+    // autorisation d'exécution (ARCH-G4.3) ; une automation ou une restauration d'état ne passe jamais par ici
+    if (isAutonomyArm(id))
+      toggle_->onClick = [this] {
+        if (toggle_->getToggleState()) proc_.authorizeAutonomy();
+      };
     toggle_->addMouseListener(&clicker_, true);
     addAndMakeVisible(*toggle_);
     caption_.setVisible(false);

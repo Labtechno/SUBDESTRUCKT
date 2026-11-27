@@ -836,6 +836,199 @@ void testMidiLearn(const std::string& profile) {
 
 }  // namespace
 
+// ------------------------------------------------------------------ ARCH-G4.3 : TRANSPORT AUTHORIZATION (wrapper)
+struct FakePlayHead : juce::AudioPlayHead {
+  int mode = 1;  // 0 : position absente ; 1 : ARRÊT ; 2 : LECTURE ; 3 : LECTURE + ENR ; 4 : contexte VST3 absent (temps 0/0)
+  juce::Optional<PositionInfo> getPosition() const override {
+    if (mode == 0) return {};
+    PositionInfo i;
+    i.setIsPlaying(mode == 2 || mode == 3);
+    i.setIsRecording(mode == 3);
+    i.setBpm(120.0);
+    i.setPpqPosition(0.0);
+    i.setTimeInSeconds(mode == 4 ? std::nan("") : 0.0);
+    return i;
+  }
+};
+long long gTaWrapAlloc = 0;
+double runPh(SubdestrucktProcessor& p, int blocks, juce::MidiBuffer* first = nullptr) {  // énergie, allocations comptées
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer empty;
+  double e = 0.0;
+  for (int i = 0; i < blocks; ++i) {
+    buf.clear();
+    juce::MidiBuffer& m = (i == 0 && first) ? *first : empty;
+    tk::allocationCount().store(0);
+    tk::countingAllocations().store(true);
+    p.processBlock(buf, m);
+    tk::countingAllocations().store(false);
+    gTaWrapAlloc += tk::allocationCount().load();
+    for (int ch = 0; ch < 2; ++ch)
+      for (int k = 0; k < 256; ++k) e += static_cast<double>(buf.getSample(ch, k)) * buf.getSample(ch, k);
+  }
+  return e;
+}
+
+void testTransportWrapper() {
+  auto srcPtr = std::make_unique<SubdestrucktProcessor>();
+  buildFrozen(*srcPtr);
+  const juce::MemoryBlock blob = stateOf(*srcPtr);
+  FakePlayHead ph;
+  auto restored = [&](FakePlayHead* head) {
+    auto q = std::make_unique<SubdestrucktProcessor>();
+    q->prepareToPlay(48000.0, 256);
+    q->setPlayHead(head);
+    q->setStateInformation(blob.getData(), static_cast<int>(blob.getSize()));
+    return q;
+  };
+  // TA-03w / TA-20w : STOP -> PLAY via le playhead, sans éditeur ni service du thread message
+  ph.mode = 1;
+  auto a = restored(&ph);
+  const double stopE = runPh(*a, 100);
+  const bool susp = a->autonomySuspended();
+  ph.mode = 2;
+  const double playE = runPh(*a, 300);
+  const bool t3 = stopE < 1e-9 && susp && playE > 1e-3 && a->autonomyAuthorized() &&
+                  a->telemetry().autonomySource.load() == static_cast<int>(AuthSource::Transport);
+  TK_CHECK(t3);
+  tk::result("TA-03w", t3, "processBlock + playhead simule : ARRET 100 blocs energie %.3g, suspendu %d ; LECTURE : gel rejoue %.3g, autorise (source transport) %d, sans Autoriser ni thread message",
+             stopE, susp, playE, a->autonomyAuthorized());
+  // TA-13w : classification INCONNU (position absente, playhead nul, contexte VST3 absent)
+  bool unk = true;
+  for (int m : {0, -1, 4}) {
+    FakePlayHead h;
+    h.mode = m < 0 ? 1 : m;
+    auto q = restored(m < 0 ? nullptr : &h);
+    runPh(*q, 20);
+    unk = unk && q->telemetry().transportState.load() == 0 && !q->autonomyAuthorized();
+  }
+  {
+    FakePlayHead h;
+    h.mode = 1;
+    auto q = restored(&h);
+    runPh(*q, 5);
+    unk = unk && q->telemetry().transportState.load() == static_cast<int>(TransportObs::Stopped);
+  }
+  TK_CHECK(unk);
+  tk::result("TA-13w", unk, "position absente, playhead nul, contexte VST3 absent (temps non fini) : classes INCONNU (jamais observe, non autorise) ; position valide a l'arret : ARRET %d", unk);
+  // TA-15w : rendu hors temps réel immédiatement après la restauration, premier bloc déjà en LECTURE
+  FakePlayHead hr;
+  hr.mode = 2;
+  auto r = restored(&hr);
+  r->setNonRealtime(true);
+  const double renderE = runPh(*r, 300);
+  const bool t15 = r->autonomyAuthorized() && r->telemetry().autonomySource.load() == static_cast<int>(AuthSource::Render) && renderE > 1e-3;
+  FakePlayHead hrt;
+  hrt.mode = 2;
+  auto rt = restored(&hrt);  // même scénario en temps réel : insertion/chargement pendant la lecture
+  const double rtE = runPh(*rt, 300);
+  const bool t15b = !rt->autonomyAuthorized() && rtE < 1e-9;
+  TK_CHECK(t15 && t15b);
+  tk::result("TA-15w", t15 && t15b, "export hors temps reel juste apres l'ouverture (premier bloc en LECTURE, sans lecture prealable, sans Autoriser, sans editeur) : autorise par rendu %d, contenu gele %.3g ; meme scenario en temps reel : non autorise %d (energie %.3g)",
+             t15, renderE, t15b, rtE);
+  // TA-18w : état identique, instance autorisée (a) et suspendue
+  auto s = restored(&ph);
+  ph.mode = 1;
+  runPh(*s, 10);
+  const bool t18 = stateOf(*a) == stateOf(*s) && stateOf(*a) == blob && a->autonomyAuthorized() && !s->autonomyAuthorized();
+  TK_CHECK(t18);
+  tk::result("TA-18w", t18, "getStateInformation : instance autorisee par le transport et instance suspendue de meme configuration : etats identiques octet par octet (et = etat restaure) %d", t18);
+  // TA-21w (c) : drone_restore
+  bool dr = true;
+  for (bool restore : {false, true}) {
+    auto d = std::make_unique<SubdestrucktProcessor>();
+    d->prepareToPlay(48000.0, 256);
+    d->setDrone(true);
+    d->setDroneRestore(restore);
+    const auto b = stateOf(*d);
+    auto e = std::make_unique<SubdestrucktProcessor>();
+    e->prepareToPlay(48000.0, 256);
+    e->setStateInformation(b.getData(), static_cast<int>(b.getSize()));
+    runPh(*e, 3);
+    dr = dr && e->drone() == restore && (restore ? (e->autonomySuspended() && !e->autonomyAuthorized()) : e->autonomyAuthorized());
+  }
+  TK_CHECK(dr);
+  tk::result("TA-21w", dr, "drone_restore=0 : Drone non restaure, aucune suspension ; drone_restore=1 : configuration Drone restauree et suspendue jusqu'a autorisation (RF-03) %d", dr);
+  // TA-22w : CC120 = Panic ; CC123 = All Notes Off
+  juce::MidiBuffer m123, m120;
+  m123.addEvent(juce::MidiMessage::controllerEvent(1, 123, 0), 10);
+  m120.addEvent(juce::MidiMessage::controllerEvent(1, 120, 0), 10);
+  const auto rev0 = a->telemetry().authRevocations.load();
+  runPh(*a, 2, &m123);
+  const bool after123 = a->autonomyAuthorized() && a->telemetry().authRevocations.load() == rev0;
+  runPh(*a, 1, &m120);
+  const bool after120 = !a->autonomyAuthorized() && a->telemetry().authRevocations.load() == rev0 + 1;
+  TK_CHECK(after123 && after120);
+  tk::result("TA-22w", after123 && after120, "MIDI : CC123 (All Notes Off) sans revocation %d ; CC120 (All Sound Off) = Panic, revocation %d", after123, after120);
+  // TA-23w / TA-07w : éditeur ouvert/fermé x10 sans effet ; clic Drone et clic d'armement = autorisation explicite
+  ph.mode = 2;
+  auto w = restored(&ph);  // restaurée pendant une LECTURE déjà en cours : reste suspendue
+  runPh(*w, 5);
+  bool edOk = !w->autonomyAuthorized();
+  for (int i = 0; i < 10; ++i) {
+    std::unique_ptr<juce::AudioProcessorEditor> ed(w->createEditorIfNeeded());
+    runPh(*w, 2);
+    edOk = edOk && !w->autonomyAuthorized();
+  }
+  TK_CHECK(edOk);
+  tk::result("TA-23w", edOk, "ouverture/fermeture de l'editeur x10 (LECTURE maintenue) : autorisation inchangee (suspendue) %d", edOk);
+  bool droneClick = false, armClick = false, armFound = false;
+  {
+    auto u = restored(&ph);
+    runPh(*u, 3);
+    std::unique_ptr<juce::AudioProcessorEditor> ed(u->createEditorIfNeeded());
+    auto* main = dynamic_cast<sbd::ui::MainEditor*>(ed.get());
+    std::vector<juce::Component*> all;
+    if (main) {
+      main->setSize(1440, 900);
+      for (int space = 0; space < 3; ++space)
+        for (int tab = 0; tab < 6; ++tab) {
+          main->showSubTab(space, tab);
+          main->refreshNow();
+          collectComponents(*main, all);
+        }
+    }
+    for (auto* c : all)
+      if (auto* b = dynamic_cast<juce::ToggleButton*>(c))
+        if (b->getButtonText() == "Drone" && !droneClick) {
+          b->setToggleState(true, juce::sendNotification);  // clic de l'utilisateur
+          runPh(*u, 1);
+          droneClick = u->autonomyAuthorized() && u->drone();
+        }
+    auto v = restored(&ph);
+    runPh(*v, 3);
+    std::unique_ptr<juce::AudioProcessorEditor> ed2(v->createEditorIfNeeded());
+    auto* main2 = dynamic_cast<sbd::ui::MainEditor*>(ed2.get());
+    all.clear();
+    if (main2) {
+      main2->setSize(1440, 900);
+      for (int space = 0; space < 3; ++space)
+        for (int tab = 0; tab < 6; ++tab) {
+          main2->showSubTab(space, tab);
+          main2->refreshNow();
+          collectComponents(*main2, all);
+        }
+    }
+    for (auto* c : all)
+      if (auto* b = dynamic_cast<juce::ToggleButton*>(c))
+        if (b->getHelpText() == "dst.gl1.arm" && !armFound) {
+          armFound = true;
+          b->setToggleState(false, juce::sendNotification);
+          runPh(*v, 1);
+          const bool stillSusp = !v->autonomyAuthorized();  // désarmer n'autorise pas
+          b->setToggleState(true, juce::sendNotification);
+          runPh(*v, 1);
+          armClick = stillSusp && v->autonomyAuthorized();
+        }
+  }
+  const bool t7 = droneClick && armFound && armClick;
+  TK_CHECK(t7);
+  tk::result("TA-07w", t7, "editeur : clic Drone -> autorisation explicite %d ; clic d'armement (dst.gl1.arm) -> autorisation explicite %d (controle trouve %d, desarmer n'autorise pas)",
+             droneClick, armClick, armFound);
+  TK_CHECK(gTaWrapAlloc == 0);
+  tk::result("TA-20w", gTaWrapAlloc == 0, "processBlock avec playhead (ARRET, LECTURE, INCONNU, hors temps reel, CC120/123) : %lld allocation(s)", gTaWrapAlloc);
+}
+
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
   // profil MIDI Learn isolé : les tests n'écrivent jamais dans le profil réel de l'utilisateur
@@ -860,6 +1053,8 @@ int main(int argc, char** argv) {
   std::fprintf(stderr, "[ARCH-G4.2 : autonomie, MIDI Learn]\n");
   testAutonomyWrapper();
   testMidiLearn(learnProfile);
+  std::fprintf(stderr, "[ARCH-G4.3 : TRANSPORT AUTHORIZATION]\n");
+  testTransportWrapper();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

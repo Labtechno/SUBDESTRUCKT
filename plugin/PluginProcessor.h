@@ -134,6 +134,9 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::uint32_t collectCaptures(std::uint32_t mask);
   void clearCapture(int slot);
   std::vector<CaptureAsset> captures() const;
+  std::vector<std::string> taRecentEvents() const;  // journal TRANSPORT AUTHORIZATION (Diagnostics)
+  static std::string taLogPath();                    // écrit seulement si taFlagPath() existe
+  static std::string taFlagPath();
   void requestCrossReset() noexcept { engine_.requestCrossReset(); }
   void requestManualExcite() noexcept { engine_.requestManualExcite(); }
   void requestPanic() noexcept { panicRequested_.store(true); }
@@ -223,7 +226,13 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::array<std::uint64_t, 3> streamCounters_{};
   InstanceState instance_;
   std::vector<CaptureAsset> captures_;
-  bool capturesHeld_ = false;  // captures restaurées non injectées (autonomie suspendue)
+  void publishCapturesLocked(bool apply);  // captures -> moteur (retenues ; appliquées sous autorisation si apply)
+  // journal TRANSPORT AUTHORIZATION (diagnostic de recette) : derniers événements, fichier si activé
+  std::vector<std::string> taRecent_;
+  int taFlagPoll_ = 0;
+  bool taFileOn_ = false;
+  std::uint32_t lastPanics_ = 0;
+  void drainTaLogLocked();
   std::string lastMessage_;
   std::uint64_t serial_ = 0, modSerial_ = 0;
   double sampleRate_ = 0.0;

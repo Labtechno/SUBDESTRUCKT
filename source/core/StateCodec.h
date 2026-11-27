@@ -103,6 +103,7 @@ bool decodeState(const std::string& text, PluginState& out, std::string& error);
 // restaure que si l'autorisation d'instance le permet (P0-C04/C05, §9). Remet à zéro les armements (filtres et destruction).
 void disarmAutonomous(PluginState& s) noexcept;
 bool anyArmed(const PluginState& s) noexcept;
+bool isAutonomyArm(ParamId id) noexcept;  // l'un des 9 armements autonomes
 
 // Base64 (RFC 4648, sans retour à la ligne) partagé par les formats texte (état, banques .sdwt).
 std::string base64Encode(const std::uint8_t* data, std::size_t size);

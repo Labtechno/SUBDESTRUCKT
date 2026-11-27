@@ -138,9 +138,10 @@ void testGolden() {
   std::string l, want;
   while (std::getline(in, l))
     if (l.rfind(platformTag() + " ", 0) == 0) want = l;
-  if (want.empty()) {  // plate-forme sans empreinte : publiée pour consignation, critère non évalué ici
+  if (want.empty()) {  // plate-forme sans empreinte consignée : échec (empreinte publiée pour consignation)
     std::printf("::notice title=GOLDEN-G43::%s\n", line.str().c_str());
-    return;  // point de contrôle de génération : critère évalué une fois l'empreinte consignée
+    tk::result("ZC-03", false, "empreintes 0.3.1 absentes pour la plate-forme %s (publiees en annotation, a consigner)", platformTag().c_str());
+    return;
   }
   std::istringstream ws(want);
   std::string tag;

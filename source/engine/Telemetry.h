@@ -41,6 +41,13 @@ struct Telemetry {
   std::atomic<bool> gate{false};
   std::atomic<bool> drone{false};
   std::atomic<bool> autonomySuspended{false};  // armement(s) configuré(s) mais autorisation locale retirée (AUT)
+  // TRANSPORT AUTHORIZATION (ARCH-G4.3) : état publié par le thread audio (diagnostic, interface, recette)
+  std::atomic<bool> autonomyAuthorized{true};
+  std::atomic<bool> autonomyLatched{false};       // verrou Panic (levé par un ARRÊT réel ou une autorisation explicite)
+  std::atomic<int> autonomySource{1};             // AuthSource
+  std::atomic<int> transportState{0};             // TransportObs du dernier état connu (0 = jamais observé)
+  std::atomic<bool> offline{false};               // traitement hors temps réel
+  std::atomic<std::uint32_t> authGrants{0}, authRevocations{0}, authGeneration{0}, taDropped{0};
   std::atomic<float> envelope{0.0f};
 
   // sortie

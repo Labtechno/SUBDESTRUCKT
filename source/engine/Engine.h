@@ -11,6 +11,7 @@
 // Transitions de topologie : fondu de sortie des arêtes retirées, bascule atomique, fondu d'entrée ; jamais d'union.
 // process() n'alloue pas, ne verrouille pas, ne fait aucune I/O.
 #pragma once
+#include <algorithm>
 #include <array>
 #include <complex>
 #include <atomic>
@@ -32,6 +33,7 @@
 #include "MidiEvent.h"
 #include "ModRuntime.h"
 #include "Telemetry.h"
+#include "AutonomyGate.h"
 #include "TopologyExchange.h"
 
 #if defined(SBD_RTSAN) && defined(__clang__)
@@ -55,8 +57,10 @@ struct EngineSetup {
 };
 
 struct TransportInfo {
-  bool valid = false;
+  bool valid = false;      // information de transport disponible (sinon : INCONNU, jamais assimilé à un ARRÊT)
   bool playing = false;
+  bool recording = false;  // ARCH-G4.3 : début d'enregistrement (TRANSPORT AUTHORIZATION)
+  bool offline = false;    // ARCH-G4.3 : traitement hors temps réel (VST3 kOffline) : rendu
   double bpm = 120.0;
   double ppq = 0.0;  // position en noires au début du bloc
 };
@@ -64,6 +68,7 @@ struct TransportInfo {
 // Captures R2 à restaurer (préparées hors RT, publiées au thread audio).
 struct CaptureSet {
   std::vector<CaptureAsset> items;
+  bool apply = true;  // false : ensemble retenu seulement (contenu déjà présent dans les tampons, ex. après une capture)
 };
 
 // Référence de banque publiée vers le thread audio (le shared_ptr est libéré hors RT au retrait).
@@ -103,8 +108,19 @@ class Engine {
   // Autorisation locale d'activation autonome (ARCH-G4.2, AUT) : état d'exécution NON persisté, distinct de la
   // configuration. Sans autorisation, les 9 armements configurés sont appliqués comme désarmés (armement effectif =
   // configuré ET autorisé) ; la configuration (base) reste intacte. Retirée par le Panic si un armement est configuré.
-  void setAutonomyAuthorized(bool on) noexcept { autonomyAuth_.store(on, std::memory_order_release); }
-  bool autonomyAuthorized() const noexcept { return autonomyAuth_.load(std::memory_order_acquire); }
+  // ARCH-G4.3 (TRANSPORT AUTHORIZATION) : machine d'états du thread audio (AutonomyGate) ; false = suspension (nouvelle
+  // génération de chargement), true = autorisation explicite. Effet à la frontière de bloc suivante.
+  void setAutonomyAuthorized(bool on) noexcept {
+    if (on)
+      auth_.requestAuthorize();
+    else
+      auth_.requestSuspend();
+  }
+  bool autonomyAuthorized() const noexcept { return auth_.authorizedView(); }
+  TaLog& taLog() noexcept { return taLog_; }
+  // captures retenues dont l'application est en attente (le thread de contrôle ne doit pas les remplacer par un tampon
+  // d'exécution non encore restauré)
+  bool capturesPending() const noexcept { return capturesPendingPub_.load(std::memory_order_acquire); }
   void requestCrossReset() noexcept { crossResetCmd_.store(true, std::memory_order_release); }
   void requestManualExcite() noexcept { exciteCmd_.store(true, std::memory_order_release); }
   // Captures R2 : demande (tout thread) ; lecture du résultat (thread de contrôle) quand il est prêt.
@@ -185,7 +201,13 @@ class Engine {
   SpscExchange<std::array<CurvePoints, 4>> curveExchange_;
   SpscExchange<CaptureSet> captureExchange_;
   std::atomic<std::uint32_t> captureReq_{0};
-  CaptureSet* pendingCaptures_ = nullptr;
+  CaptureSet* retained_ = nullptr;  // captures retenues (possédées par le thread audio jusqu'au remplacement)
+  bool captureApplyPending_ = false;
+  std::atomic<bool> capturesPendingPub_{false};
+  AutonomyGate auth_;
+  TaLog taLog_;
+  std::uint64_t taClock_ = 0;
+  bool droneEff() const noexcept { return drone_ && auth_.authorized(); }
   std::uint32_t captureApplied_ = 0;
   long long captureWait_ = 0;
   std::array<std::atomic<bool>, 6> captureReady_{};
@@ -237,7 +259,6 @@ class Engine {
   bool sustainPedal_ = false;
   bool drone_ = false;
   std::atomic<int> droneCmd_{-1};
-  std::atomic<bool> autonomyAuth_{true};
   std::atomic<bool> crossResetCmd_{false}, exciteCmd_{false};
   bool noteOnEdge_ = false, manualExcitePending_ = false;
   double f0_ = 261.6255653005986;
@@ -296,6 +317,7 @@ class Engine {
       x = buf[static_cast<size_t>((pos - d + N) % N)];
       pos = (pos + 1) % N;
     }
+    void reset() noexcept { std::fill(buf.begin(), buf.end(), 0.0); }  // RT : aucune allocation
   };
   AlignDelay alignWtL_, alignWtR_, alignFmL_, alignFmR_, alignOutL_, alignOutR_;
   bool padActive_ = false;

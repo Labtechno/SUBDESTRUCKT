@@ -39,6 +39,7 @@ add_library(subdestruckt_core STATIC
   source/core/WtLibrary.cpp
   source/engine/ModRuntime.cpp
   source/engine/Chain.cpp
+  source/engine/AutonomyGate.cpp
   source/engine/Engine.cpp)
 target_include_directories(subdestruckt_core PUBLIC source ${CMAKE_CURRENT_BINARY_DIR}/generated)
 target_compile_features(subdestruckt_core PUBLIC cxx_std_17)
@@ -75,9 +76,14 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_g41.cpp
     tests/core/test_g41_audit.cpp
     tests/core/test_g42.cpp
-    tests/core/test_g43.cpp)
+    tests/core/test_g43.cpp
+    tests/core/test_g43_ta.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
+  # pile du thread principal alignée sur macOS (8 Mo) : plusieurs tests instancient le moteur sur la pile (Windows : 1 Mo)
+  if(MSVC)
+    target_link_options(subdestruckt_core_tests PRIVATE /STACK:8388608)
+  endif()
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)
   # Rendu des exemples audio du manuel avec le moteur réel (outil hors produit)
   add_executable(subdestruckt_manual_render tools/manual-audio/render_examples_g4.cpp)

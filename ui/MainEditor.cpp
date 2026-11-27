@@ -268,7 +268,8 @@ class PerformanceView : public juce::Component {
     for (ParamId a : {ParamId::FltWtArm, ParamId::FltFmArm, ParamId::FltGlArm, ParamId::DstWt1Arm, ParamId::DstWt2Arm, ParamId::DstFm1Arm,
                       ParamId::DstFm2Arm, ParamId::DstGl1Arm, ParamId::DstGl2Arm})
       armed += pv.flag(a);
-    s << "   |   etats autonomes armes : " << armed;
+    s << "   |   etats autonomes armes : " << armed << "   |   execution "
+      << (ctx_.proc.telemetry().autonomyAuthorized.load() ? "autorisee" : (ctx_.proc.telemetry().autonomyLatched.load() ? "revoquee (Panic)" : "suspendue"));
     states_.setText(s, juce::dontSendNotification);
     states_.setColour(juce::Label::textColourId, (ctx_.proc.drone() || armed) ? col::alert : col::dim);
   }
@@ -1075,9 +1076,20 @@ class EngineeringView : public juce::Component {
         << juce::String(100.0 * t.cpuLoad.load(), 1) << " % du bloc (mesure du dernier bloc, machine courante)\n\n";
       d << "SURETE\nnon-finis      " << static_cast<int>(t.nonFiniteResets.load()) << "\ngarde +30 dBFS " << static_cast<int>(t.outputClampHits.load())
         << "\nborne PM       " << static_cast<int>(t.pmClampHits.load()) << "\nlimiteur       " << static_cast<int>(t.limiterHits.load())
-        << "\nprotection +24 dBFS (SPEC-HR-01, proposee) " << static_cast<int>(t.elpHits.load())
+        << "\nprotection +24 dBFS (ELP, SPEC-HR-01) " << static_cast<int>(t.elpHits.load())
         << "\nevenements perdus " << static_cast<int>(t.droppedEvents.load()) << "\nPanic          " << static_cast<int>(t.panics.load())
         << "\n\nmessage : " << ctx_.proc.lastMessage();
+      // TRANSPORT AUTHORIZATION (ARCH-G4.3) : état et derniers événements (recette Reason / Live)
+      static const char* tn[] = {"jamais observe", "ARRET", "LECTURE"};
+      const int ts = juce::jlimit(0, 2, t.transportState.load());
+      d << "\n\nAUTORISATION   " << (t.autonomyAuthorized.load() ? "accordee" : "retiree") << " (source "
+        << authSourceName(static_cast<AuthSource>(t.autonomySource.load())) << ")" << (t.autonomyLatched.load() ? "  verrou Panic" : "")
+        << "\ntransport      " << tn[ts] << (t.offline.load() ? "  hors temps reel" : "") << "\nautorisations  "
+        << static_cast<int>(t.authGrants.load()) << "  revocations " << static_cast<int>(t.authRevocations.load()) << "  generation "
+        << static_cast<int>(t.authGeneration.load()) << "  journal perdu " << static_cast<int>(t.taDropped.load())
+        << "\njournal fichier : " << juce::String(SubdestrucktProcessor::taFlagPath()) << " (present = actif)";
+      const auto ev = ctx_.proc.taRecentEvents();
+      for (size_t i = ev.size() > 8 ? ev.size() - 8 : 0; i < ev.size(); ++i) d << "\n  " << juce::String(ev[i]);
       diag_.setText(d, juce::dontSendNotification);
     }
   }
@@ -1194,7 +1206,10 @@ MainEditor::MainEditor(SubdestrucktProcessor& p) : juce::AudioProcessorEditor(p)
     zoom_f_ = zoom_.getSelectedId() / 100.0f;
     resized();
   };
-  drone_.onClick = [this] { proc_.setDrone(drone_.getToggleState()); };
+  drone_.onClick = [this] {  // clic de l'utilisateur : intention explicite (autorisation sans confirmation)
+    proc_.setDrone(drone_.getToggleState());
+    if (drone_.getToggleState()) proc_.authorizeAutonomy();
+  };
   authorize_.setColour(juce::TextButton::buttonColourId, col::fm.darker(0.4f));
   authorize_.setTooltip("Etats autonomes suspendus (armements ou captures restaures par le projet, la duplication, un preset "
                         "ou le Panic) : cliquer pour autoriser leur activation dans cette instance");
