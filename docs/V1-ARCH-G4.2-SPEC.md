@@ -77,7 +77,7 @@ historique**) : pendant la lecture d'un segment, hors gel, l'échantillon lu est
 | D2-01 | Historique : à Position = 0, sortie(fb = 1) − sortie(fb = 0) ≤ −60 dB (inaudibilité constatée, documentée) |
 | D2-02 | Candidat : à Position = 0, différence fb = 1 vs fb = 0 ≥ −20 dB (audible) et croissante avec fb (0,25/0,5/1) |
 | D2-03 | Non-régression : fb = 0, 30 configurations aléatoires D2 (taille, vitesse ±4, Repeat, Position, Crossfade, gel) : candidat ≡ historique bit à bit ; gel actif : tampon gelé inchangé bit à bit |
-| D2-04 | Stabilité : fb = 1, entrée pleine échelle, Repeat 1, vitesses {−4, −1, 0,25, 1, 4}, 60 s : tous finis, crête ≤ 4 (borne de saturation), énergie de la boucle bornée (aucune croissance sur les 10 dernières secondes) |
+| D2-04 | Stabilité (historique et candidat) : fb = 1, entrée pleine échelle, Repeat 1, vitesses {−4, −1, 0,25, 1, 4}, 60 s : tous finis, crête ≤ 4 (borne de saturation), énergie bornée : RMS(50–60 s) ≤ 1,05 × RMS(40–50 s) |
 | D2-05 | Déterminisme et transitions : deux rendus identiques bit à bit ; sauts par bloc de fb, Position, gel et vitesse : 0 non-fini, aucune allocation |
 
 ## 4. Transformations Z (R19)
