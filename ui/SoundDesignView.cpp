@@ -143,7 +143,7 @@ int zDomain(int type) { return type == 0 ? -1 : type == 1 ? 3 : (type == 2 || ty
 
 class ZOrderDisplay : public OpticalDisplay {
  public:
-  explicit ZOrderDisplay(UiContext& c) : OpticalDisplay("ORDRE EFFECTIF DES TRANSFORMATIONS Z", "moteur 0.3.3"), ctx_(c) {}
+  explicit ZOrderDisplay(UiContext& c) : OpticalDisplay("ORDRE EFFECTIF DES TRANSFORMATIONS Z", juce::String::fromUTF8("moteur DSP 0.3.3 (verrouillé)")), ctx_(c) {}
   void refresh() {
     const auto pv = ctx_.proc.parameters().values();
     const int a = pv.choice(ParamId::WtZAType), b = pv.choice(ParamId::WtZBType), ord = pv.choice(ParamId::WtZOrder);

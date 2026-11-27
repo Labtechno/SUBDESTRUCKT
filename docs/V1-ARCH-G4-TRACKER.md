@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 / G4.3-R1 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 / G4.3-R1 / ARCH-UI-04 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -143,6 +143,12 @@ certifiée). R-28, R-29, R-30 : NON EXÉCUTÉS jusqu'à leur terme, risques acce
 TA corrigés (`~/Library/Labtechno/SUBDESTRUCKT/`). ARCH-UI-04 (interface SYMBIOTIC INDUSTRIAL) autorisée ; mission UI
 seule, `source/` verrouillé.
 
+### 3septies. Critères ARCH-UI-04 (enregistrés avant mesure, en-tête de `tests/wrapper/Ui04Tests.cpp`)
+UI04-INV, COV, BIND, ALIAS, INACT, NAV, CLIP, PANIC, UNDO, AUTO, STATE, KEY, CORE, CON, OPEN, MULTI, RT, DSP, DECO, OPS
+(inventaire `tests/expected_results.txt`). Additif d'exécution, défini après le diagnostic d'un crash et ajouté au
+critère UI04-NAV sans en retirer de clause : aucune destruction de composant par la navigation ou la sélection.
+Résultats : `docs/V1-ARCH-UI-04-REPORT.md` (20/20 PASS en local ; CI : §5). Version 0.4.0.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -188,10 +194,10 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (CI run 9) | — |
 | R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.3 : SPEC-HR-01 adoptée, ELP-01R PASS ; ELP-01 FAIL historique conservé) | G4.3 |
 | R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
-| R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
-| R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
-| R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
-| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS (navigation, tailles, Inspector, titres accessibles) ; contrastes/DPI/zoom par niveau non mesurés) | run 33 |
+| R42 | UI Performance | UI | PASS (ARCH-UI-04 : UI04-COV/BIND/CORE/PANIC ; recette humaine H-01..H-09 à faire ; tâches UX01..18 non mesurées) | UI-04 |
+| R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | PASS (ARCH-UI-04 : UI04-COV/BIND/INACT ; ordre Z effectif affiché) | UI-04 |
+| R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | PASS (ARCH-UI-04 : UI04-OPS/DECO/BIND) | UI-04 |
+| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS ; ARCH-UI-04 : UI04-CLIP/CON/NAV/KEY PASS (zoom 75-150 %, 960x640) ; Retina réel non mesuré) | UI-04 |
 | R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.3 : 703 paramètres, format d'état 4, G-21w, G-22w, TA-xxw) | G4.3 |
 | R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | run 37 |
 | R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.3 : paquets 0.3.2 en CI, NON publiés ; compilation locale LB-01..13, barrière exhaustive) | G4.3 |
@@ -233,9 +239,15 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.3-R1 : manuel 0.3.3, campagne G431, documentationSha ; SHA livré 0469c4da6181eaa000bfc402b70b97e1dfef989b | 937ac6d, f1793ee, 0469c4d | run 44 SUCCESS |
 | 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport ; documentationSha | c7b8573, 97100b0 | run 41 : job manuel en échec (documentationSha vide ; titre S0.1 dynamique) ; **run 42 (45992835990) SUCCESS complet, SHA livré 97100b0** |
 | 2026-11-27 | DSP FINAL LOCK : consignation, chemins du journal TA corrigés, contrat ARCH-UI-03 importé de main (9a07d76, sélectif) | (ce commit) | documentaire, aucun changement de code |
+| 2026-11-27 | ARCH-UI-04 : Design System et trois espaces | 603abf8 | CI : build-test-package FAIL (suite wrapper interrompue : composants détruits pendant la navigation, corrigé en dafa6be) ; RTSan, LB, manuel SUCCESS |
+| 2026-11-27 | ARCH-UI-04 : suite UI04 (20 critères), correctifs | 16e4559 | Local : 20/20 PASS |
+| 2026-11-27 | ARCH-UI-04 : cycle de vie des composants (diagnostic ASan) | dafa6be | Local : wrapper 53 critères (AUT-02 seul, documenté), ASan 0 erreur |
+| 2026-11-27 | ARCH-UI-04 : version 0.4.0, livraison, cartographie, captures, rapport | (ce commit) | Local : barrière PASS (cœur 8 FAIL + wrapper 1 FAIL documentés, identiques à 0.3.3) ; CI : voir ligne suivante |
 
 ## 6. Prochaine action
-ARCH-UI-04 en cours (voir §3sexies ; rapport `docs/V1-ARCH-UI-04-REPORT.md` à la clôture).
+ARCH-UI-04 : GO CONDITIONNEL (`docs/V1-ARCH-UI-04-REPORT.md`). Le propriétaire : compiler le SHA livré par
+`build_local_macos.sh`, installer, exécuter la recette courte `docs/V1-ARCH-UI-04-RECETTE.md` (H-01..H-09), reporter
+le verdict ici. ARCH-UI-05 : non lancé (autorisation requise).
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |

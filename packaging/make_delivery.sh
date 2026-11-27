@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.3-R1
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-UI-04
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,15 +22,17 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate ARCH-G4.3-R1 (correction DSP finale, recette physique en attente). Ce n'est NI une beta NI une version
-publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
+STATUT : livraison interne candidate ARCH-UI-04 (interface SYMBIOTIC INDUSTRIAL ; moteur DSP identique a 0.3.3, DSP FINAL LOCK).
+Ce n'est NI une beta NI une version publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
 ---------------------------
 - Teste automatiquement sur : ${VM_OS}, machine virtuelle Apple Silicon de GitHub Actions (pas un Mac physique).
 - Hotes utilises : hote VST3 de test sans interface (hebergement VST3 de JUCE 9.0.6) et pluginval 1.0.4.
-- AUCUNE DAW n'a ete testee. Aucun test sur Mac physique (M4 Max, M3) n'a encore ete realise : recette utilisateur
-  en attente (installation, decouverte dans la DAW, son, MIDI, CROSS, rechargement de projet, desinstallation).
+- Cette build ${VERSION} n'a pas encore ete testee sur Mac physique ni dans une DAW (recette humaine courte ARCH-UI-04 a
+  faire). Moteur DSP identique a 0.3.3, recette physique 0.3.3 : Reason 14.1 sur Mac Studio M4 Max, macOS 26.5.2,
+  44,1 kHz, R-26 GO (declare par le proprietaire). Ableton Live : NON certifie (R-27 retire). Exports hors ligne (R-28),
+  ecoutes Z (R-29) et captures A/B (R-30) : NON executes, risques acceptes (docs/V1-DSP-FINAL-LOCK.md).
 - Resultats automatiques de cette build : ${n_pass} criteres PASS, ${n_fail} ECHEC (detail : docs/V1-ARCH-G4-REPORT.md
   et journal du run CI).
 - Cible materielle : Apple M3 minimum (non encore certifiee). M1/M2 hors support officiel, sans blocage.
@@ -73,22 +75,25 @@ plugins. Seul /Library/Application Support/Labtechno/SUBDESTRUCKT/install-manife
 
 6. Contenu de la build et limitations connues
 ---------------------------------------------
-Contenu (fonctions implementees et testees automatiquement ; recette utilisateur sur Mac a venir) :
-- Voix mono Mono/Legato, priorites derniere/basse/haute, sustain, pitch bend Up/Down, pression, CC1/2/11/64,
-  accordage A4 et microtuning 12 classes, Drone (desarme par defaut, restauration sur autorisation), Panic.
-- 5 enveloppes DAHDSR lineaires/exponentielles (Loop), 4 LFO (8 formes, tempo, phase), aleatoires, chaos (Lorenz).
-- Wavetable XYZ : banques 64x16 (7 banques usine + import WAV), Clamp/Wrap/Mirror, Linear/Stepped, Clean/Raw,
-  Linear/Cubic, phases, sync dure/douce, Character, Z deux emplacements (Harmonic Fold, Phase Warp, Spectral Mutation).
-- FM 4 operateurs PM/LinFM/TZFM/ExpFM, 9 formes, ratio/fixe/offset, matrice 4x4, 10 topologies, AC/DC, mute/disable.
-- CROSS : 55 routes avec contrat causal B-T2 sticky, bus FM, directions, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset.
-- Filter & Resonator F1-F4 (3 emplacements) et Destruction N1/D1/Y1/S1/N2/D2/Y2/S2 (6 emplacements), Pre/Post.
-- Matrice globale 64 connexions (Via, courbes, audio-rate 16, macros M1-M4), Randomize/Mutate/Evolve, Undo/Redo,
-  presets usine/utilisateur, Quality Eco/Normal/High, limiteur musical optionnel, UI Performance/Sound Design/Engineering.
-Limitations : 5 transformations Z historiques non implementees (catalogue non retrouve) ; morph spectral non
-implemente ; enveloppes non synchronisables au tempo (regles non arbitrees) ; balance WT/FM de facade non exposee
-(semantique non arbitree) ; editeur graphique de formes absent ; repliement eleve de N1 en repli extreme (utiliser
-Quality High) ; la garde numerique +30 dBFS peut s'engager avec des gains cumules extremes ; aucune promesse
-d'absence de clic lors des changements structurels ; performances non certifiees sur M3/M4 ; graphisme provisoire.
+Contenu (fonctions implementees et testees automatiquement ; recette humaine ARCH-UI-04 a venir) :
+- Interface SYMBIOTIC INDUSTRIAL : PERFORMANCE (WT XYZ, FM contextuel, SYMBIOTIC CORE direct X=cross.fwd, Y=cross.rev,
+  Z=cross.master, macros, balance, sortie mesuree, etats autonomes), SOUND DESIGN (WT | CROSS | FM, traitements
+  contextuels, modulation), ENGINEERING (reseaux FM/CROSS, matrice globale, banques, voix/accordage, presets/etat,
+  Randomize/Evolve, MIDI Learn, diagnostics, captures). 703/703 parametres accessibles et edites par leur commande
+  (tests UI04). Panic toujours visible ; zoom 75-150 % ; Inspector retractable et epinglable.
+- Voix Mono/Legato, priorites, sustain, bend, pression, CC, accordage A4 et microtuning, Drone, Panic,
+  TRANSPORT AUTHORIZATION (etats autonomes suspendus jusqu'a autorisation).
+- 5 enveloppes DAHDSR (Loop, declenchement, sync tempo), 4 LFO (forme Custom editable), aleatoires, chaos, suiveurs.
+- Wavetable XYZ (banques usine, import WAV, editeur de formes, bibliotheque .sdwt), morph Linear/Stepped/Spectral,
+  8 transformations Z (Fold, Warp, Mutation, Tilt, Mask, Focus, Shift, Scatter), Character.
+- FM 4 operateurs PM/LinFM/TZFM/ExpFM, matrice 4x4, 10 topologies ; CROSS 55 routes B-T2, bus, Cross Audio.
+- Filtres F1-F4 (3 emplacements), Destruction N1..S2 (6 emplacements, D2 Legacy/Regenerative), captures R2.
+- Matrice globale 64 liens, Randomize/Mutate/Evolve, Undo/Redo, presets, Quality, limiteur, protection ELP.
+Limitations : SYMBIOTIC CORE en rendu STATIQUE PROVISOIRE (renderer 3D, morphing et mapping multiparametrique : ARCH-UI-05) ;
+ordre A>B / B>A des transformations Z sans effet entre domaines differents (restriction non arbitree, signalee dans
+l'interface) ; libelles definitifs des deux commandes FM contextuelles non arbitres ; tailles et zoom verifies
+automatiquement, pas encore sur ecran Retina reel ; performances non certifiees sur M3 ; aucune promesse d'absence de clic
+lors des changements structurels.
 La latence declaree depend de la configuration (decimation ; + taille FFT si S2 est actif).
 
 7. Signature et notarisation
@@ -108,8 +113,20 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — correction DSP ARCH-G4.3-R1 (build interne, non diffusee)
--------------------------------------------------------------------------------------------
+${BUILD_ID} (commit ${COMMIT}) — interface ARCH-UI-04 SYMBIOTIC INDUSTRIAL (build interne, non diffusee)
+------------------------------------------------------------------------------------------------------
+Interface (aucune modification DSP : moteur, etat et parametres identiques a 0.3.3)
+- Design System SYMBIOTIC INDUSTRIAL : NEXUS XL/S/Micro, PLASMA CHANNEL, SYNAPTIC TRACK, NEURAL CELL, OPTICAL DISPLAY ;
+  Base / Effective / mesure reelle distinctes ; reglage fin, saisie numerique, reset explicite, clavier, molette.
+- Trois espaces refondus ; SYMBIOTIC CORE (commande directe X/Y/Z, rendu statique provisoire) ; ordre effectif des
+  transformations Z affiche ; matrice globale editable (profondeur, courbe Custom, cadence, via) ; reseaux FM/CROSS
+  avec classe causale en lecture seule ; MIDI Learn par table ; captures et actifs.
+- Libelles complets (aucune troncature), Panic permanent, barre adaptative, zoom 75-150 %, Inspector epinglable.
+Compatibilite : 703 parametres, format d'etat 4, projets et presets 0.3.x lus a l'identique ; StableID et identite VST3
+inchanges.
+
+0.3.3 — correction DSP ARCH-G4.3-R1 (build interne, non diffusee ; SHA 0469c4d, recette physique R-26 GO)
+-------------------------------------------------------------------------------------------------------
 Wavetable Z
 - Harmonic Tilt redistribue l'energie au lieu de l'amplifier : energie de la bande lue constante (meme sans Gain
   Compensation) et elevation de crete bornee a +6 dB par etage (reduction de gain continue, sans ecretage). Le son

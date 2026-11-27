@@ -8,7 +8,7 @@ if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Cible de deploiement declaree (non validee, voir plan §2)")
 endif()
 
-project(SUBDESTRUCKT VERSION 0.3.3 LANGUAGES C CXX)
+project(SUBDESTRUCKT VERSION 0.4.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

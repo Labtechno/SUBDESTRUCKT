@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — Compilation et installation privées sur Mac (0.3.3, ARCH-G4.3-R1)
+# SUBDESTRUCKT — Compilation et installation privées sur Mac (0.4.0, ARCH-UI-04)
 
 Procédure de recette **privée** sur le Mac du propriétaire (Mac Studio M4 Max, VST3 arm64). Aucune diffusion : les
 fichiers produits restent dans `local-build/` (ignoré par git) et ne doivent pas être publiés. Script :
@@ -32,7 +32,7 @@ n'écrase jamais une sortie existante et refuse un `local-build/` symbolique.
 
 1. Si le script signale un doublon, retirez `~/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3` (ancienne option
    `--install`, supprimée depuis 0.3.1). Le script ne touche jamais à vos dossiers de plugins.
-2. Ouvrez vous-même `local-build/delivery-…/SUBDESTRUCKT_v0.3.3-b…/SUBDESTRUCKT_Installer.pkg` (paquet non signé :
+2. Ouvrez vous-même `local-build/delivery-…/SUBDESTRUCKT_v0.4.0-b…/SUBDESTRUCKT_Installer.pkg` (paquet non signé :
    Réglages Système › Confidentialité et sécurité › « Ouvrir quand même » pour CE paquet).
 3. Désinstallation : `SUBDESTRUCKT_Uninstaller.pkg`.
 
@@ -54,3 +54,9 @@ Ordre conseillé après installation : R-01..R-05 (installation, version 0.3.3 a
 Live, R-28 exports hors ligne (TRANSPORT AUTHORIZATION), R-29 écoute Z (Tilt avec et sans Gain Compensation, Shift),
 R-30 écoute A/B des captures R2 (`docs/r1-audio/`). Résultats : bouton d'export du manuel 0.3.3
 (`SUBDESTRUCKT_ARCH_G43R1_RESULTS.json`). Un hôte simulé ne remplace pas ces essais.
+
+## 7. Recette 0.4.0 (ARCH-UI-04)
+
+Moteur DSP identique à 0.3.3 (DSP FINAL LOCK). Recette humaine courte, groupée : `docs/V1-ARCH-UI-04-RECETTE.md`
+(H-01..H-09, ~25 min, Reason 14.1). La section 6 est conservée pour l'historique 0.3.3 (R-27 retiré, R-28..R-30 non
+exécutés, risques acceptés : `docs/V1-DSP-FINAL-LOCK.md`).

@@ -49,7 +49,7 @@ class NetCell : public juce::Component {
     const auto& t = ctx_.proc.telemetry();
     juce::String s;
     if (f) s << (f->cls == CausalClass::Delayed ? "D (T2)" : "I") << "  id " << static_cast<int>(f->id) << "\neff " << juce::String(t.effectiveDepth[static_cast<size_t>(slot_)].load(), 2);
-    else s << juce::String::fromUTF8("absente\nsi ajoutée : ") << (classifyPreview(routes, info.src, info.dst) ? "D" : "I");
+    else s << "absente\najout : " << (classifyPreview(routes, info.src, info.dst) ? "D (T2)" : "I");
     if (s != text_) {
       text_ = s;
       repaint();

@@ -727,3 +727,11 @@ Actions et états hors registre ajoutés ou modifiés (à couvrir par le contrô
 | Mise en marche d'un armement ou du Drone par clic | contrôle de l'armement / bouton Drone | vaut autorisation explicite (TA-07w) |
 | État d'autorisation (accordée / suspendue / révoquée par Panic, source, transport observé) | barre d'états du Sound Design ; Engineering › Diagnostics | lecture seule (télémétrie), aucune écriture DSP |
 | Journal TRANSPORT AUTHORIZATION | Engineering › Diagnostics (8 derniers événements) ; fichier `ta_log.txt` si `ta_diagnostics.on` existe | diagnostic de recette, aucune écriture disque sans le fichier d'activation |
+
+## Actualisation ARCH-UI-04 (0.4.0) — cartographie candidate remplacée par une preuve d'implémentation
+
+La présente table reste l'intention ARCH-UI-03 (affectations candidates, non prouvées). Elle est **supersédée** par
+[V1-ARCH-UI-04-STABLEID-MAP.md](V1-ARCH-UI-04-STABLEID-MAP.md), générée depuis l'exploration réelle de l'éditeur
+compilé (test UI04-COV) : 703/703 StableID atteints par une commande liée visible, chacun édité et vérifié par sa
+commande (UI04-BIND). Écarts de placement par rapport aux candidats : voir `docs/V1-ARCH-UI-04-REPORT.md` §6 ; les
+actions hors registre listées ci-dessus sont vérifiées par UI04-OPS.
