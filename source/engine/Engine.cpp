@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "../dsp/Elp.h"
 
 #include <algorithm>
 #include <cmath>
@@ -9,10 +10,11 @@ namespace {
 constexpr double kPmBound = 32.0;             // borne DSP dure de la somme PM d'une destination (rad)
 constexpr double kLinBound = 8.0;             // LinFM/TZFM : ±800 % de la fréquence porteuse
 constexpr double kExpBound = 4.0;             // ExpFM : ±4 octaves
-constexpr double kOutputGuard = 32.0;         // garde numérique de sortie (+30 dBFS) ; > 0 dBFS reste autorisé
-constexpr double kElpThreshold = 16.0;        // SPEC-HR-01 : début de la protection d'extrême niveau (+24 dBFS)
 constexpr int kTransitionHostSamples = 128;   // candidat initial du contrat causal (128 échantillons hôte)
-constexpr double kPanicSeconds = 0.005;       // rampe anti-clic du Panic
+constexpr double kPanicSeconds = 0.005;
+// armements des comportements autonomes (filtres auto-oscillants/gel modal, gels D2/S2, N2) : mêmes 9 que StateCodec
+constexpr ParamId kAutonomyArms[9] = {ParamId::FltWtArm, ParamId::FltFmArm, ParamId::FltGlArm, ParamId::DstWt1Arm, ParamId::DstWt2Arm,
+                                      ParamId::DstFm1Arm, ParamId::DstFm2Arm, ParamId::DstGl1Arm, ParamId::DstGl2Arm};       // rampe anti-clic du Panic
 constexpr double kDcCutoffHz = 5.0;           // garde DC de sortie
 constexpr double kSmoothingSeconds = 0.020;   // rampes des paramètres continus
 constexpr double kAcCutoffHz = 5.0;           // couplage AC des sorties de modulation (option par source)
@@ -189,6 +191,7 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
     cur_[ii] = base_.v[ii];
     eff_[ii] = base_.v[ii];
   }
+  applyAutonomyMask();
   outGain_.setLength(std::max(1, static_cast<int>(std::lround(kSmoothingSeconds * hostRate))));
   outGain_.reset(dbToGain(base_[ParamId::OutGain]));
   for (auto& en : envs_) en.setSampleRate(fsE);
@@ -403,7 +406,22 @@ void Engine::setParameters(const ParamValues& base) noexcept {
       if (!modulated_[ii]) eff_[ii] = v;
     }
   }
+  applyAutonomyMask();
   applyEnvelopeParameters();
+}
+
+void Engine::applyAutonomyMask() noexcept {
+  const bool ok = autonomyAuth_.load(std::memory_order_acquire);
+  for (ParamId a : kAutonomyArms) {
+    const auto i = static_cast<size_t>(a);
+    cur_[i] = eff_[i] = ok ? base_.v[i] : 0.0;
+  }
+}
+
+bool Engine::anyArmConfigured() const noexcept {
+  for (ParamId a : kAutonomyArms)
+    if (base_.flag(a)) return true;
+  return false;
 }
 
 void Engine::process(float* outL, float* outR, int numSamples, const MidiEvent* events, int numEvents,
@@ -486,6 +504,7 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
     drone_ = dc == 1;
     if (!drone_) releaseGateIfIdle();
   }
+  applyAutonomyMask();  // autorisation lue à la frontière de bloc (aucune attente, aucune allocation)
   if (crossResetCmd_.exchange(false, std::memory_order_acq_rel)) crossReset();
   if (exciteCmd_.exchange(false, std::memory_order_acq_rel)) manualExcitePending_ = true;
   // captures R2 : copie cohérente à une frontière de bloc, dans les tampons préalloués (aucune allocation)
@@ -626,11 +645,10 @@ void Engine::renderSegment(int a, int b, float* outL, float* outR, double* tap) 
     for (int c = 0; c < 2; ++c) {
       // SPEC-HR-01 (proposée, à arbitrer) : au-delà de +24 dBFS, saturation douce asymptotique vers +30 dBFS ;
       // inactive en dessous (aucune opération) ; chaque engagement est compté et signalé.
+      // (fonction : dsp/Elp.h ; elpEnabled_ n'est désactivable que par les tests de contre-épreuve)
       const double ay = std::fabs(y[c]);
-      if (ay > kElpThreshold && std::isfinite(ay)) {
-        const double r = kOutputGuard - kElpThreshold;
-        const double m = kElpThreshold + r * std::tanh((ay - kElpThreshold) / r) * (1.0 - 1e-9);
-        y[c] = y[c] > 0.0 ? m : -m;
+      if (elpEnabled_ && ay > kElpThreshold && std::isfinite(ay)) {
+        y[c] = elpShape(y[c]);
         ++elpHits_;
       }
       if (muteRest_) {
@@ -1510,6 +1528,10 @@ void Engine::handleEvent(const MidiEvent& ev) noexcept {
       sustained_.fill(false);
       gate_ = false;
       drone_ = false;
+      if (anyArmConfigured()) {  // AUT-05 : le Panic retire l'autorisation ; la configuration reste intacte
+        autonomyAuth_.store(false, std::memory_order_release);
+        applyAutonomyMask();
+      }
       for (auto& en : envs_) en.noteOff();
       panicActive_ = true;
       panicLeft_ = panicLength_;
@@ -1650,6 +1672,7 @@ void Engine::publishTelemetry() noexcept {
   t.currentNote.store(gate_ ? currentNote_ : -1, std::memory_order_relaxed);
   t.gate.store(gate_, std::memory_order_relaxed);
   t.drone.store(drone_, std::memory_order_relaxed);
+  t.autonomySuspended.store(!autonomyAuth_.load(std::memory_order_relaxed) && anyArmConfigured(), std::memory_order_relaxed);
   t.envelope.store(static_cast<float>(envs_[0].level()), std::memory_order_relaxed);
   t.peakL.store(blockPeakL_, std::memory_order_relaxed);
   t.peakR.store(blockPeakR_, std::memory_order_relaxed);

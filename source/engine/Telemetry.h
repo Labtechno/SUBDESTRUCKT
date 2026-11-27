@@ -40,6 +40,7 @@ struct Telemetry {
   std::atomic<int> currentNote{-1};
   std::atomic<bool> gate{false};
   std::atomic<bool> drone{false};
+  std::atomic<bool> autonomySuspended{false};  // armement(s) configuré(s) mais autorisation locale retirée (AUT)
   std::atomic<float> envelope{0.0f};
 
   // sortie

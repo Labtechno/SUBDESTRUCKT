@@ -431,6 +431,15 @@ void DestructionSlot::d2(double& L, double& R, const double* P, bool armed) noex
     const double vr = d2Buf_[1][static_cast<size_t>(i0)] + fr * (d2Buf_[1][static_cast<size_t>(i1)] - d2Buf_[1][static_cast<size_t>(i0)]);
     outL = vl * std::max(0.0, env);
     outR = vr * std::max(0.0, env);
+    // candidat C1 (non adopté) : l'échantillon lu est régénéré dans la boucle, hors gel ; fb = 0 : aucune écriture
+    const double g = P[static_cast<int>(DstOff::D2Fb)];
+    if (d2FbMode_ == 1 && !freeze && g > 0.0) {
+      const double in[2] = {L, R};
+      for (int c = 0; c < 2; ++c) {
+        float& s = d2Buf_[static_cast<size_t>(c)][static_cast<size_t>(i0)];
+        s = static_cast<float>(softSat((1.0 - 0.5 * g) * s + 0.95 * g * in[c], 4.0));
+      }
+    }
     d2SegPos_ += std::fabs(speed) > 1e-3 ? std::fabs(speed) : 1e-3;
     if (d2SegPos_ >= len) d2SegPos_ -= len;
   }

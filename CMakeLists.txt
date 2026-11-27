@@ -73,7 +73,8 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_g4_state.cpp
     tests/core/test_g4_perf.cpp
     tests/core/test_g41.cpp
-    tests/core/test_g41_audit.cpp)
+    tests/core/test_g41_audit.cpp
+    tests/core/test_g42.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   add_test(NAME core_tests COMMAND subdestruckt_core_tests)

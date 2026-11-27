@@ -50,6 +50,7 @@ class MainEditor : public juce::AudioProcessorEditor, private juce::Timer {
   juce::TextButton spaceBtn_[3];
   juce::ComboBox quality_, zoom_;
   juce::ToggleButton drone_{"Drone"};
+  juce::TextButton authorize_{"Autoriser"};  // AUT-08 : visible tant que les états autonomes sont suspendus
   // contenu (mis à l'échelle par le zoom)
   juce::Component content_;
   std::unique_ptr<PerformanceView> perf_;

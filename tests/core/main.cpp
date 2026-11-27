@@ -1,6 +1,7 @@
 // SUBDESTRUCKT — tests natifs du cœur (sans hôte, sans JUCE). Identifiants de critères : docs/V1-ARCH-G3-PLAN.md §7.
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <new>
 
 #include "TestKit.h"
@@ -32,20 +33,26 @@ void runStateTests2();
 void runPerfTests();
 void runG41Tests();
 void runAuditTests();
-
+void runG42Tests();
 int main() {
   std::printf("SUBDESTRUCKT ARCH-G3 — tests natifs du coeur\n");
-  runDspTests();
-  runTopologyTests();
-  runStateTests();
-  runEngineTests();
-  runG4Tests();
-  runG4FeatureTests();
-  runFilterTests();
-  runDestructionTests();
-  runStateTests2();
-  runG41Tests();
-  runAuditTests();
-  runPerfTests();
+  // SBD_ONLY=<groupe> : exécution ciblée pendant le développement (la CI exécute toujours la suite complète)
+  const char* only = std::getenv("SBD_ONLY");
+  auto run = [only](const char* name, void (*fn)()) {
+    if (!only || std::strcmp(only, name) == 0) fn();
+  };
+  run("dsp", runDspTests);
+  run("topology", runTopologyTests);
+  run("state", runStateTests);
+  run("engine", runEngineTests);
+  run("g4", runG4Tests);
+  run("g4features", runG4FeatureTests);
+  run("filters", runFilterTests);
+  run("destruction", runDestructionTests);
+  run("state2", runStateTests2);
+  run("g41", runG41Tests);
+  run("audit", runAuditTests);
+  run("g42", runG42Tests);
+  run("perf", runPerfTests);
   return tk::finish("core_tests");
 }

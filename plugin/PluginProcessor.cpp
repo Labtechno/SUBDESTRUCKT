@@ -97,6 +97,20 @@ std::string MidiLearnMap::defaultPath() {
       .toStdString();
 }
 
+static std::string& learnPathOverride() {
+  static std::string p;
+  return p;
+}
+std::string MidiLearnMap::path() { return learnPathOverride().empty() ? defaultPath() : learnPathOverride(); }
+void MidiLearnMap::setPathOverride(const std::string& p) { learnPathOverride() = p; }
+bool MidiLearnMap::learnableParam(int i) noexcept {
+  if (i < 0 || i >= kNumParams || !paramSpec(i).automatable) return false;
+  for (ParamId a : {ParamId::FltWtArm, ParamId::FltFmArm, ParamId::FltGlArm, ParamId::DstWt1Arm, ParamId::DstWt2Arm, ParamId::DstFm1Arm,
+                    ParamId::DstFm2Arm, ParamId::DstGl1Arm, ParamId::DstGl2Arm})
+    if (i == idx(a)) return false;
+  return true;
+}
+
 bool MidiLearnMap::load(const std::string& path) {
   std::ifstream in(path);
   if (!in) return false;
@@ -106,9 +120,9 @@ bool MidiLearnMap::load(const std::string& path) {
     std::istringstream ls(line);
     int cc = -1;
     std::string sid;
-    if (!(ls >> cc >> sid) || cc < 0 || cc > 127) continue;
+    if (!(ls >> cc >> sid) || cc < 0 || cc > 127 || reservedCc(cc)) continue;  // ligne invalide ou CC réservée : ignorée
     ParamId id;
-    if (findParam(sid, id)) m.ccToParam[static_cast<size_t>(cc)] = static_cast<std::int16_t>(idx(id));
+    if (findParam(sid, id) && learnableParam(idx(id))) m.ccToParam[static_cast<size_t>(cc)] = static_cast<std::int16_t>(idx(id));
   }
   *this = m;
   return true;
@@ -145,7 +159,7 @@ SubdestrucktProcessor::SubdestrucktProcessor()
   std::string err;
   routes_.assign(initial.routes, initial.nextRouteId, err);
   engine_.setTopologyImmediate(routes_.compile());
-  learn_.load(MidiLearnMap::defaultPath());
+  learn_.load(MidiLearnMap::path());
   for (int cc = 0; cc < 128; ++cc) learnRt_[static_cast<size_t>(cc)].store(learn_.ccToParam[static_cast<size_t>(cc)]);
   startTimerHz(30);
 }
@@ -253,7 +267,7 @@ void SubdestrucktProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         midi_[static_cast<size_t>(count++)] = MidiEvent::controller(pos, cc, val);
         // MIDI Learn : capture et contrôle (transmis au thread message par une file sans verrou)
         const int target = learnTarget_.load(std::memory_order_relaxed);
-        if (target >= 0) {
+        if (target >= 0 && !MidiLearnMap::reservedCc(cc)) {  // CC réservées jamais apprises (lecture d'une constante)
           learnRt_[static_cast<size_t>(cc)].store(static_cast<std::int16_t>(target), std::memory_order_relaxed);
           learnCaptured_.store(cc, std::memory_order_release);
           learnTarget_.store(-1, std::memory_order_relaxed);
@@ -314,7 +328,9 @@ void SubdestrucktProcessor::getStateInformation(juce::MemoryBlock& destData) {
   // sauvegarde DAW autonome : capture des emplacements D2/S2 armés (gel en cours) avant l'encodage ; attente bornée
   // (50 ms) d'une frontière de bloc audio, sinon la dernière capture connue est conservée.
   std::uint32_t want = 0;
-  for (int k = 0; k < 6; ++k) {
+  // instance suspendue (AUT-06) : aucune capture du tampon d'exécution (vide ou non autorisé) ; les captures restaurées
+  // sont conservées telles quelles
+  for (int k = 0; k < 6 && engine_.autonomyAuthorized(); ++k) {
     const int b = idx(ParamId::DstWt1Type) + k * static_cast<int>(DstOff::Count);
     const int t = static_cast<int>(bridge_.values().v[static_cast<size_t>(b)] + 0.5f);
     if ((t == static_cast<int>(DstType::D2) || t == static_cast<int>(DstType::S2)) &&
@@ -340,9 +356,15 @@ void SubdestrucktProcessor::setStateInformation(const void* data, int sizeInByte
     lastMessage_ = "Etat refuse : " + err;
     return;
   }
-  // projet DAW : restauration fidèle, armements compris (état propre de l'utilisateur) ; seuls les presets externes
-  // sont désarmés (loadPreset) et Drone reste soumis à l'autorisation locale.
+  // projet DAW / duplication d'instance : configuration restaurée fidèlement, armements compris (G-21w) ; l'activation
+  // autonome est suspendue (autorisation locale retirée, captures retenues) jusqu'à l'action Autoriser (AUT-02/03).
+  // Drone reste soumis à son autorisation de projet (drone_restore).
+  if (anyArmed(s) || !s.captures.empty()) engine_.setAutonomyAuthorized(false);
   applyState(s, false);
+  if (!engine_.autonomyAuthorized() && (anyArmed(s) || !s.captures.empty())) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ += " ; etats autonomes suspendus : Autoriser pour les activer";
+  }
 }
 
 bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset) {
@@ -362,7 +384,9 @@ bool SubdestrucktProcessor::applyState(const PluginState& state, bool fromPreset
     seed_ = state.seed;
     streamCounters_ = state.streamCounters;
     captures_ = state.captures;
-    if (!captures_.empty()) {
+    // captures R2 : injectées dans le DSP seulement si l'activation autonome est autorisée ; sinon retenues (AUT)
+    capturesHeld_ = !captures_.empty() && !engine_.autonomyAuthorized();
+    if (!captures_.empty() && !capturesHeld_) {
       engine_.captureExchange().collectGarbage();
       engine_.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{captures_}));
     }
@@ -495,19 +519,24 @@ bool SubdestrucktProcessor::loadPreset(const PresetInfo& info) {
     lastMessage_ = "Preset refuse : " + err;
     return false;
   }
+  return applyPresetState(std::move(s), info.name);
+}
+
+bool SubdestrucktProcessor::applyPresetState(PluginState s, const std::string& name) {
   // un preset externe ne peut jamais armer un comportement autonome (filtres auto-oscillants, gels D2/S2/N2)
   const bool hadArms = anyArmed(s);
   disarmAutonomous(s);
+  if (!s.captures.empty()) engine_.setAutonomyAuthorized(false);  // captures du preset retenues (AUT-04)
   const PluginState before = snapshotState();
   if (!applyState(s, true)) return false;
-  record(before, "preset : " + info.name);
+  record(before, "preset : " + name);
   if (hadArms) {
     std::lock_guard<std::mutex> lock(controlMutex_);
     lastMessage_ += " ; armements du preset ignores (a rearmer manuellement)";
   }
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
-    presetName_ = info.name;
+    presetName_ = name;
   }
   dirty_.store(false);
   notifyState();
@@ -849,7 +878,37 @@ std::uint32_t SubdestrucktProcessor::collectCaptures(std::uint32_t mask) {
   return got;
 }
 
-void SubdestrucktProcessor::requestCapture(int slot) { engine_.requestCapture(slot); }
+void SubdestrucktProcessor::requestCapture(int slot) {
+  if (!engine_.autonomyAuthorized()) {  // instance suspendue : ne jamais remplacer une capture par un tampon inactif
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = "Capture refusee : etats autonomes suspendus (Autoriser d'abord)";
+    return;
+  }
+  engine_.requestCapture(slot);
+}
+
+void SubdestrucktProcessor::authorizeAutonomy() {
+  {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    engine_.setAutonomyAuthorized(true);
+    if (!captures_.empty()) {  // contenu créatif restitué à partir des captures conservées
+      engine_.captureExchange().collectGarbage();
+      engine_.captureExchange().publish(std::make_unique<CaptureSet>(CaptureSet{captures_}));
+    }
+    capturesHeld_ = false;
+    lastMessage_ = "Etats autonomes autorises";
+  }
+  notifyState();
+}
+
+bool SubdestrucktProcessor::autonomySuspended() const {
+  if (engine_.autonomyAuthorized()) return false;
+  PluginState cfg;
+  cfg.params = bridge_.values();
+  if (anyArmed(cfg)) return true;
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  return capturesHeld_ || !captures_.empty();
+}
 
 void SubdestrucktProcessor::clearCapture(int slot) {
   std::lock_guard<std::mutex> lock(controlMutex_);
@@ -876,9 +935,37 @@ MidiLearnMap SubdestrucktProcessor::midiLearn() const {
 void SubdestrucktProcessor::clearMidiLearn(int cc) {
   if (cc < 0 || cc > 127) return;
   std::lock_guard<std::mutex> lock(controlMutex_);
-  learn_.ccToParam[static_cast<size_t>(cc)] = -1;
-  learnRt_[static_cast<size_t>(cc)].store(-1);
-  learn_.save(MidiLearnMap::defaultPath());
+  updateLearnLocked([cc](MidiLearnMap& m) { m.ccToParam[static_cast<size_t>(cc)] = -1; });
+  lastMessage_ = "MIDI Learn : CC" + std::to_string(cc) + " supprimee";
+}
+
+bool SubdestrucktProcessor::setMidiLearnTarget(int paramIndex) {
+  if (paramIndex < 0) {
+    learnTarget_.store(-1);
+    return true;
+  }
+  if (!MidiLearnMap::learnableParam(paramIndex)) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = std::string("MIDI Learn refuse : ") + paramSpec(paramIndex).stableId +
+                   " n'est pas apprenable (non automatisable ou armement autonome : action explicite)";
+    return false;
+  }
+  learnTarget_.store(paramIndex);
+  return true;
+}
+
+void SubdestrucktProcessor::adoptLearnLocked(const MidiLearnMap& m) {
+  learn_ = m;
+  for (int cc = 0; cc < 128; ++cc) learnRt_[static_cast<size_t>(cc)].store(learn_.ccToParam[static_cast<size_t>(cc)], std::memory_order_relaxed);
+}
+
+void SubdestrucktProcessor::updateLearnLocked(const std::function<void(MidiLearnMap&)>& change) {
+  // multi-instance : relecture du profil (modifications des autres instances) avant écriture, aucune perte
+  MidiLearnMap disk;
+  if (!disk.load(MidiLearnMap::path())) disk = learn_;
+  change(disk);
+  disk.save(MidiLearnMap::path());
+  adoptLearnLocked(disk);
 }
 
 void SubdestrucktProcessor::setStateListener(std::function<void()> f) {
@@ -903,7 +990,9 @@ void SubdestrucktProcessor::updateLatency() {
   if (required != getLatencySamples()) setLatencySamples(required);
 }
 
-void SubdestrucktProcessor::timerCallback() {
+void SubdestrucktProcessor::timerCallback() { serviceMessageThread(); }
+
+void SubdestrucktProcessor::serviceMessageThread() {
   {
     std::lock_guard<std::mutex> lock(controlMutex_);
     engine_.exchange().collectGarbage();
@@ -912,9 +1001,19 @@ void SubdestrucktProcessor::timerCallback() {
     engine_.curveExchange().collectGarbage();
     const int cap = learnCaptured_.exchange(-1, std::memory_order_acq_rel);
     if (cap >= 0) {
-      learn_.ccToParam[static_cast<size_t>(cap)] = learnRt_[static_cast<size_t>(cap)].load();
-      learn_.save(MidiLearnMap::defaultPath());
-      lastMessage_ = "MIDI Learn : CC" + std::to_string(cap) + " -> " + paramSpec(learn_.ccToParam[static_cast<size_t>(cap)]).stableId;
+      const int target = learnRt_[static_cast<size_t>(cap)].load();
+      // une CC -> un paramètre (remplacement) ; un paramètre -> une CC (l'ancienne CC du paramètre est retirée)
+      updateLearnLocked([cap, target](MidiLearnMap& m) {
+        for (auto& v : m.ccToParam)
+          if (v == target) v = -1;
+        m.ccToParam[static_cast<size_t>(cap)] = static_cast<std::int16_t>(target);
+      });
+      lastMessage_ = "MIDI Learn : CC" + std::to_string(cap) + " -> " + paramSpec(target).stableId;
+      if (cap == 1 || cap == 2 || cap == 11) lastMessage_ += " (cette CC reste aussi une source de modulation)";
+    } else if (++learnPoll_ >= 30) {  // ~1 s : relecture du profil si une autre instance l'a modifié
+      learnPoll_ = 0;
+      MidiLearnMap disk;
+      if (disk.load(MidiLearnMap::path()) && !(disk == learn_)) adoptLearnLocked(disk);
     }
   }
   // contrôleurs appris : la valeur hôte est mise à jour depuis le thread message (automation cohérente)

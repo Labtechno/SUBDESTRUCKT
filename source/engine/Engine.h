@@ -100,6 +100,11 @@ class Engine {
 
   // ---- commandes instantanées (tout thread, atomiques)
   void setDrone(bool on) noexcept { droneCmd_.store(on ? 1 : 0, std::memory_order_release); }
+  // Autorisation locale d'activation autonome (ARCH-G4.2, AUT) : état d'exécution NON persisté, distinct de la
+  // configuration. Sans autorisation, les 9 armements configurés sont appliqués comme désarmés (armement effectif =
+  // configuré ET autorisé) ; la configuration (base) reste intacte. Retirée par le Panic si un armement est configuré.
+  void setAutonomyAuthorized(bool on) noexcept { autonomyAuth_.store(on, std::memory_order_release); }
+  bool autonomyAuthorized() const noexcept { return autonomyAuth_.load(std::memory_order_acquire); }
   void requestCrossReset() noexcept { crossResetCmd_.store(true, std::memory_order_release); }
   void requestManualExcite() noexcept { exciteCmd_.store(true, std::memory_order_release); }
   // Captures R2 : demande (tout thread) ; lecture du résultat (thread de contrôle) quand il est prêt.
@@ -117,6 +122,12 @@ class Engine {
   void testSetPoison(bool on) noexcept { poison_ = on; }
   void testSetReverseOrder(bool on) noexcept { reverseOrder_ = on; }
   Envelope::Stage testEnvStage(int k) const noexcept { return envs_[static_cast<size_t>(k)].stage(); }
+  // contre-épreuve SPEC-HR-01 (tests uniquement, aucun paramètre ni état) : moteur sans ELP
+  void setElpEnabledForTest(bool on) noexcept { elpEnabled_ = on; }
+  struct TestCounters {
+    std::uint32_t elp, clamp, limiter;
+  };
+  TestCounters testCounters() const noexcept { return {elpHits_, clampHits_, limiterHits_}; }
   void testInjectNaN() noexcept { lines_[kNodeOP1].poisonForTest(std::numeric_limits<double>::quiet_NaN()); }
   long long testOverlapSamples() const noexcept { return overlapSamples_; }
   double testEffectiveDepth(int slot) const noexcept;
@@ -156,6 +167,8 @@ class Engine {
   void purgeStates() noexcept;
   void crossReset() noexcept;
   void applyEnvelopeParameters() noexcept;
+  void applyAutonomyMask() noexcept;
+  bool anyArmConfigured() const noexcept;
   void publishTelemetry() noexcept;
   double e(ParamId id) const noexcept { return eff_[static_cast<size_t>(id)]; }
   int ch(ParamId id) const noexcept { return static_cast<int>(eff_[static_cast<size_t>(id)] + 0.5); }
@@ -224,6 +237,7 @@ class Engine {
   bool sustainPedal_ = false;
   bool drone_ = false;
   std::atomic<int> droneCmd_{-1};
+  std::atomic<bool> autonomyAuth_{true};
   std::atomic<bool> crossResetCmd_{false}, exciteCmd_{false};
   bool noteOnEdge_ = false, manualExcitePending_ = false;
   double f0_ = 261.6255653005986;
@@ -291,6 +305,7 @@ class Engine {
   double limGain_ = 1.0;
   bool purgeRequested_ = false;
   bool muteRest_ = false;
+  bool elpEnabled_ = true;
   bool panicActive_ = false;
   int panicLeft_ = 0, panicLength_ = 1;
   float blockPeakL_ = 0.0f, blockPeakR_ = 0.0f;

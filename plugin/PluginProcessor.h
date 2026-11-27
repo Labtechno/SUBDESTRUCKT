@@ -50,6 +50,15 @@ struct MidiLearnMap {
   std::array<std::int16_t, 128> ccToParam{};  // -1 = libre
   MidiLearnMap() { ccToParam.fill(-1); }
   static std::string defaultPath();
+  // profil utilisé : chemin par défaut, ou chemin isolé fixé par les tests (jamais le profil réel en test)
+  static std::string path();
+  static void setPathOverride(const std::string& p);
+  // politique (ARCH-G4.2, ML) : CC réservées jamais apprises (Bank Select, Data Entry/RPN/NRPN, sustain, modes)
+  static constexpr bool reservedCc(int cc) noexcept {
+    return cc == 0 || cc == 6 || cc == 32 || cc == 38 || cc == 64 || (cc >= 96 && cc <= 101) || cc >= 120;
+  }
+  static bool learnableParam(int paramIndex) noexcept;  // automatisable et hors des 9 armements autonomes
+  bool operator==(const MidiLearnMap& o) const { return ccToParam == o.ccToParam; }
   bool load(const std::string& path);
   bool save(const std::string& path) const;
 };
@@ -115,6 +124,13 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   bool droneRestore() const;
   // Captures créatives R2 (Glitch D2 / Freeze S2) : demande au thread audio, collecte, effacement.
   void requestCapture(int slot);
+  // Autorisation locale d'activation autonome (AUT, ARCH-G4.2) : non persistée ; retirée par une restauration externe
+  // (projet DAW, duplication, preset) portant un armement ou une capture, et par le Panic ; accordée par Autoriser.
+  void authorizeAutonomy();
+  // chargement d'un preset déjà décodé (chemin commun de loadPreset ; tests) : désarmement, captures retenues
+  bool applyPresetState(PluginState s, const std::string& name);
+  bool autonomyAuthorized() const noexcept { return engine_.autonomyAuthorized(); }
+  bool autonomySuspended() const;  // armement configuré ou capture retenue, sans autorisation
   std::uint32_t collectCaptures(std::uint32_t mask);
   void clearCapture(int slot);
   std::vector<CaptureAsset> captures() const;
@@ -128,10 +144,13 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::string encodeCurrentState(StateScope scope = StateScope::Daw) const;
   // Transaction unique sur l'état (Undo/Redo, Randomize...) : fonction appliquée à une copie, validée, appliquée.
   bool transact(const std::function<bool(PluginState&)>& edit, const std::string& cause);
-  void setMidiLearnTarget(int paramIndex) noexcept { learnTarget_.store(paramIndex); }
+  bool setMidiLearnTarget(int paramIndex);  // refus (message) si la cible n'est pas apprenable ; -1 annule
   int midiLearnTarget() const noexcept { return learnTarget_.load(); }
   MidiLearnMap midiLearn() const;
   void clearMidiLearn(int cc);
+  // service du thread message (appelé par le timer ; appelable par les tests) : libérations hors RT, MIDI Learn
+  // (capture, contrôleurs appris, relecture du profil modifié par une autre instance), Evolve, latence
+  void serviceMessageThread();
   void setStateListener(std::function<void()> f);  // notifié (thread message) après tout changement d'état non-hôte
 
   // ---- Undo/Redo (pile d'instance, non sauvegardée), Randomizer, presets
@@ -204,6 +223,7 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::array<std::uint64_t, 3> streamCounters_{};
   InstanceState instance_;
   std::vector<CaptureAsset> captures_;
+  bool capturesHeld_ = false;  // captures restaurées non injectées (autonomie suspendue)
   std::string lastMessage_;
   std::uint64_t serial_ = 0, modSerial_ = 0;
   double sampleRate_ = 0.0;
@@ -216,6 +236,9 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   std::array<std::atomic<std::int16_t>, 128> learnRt_{};
   std::atomic<int> learnTarget_{-1};
   std::atomic<int> learnCaptured_{-1};
+  int learnPoll_ = 0;
+  void updateLearnLocked(const std::function<void(MidiLearnMap&)>& change);  // lecture-modification-écriture du profil
+  void adoptLearnLocked(const MidiLearnMap& m);
   struct CcEvent {
     std::int16_t param;
     float value;

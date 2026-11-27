@@ -85,6 +85,9 @@ class DestructionSlot {
   void restoreFrom(const float* src, int frames, int kind, double srcRate) noexcept;
   static int captureCapacity(double fs) noexcept { return static_cast<int>(std::ceil(2.05 * fs)) + 8; }
   bool frozen() const noexcept { return autonomous_; }
+  // D2 Feedback (étude ARCH-G4.2, arbitrage A-G41-06) : 0 = historique (défaut, seul comportement des états et presets),
+  // 1 = candidat C1 « régénération dans la boucle ». Option interne de test : ni paramètre, ni état, ni UI.
+  void setD2FeedbackMode(int m) noexcept { d2FbMode_ = m; }
   int activeType() const noexcept { return type_; }
   bool settled() const noexcept { return pendingType_ < 0 && !fadingOut_; }
 
@@ -157,6 +160,7 @@ class DestructionSlot {
   double d2Read_ = 0.0, d2SegStart_ = 0.0, d2SegLen_ = 0.0, d2SegPos_ = 0.0;
   double d2Clock_ = 0.0;
   bool d2Looping_ = false;
+  int d2FbMode_ = 0;
   // S2
   struct S2State {
     std::vector<double> in, out, dry;

@@ -245,6 +245,7 @@ void testPanicRequest() {
 }
 
 // CAP-02w : sauvegarde DAW autonome d'un gel D2 armé (capture à la sauvegarde), restauration dans une autre instance.
+// ARCH-G4.2 : étape explicite « Autoriser » insérée (résultat historique G4.1 run 33 : gel rejoué sans autorisation).
 void testCapturesWrapper() {
   auto setP = [](SubdestrucktProcessor& p, ParamId id, float v) {
     auto* q = p.parameters().param(idx(id));
@@ -275,6 +276,15 @@ void testCapturesWrapper() {
   b.prepareToPlay(48000.0, 256);
   b.setStateInformation(blob.getData(), static_cast<int>(blob.getSize()));
   const bool same = b.captures() == a.captures() && !b.captures().empty();
+  // ARCH-G4.2 (correction de la non-conformite DAW de CAP-01) : restauration suspendue, silence, puis Autoriser
+  double e0 = 0.0;
+  for (int i = 0; i < 100; ++i) {
+    buf.clear();
+    b.processBlock(buf, midi);
+    for (int k = 0; k < 256; ++k) e0 += static_cast<double>(buf.getSample(0, k)) * buf.getSample(0, k);
+  }
+  const bool held = b.autonomySuspended() && e0 < 1e-9;
+  b.authorizeAutonomy();
   double e = 0.0;
   for (int i = 0; i < 100; ++i) {
     buf.clear();
@@ -283,10 +293,10 @@ void testCapturesWrapper() {
       for (int k = 0; k < 256; ++k) e += static_cast<double>(buf.getSample(0, k)) * buf.getSample(0, k);
   }
   const bool sounds = e > 1e-3;
-  const bool ok = got && inBlob && same && sounds;
+  const bool ok = got && inBlob && same && held && sounds;
   TK_CHECK(ok);
-  tk::result("CAP-02w", ok, "sauvegarde DAW d'un gel D2 arme : capture %d, presente dans l'etat %d, restauree a l'identique %d, gel rejoue sans entree %d (energie %.3g)",
-             got, inBlob, same, sounds, e);
+  tk::result("CAP-02w", ok, "sauvegarde DAW d'un gel D2 arme : capture %d, presente dans l'etat %d, restauree a l'identique %d ; G4.2 : suspendue et silencieuse avant autorisation %d (energie %.3g), gel rejoue sans entree apres Autoriser %d (energie %.3g)",
+             got, inBlob, same, held, e0, sounds, e);
 }
 
 // WT-ED-02w : génération et édition de banques via le processeur ; chaque opération est annulable.
@@ -418,10 +428,420 @@ void snapshotEditor(const std::string& path) {
   }
 }
 
+// ------------------------------------------------------------------ ARCH-G4.2 : AUT-02..08 (états autonomes)
+void setPv(SubdestrucktProcessor& p, ParamId id, float v) {
+  auto* q = p.parameters().param(idx(id));
+  q->setValueNotifyingHost(q->convertTo0to1(v));
+}
+double runSilent(SubdestrucktProcessor& p, int blocks, int skip = 0) {  // énergie sans note (canal gauche + droit)
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  double e = 0.0;
+  for (int i = 0; i < blocks; ++i) {
+    buf.clear();
+    p.processBlock(buf, midi);
+    if (i >= skip)
+      for (int ch = 0; ch < 2; ++ch)
+        for (int k = 0; k < 256; ++k) e += static_cast<double>(buf.getSample(ch, k)) * buf.getSample(ch, k);
+  }
+  return e;
+}
+// gel D2 armé (GL1, emplacement 4) et gel S2 armé (GL2, emplacement 5), joués puis gelés pendant la note
+void buildFrozen(SubdestrucktProcessor& p, float s2Decay = -1.0f) {
+  p.prepareToPlay(48000.0, 256);
+  if (s2Decay >= 0.0f) setPv(p, ParamId::DstGl2S2Decay, s2Decay);
+  setPv(p, ParamId::DstGl1Type, static_cast<float>(DstType::D2));
+  setPv(p, ParamId::DstGl1Arm, 1.0f);
+  setPv(p, ParamId::DstGl2Type, static_cast<float>(DstType::S2));
+  setPv(p, ParamId::DstGl2Arm, 1.0f);
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  midi.addEvent(juce::MidiMessage::noteOn(1, 52, static_cast<juce::uint8>(120)), 0);
+  for (int i = 0; i < 300; ++i) {
+    if (i == 150) {
+      setPv(p, ParamId::DstGl1D2Freeze, 1.0f);
+      setPv(p, ParamId::DstGl2S2Freeze, 1.0f);
+    }
+    if (i == 200) midi.addEvent(juce::MidiMessage::noteOff(1, 52), 0);
+    buf.clear();
+    p.processBlock(buf, midi);
+    midi.clear();
+  }
+  // hôte simulé sur un seul thread : la capture automatique de getStateInformation attend un bloc audio qui ne vient
+  // pas ; capture explicite (comme CAP-02w) avant toute sauvegarde
+  p.requestCapture(4);
+  p.requestCapture(5);
+  buf.clear();
+  p.processBlock(buf, midi);
+  p.collectCaptures((1u << 4) | (1u << 5));
+}
+juce::MemoryBlock stateOf(SubdestrucktProcessor& p) {
+  juce::MemoryBlock b;
+  p.getStateInformation(b);
+  return b;
+}
+bool sameCaptures(const std::vector<CaptureAsset>& a, const std::vector<CaptureAsset>& b) {
+  if (a.size() != b.size()) return false;
+  for (const auto& x : a) {
+    bool found = false;
+    for (const auto& y : b)
+      if (y.slot == x.slot && y.kind == x.kind && y.frames == x.frames && y.data == x.data) found = true;
+    if (!found) return false;
+  }
+  return true;
+}
+
+void testAutonomyWrapper() {
+  // AUT-02 : restauration DAW
+  auto aPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& a = *aPtr;
+  buildFrozen(a);
+  const juce::MemoryBlock blobA = stateOf(a);  // capture automatique des gels armés
+  const auto capA = a.captures();
+  auto bPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& b = *bPtr;
+  b.prepareToPlay(48000.0, 256);
+  b.setStateInformation(blobA.getData(), static_cast<int>(blobA.getSize()));
+  const bool persisted = stateOf(b) == blobA;  // G-21w : configuration persistée identique (armements, captures)
+  const double before = runSilent(b, 563);       // 3 s sans note, non autorisée
+  const bool suspended = b.autonomySuspended() && b.telemetry().autonomySuspended.load() && !b.autonomyAuthorized();
+  b.authorizeAutonomy();
+  const double after = runSilent(b, 375, 100);  // gel rejoué sans entrée
+  b.requestCapture(4);
+  b.requestCapture(5);
+  runSilent(b, 1);
+  b.collectCaptures((1u << 4) | (1u << 5));
+  const bool content = capA.size() == 2 && sameCaptures(b.captures(), capA);
+  std::string capDetail;
+  for (const auto& x : capA)
+    for (const auto& y : b.captures())
+      if (y.slot == x.slot) {
+        double md = 0.0;
+        for (size_t i = 0; i < std::min(x.data.size(), y.data.size()); ++i) md = std::max(md, std::fabs(static_cast<double>(x.data[i]) - y.data[i]));
+        char t[160];
+        std::snprintf(t, sizeof t, " [emplacement %d %s : trames %d/%d, ecart max %.3g]", x.slot, x.kind ? "S2" : "D2", x.frames, y.frames, md);
+        capDetail += t;
+      }
+  const bool a2 = capA.size() == 2 && persisted && before < 1e-9 && suspended && after > 1e-3 && content;
+  TK_CHECK(a2);
+  tk::result("AUT-02", a2, "restauration DAW (gel D2 + gel S2 armes, 2 captures) : etat relu identique octet par octet %d ; avant autorisation : energie 3 s sans note %.3g (< 1e-9), suspendu (processeur + telemetrie) %d ; apres Autoriser : gel rejoue %.3g (> 1e-3), nouvelles captures identiques aux originales %d%s",
+             persisted, before, suspended, after, content, capDetail.c_str());
+
+  // AUT-02c (COMPLÉMENTAIRE, défini APRÈS le diagnostic de la clause (c) d'AUT-02, ne la remplace pas) : même
+  // protocole avec S2 Decay = 1 (gel S2 sans demi-vie) : nouvelles captures identiques aux originales (D2 et S2)
+  bool c2 = false;
+  {
+    auto aaPtr = std::make_unique<SubdestrucktProcessor>(), bbPtr = std::make_unique<SubdestrucktProcessor>();
+    auto& aa = *aaPtr;
+    auto& bb = *bbPtr;
+    buildFrozen(aa, 1.0f);
+    const juce::MemoryBlock blob = stateOf(aa);
+    const auto cap0 = aa.captures();
+    bb.prepareToPlay(48000.0, 256);
+    bb.setStateInformation(blob.getData(), static_cast<int>(blob.getSize()));
+    runSilent(bb, 100);
+    bb.authorizeAutonomy();
+    runSilent(bb, 375);
+    bb.requestCapture(4);
+    bb.requestCapture(5);
+    runSilent(bb, 1);
+    bb.collectCaptures((1u << 4) | (1u << 5));
+    c2 = cap0.size() == 2 && sameCaptures(bb.captures(), cap0);
+  }
+  TK_CHECK(c2);
+  tk::result("AUT-02c", c2, "COMPLEMENTAIRE (defini apres diagnostic d'AUT-02 (c)) : gel S2 sans demi-vie (S2 Decay = 1) : nouvelles captures D2 et S2 identiques aux originales apres restauration suspendue puis Autoriser %d ; avec le Decay par defaut (0,5), le spectre gele restaure decroit selon son contrat (demi-vie 0,1 + 30 d^2 s)", c2);
+
+  // AUT-03 : duplication d'instance (A -> C) ; A inchangée (rendu identique à un jumeau A2 non dupliqué)
+  auto a2pPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& a2p = *a2pPtr;
+  buildFrozen(a2p);
+  stateOf(a2p);
+  auto cPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& c = *cPtr;
+  c.prepareToPlay(48000.0, 256);
+  const juce::MemoryBlock blobA2 = stateOf(a);
+  c.setStateInformation(blobA2.getData(), static_cast<int>(blobA2.getSize()));
+  const double ea = runSilent(a, 188), ea2 = runSilent(a2p, 188), ec = runSilent(c, 188);
+  const bool a3 = c.autonomySuspended() && a.autonomyAuthorized() && ea == ea2 && ea > 1e-3 && ec < 1e-9;
+  TK_CHECK(a3);
+  tk::result("AUT-03", a3, "duplication : copie suspendue %d (energie %.3g) ; source toujours autorisee %d, rendu identique a son jumeau %d (energie %.3g)",
+             c.autonomySuspended(), ec, a.autonomyAuthorized(), ea == ea2, ea);
+
+  // AUT-04 : preset externe armé avec captures ; changement de preset pendant un gel autorisé
+  auto dPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& d = *dPtr;
+  d.prepareToPlay(48000.0, 256);
+  PluginState ps = a.snapshotState();
+  ps.captures = capA;
+  const bool presetArmed = anyArmed(ps);
+  d.applyPresetState(ps, "test arme");
+  PluginState dcfg = d.snapshotState();
+  const double ed = runSilent(d, 563);
+  const bool a4a = presetArmed && !anyArmed(dcfg) && sameCaptures(d.captures(), capA) && d.autonomySuspended() && ed < 1e-9;
+  const double playing = runSilent(a2p, 100);
+  a2p.applyPresetState(defaultState(), "defaut");
+  const double afterChange = runSilent(a2p, 375, 100);
+  const bool a4 = a4a && playing > 1e-3 && afterChange < 1e-9;
+  TK_CHECK(a4);
+  tk::result("AUT-04", a4, "preset arme avec captures : armements remis a zero %d, captures conservees %d, suspendu %d, energie sans note %.3g ; changement de preset pendant un gel autorise : %.3g -> %.3g",
+             !anyArmed(dcfg), sameCaptures(d.captures(), capA), d.autonomySuspended(), ed, playing, afterChange);
+
+  // AUT-05 : Panic (autorisation retirée, configuration inchangée, Drone désarmé) puis Autoriser
+  auto ePtr = std::make_unique<SubdestrucktProcessor>();
+  auto& e = *ePtr;
+  buildFrozen(e);
+  stateOf(e);  // captures prises (gels armés)
+  e.setDrone(true);
+  runSilent(e, 2);
+  std::vector<float> paramsBefore;
+  for (int i = 0; i < kNumParams; ++i) paramsBefore.push_back(e.parameters().param(i)->getValue());
+  const bool dirtyBefore = e.dirty();
+  e.requestPanic();
+  const double ep = runSilent(e, 375, 100);
+  bool sameCfg = true;
+  for (int i = 0; i < kNumParams; ++i) sameCfg = sameCfg && e.parameters().param(i)->getValue() == paramsBefore[static_cast<size_t>(i)];
+  const bool revoked = !e.autonomyAuthorized() && e.autonomySuspended() && !e.telemetry().drone.load();
+  e.authorizeAutonomy();
+  const double er = runSilent(e, 375, 100);
+  const bool a5 = revoked && sameCfg && e.dirty() == dirtyBefore && ep < 1e-9 && er > 1e-3;
+  TK_CHECK(a5);
+  tk::result("AUT-05", a5, "Panic : autorisation retiree et Drone desarme %d, configuration inchangee %d (dirty inchange %d), energie apres Panic %.3g ; Autoriser : gel restaure depuis la capture %.3g",
+             revoked, sameCfg, e.dirty() == dirtyBefore, ep, er);
+
+  // AUT-06 : fermeture / réouverture (2 cycles d'une instance suspendue)
+  juce::MemoryBlock cyc = blobA;
+  bool cycles = true;
+  for (int k = 0; k < 2; ++k) {
+    auto fPtr = std::make_unique<SubdestrucktProcessor>();
+    auto& f = *fPtr;
+    f.prepareToPlay(48000.0, 256);
+    f.setStateInformation(cyc.getData(), static_cast<int>(cyc.getSize()));
+    runSilent(f, 4);
+    const juce::MemoryBlock next = stateOf(f);
+    cycles = cycles && next == blobA && f.autonomySuspended() && sameCaptures(f.captures(), capA);
+    cyc = next;
+  }
+  TK_CHECK(cycles);
+  tk::result("AUT-06", cycles, "2 cycles fermeture/reouverture d'une instance suspendue : etat (armements + captures) identique octet par octet et toujours suspendue %d", cycles);
+
+  // AUT-07 : compatibilité : état v2 armé (paramètres du format 2 uniquement) -> suspendu ; Drone (drone_restore)
+  PluginState v2s = defaultState();
+  v2s.params[ParamId::DstGl1Type] = static_cast<float>(DstType::D2);
+  v2s.params[ParamId::DstGl1Arm] = 1.0f;
+  v2s.params[ParamId::DstGl1D2Freeze] = 1.0f;
+  std::istringstream in(encodeState(v2s, "test", StateScope::Daw));
+  std::string line, v2txt;
+  while (std::getline(in, line)) {
+    if (line.rfind("SUBDESTRUCKT_STATE", 0) == 0) line = "SUBDESTRUCKT_STATE 2";
+    if (line.rfind("param ", 0) == 0) {
+      std::istringstream ls(line.substr(6));
+      std::string sid;
+      ls >> sid;
+      ParamId id;
+      if (findParam(sid, id) && paramSpec(id).version > 2) continue;
+    }
+    if (line.rfind("capture", 0) == 0 || line.rfind("bank", 0) == 0) continue;
+    v2txt += line + "\n";
+  }
+  auto gPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& g = *gPtr;
+  g.prepareToPlay(48000.0, 256);
+  g.setStateInformation(v2txt.data(), static_cast<int>(v2txt.size()));
+  const bool v2ok = juce::String(g.lastMessage()).contains("v2 migre") && g.autonomySuspended() && g.parameters().param(idx(ParamId::DstGl1Arm))->getValue() > 0.5f;
+  auto droneCase = [](bool restore) {
+    auto hPtr = std::make_unique<SubdestrucktProcessor>();
+    auto& h = *hPtr;
+    h.prepareToPlay(48000.0, 256);
+    h.setDroneRestore(restore);
+    h.setDrone(true);
+    const juce::MemoryBlock s = stateOf(h);
+    auto h2Ptr = std::make_unique<SubdestrucktProcessor>();
+    auto& h2 = *h2Ptr;
+    h2.prepareToPlay(48000.0, 256);
+    h2.setStateInformation(s.getData(), static_cast<int>(s.getSize()));
+    return h2.drone();
+  };
+  const bool d0 = !droneCase(false), d1 = droneCase(true);
+  const bool a7 = v2ok && d0 && d1;
+  TK_CHECK(a7);
+  tk::result("AUT-07", a7, "etat v2 arme migre (%s) : suspendu, armement conserve %d ; Drone : drone_restore=0 non restaure %d, =1 restaure %d",
+             g.lastMessage().c_str(), v2ok, d0, d1);
+
+  // AUT-08 : UI : bouton Autoriser visible si suspendu ; ouvrir l'éditeur et naviguer ne change pas l'autorisation
+  std::unique_ptr<juce::AudioProcessorEditor> edB(b.createEditorIfNeeded());
+  auto s2Ptr = std::make_unique<SubdestrucktProcessor>();
+  auto& s2 = *s2Ptr;
+  s2.prepareToPlay(48000.0, 256);
+  s2.setStateInformation(blobA.getData(), static_cast<int>(blobA.getSize()));
+  std::unique_ptr<juce::AudioProcessorEditor> ed2(s2.createEditorIfNeeded());
+  auto* m2 = dynamic_cast<sbd::ui::MainEditor*>(ed2.get());
+  bool shown = false, stillSusp = true;
+  if (m2) {
+    for (int sp = 0; sp < 3; ++sp) m2->showSpace(sp);
+    m2->refreshNow();
+    std::vector<juce::Component*> all;
+    collectComponents(*m2, all);
+    for (auto* comp : all)
+      if (auto* tb = dynamic_cast<juce::TextButton*>(comp))
+        if (tb->getButtonText() == "Autoriser") shown = tb->isVisible();
+    stillSusp = s2.autonomySuspended() && !s2.autonomyAuthorized();
+  }
+  const bool a8 = m2 && shown && stillSusp;
+  TK_CHECK(a8);
+  tk::result("AUT-08", a8, "UI : bouton Autoriser visible pour une instance suspendue %d ; navigation des 3 espaces sans effet sur l'autorisation %d", shown, stillSusp);
+}
+
+// ------------------------------------------------------------------ ARCH-G4.2 : ML-01w..07w (MIDI Learn)
+void sendCc(SubdestrucktProcessor& p, int cc, int val, int count = 1) {
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  for (int i = 0; i < count; ++i) midi.addEvent(juce::MidiMessage::controllerEvent(1, cc, val), i % 256);
+  buf.clear();
+  p.processBlock(buf, midi);
+  p.serviceMessageThread();
+}
+float native(SubdestrucktProcessor& p, ParamId id) {
+  auto* q = p.parameters().param(idx(id));
+  return q->convertFrom0to1(q->getValue());
+}
+
+void testMidiLearn(const std::string& profile) {
+  std::remove(profile.c_str());
+  const auto& sx = paramSpec(idx(ParamId::WtX));
+  auto pPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& p = *pPtr;
+  p.prepareToPlay(48000.0, 256);
+  // ML-01w : affectation et suivi de valeur
+  p.setMidiLearnTarget(idx(ParamId::WtX));
+  sendCc(p, 20, 0);
+  const bool mapped = p.midiLearn().ccToParam[20] == idx(ParamId::WtX);
+  const float v0 = native(p, ParamId::WtX);
+  sendCc(p, 20, 127);
+  const float v127 = native(p, ParamId::WtX);
+  sendCc(p, 20, 64);
+  const float v64 = native(p, ParamId::WtX);
+  const float step = (sx.maxValue - sx.minValue) / 127.0f;
+  const float mid = sx.minValue + 64.0f * step;
+  const bool m1 = mapped && std::fabs(v0 - sx.minValue) < 1e-4f && std::fabs(v127 - sx.maxValue) < 1e-4f && std::fabs(v64 - mid) <= step;
+  TK_CHECK(m1);
+  tk::result("ML-01w", m1, "CC20 -> wt.x : appris %d ; 0 -> %.4f, 127 -> %.4f, 64 -> %.4f (attendu %.4f +- %.4f)", mapped, v0, v127, v64, mid, step);
+  // ML-02w : remplacement et suppression
+  p.setMidiLearnTarget(idx(ParamId::WtY));
+  sendCc(p, 20, 10);
+  const bool repl = p.midiLearn().ccToParam[20] == idx(ParamId::WtY);
+  p.setMidiLearnTarget(idx(ParamId::WtY));
+  sendCc(p, 21, 10);
+  const bool moved = p.midiLearn().ccToParam[21] == idx(ParamId::WtY) && p.midiLearn().ccToParam[20] == -1;
+  p.clearMidiLearn(21);
+  const float yBefore = native(p, ParamId::WtY);
+  sendCc(p, 21, 127);
+  const bool cleared = p.midiLearn().ccToParam[21] == -1 && native(p, ParamId::WtY) == yBefore;
+  const bool m2 = repl && moved && cleared;
+  TK_CHECK(m2);
+  tk::result("ML-02w", m2, "remplacement CC20 -> wt.y %d ; wt.y appris sur CC21 retire CC20 %d ; suppression de CC21 sans effet ensuite %d", repl, moved, cleared);
+  // ML-03w : persistance (profil isolé), relecture par une nouvelle instance, lignes invalides ignorées
+  p.setMidiLearnTarget(idx(ParamId::WtZ));
+  sendCc(p, 30, 0);
+  {
+    std::ofstream app(profile, std::ios::app);
+    app << "garbage line\n999 wt.x\n31 param.inconnu\n64 wt.x\n";
+  }
+  auto qPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& q = *qPtr;
+  const bool m3 = q.midiLearn().ccToParam[30] == idx(ParamId::WtZ) && q.midiLearn().ccToParam[31] == -1 && q.midiLearn().ccToParam[64] == -1 &&
+                  juce::File(profile).existsAsFile();
+  TK_CHECK(m3);
+  tk::result("ML-03w", m3, "profil isole %s : affectation relue par une nouvelle instance %d ; lignes invalides, StableID inconnu et CC reservee ignores sans echec", profile.c_str(), m3);
+  // ML-04w : séparation presets / projets
+  const std::string st = p.encodeCurrentState(StateScope::Daw), pr = p.encodeCurrentState(StateScope::Preset);
+  const bool noMap = st.find("learn") == std::string::npos && st.find("cc ") == std::string::npos && pr.find("learn") == std::string::npos;
+  const MidiLearnMap mapBefore = p.midiLearn();
+  p.applyPresetState(defaultState(), "defaut");
+  juce::MemoryBlock blob;
+  q.getStateInformation(blob);
+  p.setStateInformation(blob.getData(), static_cast<int>(blob.getSize()));
+  const bool m4 = noMap && p.midiLearn() == mapBefore;
+  TK_CHECK(m4);
+  tk::result("ML-04w", m4, "etat DAW et preset sans affectation %d ; chargement d'un preset et d'un etat : carte inchangee %d", noMap, p.midiLearn() == mapBefore);
+  // ML-05w : multi-instance sans perte
+  auto iaPtr = std::make_unique<SubdestrucktProcessor>(), ibPtr = std::make_unique<SubdestrucktProcessor>();
+  auto& ia = *iaPtr;
+  auto& ib = *ibPtr;
+  ia.prepareToPlay(48000.0, 256);
+  ib.prepareToPlay(48000.0, 256);
+  ia.setMidiLearnTarget(idx(ParamId::WtLevel));
+  sendCc(ia, 22, 0);
+  ib.setMidiLearnTarget(idx(ParamId::Op1Level));
+  sendCc(ib, 23, 0);
+  MidiLearnMap disk;
+  disk.load(profile);
+  for (int i = 0; i < 31; ++i) ia.serviceMessageThread();  // relecture périodique (~1 s)
+  const bool m5 = disk.ccToParam[22] == idx(ParamId::WtLevel) && disk.ccToParam[23] == idx(ParamId::Op1Level) && disk.ccToParam[30] == idx(ParamId::WtZ) &&
+                  ia.midiLearn().ccToParam[23] == idx(ParamId::Op1Level);
+  TK_CHECK(m5);
+  tk::result("ML-05w", m5, "A apprend CC22, B apprend CC23 : profil contenant les deux et l'affectation anterieure (aucune perte) %d ; carte de A actualisee %d", m5,
+             ia.midiLearn().ccToParam[23] == idx(ParamId::Op1Level));
+  // ML-06w : limites et conflits
+  const MidiLearnMap m6b = p.midiLearn();
+  bool reservedOk = true;
+  for (int cc : {0, 6, 32, 38, 64, 96, 101, 121, 127}) {
+    p.setMidiLearnTarget(idx(ParamId::WtX));
+    sendCc(p, cc, 5);
+    reservedOk = reservedOk && p.midiLearn().ccToParam[static_cast<size_t>(cc)] == -1;
+  }
+  p.setMidiLearnTarget(-1);
+  const bool refusedArm = !p.setMidiLearnTarget(idx(ParamId::DstGl1Arm)) && juce::String(p.lastMessage()).contains("refuse");
+  bool refusedNonAuto = true;
+  for (int i = 0; i < kNumParams; ++i)
+    if (!paramSpec(i).automatable) {
+      refusedNonAuto = !p.setMidiLearnTarget(i);
+      break;
+    }
+  p.setMidiLearnTarget(-1);
+  sendCc(p, 40, 3);
+  const bool unchanged = p.midiLearn() == m6b;
+  // automation hôte -> CC -> hôte : dernière écriture gagnante, aucune boucle
+  setPv(p, ParamId::WtZ, 0.25f);
+  const bool h1 = std::fabs(native(p, ParamId::WtZ) - 0.25f) < 1e-3f;
+  sendCc(p, 30, 127);
+  const bool c1 = std::fabs(native(p, ParamId::WtZ) - paramSpec(idx(ParamId::WtZ)).maxValue) < 1e-3f;
+  setPv(p, ParamId::WtZ, 0.5f);
+  p.serviceMessageThread();
+  p.serviceMessageThread();
+  const bool h2 = std::fabs(native(p, ParamId::WtZ) - 0.5f) < 1e-3f;
+  const bool m6 = reservedOk && refusedArm && refusedNonAuto && unchanged && h1 && c1 && h2;
+  TK_CHECK(m6);
+  tk::result("ML-06w", m6, "CC reservees refusees %d ; armement refuse %d ; non automatisable refuse %d ; carte inchangee %d ; hote -> CC -> hote : derniere ecriture gagnante %d/%d/%d, aucune boucle",
+             reservedOk, refusedArm, refusedNonAuto, unchanged, h1, c1, h2);
+  // ML-07w : 512 CC appris par bloc, 0 allocation dans processBlock
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  midi.ensureSize(16384);
+  for (int i = 0; i < 512; ++i) midi.addEvent(juce::MidiMessage::controllerEvent(1, 30, i % 128), i % 256);
+  long long alloc = 0;
+  for (int r = 0; r < 4; ++r) {
+    buf.clear();
+    tk::allocationCount().store(0);
+    tk::countingAllocations().store(true);
+    p.processBlock(buf, midi);
+    tk::countingAllocations().store(false);
+    alloc += tk::allocationCount().load();
+    p.serviceMessageThread();
+  }
+  const bool m7 = alloc == 0;
+  TK_CHECK(m7);
+  tk::result("ML-07w", m7, "512 messages CC appris par bloc x 4 blocs : %lld allocation(s) dans processBlock ; chemin audio : atomiques uniquement (lecture de code)", alloc);
+  std::remove(profile.c_str());
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
+  // profil MIDI Learn isolé : les tests n'écrivent jamais dans le profil réel de l'utilisateur
+  const std::string learnProfile =
+      juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("sbd_test_midi_learn.txt").getFullPathName().toStdString();
+  MidiLearnMap::setPathOverride(learnProfile);
   std::printf("SUBDESTRUCKT ARCH-G3 — tests du wrapper JUCE\n");
   const std::string expected = argc > 1 ? argv[1] : "tests/host/expected_vst3_param_ids.txt";
   std::fprintf(stderr, "[temps reel et latence]\n");
@@ -437,6 +857,9 @@ int main(int argc, char** argv) {
   testCapturesWrapper();
   testBankEditingWrapper();
   testUiCoherence();
+  std::fprintf(stderr, "[ARCH-G4.2 : autonomie, MIDI Learn]\n");
+  testAutonomyWrapper();
+  testMidiLearn(learnProfile);
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

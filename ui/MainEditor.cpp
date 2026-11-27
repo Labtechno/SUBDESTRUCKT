@@ -1195,7 +1195,13 @@ MainEditor::MainEditor(SubdestrucktProcessor& p) : juce::AudioProcessorEditor(p)
     resized();
   };
   drone_.onClick = [this] { proc_.setDrone(drone_.getToggleState()); };
+  authorize_.setColour(juce::TextButton::buttonColourId, col::fm.darker(0.4f));
+  authorize_.setTooltip("Etats autonomes suspendus (armements ou captures restaures par le projet, la duplication, un preset "
+                        "ou le Panic) : cliquer pour autoriser leur activation dans cette instance");
+  authorize_.setTitle("Autoriser les etats autonomes");
+  authorize_.onClick = [this] { proc_.authorizeAutonomy(); };
   for (auto* c : std::initializer_list<juce::Component*>{&prev_, &next_, &undo_, &redo_, &panic_, &inspectorBtn_, &quality_, &zoom_, &drone_}) addAndMakeVisible(*c);
+  addChildComponent(authorize_);
   perf_ = std::make_unique<PerformanceView>(ctx_);
   sound_ = std::make_unique<SoundDesignView>(ctx_);
   eng_ = std::make_unique<EngineeringView>(ctx_);
@@ -1279,6 +1285,7 @@ void MainEditor::resized() {
   inspectorBtn_.setBounds(bar.removeFromRight(82).reduced(1));
   zoom_.setBounds(bar.removeFromRight(76).reduced(1));
   drone_.setBounds(bar.removeFromRight(72).reduced(1));
+  authorize_.setBounds(bar.removeFromRight(86).reduced(1));
   quality_.setBounds(bar.removeFromRight(140).reduced(1));
   meter_.setBounds(bar.removeFromRight(150));
   status_.setBounds(bar.reduced(4, 0));
@@ -1293,6 +1300,7 @@ void MainEditor::refreshBar() {
   redo_.setTooltip(proc_.redoLabel());
   drone_.setToggleState(proc_.drone(), juce::dontSendNotification);
   drone_.setColour(juce::ToggleButton::textColourId, proc_.drone() ? col::alert : col::text);
+  authorize_.setVisible(proc_.autonomySuspended());
   auto& t = proc_.telemetry();
   const float pk = std::max(t.peakL.load(), t.peakR.load());
   const float db = pk > 1e-6f ? 20.0f * std::log10(pk) : -120.0f;

@@ -122,3 +122,14 @@ exécuter par le propriétaire.
 
 Le harnais vérifie le flux de contrôle du script ; la compilation réelle, pluginval et les paquets réels restent
 vérifiés par la CI macOS arm64 (G-23, G-24, PKG) et, en recette, sur le Mac du propriétaire.
+
+## 7. Additifs consignés pendant l'exécution (les critères ci-dessus restent inchangés)
+
+- **D2-04c — complémentaire, défini APRÈS le diagnostic de l'échec de D2-04** (ne remplace pas D2-04, qui reste
+  FAIL) : 10 cas de D2-04, entrée stéréo décorrélée. (1) Entrée coupée à 60 s : RMS par fenêtre de 10 s non croissante
+  à partir de la fenêtre 50–60 s, et RMS(170–180 s) ≤ −40 dB du niveau 50–60 s, sur les deux canaux ; (2) 300 s :
+  finis et crête ≤ 4 sur les deux canaux ; (3) rapports de moyennes de fenêtres 180–300 s / 60–180 s : descriptifs.
+- **AUT-02c — complémentaire, défini APRÈS le diagnostic de l'échec de la clause (c) d'AUT-02** (ne la remplace pas) :
+  même protocole avec S2 Decay = 1 (gel S2 sans demi-vie) : nouvelles captures D2 et S2 identiques aux originales.
+- **CAP-02w** (G4.1) : étape explicite « Autoriser » insérée et vérification de la suspension silencieuse avant
+  autorisation (§2) ; résultat historique G4.1 (run 33) conservé.
