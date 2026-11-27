@@ -186,8 +186,8 @@ class PerformanceView : public juce::Component {
  public:
   explicit PerformanceView(UiContext& c)
       : ctx_(c), core_(c.proc, c.select, "PERFORMANCE  //  noyau fixe", col::cross), macros_(c.proc, c.select, "MACROS M1-M4", col::cross), monitor_(c.proc) {
-    core_.grid.setCellSize(104, 118);
-    core_.grid.setParams(P({ParamId::WtX, ParamId::WtY, ParamId::WtZ, ParamId::CrossMaster, ParamId::OutGain}));
+    core_.grid.setCellSize(84, 118);  // six commandes visibles sans défilement (balance WT/FM ajoutée)
+    core_.grid.setParams(P({ParamId::WtX, ParamId::WtY, ParamId::WtZ, ParamId::CrossMaster, ParamId::PerfBalance, ParamId::OutGain}));
     macros_.grid.setCellSize(104, 118);
     macros_.grid.setParams(range(ParamId::Macro1, ParamId::Macro4));
     addAndMakeVisible(core_);
@@ -412,9 +412,18 @@ class SoundDesignView : public juce::Component {
     excite_.setButtonText("Excitation");
     excite_.onClick = [this] { ctx_.proc.requestManualExcite(); };
     addAndMakeVisible(excite_);
+    // captures R2 : gels D2 / spectres S2 des six emplacements, sauvegardés avec le preset ou le projet
+    capture_.setButtonText("Capturer gels");
+    capture_.setTooltip("Capture le contenu Glitch D2 et le spectre Freeze S2 des emplacements actifs (sauvegarde preset/projet)");
+    capture_.onClick = [this] {
+      for (int k = 0; k < 6; ++k) ctx_.proc.requestCapture(k);
+      capturePending_ = 20;  // collecte aux rafraîchissements suivants (un bloc audio est requis)
+    };
+    addAndMakeVisible(capture_);
     std::vector<ParamId> m = range(ParamId::AmpAttack, ParamId::AmpVelocity);
     for (ParamId x : {ParamId::AmpDelay, ParamId::AmpHold, ParamId::AmpCurve}) m.push_back(x);
     for (ParamId x : range(ParamId::EnvWtDelay, ParamId::EnvAux2Loop)) m.push_back(x);
+    for (ParamId x : range(ParamId::AmpTrigger, ParamId::EnvAux2Sync)) m.push_back(x);  // déclenchement et sync (v3)
     for (ParamId x : range(ParamId::Lfo1Shape, ParamId::Lfo4Retrig)) m.push_back(x);
     for (ParamId x : range(ParamId::RndHoldRate, ParamId::Fol3Release)) m.push_back(x);
     mod_.grid.setCellSize(70, 82);
@@ -475,6 +484,12 @@ class SoundDesignView : public juce::Component {
     layoutProcess();
   }
   void refreshTelemetry() {
+    if (capturePending_ > 0) {
+      --capturePending_;
+      ctx_.proc.collectCaptures(0x3Fu);
+      const int n = static_cast<int>(ctx_.proc.captures().size());
+      capture_.setButtonText(n > 0 ? "Capturer gels (" + juce::String(n) + ")" : "Capturer gels");
+    }
     const bool a = wtChain_.refresh(), b = fmChain_.refresh(), c = glChain_.refresh();
     if (a || b || c) layoutProcess();
     wt_.grid.refreshTelemetry();
@@ -512,8 +527,10 @@ class SoundDesignView : public juce::Component {
     wt_.setBounds(wtA);
     auto crA = top.removeFromLeft(w3).reduced(4, 0);
     auto crB = crA.removeFromTop(26);
-    crossReset_.setBounds(crB.removeFromLeft(crB.getWidth() / 2).reduced(2));
-    excite_.setBounds(crB.reduced(2));
+    const int cw = crB.getWidth() / 3;
+    crossReset_.setBounds(crB.removeFromLeft(cw).reduced(2));
+    excite_.setBounds(crB.removeFromLeft(cw).reduced(2));
+    capture_.setBounds(crB.reduced(2));
     cross_.setBounds(crA);
     auto fmA = top;
     auto ob = fmA.removeFromTop(26);
@@ -538,7 +555,8 @@ class SoundDesignView : public juce::Component {
   GridSection mod_, voice_;
   juce::Component processView_;
   juce::Viewport procVp_, modVp_, voiceVp_;
-  juce::TextButton opBtn_[4], tabBtn_[3], crossReset_, excite_;
+  juce::TextButton opBtn_[4], tabBtn_[3], crossReset_, excite_, capture_;
+  int capturePending_ = 0;
   juce::ComboBox topo_, bank_;
   std::vector<std::string> bankIds_;
   int op_ = 0, tab_ = 0;
@@ -869,6 +887,7 @@ class EngineeringView : public juce::Component {
         << juce::String(100.0 * t.cpuLoad.load(), 1) << " % du bloc (mesure du dernier bloc, machine courante)\n\n";
       d << "SURETE\nnon-finis      " << static_cast<int>(t.nonFiniteResets.load()) << "\ngarde +30 dBFS " << static_cast<int>(t.outputClampHits.load())
         << "\nborne PM       " << static_cast<int>(t.pmClampHits.load()) << "\nlimiteur       " << static_cast<int>(t.limiterHits.load())
+        << "\nprotection +24 dBFS (SPEC-HR-01, proposee) " << static_cast<int>(t.elpHits.load())
         << "\nevenements perdus " << static_cast<int>(t.droppedEvents.load()) << "\nPanic          " << static_cast<int>(t.panics.load())
         << "\n\nmessage : " << ctx_.proc.lastMessage();
       diag_.setText(d, juce::dontSendNotification);
@@ -1087,8 +1106,10 @@ void MainEditor::refreshBar() {
   auto& t = proc_.telemetry();
   const float pk = std::max(t.peakL.load(), t.peakR.load());
   const float db = pk > 1e-6f ? 20.0f * std::log10(pk) : -120.0f;
-  meter_.setText("OUT " + juce::String(db, 1) + " dBFS" + (db > 0.0f ? " >0" : ""), juce::dontSendNotification);
-  meter_.setColour(juce::Label::textColourId, db > 0.0f ? col::alert : col::text);
+  const auto elp = t.elpHits.load();
+  meter_.setText("OUT " + juce::String(db, 1) + " dBFS" + (db > 0.0f ? " >0" : "") + (elp > 0 ? " ELP " + juce::String(static_cast<int>(elp)) : juce::String()),
+                 juce::dontSendNotification);
+  meter_.setColour(juce::Label::textColourId, (db > 0.0f || elp > 0) ? col::alert : col::text);
   status_.setText(proc_.lastMessage(), juce::dontSendNotification);
 }
 
