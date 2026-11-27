@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <memory>
 #include <random>
+#include <set>
 #include <vector>
 
 #include "G4Helper.h"
@@ -468,6 +469,98 @@ void testWtEditing() {
              static_cast<int>(WtProcedure::Count), gen, mean, pk, draw, rep, file, tamper, port);
 }
 
+// ------------------------------------------------------------------ §9 : Character, topologies FM, dépendances
+void testCharacterTopologyDeps() {
+  // CHR-01 : WT Character (3 profils) et FM Character : à 0, chaque profil est neutre bit à bit ; > 0, effet déterministe
+  auto rc = [](int mode, float amt, bool fm) {
+    G4Scenario sc;
+    sc.samples = 12000;
+    sc.state = fm ? defaultState() : bareState();
+    if (fm) {
+      sc.state.params[ParamId::Op1Char] = amt;
+      sc.state.params[ParamId::FmCharMaster] = 1.0f;
+    } else {
+      sc.state.params[ParamId::WtLevel] = 0.5f;  // bareState coupe la WT
+      sc.state.params[ParamId::WtChar] = amt;
+      sc.state.params[ParamId::WtCharMode] = static_cast<float>(mode);
+    }
+    sc.events = {MidiEvent::noteOn(0, 52, 100)};
+    return renderG4(sc).L;
+  };
+  bool chr = true;
+  const auto ref = rc(0, 0.0f, false);
+  for (int m = 0; m < 3; ++m) {
+    const auto z = rc(m, 0.0f, false), a = rc(m, 0.6f, false), b = rc(m, 0.6f, false);
+    chr = chr && th::sameFloats(z, ref) && !th::sameFloats(a, ref) && th::sameFloats(a, b);
+  }
+  const auto f0 = rc(0, 0.0f, true), f1 = rc(0, 0.7f, true);
+  chr = chr && !th::sameFloats(f0, f1);
+  TK_CHECK(chr);
+  tk::result("CHR-01", chr, "Character WT (3 profils) et FM : neutre bit a bit a 0, effet deterministe > 0 : %d", chr);
+  // TOPO-01 : 10 topologies FM : transaction valide, routes CROSS conservées, rendus finis et distincts deux à deux
+  PluginState base = defaultState();
+  RouteTable t0;
+  std::string err;
+  t0.assign(base.routes, base.nextRouteId, err);
+  t0.apply({RouteTable::Op::add(kNodeOP1, kPortWtX)});  // route CROSS à conserver
+  int crossBefore = 0;
+  for (const auto& r : t0.routes()) crossBefore += (r.dst >= kNumNodes - 1 || r.src == kNodeWT || r.src == kNodeBUS) ? 1 : 0;
+  std::vector<std::vector<float>> outs;
+  bool topo = true;
+  std::set<std::string> names;
+  for (int k = 0; k < kNumFmTopologies; ++k) {
+    RouteTable t = t0;
+    const auto res = t.apply(fmTopologyOps(t, k));
+    int crossAfter = 0;
+    for (const auto& r : t.routes()) crossAfter += (r.dst >= kNumNodes - 1 || r.src == kNodeWT || r.src == kNodeBUS) ? 1 : 0;
+    topo = topo && res.ok && t.immediateAcyclic() && crossAfter == crossBefore;
+    names.insert(fmTopologyName(k));
+    G4Scenario sc;
+    sc.samples = 9600;
+    sc.state = base;
+    sc.state.routes = t.routes();
+    sc.state.nextRouteId = t.nextRouteId();
+    for (ParamId l : {ParamId::Op2Level, ParamId::Op3Level, ParamId::Op4Level}) sc.state.params[l] = 0.2f;
+    for (int s = 0; s < kMaxRoutes; ++s)
+      if (routeSlotInfo(s).src >= kNodeOP1 && routeSlotInfo(s).src <= kNodeOP4 && routeSlotInfo(s).dst >= kNodeOP1 && routeSlotInfo(s).dst <= kNodeOP4)
+        sc.state.params[routeSlotInfo(s).depthParam] = 0.8f;
+    sc.events = {MidiEvent::noteOn(0, 45, 100)};
+    const auto r = renderG4(sc);
+    topo = topo && r.nonFinite == 0;
+    outs.push_back(r.L);
+  }
+  int distinct = 0, pairs = 0;
+  for (size_t a = 0; a < outs.size(); ++a)
+    for (size_t b = a + 1; b < outs.size(); ++b, ++pairs) distinct += th::sameFloats(outs[a], outs[b]) ? 0 : 1;
+  topo = topo && distinct == pairs && static_cast<int>(names.size()) == kNumFmTopologies;
+  TK_CHECK(topo);
+  tk::result("TOPO-01", topo, "%d topologies FM : transactions valides et acycliques (immediat), routes CROSS conservees, rendus finis, %d/%d paires distinctes",
+             kNumFmTopologies, distinct, pairs);
+  // MACRO-01 : audit des dépendances : cycle entre macros refusé (2 et 3 macros), auto-cycle refusé, suiveur en amont
+  // inactif avec raison, route valide active
+  auto macroRoute = [](ModSource s, ParamId d) {
+    ModRoute r;
+    r.source = s;
+    r.dest = d;
+    r.depth = 0.5f;
+    return r;
+  };
+  ModMatrixState m;
+  const bool a1 = modAdd(m, macroRoute(ModSource::Macro1, ParamId::Macro2)).ok;
+  const bool a2 = !modAdd(m, macroRoute(ModSource::Macro2, ParamId::Macro1)).ok;  // M1 -> M2 -> M1
+  const bool a3 = modAdd(m, macroRoute(ModSource::Macro2, ParamId::Macro3)).ok && !modAdd(m, macroRoute(ModSource::Macro3, ParamId::Macro1)).ok;
+  const bool a4 = !modAdd(m, macroRoute(ModSource::Macro4, ParamId::Macro4)).ok;
+  ModMatrixState f;
+  modAdd(f, macroRoute(ModSource::Follower1, ParamId::WtX));
+  modAdd(f, macroRoute(ModSource::Follower1, ParamId::FltGlCutoff));
+  const auto st = modRouteStatus(f);
+  const bool a5 = st.size() == 2 && st[0] == ModInactive::FollowerCycle && st[1] == ModInactive::Active && std::string(modInactiveText(st[0])).size() > 5;
+  const bool deps = a1 && a2 && a3 && a4 && a5;
+  TK_CHECK(deps);
+  tk::result("MACRO-01", deps, "dependances : M1>M2 accepte %d ; M2>M1 refuse %d ; cycle a 3 refuse %d ; auto-cycle refuse %d ; suiveur WT > WT X inactif (raison affichee), > cutoff global actif %d",
+             a1, a2, a3, a4, a5);
+}
+
 }  // namespace
 
 void runG41Tests() {
@@ -481,4 +574,5 @@ void runG41Tests() {
   testSpectralMorph();
   testCaptures();
   testWtEditing();
+  testCharacterTopologyDeps();
 }

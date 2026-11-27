@@ -316,6 +316,65 @@ void testBankEditingWrapper() {
              b1.c_str(), b2.c_str(), content, b0.c_str(), p.currentBank() == b1);
 }
 
+// UI-01w : cohérence des trois espaces (naviguer, sélectionner, redimensionner ne modifie jamais l'état), titres
+// accessibles des contrôles de paramètres, couverture de l'UI (part des paramètres atteignables par un contrôle).
+void collectComponents(juce::Component& c, std::vector<juce::Component*>& out) {
+  out.push_back(&c);
+  for (auto* ch : c.getChildren()) collectComponents(*ch, out);
+}
+
+void testUiCoherence() {
+  SubdestrucktProcessor p;
+  p.prepareToPlay(48000.0, 256);
+  std::unique_ptr<juce::AudioProcessorEditor> ed(p.createEditorIfNeeded());
+  auto* main = dynamic_cast<sbd::ui::MainEditor*>(ed.get());
+  if (main == nullptr) {
+    tk::result("UI-01w", false, "editeur indisponible");
+    return;
+  }
+  main->setSize(1440, 900);
+  juce::MemoryBlock before;
+  p.getStateInformation(before);
+  bool layoutOk = true;
+  for (int space = 0; space < 3; ++space)
+    for (int tab = 0; tab < 6; ++tab) {
+      main->showSubTab(space, tab);
+      main->refreshNow();
+    }
+  for (auto sz : {std::pair<int, int>{1000, 700}, {1920, 1200}, {1440, 900}}) {
+    main->setSize(sz.first, sz.second);
+    main->refreshNow();
+    layoutOk = layoutOk && main->getWidth() == sz.first && main->getHeight() == sz.second;
+  }
+  for (int k = 0; k < kNumParams; k += 7) main->selectParam(static_cast<ParamId>(k));  // Inspector
+  main->refreshNow();
+  juce::MemoryBlock after;
+  p.getStateInformation(after);
+  const bool unchanged = before == after;
+  // contrôles de paramètres (HelpText = StableID) : titre accessible = libellé du registre ; couverture
+  std::vector<juce::Component*> all;
+  for (int space = 0; space < 3; ++space)
+    for (int tab = 0; tab < 6; ++tab) {
+      main->showSubTab(space, tab);
+      main->refreshNow();
+      collectComponents(*main, all);
+    }
+  std::set<std::string> covered;
+  int controls = 0, untitled = 0;
+  for (auto* c : all) {
+    const std::string help = c->getHelpText().toStdString();
+    ParamId id;
+    if (help.empty() || !findParam(help, id)) continue;
+    ++controls;
+    covered.insert(help);
+    if (c->getTitle().toStdString() != paramSpec(id).name) ++untitled;
+  }
+  const bool ok = layoutOk && unchanged && untitled == 0 && controls > 0;
+  TK_CHECK(ok);
+  tk::result("UI-01w", ok, "3 espaces x 6 sous-onglets, 3 tailles, %d selections Inspector : etat inchange %d, tailles respectees %d ; %d controles de parametres, titres accessibles manquants %d ; %zu/%d parametres atteignables par un controle visible",
+             (kNumParams + 6) / 7, unchanged, layoutOk, controls, untitled, covered.size(), kNumParams);
+}
+
 // Capture PNG de l'UI de diagnostic (contrôle visuel, non bloquant) après quelques blocs joués à 44,1 kHz.
 void snapshotEditor(const std::string& path) {
   SubdestrucktProcessor p;
@@ -377,6 +436,7 @@ int main(int argc, char** argv) {
   testPanicRequest();
   testCapturesWrapper();
   testBankEditingWrapper();
+  testUiCoherence();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);
