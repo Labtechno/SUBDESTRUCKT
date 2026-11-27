@@ -7,16 +7,19 @@ Date : 2026-11-27. Branche `feature/arch-g4-full-development`. Mission UI seule 
 
 **GO CONDITIONNEL.** L'interface des trois espaces est implémentée et prouvée automatiquement (20 critères UI04, tous
 PASS en local ; 703/703 StableID atteints et édités par leur commande ; rendu DSP bit à bit identique avec et sans
-éditeur ; ASan sans erreur). Conditions de levée : (a) CI macOS arm64 SUCCESS sur le SHA livré (pluginval rigueur 10,
-RTSan, paquets) ; (b) compilation locale du SHA par `build_local_macos.sh` sur le Mac du propriétaire ; (c) recette
+éditeur ; ASan sans erreur). Condition (a) CI macOS arm64 sur le SHA livré : **remplie** (run 48). Conditions restantes : (b) compilation locale du SHA par `build_local_macos.sh` sur le Mac du propriétaire ; (c) recette
 humaine courte H-01..H-09 (`docs/V1-ARCH-UI-04-RECETTE.md`, ~25 min). Aucun test physique n'a été exécuté à distance.
 
 ## 2. Version et commits
 
 Version **0.4.0** (convention : nouvelle génération fonctionnelle → mineure ; lots correctifs G4.x → correctif ;
 le moteur reste celui de 0.3.3). Commits : `86b84e5` (consignation DSP FINAL LOCK), `603abf8` (Design System et trois
-espaces), `16e4559` (suite UI04 et correctifs), `dafa6be` (cycle de vie des composants), puis commit de version/
-documentation (SHA livré et run CI : tracker §5). Contrôle : `git diff 0469c4d -- source/` vide.
+espaces), `16e4559` (suite UI04 et correctifs), `dafa6be` (cycle de vie des composants), `8a61b12` (version 0.4.0, documentation).
+**SHA livré : `8a61b124abc45449174dbd1f07e4b4f95f47a38e`**, build CI 0.4.0-b48. CI macOS 15 arm64 : run 47
+(`dafa6be`, ID 46077200491) et **run 48 (`8a61b12`, ID 46078289226) SUCCESS complet** : barrière PASS (seuls FAIL
+documentés), UI04 20/20 PASS sur macOS, pluginval 1.0.4 rigueur 10 avec tests d'interface PASS, RTSan PASS, bundle
+arm64 0.4.0 signé ad hoc, installation réelle en VM et découverte VST3 PASS, paquets et livraison construits (non
+publiés), script de compilation locale (LB) PASS, manuel PASS. Contrôle : `git diff 0469c4d -- source/` vide.
 
 ## 3. Critères enregistrés et résultats (local MSVC Windows, build Release ; CI macOS : tracker)
 

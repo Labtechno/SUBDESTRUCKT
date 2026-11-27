@@ -147,7 +147,7 @@ seule, `source/` verrouillé.
 UI04-INV, COV, BIND, ALIAS, INACT, NAV, CLIP, PANIC, UNDO, AUTO, STATE, KEY, CORE, CON, OPEN, MULTI, RT, DSP, DECO, OPS
 (inventaire `tests/expected_results.txt`). Additif d'exécution, défini après le diagnostic d'un crash et ajouté au
 critère UI04-NAV sans en retirer de clause : aucune destruction de composant par la navigation ou la sélection.
-Résultats : `docs/V1-ARCH-UI-04-REPORT.md` (20/20 PASS en local ; CI : §5). Version 0.4.0.
+Résultats : `docs/V1-ARCH-UI-04-REPORT.md` (20/20 PASS en local et en CI run 48). Version 0.4.0.
 
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
@@ -242,10 +242,11 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | ARCH-UI-04 : Design System et trois espaces | 603abf8 | CI : build-test-package FAIL (suite wrapper interrompue : composants détruits pendant la navigation, corrigé en dafa6be) ; RTSan, LB, manuel SUCCESS |
 | 2026-11-27 | ARCH-UI-04 : suite UI04 (20 critères), correctifs | 16e4559 | Local : 20/20 PASS |
 | 2026-11-27 | ARCH-UI-04 : cycle de vie des composants (diagnostic ASan) | dafa6be | Local : wrapper 53 critères (AUT-02 seul, documenté), ASan 0 erreur |
-| 2026-11-27 | ARCH-UI-04 : version 0.4.0, livraison, cartographie, captures, rapport | (ce commit) | Local : barrière PASS (cœur 8 FAIL + wrapper 1 FAIL documentés, identiques à 0.3.3) ; CI : voir ligne suivante |
+| 2026-11-27 | ARCH-UI-04 : version 0.4.0, livraison, cartographie, captures, rapport | 8a61b12 | Local : barrière PASS (cœur 8 FAIL + wrapper 1 FAIL documentés, identiques à 0.3.3) |
+| 2026-11-28 | ARCH-UI-04 : CI | dafa6be, 8a61b12 | run 47 SUCCESS ; **run 48 (46078289226) SUCCESS complet, SHA livré 8a61b124abc45449174dbd1f07e4b4f95f47a38e, 0.4.0-b48** (pluginval 10 avec UI, RTSan, paquets, LB, manuel) |
 
 ## 6. Prochaine action
-ARCH-UI-04 : GO CONDITIONNEL (`docs/V1-ARCH-UI-04-REPORT.md`). Le propriétaire : compiler le SHA livré par
+ARCH-UI-04 : GO CONDITIONNEL (`docs/V1-ARCH-UI-04-REPORT.md`). Le propriétaire : compiler le SHA livré `8a61b12` par
 `build_local_macos.sh`, installer, exécuter la recette courte `docs/V1-ARCH-UI-04-RECETTE.md` (H-01..H-09), reporter
 le verdict ici. ARCH-UI-05 : non lancé (autorisation requise).
 
