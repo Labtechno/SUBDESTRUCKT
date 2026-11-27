@@ -23,7 +23,7 @@ SPEC-HR-01 dont dépend le PASS de G-15 et DST-09. **NO-GO pour toute diffusion 
 
 Branche `feature/arch-g4-full-development`. Commits ARCH-G4.2 : 87d1ed6, 1ef1c67 (critères), 4912ea6 (ELP,
 autonomie, D2, MIDI Learn), 49bfa0c (compilation locale, CI, 0.3.1), puis documentation (manuel 0.3.1, Z, rapport).
-SHA exact livré et run CI : §5.
+SHA exact livré : **`6ac4b838807460216294aa3cb3a26bb19479265d`** (dernier commit de code, manuel et CI), run CI 37 SUCCESS (§5) ; commits ultérieurs : rapport et tracker uniquement.
 
 ## 3. Modifications
 
@@ -99,7 +99,18 @@ UI-01w PASS ; seul AUT-02 (clause c) en échec documenté. Manuel 0.3.1 : 28 exe
 
 ## 5. CI (macOS arm64 : build, tests, paquets, pluginval, RTSan ; Ubuntu : harnais LB, manuel)
 
-@CI@
+**Run 37 — SUCCESS** (tous les jobs) : https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45951352395 , commit
+`6ac4b83` (code et manuel identiques au commit livré ; les commits suivants ne modifient que ce rapport et le tracker).
+
+| Job | Résultat |
+|---|---|
+| build-test-package (macos-15 arm64, VM) | SUCCESS : compilation Release arm64 ; suites cœur et wrapper complètes ; barrière : seuls FAIL = ELP-01, D2-04, D2-04c, AUT-02 (documentés) ; paquets 0.3.1 Installer/Uninstaller ; bundle livré G-24 PASS ; hôte VST3 G-19h/G-20/G-21/G-22 PASS ; **pluginval 1.0.4 rigueur 10 PASS** (tests d'interface inclus, 44,1/48/88,2/96 kHz, blocs 32–512) ; bac à sable et recette VM des paquets ; livraison assemblée **non publiée** |
+| RealtimeSanitizer (macOS) | SUCCESS : 0 violation dans Engine::process sur l'ensemble des tests du cœur (masque d'autorisation inclus) ; contrôle négatif détecté |
+| local-build-script (ubuntu) | SUCCESS : LB-01..07 PASS |
+| manual-playwright (ubuntu) | SUCCESS : éditions 0.1.0-b5, 0.2.0, 0.3.0 et 0.3.1 construites et testées (Chromium, WebKit profil iPhone) |
+
+Runs 35 et 36 : échec du job macOS (voir §7, cause corrigée en 6ac4b83). Mesures CI = machine virtuelle : aucune
+certification de performance M3 ou M4 Max.
 
 ## 6. Matrice R01–R50 (règle : PASS = 1, IMPLEMENTED = 0,5, FAIL/BLOCKED/TODO = 0, sur 50)
 
@@ -158,6 +169,7 @@ UI-01w PASS ; seul AUT-02 (clause c) en échec documenté. Manuel 0.3.1 : 28 exe
 | G-15, DST-09 | FAIL historiques (c741fb8) conservés ; PASS **conditionnel** | dépendent de SPEC-HR-01 (contre-épreuve ELP-06 : garde 638 487 sans ELP) |
 | AUT-02 (c) | FAIL documenté | identité S2 non atteignable avec un gel S2 qui décroît (Decay < 1) ; critère mal posé, non modifié ; AUT-02c PASS |
 | D2-04 / D2-04c | FAIL documentés | moteur historique : fluctuation bornée (RMS 10 s 0,83–1,65 sur 300 s, sans tendance, crête < 4, décroissance vers 0 sans entrée) ; protocole à deux fenêtres insuffisant pour H ; aucune correction (son historique conservé) ; candidat C1 PASS aux deux |
+| CI runs 35 (49bfa0c) et 36 (9d604e4) | **échec, cause corrigée** | job macOS arrêté à l'étape « Tests du wrapper » : son code de sortie non nul (AUT-02 c, échec documenté) faisait échouer l'étape avant la barrière des échecs connus, contrairement au cœur. Correctif 6ac4b83 : code consigné, verdict à la barrière ; un échec non documenté ou une interruption du wrapper restent bloquants. RTSan, harnais LB et manuel : verts sur ces deux runs |
 | Wrapper, hôte simulé mono-thread | limite de test | la capture automatique de `getStateInformation` attend un bloc audio (50 ms) ; les tests réalisent la capture explicitement (comme CAP-02w) |
 | Glossaire des manuels 0.2.0 et 0.3.0 publiés | défaut connu | définitions héritées de 0.1.0-b5, fausses depuis 0.2.0 (« trois oscillateurs », « WT à une seule forme », PM seule) ; corrigé en 0.3.1 ; éditions publiées non modifiées |
 | Performances | non certifiées | aucune nouvelle mesure ; DSP par défaut inchangé ; M3/M4 Max : `perf_this_machine.txt` de la compilation locale |

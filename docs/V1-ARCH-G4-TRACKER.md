@@ -132,7 +132,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | run 33 |
 | R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | run 33 |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
-| R10 | Tail/Drone/Panic | F | PASS (G4.2 : Panic suspend aussi les états autonomes (AUT-05)) | @CI42@ |
+| R10 | Tail/Drone/Panic | F | PASS (G4.2 : Panic suspend aussi les états autonomes (AUT-05)) | run 37 |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
 | R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | run 33 |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
@@ -162,17 +162,17 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (CI run 9) | — |
 | R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (CI run 9) | — |
 | R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (CI run 9) | — |
-| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.2 : ELP / limiteur / garde distincts et comptés séparément (ELP-07)) | @CI42@ |
+| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.2 : ELP / limiteur / garde distincts et comptés séparément (ELP-07)) | run 37 |
 | R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
 | R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
 | R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
 | R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
 | R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS (navigation, tailles, Inspector, titres accessibles) ; contrastes/DPI/zoom par niveau non mesurés) | run 33 |
-| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.2 : G-21w inchangé et PASS ; G-22w) | @CI42@ |
-| R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | @CI42@ |
-| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.2 : paquets 0.3.1 construits et recette VM (CI) ; NON publiés ; compilation locale LB-01..07) | @CI42@ |
-| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.2 : manuel 0.3.1 (comportements modifiés) : contrôles bloquants + Playwright) | @CI42@ |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.2 : non-conformité DAW corrigée (AUT-01, 03..08, AUT-02 a/b, CAP-02w PASS) ; AUT-02 clause (c) FAIL documenté (S2 décroît par contrat), AUT-02c PASS : PASS soumis à l'arbitrage A-G42-04) | @CI42@ |
+| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.2 : G-21w inchangé et PASS ; G-22w) | run 37 |
+| R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | run 37 |
+| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.2 : paquets 0.3.1 construits et recette VM (CI) ; NON publiés ; compilation locale LB-01..07) | run 37 |
+| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.2 : manuel 0.3.1 (comportements modifiés) : contrôles bloquants + Playwright) | run 37 |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.2 : non-conformité DAW corrigée (AUT-01, 03..08, AUT-02 a/b, CAP-02w PASS) ; AUT-02 clause (c) FAIL documenté (S2 décroît par contrat), AUT-02c PASS : PASS soumis à l'arbitrage A-G42-04) | run 37 |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -199,7 +199,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.2 : critères avant mesure | 87d1ed6, 1ef1c67 | — |
 | 2026-11-27 | G4.2 : ELP, autorisation autonome, étude D2, MIDI Learn | 4912ea6 | Local : cœur sans régression (seuls ELP-01, D2-04, D2-04c documentés) ; wrapper : AUT-02 (c) documenté |
 | 2026-11-27 | G4.2 : compilation locale sécurisée, harnais LB, version 0.3.1 | 49bfa0c | Local : LB-01..07 PASS ; CI : voir rapport G4.2 |
-| 2026-11-27 | G4.2 : manuel 0.3.1, propositions Z, rapport | (voir git) | Playwright 0.3.1 local : 46 PASS, 4 ignorés (b5) |
+| 2026-11-27 | G4.2 : manuel 0.3.1, propositions Z, rapport | 0ab245e, 9d604e4 | Playwright 0.3.1 local : 46 PASS, 4 ignorés (b5) ; CI runs 35/36 : job macOS en échec à l'étape wrapper (code de sortie avant la barrière) |
+| 2026-11-27 | G4.2 : verdict du wrapper à la barrière | 6ac4b83 | **CI run 37 (45951352395) SUCCESS complet** (pluginval 10, paquets, RTSan, LB, manuel) ; FAIL documentés seuls |
 
 ## 6. Prochaine action
 Arbitrages groupés du rapport ARCH-G4.2 (§8) : D-LIC-1 (licence JUCE pour la compilation locale), SPEC-HR-01
