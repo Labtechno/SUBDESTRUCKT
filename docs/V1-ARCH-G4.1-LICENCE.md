@@ -66,8 +66,15 @@ exigé, sources exportées du commit, arrêt au premier échec. Détail : `docs/
 
 Coût : nul (outils Apple gratuits, cmake/ninja via Homebrew). Aucun compte n'est créé par le script.
 
+**Mise à jour ARCH-G4.3** : pipeline réordonné (pluginval sur le bundle signé AVANT les paquets ; paquets construits à
+partir du bundle validé, charge utile vérifiée ; ZIP réextrait et vérifié) ; barrière exhaustive partagée avec la CI ;
+suite partielle (`SBD_ONLY`), `local-build/` symbolique et collisions refusés. Procédure : `docs/V1-LOCAL-BUILD.md`.
+Arbitrage du propriétaire : **JUCE Starter retenue sous réserve** d'éligibilité et d'acceptation explicite par lui ;
+aucune condition n'a été acceptée par l'agent ; distribution publique toujours interdite.
+
 ## 5. Décisions restant à l'utilisateur
 
-- D-LIC-1 : licence JUCE retenue pour la recette privée (AGPLv3 ou Starter).
+- D-LIC-1 : licence JUCE retenue pour la recette privée : Starter retenue sous réserve (ARCH-G4.3) ; éligibilité et
+  acceptation explicite à confirmer par le propriétaire lui-même.
 - D-LIC-2 : licence et modalités d'une éventuelle diffusion publique future (Starter et son plafond, Indie/Pro, ou
   AGPLv3 avec publication des sources) ; signature Developer ID et notarisation (payantes, non engagées).

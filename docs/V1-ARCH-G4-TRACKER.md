@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -119,6 +119,16 @@ AUT-02c, **complémentaires, définis après diagnostic**, qui ne remplacent pas
 numérique de tanh), D2-04 (moteur historique, fluctuation bornée), D2-04c (une fenêtre après coupure), AUT-02
 clause (c) (S2 décroît par contrat). Résultats : rapport `docs/V1-ARCH-G4.2-REPORT.md`.
 
+### 3quater. Critères ARCH-G4.3 (enregistrés le 2026-11-27, avant toute mesure)
+Texte intégral : `docs/V1-ARCH-G4.3-SPEC.md` (commit 2a228d4) : TA-01..25 (+ TA-xxw), ELP-01R, D2R-01..11, R2-01..05,
+ZC-01..18, LB-08..13, MIG-01..04 ; arbitrages et révisions fonctionnelles RF-01..04 (§1) ; additifs d'exécution (§11).
+Échecs documentés ajoutés (`tests/known_failures.txt`, désormais bornés à leur portée `core:` / `wrapper:`) : R2-02,
+ZC-05, ZC-13. Arbitrages ouverts : A-G43-01 (niveau de Harmonic Tilt), A-G43-02 (progressivité de Harmonic Shift).
+Contrats : `docs/V1-AUTONOMY-CONTRACT.md`, `docs/V1-Z-TRANSFORMS-CONTRACT.md` ; procédure : `docs/V1-LOCAL-BUILD.md`.
+Résultats : `docs/V1-ARCH-G4.3-REPORT.md`. Point de reprise MSVC : le suivi des dépendances d'en-têtes fonctionne dans
+un répertoire de build recréé (`ninja -t deps` VALID) ; l'ancien `build-local` hérité de G4.2 produisait des objets
+périmés. Tests : `tests/expected_results.txt` (inventaire) à compléter pour tout nouveau critère (INV-01 en CI).
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -132,7 +142,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | run 33 |
 | R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | run 33 |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
-| R10 | Tail/Drone/Panic | F | PASS (G4.2 : Panic suspend aussi les états autonomes (AUT-05)) | run 37 |
+| R10 | Tail/Drone/Panic | F | PASS (G4.3 : Panic révoque systématiquement, purge des lignes d'alignement ; TA-09..12, TA-21/22) | G4.3 |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
 | R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | run 33 |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
@@ -141,7 +151,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | PASS (G4.1 : WTA-01, WT-ED-01, WT-ED-02w (générateur, éditeur, .sdwt, UI Banques)) | run 33 |
 | R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (CI run 9) | — |
 | R18 | Z : 3 transformations attestées | WT | PASS (CI run 9) | — |
-| R19 | Z : 5 transformations historiques | WT | BLOCKED | — |
+| R19 | Z : 5 transformations du catalogue validé | WT | IMPLEMENTED (G4.3 : Tilt, Mask, Focus, Shift, Scatter ; ZC-05 et ZC-13 c FAIL documentés ; A-G43-01/02) | G4.3 |
 | R20 | FM 4 opérateurs, PM/LinFM/TZFM/ExpFM par destinataire | FM | PASS (CI run 9) | — |
 | R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (CI run 9) | — |
 | R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (CI run 9) | — |
@@ -162,17 +172,17 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (CI run 9) | — |
 | R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (CI run 9) | — |
 | R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (CI run 9) | — |
-| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.2 : ELP / limiteur / garde distincts et comptés séparément (ELP-07)) | run 37 |
+| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.3 : SPEC-HR-01 adoptée, ELP-01R PASS ; ELP-01 FAIL historique conservé) | G4.3 |
 | R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
 | R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
 | R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
 | R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
 | R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS (navigation, tailles, Inspector, titres accessibles) ; contrastes/DPI/zoom par niveau non mesurés) | run 33 |
-| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.2 : G-21w inchangé et PASS ; G-22w) | run 37 |
+| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.3 : 703 paramètres, format d'état 4, G-21w, G-22w, TA-xxw) | G4.3 |
 | R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | run 37 |
-| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.2 : paquets 0.3.1 construits et recette VM (CI) ; NON publiés ; compilation locale LB-01..07) | run 37 |
-| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.2 : manuel 0.3.1 (comportements modifiés) : contrôles bloquants + Playwright) | run 37 |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.2 : non-conformité DAW corrigée (AUT-01, 03..08, AUT-02 a/b, CAP-02w PASS) ; AUT-02 clause (c) FAIL documenté (S2 décroît par contrat), AUT-02c PASS : PASS soumis à l'arbitrage A-G42-04) | run 37 |
+| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.3 : paquets 0.3.2 en CI, NON publiés ; compilation locale LB-01..13, barrière exhaustive) | G4.3 |
+| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.3 : manuel 0.3.2, 29 tests de recette dont R-26..R-29, contrôles bloquants + Playwright) | G4.3 |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.3 : AUT, TA, R2-01/03/04/05 PASS ; R2-02 FAIL documenté (restitution entre fréquences) ; recette physique R-21/R-25/R-28) | G4.3 |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -201,16 +211,20 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.2 : compilation locale sécurisée, harnais LB, version 0.3.1 | 49bfa0c | Local : LB-01..07 PASS ; CI : voir rapport G4.2 |
 | 2026-11-27 | G4.2 : manuel 0.3.1, propositions Z, rapport | 0ab245e, 9d604e4 | Playwright 0.3.1 local : 46 PASS, 4 ignorés (b5) ; CI runs 35/36 : job macOS en échec à l'étape wrapper (code de sortie avant la barrière) |
 | 2026-11-27 | G4.2 : verdict du wrapper à la barrière | 6ac4b83 | **CI run 37 (45951352395) SUCCESS complet** (pluginval 10, paquets, RTSan, LB, manuel) ; FAIL documentés seuls |
+| 2026-11-27 | G4.3 : critères avant mesure, empreintes 0.3.1 (msvc-x64, clang-arm64) | 2a228d4 | CI run 39 SUCCESS (empreintes publiées en annotation) |
+| 2026-11-27 | G4.3 : TRANSPORT AUTHORIZATION, purge Panic | 528a000 | Local : TA 24/24, TA-xxw 9/9 |
+| 2026-11-27 | G4.3 : D2 Legacy/Regenerative, Z, R2, topologie par défaut, barrière exhaustive, LB-08..13, 0.3.2 | d7dcc22 | CI run 40 : voir rapport G4.3 §11 |
+| 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport | (livraison) | rapport G4.3 §11 |
 
 ## 6. Prochaine action
-Arbitrages groupés du rapport ARCH-G4.2 (§8) : D-LIC-1 (licence JUCE pour la compilation locale), SPEC-HR-01
-(et ELP-01), A-G42-01 (D2 Feedback), A-G42-04 (AUT-02 c), B-01 (Z). Puis recette physique 0.3.1 sur Mac Studio
-M4 Max (compilation locale sécurisée, chapitre 2 du manuel 0.3.1). ARCH-UI-04 non commencé (non autorisé).
+Recette physique 0.3.2 sur Mac Studio M4 Max (compilation locale au SHA livré : `docs/V1-LOCAL-BUILD.md`) : R-26 Reason 14,
+R-27 Ableton Live, R-28 exports, R-29 écoute ; puis verdict C (DSP FINAL LOCK). Arbitrages : A-G43-01, A-G43-02,
+acceptation de la licence JUCE Starter par le propriétaire. ARCH-UI-04 non commencé (autorisation requise).
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
 |---|---|---|
-| B-01 | Cinq transformations Z historiques (P0-C28/C29) | R19 BLOCKED ; 3 transformations développées ; G4.2 : recherche négative, 6 propositions NOUVELLES non implémentées (`docs/V1-ARCH-G4.2-Z-PROPOSALS.md`) |
+| B-01 | Catalogue Z | LEVÉ (G4.3) : catalogue de huit transformations validé par le propriétaire, cinq implémentées ; arbitrages A-G43-01 (niveau de Tilt) et A-G43-02 (progressivité de Shift) |
 | B-02 | Sémantique WT/FM balance (AUD-A05) | Levé par ARCH-G4.1 : balance audio post-Amp, centre = 0.2.0 (BAL-01) ; conflit éventuel avec Cross Audio Crossfade documenté |
 | B-03 | Règles de retrigger/loop/sync tempo des enveloppes | Implémenté provisoirement (Voice/Note/Gate, Sync en noires) ; à confirmer |
 | B-05 | (proposition SPEC-HR-01 en attente) Plages de gain des étages (Out filtres/destruction jusqu'à +24 dB, makeup Y1 +36 dB) : en cumul extrême, la garde +30 dBFS se déclenche (G-15 étendu, DST-09 FAIL, rapportés) | Décider : conserver les plages (garde = comportement voulu) ou les réduire (ex. +12 dB) |

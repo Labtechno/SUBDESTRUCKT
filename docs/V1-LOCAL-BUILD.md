@@ -1,0 +1,48 @@
+# SUBDESTRUCKT — Compilation et installation privées sur Mac (0.3.2, ARCH-G4.3)
+
+Procédure de recette **privée** sur le Mac du propriétaire (Mac Studio M4 Max, VST3 arm64). Aucune diffusion : les
+fichiers produits restent dans `local-build/` (ignoré par git) et ne doivent pas être publiés. Script :
+`tools/local-build/build_local_macos.sh` (critères LB-01..13, harnais `tools/local-build/test_build_local.sh`).
+
+## 1. Prérequis (gratuits)
+
+macOS 14+, Apple Silicon ; `xcode-select --install` ; `brew install cmake ninja` ; git, curl. Aucun compte, aucune
+dépense. Licence JUCE : **à choisir et accepter par vous-même** (option retenue sous réserve : Starter, après
+vérification de votre éligibilité ; voir `docs/V1-ARCH-G4.1-LICENCE.md`). Le script n'accepte aucune condition à votre
+place : il enregistre seulement le choix que vous déclarez.
+
+## 2. Compiler
+
+    git clone https://github.com/Labtechno/SUBDESTRUCKT.git && cd SUBDESTRUCKT
+    git checkout <SHA communiqué>        # git status doit être vide
+    unset SBD_ONLY                       # aucune suite partielle n'est livrable
+    tools/local-build/build_local_macos.sh --juce-licence=<agplv3|starter|autre>
+
+Le script : exporte les sources exactes du commit ; vérifie JUCE (tag + SHA, arbre propre) et pluginval (SHA-256)
+d'après le workflow du commit ; compile ; exécute les suites cœur et wrapper **complètes** et applique la barrière
+exhaustive (`tools/check_results.sh` : inventaire `tests/expected_results.txt`, échecs connus bornés à leur portée
+`tests/known_failures.txt`) ; prépare et signe ad hoc le bundle, vérifie son identité ; exécute pluginval (rigueur 10) sur
+**ce** bundle ; construit les paquets à partir de ce bundle sans le modifier et vérifie que la charge utile de
+l'installateur lui est identique (empreinte d'arbre) ; assemble la livraison, réextrait le ZIP et vérifie chaque fichier
+contre `SHA256SUMS.txt`. Il s'arrête au premier échec (codes : 2 usage, 3 dépôt/commit/chemins, 4 dépendances, 5 tests,
+6 bundle, 7 pluginval, 8 paquets/livraison, 9 collision) et ne laisse alors aucune livraison présentée comme valide. Il
+n'écrase jamais une sortie existante et refuse un `local-build/` symbolique.
+
+## 3. Installer, désinstaller
+
+1. Si le script signale un doublon, retirez `~/Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3` (ancienne option
+   `--install`, supprimée depuis 0.3.1). Le script ne touche jamais à vos dossiers de plugins.
+2. Ouvrez vous-même `local-build/delivery-…/SUBDESTRUCKT_v0.3.2-b…/SUBDESTRUCKT_Installer.pkg` (paquet non signé :
+   Réglages Système › Confidentialité et sécurité › « Ouvrir quand même » pour CE paquet).
+3. Désinstallation : `SUBDESTRUCKT_Uninstaller.pkg`.
+
+## 4. Mesures de cette machine
+
+`local-build/out-…/perf_this_machine.txt` (PERF-01..03, ZC-17) : seules ces mesures valent pour votre Mac ; les mesures
+CI (machine virtuelle) et Windows ne certifient ni M3 ni M4 Max.
+
+## 5. Journal de recette TRANSPORT AUTHORIZATION
+
+Créez le fichier vide `~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_diagnostics.on` ; chaque instance écrit
+alors ses événements (transport observé, hors temps réel, autorisations et leur source, suspensions, révocations,
+captures appliquées) dans `ta_log.txt` du même dossier. Supprimez le fichier d'activation après la recette.

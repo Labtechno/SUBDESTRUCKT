@@ -1,5 +1,6 @@
 // SUBDESTRUCKT — tests ARCH-G4.3 : TRANSPORT AUTHORIZATION (moteur, transport simulé). docs/V1-ARCH-G4.3-SPEC.md §3.
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -671,11 +672,24 @@ void testTransportAuthorization(const std::vector<CaptureAsset>& caps) {
                afterAno, anoOk, asoOk);
   }
 
-  // TA-20 : allocations RT
+  // TA-20 : allocations RT ; coût de la machine d'autorisation (mesure, machine de développement)
   {
+    AutonomyGate g;
+    TaLog lg;
+    TaEvent x;
+    const TransportObs seq[4] = {TransportObs::Stopped, TransportObs::Rolling, TransportObs::Rolling, TransportObs::Unknown};
+    const auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < 1000000; ++i) {
+      if (i % 1000 == 0) g.requestSuspend();
+      g.beginBlock(seq[i & 3], (i & 7) == 5, (i & 15) == 9, false, static_cast<std::uint64_t>(i) * 256, lg);
+      while (lg.pop(x)) {
+      }
+    }
+    const double ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - t0).count() / 1e6;
     const bool ok = gAlloc == 0;
     TK_CHECK(ok);
-    tk::result("TA-20", ok, "0 allocation dans Engine::process sur toutes les sequences TA (%lld) ; processBlock : TA-20w ; RTSan : CI", gAlloc);
+    tk::result("TA-20", ok, "0 allocation dans Engine::process sur toutes les sequences TA (%lld) ; processBlock : TA-20w ; RTSan : CI ; cout de la machine d'autorisation (Windows, ne certifie pas M3/M4 Max) : %.1f ns par bloc hote (journal compris), soit %.4f %% d'un bloc de 256 echantillons a 281 ns/echantillon",
+               gAlloc, ns, 100.0 * ns / (256.0 * 281.0));
   }
 }
 

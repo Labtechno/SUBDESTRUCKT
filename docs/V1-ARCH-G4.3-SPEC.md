@@ -266,3 +266,42 @@ R19 passe à PASS si les cinq transformations sont implémentées et ZC-01..18 P
 Reason 14 et Ableton Live (version relevée) sur Mac Studio M4 Max, VST3 arm64 : protocole en 20 étapes et protocole
 d'exports (rapport §13–14). La CI ne prouve pas la compatibilité physique. Verdict C (DSP FINAL LOCK) uniquement après
 cette recette.
+
+## 11. Additifs consignés pendant l'exécution (les critères ci-dessus restent inchangés)
+
+Défauts réels trouvés et corrigés (critères inchangés) :
+- **Panic** (TA-09, premier passage FAIL : résidu 1,26e−4 après la rampe) : les lignes d'alignement de latence
+  (S2/N1) n'étaient pas purgées ; elles le sont désormais à la fin de la rampe (TA-09 PASS, silence exact).
+- **Restitution S2 entre fréquences** (R2-02, premier passage : biais −2,5 / −3 dB) : interpolation d'amplitudes
+  remplacée par un rééchantillonnage en énergie (énergie totale −0,35 / +0,48 dB) ; R2-02 reste FAIL (résolution).
+- **Topologie par défaut du moteur** : un `CompiledTopology` construit par défaut avait un ordre d'évaluation nul (nœud
+  WT évalué 6 fois par échantillon) ; seuls les moteurs de test utilisés sans `setTopologyImmediate` étaient concernés
+  (le processeur fixe toujours sa topologie). Corrigé (topologie compilée d'une table vide) ; mis en évidence par les
+  13 906 resynthèses spectrales pour 384 000 échantillons de la première mesure ZC-17. Toutes les suites relancées.
+
+Corrections de mesure dans les tests (critères inchangés ; premiers résultats consignés au rapport) :
+- TA-08 (2e partie) : le test exigeait le silence 2 s après un preset désarmé ; un gel non armé est une traîne bornée
+  à 10 s par contrat (P0-C03/C04) ; mesure remplacée par le critère écrit (« rendu ≡ désarmé ») : équivalence bit à bit
+  avec le même historique désarmé, silence après le garde-fou.
+- TA-21/22 : configuration de test inadaptée (D2/S2 gelés et vides coupant tout le signal) ; état par défaut utilisé.
+  TA-22 : verrou Panic lu à la fin du bloc du Panic (il est levé ensuite par un ARRÊT réel, conformément au §3).
+- TA-23w : l'instance passait d'ARRÊT à LECTURE (autorisation légitime) ; elle démarre désormais en LECTURE.
+- R2-02 : normalisation des énergies de bande par la durée de trame (Parseval) ; R2-05 : « contenu = capture » mesuré
+  sur le spectre tenu (C·r^m, écart relatif ≤ 1e−6) ; l'écart de niveau de trame (0,51 dB) reste descriptif.
+- ZC-13 (b) : fenêtre d'analyse lue hors du rendu (24 000 échantillons pour une fenêtre jusqu'à 24 384) : lecture de
+  mémoire non initialisée, résultats variables entre compilations (0, 18, 23 bandes) ; rendu porté à 32 768 échantillons
+  (23 bandes, stable). Les rendus du moteur étaient identiques entre compilations propres (empreintes vérifiées).
+- D2R-02 : filtre de conversion v3 du test trop large (`lfo1.shape` retiré par erreur).
+
+Compléments (définis après observation, ne remplacent rien) :
+- **ZC-17, cadence** : au plus une resynthèse complète toutes les 128 échantillons moteur ; décomposition du coût
+  (transformations, combinaison XY, FFT, cache).
+- **ZC-16, diagnostic** : niveau avant ELP, configuration Z au bloc de crête, variantes de contrôle (sans Tilt,
+  compensation forcée, Tilt brillant seul).
+- **R2-02, analyse** : énergie totale, écart pondéré par l'énergie, niveau des bandes hors tolérance.
+
+Révisions fonctionnelles appliquées à des critères historiques (définies avant mesure au §1) :
+- **ST-02** (« autres paramètres au défaut ») : les modes D2 d'un état antérieur au format 4 prennent leur valeur de
+  migration Legacy (RF-04).
+- **AUD-01** : contextes d'activation étendus aux nouvelles valeurs (types Z 4–8 sur les deux emplacements, D2 avec
+  Feedback > 0) ; critère « chaque paramètre a un effet mesuré » inchangé.

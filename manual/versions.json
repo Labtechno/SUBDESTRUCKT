@@ -65,6 +65,24 @@
    "audioChapter": 16,
    "screenshot": "assets/ui_performance.png",
    "exportFileName": "SUBDESTRUCKT_ARCH_G42_RESULTS.json"
+  },
+  {
+   "version": "0.3.2",
+   "label": "developpement integre ARCH-G4.3, TRANSPORT AUTHORIZATION, D2 Regenerative, catalogue Z complet, aucun binaire diffuse",
+   "buildSourceSha": "d7dcc22fcb741127460943e0a8ebdce6fe908cac",
+   "documentationSha": "",
+   "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
+   "deliveryZipSha256": "",
+   "deliveryZipBytes": 0,
+   "recetteCampaignId": "SUBDESTRUCKT-ARCH-G43-RECETTE-PHYSIQUE",
+   "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g43-recette.v1",
+   "resultsSchemaVersion": 1,
+   "registry": "g4",
+   "recetteCount": 29,
+   "chapterCount": 18,
+   "audioChapter": 16,
+   "screenshot": "assets/ui_performance.png",
+   "exportFileName": "SUBDESTRUCKT_ARCH_G43_RESULTS.json"
   }
  ]
 }
