@@ -34,7 +34,7 @@
       "version": "0.3.0",
       "label": "developpement integre ARCH-G4.1, compilation locale, aucun binaire diffuse",
       "buildSourceSha": "4f7a49cf24b7d3f0d222aa76044b7d5b95d4ccf1",
-      "documentationSha": "4f7a49cf24b7d3f0d222aa76044b7d5b95d4ccf1",
+      "documentationSha": "1bf461d1aa0e15cf7c2c9f9a057fc007c6473d31",
       "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
       "deliveryZipSha256": "",
       "deliveryZipBytes": 0,
