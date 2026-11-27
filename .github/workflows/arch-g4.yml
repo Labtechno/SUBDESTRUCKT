@@ -307,7 +307,9 @@ jobs:
           status=0
           for v in $(python -c "import json;print(' '.join(x['version'] for x in json.load(open('manual/versions.json'))['versions']))"); do
             echo "== edition $v"
-            MANUAL_VERSION="$v" python -m pytest tests/manual -q -rx -p no:cacheprovider 2>&1 | tee "manual_$v.log" || status=1
+            MANUAL_VERSION="$v" python -m pytest tests/manual -q -rfEx -p no:cacheprovider 2>&1 | tee "manual_$v.log" || status=1
             tail -1 "manual_$v.log" | sed "s/^/::notice title=manuel $v::/"
+            grep -E "^(FAILED|ERROR) " "manual_$v.log" | cut -c1-400 | sed "s/^/::error title=manuel $v::/" || true
+            grep -E "^E   " "manual_$v.log" | head -6 | cut -c1-300 | sed "s/^/::warning title=manuel $v detail::/" || true
           done
           exit $status
