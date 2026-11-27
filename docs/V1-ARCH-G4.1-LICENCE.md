@@ -59,6 +59,11 @@ Le projet épingle JUCE 9.0.6 (commit 654bdbc7) : c'est l'EULA JUCE 9 qui s'appl
 - le script **refuse de s'exécuter** sans `--juce-licence=agplv3|starter|autre` : il ne choisit rien, il enregistre
   seulement le choix déclaré par l'utilisateur dans le rapport local.
 
+**Mise à jour ARCH-G4.2** (le texte ci-dessus décrit la version G4.1 du script) : l'option `--install` est
+supprimée (aucune installation automatique : l'utilisateur ouvre lui-même Installer.pkg) ; pluginval et la livraison
+complète sont toujours exécutés et bloquants (`--pluginval` et `--packages` sont devenus sans effet) ; dépôt propre
+exigé, sources exportées du commit, arrêt au premier échec. Détail : `docs/V1-ARCH-G4.2-REPORT.md` §3 et §9.
+
 Coût : nul (outils Apple gratuits, cmake/ninja via Homebrew). Aucun compte n'est créé par le script.
 
 ## 5. Décisions restant à l'utilisateur
