@@ -14,12 +14,14 @@
     const buttons = Array.from(box.querySelectorAll('button.play'));
     buttons.forEach((btn) => {
       const audio = new Audio();
-      audio.preload = 'none';  // aucun téléchargement avant le premier clic (données mobiles)
-      audio.src = btn.dataset.src;
+      audio.preload = 'none';
+      // source affectée au premier clic seulement : certains moteurs (WebKit Linux) chargent malgré preload=none
+      // (défaut constaté en CI sur les éditions 0.1.0-b5 et 0.2.0) ; aucun téléchargement avant le clic.
       btn._audio = audio;
       audio.addEventListener('ended', () => { if (current && current.audio === audio) stopCurrent(); });
       btn.addEventListener('click', () => {
         if (current && current.audio === audio) { stopCurrent(); return; }
+        if (!audio.getAttribute('src')) audio.src = btn.dataset.src;
         // bascule A/B : reprend au même instant si l'autre son de la même comparaison jouait
         let t = 0;
         if (current && buttons.includes(current.button)) t = current.audio.currentTime;

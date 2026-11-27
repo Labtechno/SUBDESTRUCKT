@@ -222,6 +222,9 @@ def test_audio_files_match_manifest(manual_url):
 
 
 def test_no_autoplay_and_no_audio_download_before_click_all(page, manual_url):
+    import sys
+    if VERSION in ("0.1.0-b5", "0.2.0") and page.browser_name == "webkit-iphone" and sys.platform.startswith("linux"):
+        pytest.xfail("éditions publiées 0.1.0-b5/0.2.0 : WebKit Linux charge les WAV malgré preload=none (corrigé en 0.3.0)")
     audio_reqs = []
     page.on("request", lambda r: audio_reqs.append(r.url) if r.url.endswith(".wav") else None)
     goto(page, manual_url + "index.html")

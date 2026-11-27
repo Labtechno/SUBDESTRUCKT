@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -105,9 +105,14 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 | AUD-01 | Audit des commandes : chaque paramètre continu ou discret modifie la sortie dans au moins un contexte d'activation documenté, sinon il figure dans une liste d'exceptions justifiées |
 | MT-01 | Microtuning : Custom, +50 cents sur La : fréquence × 2^(50/1200) ± 0,1 cent ; Equal : offsets ignorés ; A4 = 432 Hz respecté |
 | FOL-01 | Suiveurs : source dans [0, ~1] proportionnelle au niveau de la chaîne mesurée ; route suiveur WT -> cutoff global active et efficace |
+| ENV-03 | (clause BPM d'ENV-02, tolérance fixée à l'écriture du test, avant exécution) attaque synchronisée d'une noire, BPM 120 -> 60 à mi-attaque : fin à 36000 ± 128 échantillons, aucun pas > pente à 60 bpm |
+| WT-ED-01/02w | Banques utilisateur : générateurs déterministes bornés 64×16 ; forme dessinée (DC nul, crête 1) ; remplacement par copie ; .sdwt aller-retour (même identifiant), altération refusée ; banque intégrée à l'état ; côté processeur : génération, édition, Undo/Redo |
+| CHR-01, TOPO-01, MACRO-01, UI-01w, CAP-02w, PERF-03 | §9/§10 : Character neutre à 0 et déterministe ; 10 topologies valides/distinctes, CROSS conservé ; cycles de macros refusés, suiveur en amont inactif ; navigation/tailles/Inspector sans modification d'état, titres accessibles ; sauvegarde DAW d'un gel ; mesures Eco/Normal/High sans seuil |
+
+Résultats ARCH-G4.1 (local MSVC, puis CI macOS arm64 — colonne CI de la matrice) : tous PASS sauf la clause DAW de CAP-01 (**non conforme** : la restauration DAW est fidèle, armements compris, car le critère antérieur G-21w exige un état DAW identique après rechargement ; arbitrage A-G41-03). G-15 et DST-09 : FAIL historiques au commit c741fb8 (consignés) ; PASS au commit courant **uniquement sous SPEC-HR-01 proposée** (si refusée : retour à FAIL).
 
 ## 4. Matrice d'exigences P0/P1
-Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 + PASS×1) / lignes non BLOCKED.
+Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
 |---|---|---|---|---|
 | R01 | Registre stable extensible (C23–C27) | F | PASS (CI run 3) | — |
@@ -116,23 +121,23 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R04 | Timeline MIDI sample-accurate, ordre C11 étendu (bend/CC/pression) | F | PASS (CI run 9) | — |
 | R05 | Mono/Legato, priorités Last/Low/High, sustain | F | PASS (CI run 9) | — |
 | R06 | Expressivité : bend Up/Down, pression, CC1/2/11/64, vélocité | F | PASS (CI run 9) | — |
-| R07 | Accordage A4, microtuning 12 classes | F | IMPLEMENTED | — |
-| R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (CI run 9) | — |
+| R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | @CI@ |
+| R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | @CI@ |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
 | R10 | Tail/Drone/Panic | F | PASS (CI run 9) | — |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
-| R12 | WT morph Spectral | WT | TODO (morph spectral) | — |
+| R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | @CI@ |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
 | R14 | WT phase free/retrigger/fixed/random, sync hard/soft (interne/OP) | WT | PASS (CI run 9) | — |
-| R15 | WT Character | WT | IMPLEMENTED | — |
-| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | IMPLEMENTED (import/export WAV, SHA-256, intégration à l'état ; éditeur/générateur UI absents) — WTA-01 PASS local, CI run 13 | — |
+| R15 | WT Character | WT | PASS (G4.1 : CHR-01) | @CI@ |
+| R16 | Génération procédurale, import/export WAV, format portable, édition COW | WT | PASS (G4.1 : WTA-01, WT-ED-01, WT-ED-02w (générateur, éditeur, .sdwt, UI Banques)) | @CI@ |
 | R17 | Z deux slots A→B/B→A, Z Master, profondeurs/courbes, fondamentale, gain | WT | PASS (CI run 9) | — |
 | R18 | Z : 3 transformations attestées | WT | PASS (CI run 9) | — |
 | R19 | Z : 5 transformations historiques | WT | BLOCKED | — |
 | R20 | FM 4 opérateurs, PM/LinFM/TZFM/ExpFM par destinataire | FM | PASS (CI run 9) | — |
 | R21 | 9 formes, ratio/fixed/offset/coarse/fine | FM | PASS (CI run 9) | — |
 | R22 | Niveau audio/pan ≠ modulation, mute ≠ disable, AC/DC, Character + Master | FM | PASS (CI run 9) | — |
-| R23 | Matrice 4×4 + 10 topologies préréglées | FM | IMPLEMENTED | — |
+| R23 | Matrice 4×4 + 10 topologies préréglées | FM | PASS (G4.1 : TOPO-01) | @CI@ |
 | R24 | ExpFM benchmark | FM | PASS (PERF-02 : ExpFM = coût PM/Lin/TZ) | — |
 | R25 | CROSS 55 routes B-T2 sticky, bus Raw/Normalized, directions | CR | PASS (CI run 9) | — |
 | R26 | Sync bidirectionnel, Cross Audio Mix/Crossfade/Ring/AM, Cross Reset | CR | PASS (CI run 9) | — |
@@ -144,7 +149,7 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R32 | Pre/Post, excitation, stéréo linked/dual | FLT | PASS (CI run 9) | — |
 | R33 | Matrice globale 64, Via, courbes, rates, inactivité, macros | MOD | PASS (CI run 9) | — |
 | R34 | RNG PCG32/xoshiro benchmark, chaos 3 modèles | MOD | PASS (CI run 9) | — |
-| R35 | Suiveurs ×3, Y2 sources | MOD | IMPLEMENTED | — |
+| R35 | Suiveurs ×3, Y2 sources | MOD | PASS (G4.1 : FOL-01 (correctif setup), DST-07 (Y2)) | @CI@ |
 | R36 | Presets : bibliothèque, tags/favoris, import/export | STATE | PASS (CI run 9) | — |
 | R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (CI run 9) | — |
 | R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (CI run 9) | — |
@@ -154,12 +159,12 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
 | R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
 | R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
-| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (zoom 75–150 %, focus clavier ; DPI/contrastes non mesurés) | — |
-| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (CI runs 3, 6, 7 : wrapper, hôte, pluginval 10) | — |
+| R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS (navigation, tailles, Inspector, titres accessibles) ; contrastes/DPI/zoom par niveau non mesurés) | @CI@ |
+| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.1 : 695 paramètres, état v3 (G-21w/G-22w, REG-ID)) | @CI@ |
 | R47 | MIDI Learn global séparé des presets | PLG | IMPLEMENTED (file audio->message, latence ≤ 33 ms) | — |
-| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (CI run 9 : paquets 0.2.0-b9 construits, recette VM PASS ; NON publiés, B-04) | — |
-| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (manuel 0.2.0 construit, contrôles bloquants OK, publié sur gh-pages ; tests Playwright non exécutés) | — |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | TODO (captures créatives Freeze/Glitch R2 non persistées) | — |
+| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.1 : paquets 0.3.0 construits et recette VM (CI) ; NON publiés) | @CI@ |
+| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.1 : manuel 0.3.0 : contrôles bloquants + Playwright (local et CI ubuntu) ; publication gh-pages manual/0.3.0) | @CI@ |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.1 : CAP-01/CAP-02w PASS ; clause DAW de CAP-01 non conforme (A-G41-03)) | @CI@ |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -178,16 +183,21 @@ Pondération : chaque ligne vaut 1 ; avancement fonctionnel = (IMPLEMENTED×0,5 
 | 2026-11-26 | Manuel 0.2.0 + publication gh-pages (manual/0.2.0) | 573b60a / gh-pages 1631944 | build OK ; CI run 9 (f640c5c) SUCCESS complet (63/65, 2 FAIL documentés) |
 | 2026-11-26 | Rapport final | (ce commit) | docs/V1-ARCH-G4-REPORT.md ; avancement 85,7 % |
 
+| 2026-11-27 | G4.1 : balance, Trigger/Sync, SPEC-HR-01, état v3 | efeee24 | Local PASS ; CI : barrière en échec (liste d'échecs connus vide sous pipefail), corrigée en f1183b2 |
+| 2026-11-27 | N1 hybride OS ; morph spectral ; captures R2 | c116aa4, 83f5d39, 22297e1 | Local PASS |
+| 2026-11-27 | AUD-01 + correctifs suiveurs / modulation de sortie | 7a82590 | Local PASS (686 effectifs, 9 exceptions) |
+| 2026-11-27 | UI ; banques utilisateur ; perf ; licence ; manuel 0.3.0 ; §9 | e9d6919..feafcb6 | voir rapport ARCH-G4.1 |
+
 ## 6. Prochaine action
-Arbitrages du rapport §7 (B-04 en priorité pour la recette physique). Développement possible sans arbitrage : morph
-spectral (R12), captures créatives R2 (R50), éditeur/générateur de formes, OS interne de N1, tests Playwright du manuel,
-vérification des runs CI 13/14.
+Arbitrages groupés du rapport ARCH-G4.1 (§8) : D-LIC-1 (licence JUCE pour la compilation locale), SPEC-HR-01,
+A-G41-03 (armements DAW), règles provisoires des enveloppes. Puis recette physique 0.3.0 sur Mac Studio M4 Max
+(compilation locale, chapitre 2 du manuel 0.3.0).
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
 |---|---|---|
 | B-01 | Cinq transformations Z historiques (P0-C28/C29) | R19 BLOCKED ; 3 transformations développées |
-| B-02 | Sémantique WT/FM balance de la façade Performance (AUD-A05) | Commande non exposée tant que non arbitrée |
-| B-03 | Règles de retrigger/loop/sync tempo des enveloppes « à préciser » | Implémenté : free + loop A-H-D ; sync tempo des enveloppes non implémentée |
-| B-05 | Plages de gain des étages (Out filtres/destruction jusqu'à +24 dB, makeup Y1 +36 dB) : en cumul extrême, la garde +30 dBFS se déclenche (G-15 étendu, DST-09 FAIL, rapportés) | Décider : conserver les plages (garde = comportement voulu) ou les réduire (ex. +12 dB) |
+| B-02 | Sémantique WT/FM balance (AUD-A05) | Levé par ARCH-G4.1 : balance audio post-Amp, centre = 0.2.0 (BAL-01) ; conflit éventuel avec Cross Audio Crossfade documenté |
+| B-03 | Règles de retrigger/loop/sync tempo des enveloppes | Implémenté provisoirement (Voice/Note/Gate, Sync en noires) ; à confirmer |
+| B-05 | (proposition SPEC-HR-01 en attente) Plages de gain des étages (Out filtres/destruction jusqu'à +24 dB, makeup Y1 +36 dB) : en cumul extrême, la garde +30 dBFS se déclenche (G-15 étendu, DST-09 FAIL, rapportés) | Décider : conserver les plages (garde = comportement voulu) ou les réduire (ex. +12 dB) |
 | B-04 | Licence JUCE 9 (AGPLv3/commerciale), canal de diffusion conforme, Developer ID/notarisation | Aucune publication binaire ; paquets construits et testés en CI sans publication |
