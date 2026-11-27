@@ -79,8 +79,9 @@ jobs:
 
       - name: Tests du wrapper JUCE (G-06w, G-16w, G-18w, G-19w, G-21w, G-22w)
         run: |
-          set -o pipefail
-          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log
+          set +e -o pipefail
+          ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log; echo "${PIPESTATUS[0]}" > out/wrapper_exit.txt
+          true  # ARCH-G4.2 : verdict a la barriere finale, comme le coeur (echec non documente ou interruption : bloquant)
 
       - name: Barrière des résultats (échecs connus documentés uniquement)
         run: |
@@ -93,6 +94,7 @@ jobs:
             if echo "$known" | grep -qx -- "$id"; then echo "echec connu (documente) : $line"; else echo "ECHEC NON ATTENDU : $line"; echo "::error title=ECHEC $id::${line:0:900}"; unexpected=1; fi
           done < out/fails.txt
           crash="$(cat out/core_exit.txt)"
+          if ! grep -q "^wrapper_tests :" out/wrapper_tests.log; then echo "tests du wrapper interrompus (code $(cat out/wrapper_exit.txt))"; echo "::error title=wrapper_tests interrompus::code $(cat out/wrapper_exit.txt) ; derniere ligne : $(tail -1 out/wrapper_tests.log | cut -c1-300)"; unexpected=1; fi
           if ! grep -q "core_tests :" out/core_tests.log; then echo "tests du coeur interrompus (code $crash)"; echo "::error title=core_tests interrompus::code $crash ; derniere ligne : $(tail -1 out/core_tests.log | cut -c1-300)"; unexpected=1; fi
           # controles echoues (TK_CHECK) : localisation publique pour le diagnostic
           grep -h "ECHEC " out/*.log | head -20 | while read -r l; do echo "::warning title=controle::${l:0:300}"; done || true
