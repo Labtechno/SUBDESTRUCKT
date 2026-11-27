@@ -104,6 +104,10 @@ bool decodeState(const std::string& text, PluginState& out, std::string& error);
 void disarmAutonomous(PluginState& s) noexcept;
 bool anyArmed(const PluginState& s) noexcept;
 
+// Base64 (RFC 4648, sans retour à la ligne) partagé par les formats texte (état, banques .sdwt).
+std::string base64Encode(const std::uint8_t* data, std::size_t size);
+bool base64Decode(const std::string& text, std::vector<std::uint8_t>& out);
+
 // Validation sémantique complète (utilisée par le décodeur et les transactions).
 bool validateState(const PluginState& s, std::string& error);
 

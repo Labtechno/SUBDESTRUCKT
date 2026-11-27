@@ -212,6 +212,9 @@ PluginState defaultState() {
 
 static const ParamId kArms[9] = {ParamId::FltWtArm, ParamId::FltFmArm, ParamId::FltGlArm, ParamId::DstWt1Arm, ParamId::DstWt2Arm,
                                  ParamId::DstFm1Arm, ParamId::DstFm2Arm, ParamId::DstGl1Arm, ParamId::DstGl2Arm};
+std::string base64Encode(const std::uint8_t* data, std::size_t size) { return base64(data, size); }
+bool base64Decode(const std::string& text, std::vector<std::uint8_t>& out) { return unbase64(text, out); }
+
 void disarmAutonomous(PluginState& s) noexcept {
   for (ParamId a : kArms) s.params[a] = 0.0f;
 }

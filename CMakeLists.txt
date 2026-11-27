@@ -36,6 +36,7 @@ add_library(subdestruckt_core STATIC
   source/core/StateCodec.cpp
   source/core/PresetOps.cpp
   source/core/WtAssets.cpp
+  source/core/WtLibrary.cpp
   source/engine/ModRuntime.cpp
   source/engine/Chain.cpp
   source/engine/Engine.cpp)

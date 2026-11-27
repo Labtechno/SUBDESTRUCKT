@@ -707,9 +707,195 @@ class ModListView : public juce::Component {
   juce::TextEditor remId_;
 };
 
+// ================================================================ éditeur de formes wavetable (ARCH-G4.1 §3)
+// Dessin à la souris (64 points de contrôle, interpolation linéaire bouclée, DC retiré, crête normalisée), générateur
+// procédural et bibliothèque .sdwt. Chaque action crée une nouvelle banque immuable, préparée hors RT, sélectionnée
+// par une transaction annulable (Undo). Aucune écriture dans la banque jouée.
+class WaveEditor : public juce::Component {
+ public:
+  static constexpr int kPoints = 64;
+  explicit WaveEditor(UiContext& c) : ctx_(c) {
+    styleLabel(title_, 12.0f, col::wt);
+    title_.setText("EDITEUR DE FORMES  //  dessin, generateur, bibliotheque", juce::dontSendNotification);
+    styleLabel(info_, 11.0f, col::dim, true);
+    wave_.setSliderStyle(juce::Slider::LinearHorizontal);
+    wave_.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 48, 18);
+    wave_.onValueChange = [this] { loadWave(); };
+    apply_.setButtonText("Appliquer la forme");
+    apply_.setTooltip("Remplace la forme selectionnee dans une copie de la banque (nouvelle banque, annulable)");
+    apply_.onClick = [this] {
+      std::vector<std::pair<double, double>> pts;
+      for (int i = 0; i < kPoints; ++i) pts.emplace_back(static_cast<double>(i) / kPoints, pts_[static_cast<size_t>(i)]);
+      ctx_.proc.editCurrentWave(static_cast<int>(wave_.getValue()), drawnWave(pts));
+    };
+    revert_.setButtonText("Reprendre");
+    revert_.onClick = [this] { loadWave(); };
+    for (int k = 0; k < static_cast<int>(WtProcedure::Count); ++k) proc_.addItem(procedureName(static_cast<WtProcedure>(k)), k + 1);
+    proc_.setSelectedId(1);
+    grid_.addItem("16 x 1", 1);
+    grid_.addItem("16 x 4", 2);
+    grid_.addItem("64 x 16", 3);
+    grid_.setSelectedId(2);
+    for (auto* s : {&seed_, &amount_}) {
+      s->setSliderStyle(juce::Slider::LinearHorizontal);
+      s->setTextBoxStyle(juce::Slider::TextBoxRight, false, 48, 18);
+    }
+    seed_.setRange(0, 999, 1);
+    amount_.setRange(0.0, 1.0, 0.01);
+    amount_.setValue(0.6);
+    gen_.setButtonText("Generer");
+    gen_.onClick = [this] {
+      const int g = grid_.getSelectedId();
+      const int nx = g == 3 ? 64 : 16, ny = g == 1 ? 1 : (g == 2 ? 4 : 16);
+      ctx_.proc.generateBank(static_cast<WtProcedure>(proc_.getSelectedId() - 1), nx, ny, static_cast<std::uint64_t>(seed_.getValue()),
+                             amount_.getValue());
+    };
+    name_.setTextToShowWhenEmpty("nom de la banque", col::dim);
+    saveLib_.setButtonText("Enregistrer .sdwt");
+    saveLib_.onClick = [this] {
+      ctx_.proc.saveBankToLibrary(name_.getText().toStdString());
+      libCount_ = -1;
+    };
+    loadLib_.setButtonText("Charger");
+    loadLib_.onClick = [this] {
+      const int k = lib_.getSelectedId() - 1;
+      if (k >= 0 && k < static_cast<int>(libFiles_.size())) ctx_.proc.loadBankFromLibrary(libFiles_[static_cast<size_t>(k)].path);
+    };
+    for (auto* x : std::initializer_list<juce::Component*>{&title_, &info_, &wave_, &apply_, &revert_, &proc_, &grid_, &seed_, &amount_, &gen_, &name_,
+                                                           &saveLib_, &lib_, &loadLib_})
+      addAndMakeVisible(*x);
+    pts_.fill(0.0);
+  }
+  void refresh() {
+    const auto id = ctx_.proc.currentBank();
+    if (id != bankId_) {
+      bankId_ = id;
+      bank_ = resolveBank(id);
+      const int n = bank_ ? bank_->numWaves() : 1;
+      wave_.setRange(0, std::max(1, n - 1), 1);
+      if (n <= 1) wave_.setRange(0, 1, 1);
+      wave_.setValue(std::min(wave_.getValue(), static_cast<double>(n - 1)), juce::dontSendNotification);
+      loadWave();
+    }
+    const auto files = ctx_.proc.bankLibrary();
+    if (static_cast<int>(files.size()) != libCount_) {
+      libCount_ = static_cast<int>(files.size());
+      libFiles_ = files;
+      lib_.clear(juce::dontSendNotification);
+      for (size_t k = 0; k < files.size(); ++k)
+        lib_.addItem(juce::String(files[k].name) + "  (" + juce::String(files[k].nx) + "x" + juce::String(files[k].ny) + ")", static_cast<int>(k) + 1);
+      if (!files.empty()) lib_.setSelectedId(1, juce::dontSendNotification);
+    }
+    if (bank_)
+      info_.setText(juce::String(bank_->name()) + "  " + juce::String(bank_->nx()) + " x " + juce::String(bank_->ny()) + "  |  " + juce::String(bankId_) +
+                        "  |  bibliotheque : " + juce::String(libCount_) + " fichier(s)",
+                    juce::dontSendNotification);
+  }
+  void paint(juce::Graphics& g) override {
+    g.setColour(col::panel);
+    g.fillRoundedRectangle(getLocalBounds().toFloat(), 4.0f);
+    const auto a = drawArea().toFloat();
+    g.setColour(col::display);
+    g.fillRect(a);
+    g.setColour(col::dim.withAlpha(0.5f));
+    g.drawHorizontalLine(static_cast<int>(a.getCentreY()), a.getX(), a.getRight());
+    // forme d'origine (lecture de la banque) en filigrane
+    if (!orig_.empty()) {
+      juce::Path p;
+      for (int i = 0; i < 256; ++i) {
+        const float x = a.getX() + a.getWidth() * i / 255.0f;
+        const float y = a.getCentreY() - 0.45f * a.getHeight() * orig_[static_cast<size_t>(i * 8)];
+        i == 0 ? p.startNewSubPath(x, y) : p.lineTo(x, y);
+      }
+      g.setColour(col::dim);
+      g.strokePath(p, juce::PathStrokeType(1.0f));
+    }
+    juce::Path q;
+    for (int i = 0; i <= kPoints; ++i) {
+      const float x = a.getX() + a.getWidth() * i / static_cast<float>(kPoints);
+      const float y = a.getCentreY() - 0.45f * a.getHeight() * static_cast<float>(pts_[static_cast<size_t>(i % kPoints)]);
+      i == 0 ? q.startNewSubPath(x, y) : q.lineTo(x, y);
+    }
+    g.setColour(col::wt);
+    g.strokePath(q, juce::PathStrokeType(2.0f));
+    g.setColour(col::dim);
+    g.setFont(11.0f);
+    g.drawText("dessiner a la souris  (forme " + juce::String(static_cast<int>(wave_.getValue())) + ")", a.reduced(6).toNearestInt(),
+               juce::Justification::topLeft);
+  }
+  void mouseDown(const juce::MouseEvent& e) override {
+    last_ = -1;
+    mouseDrag(e);
+  }
+  void mouseDrag(const juce::MouseEvent& e) override {
+    const auto a = drawArea().toFloat();
+    if (!a.contains(e.position) && last_ < 0) return;
+    const int i = juce::jlimit(0, kPoints - 1, static_cast<int>((e.position.x - a.getX()) / a.getWidth() * kPoints));
+    const double v = juce::jlimit(-1.0, 1.0, static_cast<double>((a.getCentreY() - e.position.y) / (0.45f * a.getHeight())));
+    if (last_ >= 0 && last_ != i) {  // continuité entre deux positions de glisser
+      const int s = last_ < i ? 1 : -1;
+      for (int k = last_ + s; k != i; k += s)
+        pts_[static_cast<size_t>(k)] = lastV_ + (v - lastV_) * (k - last_) / static_cast<double>(i - last_);
+    }
+    pts_[static_cast<size_t>(i)] = v;
+    last_ = i;
+    lastV_ = v;
+    repaint();
+  }
+  void resized() override {
+    auto r = getLocalBounds().reduced(6);
+    title_.setBounds(r.removeFromTop(20));
+    info_.setBounds(r.removeFromTop(18));
+    auto l1 = r.removeFromTop(28);
+    wave_.setBounds(l1.removeFromLeft(260).reduced(2));
+    apply_.setBounds(l1.removeFromLeft(150).reduced(2));
+    revert_.setBounds(l1.removeFromLeft(100).reduced(2));
+    auto bottom = r.removeFromBottom(60);
+    auto l2 = bottom.removeFromTop(30);
+    proc_.setBounds(l2.removeFromLeft(150).reduced(2));
+    grid_.setBounds(l2.removeFromLeft(90).reduced(2));
+    seed_.setBounds(l2.removeFromLeft(150).reduced(2));
+    amount_.setBounds(l2.removeFromLeft(150).reduced(2));
+    gen_.setBounds(l2.removeFromLeft(90).reduced(2));
+    auto l3 = bottom;
+    name_.setBounds(l3.removeFromLeft(180).reduced(2));
+    saveLib_.setBounds(l3.removeFromLeft(140).reduced(2));
+    lib_.setBounds(l3.removeFromLeft(220).reduced(2));
+    loadLib_.setBounds(l3.removeFromLeft(90).reduced(2));
+    area_ = r.reduced(0, 4);
+  }
+
+ private:
+  juce::Rectangle<int> drawArea() const { return area_; }
+  void loadWave() {
+    orig_.clear();
+    if (bank_) {
+      const int w = juce::jlimit(0, bank_->numWaves() - 1, static_cast<int>(wave_.getValue()));
+      const auto& raw = bank_->raw();
+      orig_.assign(raw.begin() + static_cast<std::ptrdiff_t>(w) * WtBank::kLength, raw.begin() + static_cast<std::ptrdiff_t>(w + 1) * WtBank::kLength);
+      for (int i = 0; i < kPoints; ++i) pts_[static_cast<size_t>(i)] = orig_[static_cast<size_t>(i * (WtBank::kLength / kPoints))];
+    }
+    repaint();
+  }
+  UiContext& ctx_;
+  juce::Label title_, info_;
+  juce::Slider wave_, seed_, amount_;
+  juce::TextButton apply_, revert_, gen_, saveLib_, loadLib_;
+  juce::ComboBox proc_, grid_, lib_;
+  juce::TextEditor name_;
+  std::array<double, kPoints> pts_{};
+  std::vector<float> orig_;
+  std::shared_ptr<const WtBank> bank_;
+  std::string bankId_;
+  std::vector<BankFileInfo> libFiles_;
+  int libCount_ = -1, last_ = -1;
+  double lastV_ = 0.0;
+  juce::Rectangle<int> area_;
+};
+
 class EngineeringView : public juce::Component {
  public:
-  explicit EngineeringView(UiContext& c) : ctx_(c), routes_(c), mods_(c) {
+  explicit EngineeringView(UiContext& c) : ctx_(c), routes_(c), mods_(c), waveEd_(c) {
     const char* tabs[6] = {"RESEAUX FM / CROSS", "MODULATION", "BANQUES", "RANDOMIZER", "ETAT / PRESETS", "DIAGNOSTICS"};
     for (int k = 0; k < 6; ++k) {
       tab_[k].setButtonText(tabs[k]);
@@ -738,7 +924,7 @@ class EngineeringView : public juce::Component {
         if (fc.getResult() != juce::File()) ctx_.proc.exportBankWav(fc.getResult().withFileExtension("wav").getFullPathName().toStdString());
       });
     };
-    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_}) addChildComponent(*b);
+    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_, &waveEd_}) addChildComponent(*b);
     // randomizer
     for (int p = 0; p < 4; ++p) profile_.addItem(randomProfileName(static_cast<RandomProfile>(p)), p + 1);
     profile_.setSelectedId(2);
@@ -831,7 +1017,7 @@ class EngineeringView : public juce::Component {
     routesVp_.setVisible(k == 0);
     mods_.setVisible(k == 1);
     banks_.setVisible(k == 2);
-    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_}) b->setVisible(k == 2);
+    for (auto* b : std::initializer_list<juce::Component*>{&cycle_, &import_, &export_, &waveEd_}) b->setVisible(k == 2);
     for (auto* x : std::initializer_list<juce::Component*>{&profile_, &intensity_, &rnd_, &mut_, &evoMode_, &evoRate_, &evoStart_, &evoStop_, &evoReset_, &evoCommit_, &rndInfo_}) x->setVisible(k == 3);
     for (auto& f : fam_) f.setVisible(k == 3);
     for (auto* x : std::initializer_list<juce::Component*>{&presetList_, &load_, &fav_, &saveName_, &saveTags_, &save_, &restore_, &stateInfo_}) x->setVisible(k == 4);
@@ -852,8 +1038,10 @@ class EngineeringView : public juce::Component {
           << juce::String(b->nx()) << "x" << juce::String(b->ny()) << "  " << juce::String(b->memoryBytes() / 1024) << " Kio" << (b->precise() ? "  (double, reference b5)" : "") << "\n";
       }
       t << "\nImport : cycles de N echantillons (choix ci-dessus), jusqu'a 64 x 16 formes, identifiant SHA-256 ; la banque est\n"
-           "integree a l'etat du projet et aux presets. Editeur graphique de formes : non disponible dans cette build.";
+           "integree a l'etat du projet et aux presets. Editeur (a gauche) : dessin d'une forme, generateur procedural,\n"
+           "bibliotheque .sdwt (portable, SHA-256 verifie). Chaque edition cree une nouvelle banque (Undo).";
       banks_.setText(t, juce::dontSendNotification);
+      waveEd_.refresh();
     }
     if (current_ == 3) {
       juce::String t;
@@ -907,7 +1095,8 @@ class EngineeringView : public juce::Component {
       cycle_.setBounds(row.removeFromLeft(130).reduced(2));
       import_.setBounds(row.removeFromLeft(150).reduced(2));
       export_.setBounds(row.removeFromLeft(150).reduced(2));
-      banks_.setBounds(bb);
+      waveEd_.setBounds(bb.removeFromLeft(bb.getWidth() * 58 / 100).reduced(2));
+      banks_.setBounds(bb.reduced(6, 2));
     }
     diag_.setBounds(r);
     auto a = r;
@@ -953,6 +1142,7 @@ class EngineeringView : public juce::Component {
   juce::TextEditor saveName_, saveTags_;
   juce::ComboBox cycle_;
   juce::TextButton import_, export_;
+  WaveEditor waveEd_;
   std::unique_ptr<juce::FileChooser> chooser_;
   int current_ = 0;
 };

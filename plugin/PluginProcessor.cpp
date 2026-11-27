@@ -1,5 +1,7 @@
 #include "PluginProcessor.h"
 
+#include "core/WtLibrary.h"
+
 #include <algorithm>
 #include <chrono>
 #include <thread>
@@ -673,6 +675,66 @@ bool SubdestrucktProcessor::importBankWav(const std::string& path, int cycleLeng
   }
   UserBanks::add(bank);
   return setBank(bank->id());
+}
+
+static std::string bankLibraryDir() {
+  return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+      .getChildFile("Labtechno").getChildFile("SUBDESTRUCKT").getChildFile("Wavetables").getFullPathName().toStdString();
+}
+
+bool SubdestrucktProcessor::adoptBank(std::shared_ptr<const WtBank> bank, const std::string& err, const char* what) {
+  if (!bank) {
+    std::lock_guard<std::mutex> lock(controlMutex_);
+    lastMessage_ = std::string(what) + " refuse : " + err;
+    return false;
+  }
+  UserBanks::add(bank);  // préparée hors RT (mip-maps, spectres) avant publication
+  return setBank(bank->id());
+}
+
+bool SubdestrucktProcessor::generateBank(WtProcedure p, int nx, int ny, std::uint64_t seed, double amount) {
+  nx = std::clamp(nx, 1, WtBank::kMaxX);
+  ny = std::clamp(ny, 1, WtBank::kMaxY);
+  const auto raw = generateProcedural(p, nx, ny, seed, amount);
+  std::string err;
+  auto b = WtBank::build(userBankId(nx, ny, raw), std::string(procedureName(p)) + " " + std::to_string(seed), nx, ny, raw, WtBank::Options{}, err);
+  return adoptBank(b, err, "Generation");
+}
+
+bool SubdestrucktProcessor::editCurrentWave(int wave, const std::vector<float>& samples) {
+  auto cur = resolveBank(currentBank());
+  std::string err = "banque absente";
+  std::vector<float> raw;
+  std::shared_ptr<const WtBank> b;
+  if (cur && replaceWave(cur->raw(), cur->nx(), cur->ny(), wave, samples, raw, err))
+    b = WtBank::build(userBankId(cur->nx(), cur->ny(), raw), (cur->name() + " *").substr(0, 64), cur->nx(), cur->ny(), raw, WtBank::Options{}, err);
+  return adoptBank(b, err, "Edition de forme");
+}
+
+bool SubdestrucktProcessor::saveBankToLibrary(const std::string& name) {
+  auto cur = resolveBank(currentBank());
+  std::string err = "banque absente";
+  bool ok = false;
+  std::string path;
+  if (cur) {
+    const std::string clean = PresetLibrary::sanitizeName(name.empty() ? cur->name() : name);
+    juce::File(bankLibraryDir()).createDirectory();
+    path = juce::File(bankLibraryDir()).getChildFile(juce::String(clean) + ".sdwt").getFullPathName().toStdString();
+    std::string e2;
+    auto renamed = WtBank::build(cur->id(), clean, cur->nx(), cur->ny(), cur->raw(), WtBank::Options{}, e2);
+    ok = renamed && saveBankFile(path, *renamed, err);
+  }
+  std::lock_guard<std::mutex> lock(controlMutex_);
+  lastMessage_ = ok ? "Banque enregistree : " + path : "Enregistrement refuse : " + err;
+  return ok;
+}
+
+std::vector<BankFileInfo> SubdestrucktProcessor::bankLibrary() const { return listBankFiles(bankLibraryDir()); }
+
+bool SubdestrucktProcessor::loadBankFromLibrary(const std::string& path) {
+  std::string err;
+  auto b = loadBankFile(path, err);
+  return adoptBank(b, err, "Chargement de banque");
 }
 
 bool SubdestrucktProcessor::exportBankWav(const std::string& path) {

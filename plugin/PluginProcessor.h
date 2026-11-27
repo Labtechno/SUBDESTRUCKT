@@ -21,6 +21,7 @@
 #include "core/WtAssets.h"
 #include "core/Parameters.h"
 #include "core/StateCodec.h"
+#include "core/WtLibrary.h"
 #include "core/Topology.h"
 #include "engine/Engine.h"
 
@@ -94,6 +95,13 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   // Import WAV (cycles de `cycleLength` échantillons) -> banque utilisateur immuable (id SHA-256), sélectionnée.
   bool importBankWav(const std::string& path, int cycleLength);
   bool exportBankWav(const std::string& path);  // contenu brut exact de la banque active (float32)
+  // Banques utilisateur (ARCH-G4.1 §3) : génération procédurale, édition d'une forme, bibliothèque .sdwt portable.
+  // Chaque opération crée une nouvelle banque immuable, sélectionnée par une transaction annulable.
+  bool generateBank(WtProcedure p, int nx, int ny, std::uint64_t seed, double amount);
+  bool editCurrentWave(int wave, const std::vector<float>& samples);
+  bool saveBankToLibrary(const std::string& name);
+  std::vector<BankFileInfo> bankLibrary() const;
+  bool loadBankFromLibrary(const std::string& path);
   std::string currentBank() const;
   void setMacroName(int index, const std::string& name);
   std::array<std::string, 4> macroNames() const;
@@ -157,6 +165,7 @@ class SubdestrucktProcessor : public juce::AudioProcessor, private juce::Timer {
   void publishTopologyLocked();           // compile + publication lock-free vers le moteur
   void publishModLocked();
   void publishBankLocked();
+  bool adoptBank(std::shared_ptr<const WtBank> bank, const std::string& err, const char* what);
   void publishCurvesLocked();
   void reprepareLocked();                 // Quality : reconstruction hors RT (traitement suspendu)
   void updateLatency();

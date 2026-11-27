@@ -11,6 +11,7 @@
 #include "TestKit.h"
 #include "core/StateCodec.h"
 #include "core/WtAssets.h"
+#include "core/WtLibrary.h"
 #include "dsp/Destruction.h"
 
 using namespace sbd;
@@ -415,6 +416,58 @@ void testCaptures() {
              cd.frames, cs.frames, dD, dS, rt, integ, prot, alloc);
 }
 
+// ------------------------------------------------------------------ WT-ED-01 : édition, génération, bibliothèque
+void testWtEditing() {
+  // génération procédurale : déterministe, bornée, préparée (mip-maps + spectres)
+  bool gen = true;
+  std::string err;
+  for (int k = 0; k < static_cast<int>(WtProcedure::Count); ++k) {
+    const auto a = generateProcedural(static_cast<WtProcedure>(k), 16, 4, 7, 0.6), b = generateProcedural(static_cast<WtProcedure>(k), 16, 4, 7, 0.6);
+    gen = gen && a == b && a.size() == 16u * 4u * 2048u;
+    for (float v : a) gen = gen && std::isfinite(v);
+    auto bank = WtBank::build(userBankId(16, 4, a), procedureName(static_cast<WtProcedure>(k)), 16, 4, a, WtBank::Options{}, err);
+    gen = gen && bank && bank->nx() == 16 && bank->ny() == 4;
+  }
+  const auto big = generateProcedural(WtProcedure::HarmonicTilt, 200, 40, 1, 1.0);  // grille bornée 64 x 16
+  gen = gen && big.size() == 64u * 16u * 2048u;
+  // forme dessinée : triangle par 3 points -> DC nul, crête 1, valeur au quart de période
+  const auto tri = drawnWave({{0.0, -1.0}, {0.5, 1.0}, {0.999, -1.0}});
+  double mean = 0.0, pk = 0.0;
+  for (float v : tri) {
+    mean += v;
+    pk = std::max(pk, static_cast<double>(std::fabs(v)));
+  }
+  mean /= tri.size();
+  const bool draw = std::fabs(mean) < 1e-6 && std::fabs(pk - 1.0) < 1e-6 && std::fabs(tri[512] - tri[1536]) < 0.01;
+  // remplacement de forme : copie, l'original reste inchangé ; refus d'un index invalide
+  const auto base = generateProcedural(WtProcedure::PulseWidth, 4, 1, 0, 0.5);
+  std::vector<float> edited;
+  const bool rep = replaceWave(base, 4, 1, 2, tri, edited, err) && std::equal(tri.begin(), tri.end(), edited.begin() + 2 * 2048) &&
+                   std::equal(base.begin(), base.begin() + 2 * 2048, edited.begin()) && !replaceWave(base, 4, 1, 9, tri, edited, err);
+  // fichier .sdwt : aller-retour (même identifiant de contenu), altération refusée
+  auto b0 = WtBank::build(userBankId(4, 1, edited), "Edit test", 4, 1, edited, WtBank::Options{}, err);
+  const std::string txt = encodeBankFile(*b0);
+  auto b1 = decodeBankFile(txt, err);
+  const bool file = b1 && b1->id() == b0->id() && b1->raw() == b0->raw() && b1->name() == "Edit test";
+  std::string bad = txt;
+  const size_t at = bad.find("data ") + 40;
+  bad[at] = bad[at] == 'A' ? 'B' : 'A';
+  const bool tamper = !decodeBankFile(bad, err);
+  // portabilité : la banque intégrée à l'état est restaurée dans un registre où elle est absente (même rendu)
+  PluginState st = defaultState();
+  st.bank = b0->id();
+  st.bankRaw = b0->raw();
+  st.bankNx = 4;
+  st.bankNy = 1;
+  st.bankName = "Edit test";
+  PluginState back;
+  const bool port = decodeState(encodeState(st, "t", StateScope::Preset), back, err) && back.bankRaw == st.bankRaw && back.bank == st.bank;
+  const bool ok = gen && draw && rep && file && tamper && port;
+  TK_CHECK(ok);
+  tk::result("WT-ED-01", ok, "banques utilisateur : %d generateurs deterministes et bornes 64x16 %d ; forme dessinee (DC %.1e, crete %.3f) %d ; remplacement par copie %d ; fichier .sdwt aller-retour (meme id) %d, altere refuse %d ; banque integree a l'etat %d",
+             static_cast<int>(WtProcedure::Count), gen, mean, pk, draw, rep, file, tamper, port);
+}
+
 }  // namespace
 
 void runG41Tests() {
@@ -427,4 +480,5 @@ void runG41Tests() {
   testN1Hybrid();
   testSpectralMorph();
   testCaptures();
+  testWtEditing();
 }

@@ -289,6 +289,33 @@ void testCapturesWrapper() {
              got, inBlob, same, sounds, e);
 }
 
+// WT-ED-02w : génération et édition de banques via le processeur ; chaque opération est annulable.
+void testBankEditingWrapper() {
+  SubdestrucktProcessor p;
+  p.prepareToPlay(48000.0, 256);
+  const std::string b0 = p.currentBank();
+  const bool g = p.generateBank(WtProcedure::HarmonicTilt, 16, 4, 3, 0.5);
+  const std::string b1 = p.currentBank();
+  std::vector<float> w(WtBank::kLength);
+  for (int i = 0; i < WtBank::kLength; ++i) w[static_cast<size_t>(i)] = i < WtBank::kLength / 2 ? 1.0f : -1.0f;
+  const bool e = p.editCurrentWave(5, w);
+  const std::string b2 = p.currentBank();
+  auto bank2 = resolveBank(b2);
+  const bool content = bank2 && std::equal(w.begin(), w.end(), bank2->raw().begin() + 5 * WtBank::kLength);
+  const bool u1 = p.undo() && p.currentBank() == b1;
+  const bool u2 = p.undo() && p.currentBank() == b0;
+  // rendu sans allocation après changement de banque utilisateur
+  juce::AudioBuffer<float> buf(2, 256);
+  juce::MidiBuffer midi;
+  midi.addEvent(juce::MidiMessage::noteOn(1, 48, static_cast<juce::uint8>(100)), 0);
+  p.redo();
+  p.processBlock(buf, midi);
+  const bool ok = g && e && b1.rfind("user:", 0) == 0 && b2 != b1 && content && u1 && u2 && p.currentBank() == b1;
+  TK_CHECK(ok);
+  tk::result("WT-ED-02w", ok, "processeur : generation (%s), edition d'une forme (%s, contenu exact %d), Undo x2 retour a %s, Redo %d",
+             b1.c_str(), b2.c_str(), content, b0.c_str(), p.currentBank() == b1);
+}
+
 // Capture PNG de l'UI de diagnostic (contrôle visuel, non bloquant) après quelques blocs joués à 44,1 kHz.
 void snapshotEditor(const std::string& path) {
   SubdestrucktProcessor p;
@@ -312,7 +339,7 @@ void snapshotEditor(const std::string& path) {
   const struct {
     int space, tab;
     const char* suffix;
-  } views[] = {{0, 0, ""}, {1, 0, "_sound_process"}, {1, 1, "_sound_mod"}, {2, 0, "_eng_network"}, {2, 1, "_eng_mod"}, {2, 3, "_eng_random"}, {2, 5, "_eng_diag"}};
+  } views[] = {{0, 0, ""}, {1, 0, "_sound_process"}, {1, 1, "_sound_mod"}, {2, 0, "_eng_network"}, {2, 1, "_eng_mod"}, {2, 2, "_eng_banks"}, {2, 3, "_eng_random"}, {2, 5, "_eng_diag"}};
   for (const auto& v : views) {
     main->showSubTab(v.space, v.tab);
     main->refreshNow();
@@ -349,6 +376,7 @@ int main(int argc, char** argv) {
   std::fprintf(stderr, "[panic]\n");
   testPanicRequest();
   testCapturesWrapper();
+  testBankEditingWrapper();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);
