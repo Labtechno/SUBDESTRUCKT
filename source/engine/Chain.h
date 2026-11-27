@@ -31,7 +31,7 @@ class ProcessingChain {
   void reset() noexcept;                                // Panic / prepare
   void process(double& L, double& R, const double* E, const ChainContext& c) noexcept;
   int latency() const noexcept;                         // échantillons moteur (alignement dry/wet interne compris)
-  static int latencyFor(int location, const ParamValues& p, double fs) noexcept;
+  static int latencyFor(int location, const ParamValues& p, double fs, Quality q = Quality::Normal) noexcept;
   double y2Env(int slot) const noexcept { return dst_[static_cast<size_t>(slot)].y2Env(); }
   bool autonomousActive() const noexcept;
   void tailGuardPurge() noexcept;  // garde-fou temporel des états non armés

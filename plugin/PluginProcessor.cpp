@@ -776,7 +776,7 @@ void SubdestrucktProcessor::updateLatency() {
   // latence exigée par la configuration structurelle courante (décimation + chaînes) ; l'hôte est notifié
   const auto& st = engine_.setup();
   if (!st.supported) return;
-  const int required = st.decimatorLatency + Engine::chainLatencyFor(bridge_.values(), st.engineRate, st.oversampling);
+  const int required = st.decimatorLatency + Engine::chainLatencyFor(bridge_.values(), st.engineRate, st.oversampling, st.quality);
   if (required != getLatencySamples()) setLatencySamples(required);
 }
 

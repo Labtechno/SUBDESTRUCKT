@@ -1,5 +1,7 @@
 // SUBDESTRUCKT — tests ARCH-G4.1 (BAL-01, ENV-02, HR-01/02, MT-01, FOL-01). Seuils : tracker §3bis (avant mesure).
+#include <chrono>
 #include <cmath>
+#include "Analysis.h"
 #include <cstdio>
 #include <random>
 #include <vector>
@@ -210,6 +212,83 @@ void testFollowers() {
   tk::result("FOL-01", ok, "suiveur WT : %.4f puis %.4f pour un niveau double (rapport %.3f) ; route suiveur WT -> cutoff global active, effet NMSE %.1f dB", f1, f2, f2 / f1, d);
 }
 
+// ------------------------------------------------------------------ N1-02 : hybride ADAA1 + suréchantillonnage interne
+struct N1Run {
+  double alias = 0.0, ns = 0.0;
+};
+N1Run n1Measure(Quality q, double f0, double driveDb, double fold) {
+  const double fs = 48000.0;
+  DestructionSlot d;
+  d.configure(fs, 1, q);
+  std::vector<double> E(kNumParams);
+  ParamValues p = ParamValues::defaults();
+  const int b = idx(ParamId::DstGl1Type);
+  p.v[static_cast<size_t>(b)] = 1.0f;
+  p.v[static_cast<size_t>(b + static_cast<int>(DstOff::N1Drive))] = static_cast<float>(driveDb);
+  p.v[static_cast<size_t>(b + static_cast<int>(DstOff::N1Fold))] = static_cast<float>(fold);
+  p.v[static_cast<size_t>(b + static_cast<int>(DstOff::N1Tone))] = 1.0f;
+  for (int i = 0; i < kNumParams; ++i) E[static_cast<size_t>(i)] = p.v[static_cast<size_t>(i)];
+  DestructionContext c;
+  c.fs = fs;
+  c.quality = q;
+  const int N = 8192 + 16384 + 4096;
+  std::vector<double> y(static_cast<size_t>(N));
+  const auto t0 = std::chrono::steady_clock::now();
+  for (int i = 0; i < N; ++i) {
+    double l = 0.8 * std::sin(kTwoPi * f0 * i / fs), r = l;
+    d.process(l, r, E.data(), b, c);
+    y[static_cast<size_t>(i)] = l;
+  }
+  N1Run out;
+  out.ns = std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - t0).count() / N;
+  std::vector<double> seg(y.begin() + 8192, y.begin() + 8192 + 16384);
+  const auto m = an::amplitudeSpectrum(seg.data(), seg.size());
+  out.alias = an::offGridEnergyDb(m, fs / 16384.0, f0, 20.0, 0.45 * fs, 6);
+  return out;
+}
+
+void testN1Hybrid() {
+  const auto e = n1Measure(Quality::Eco, 3100.0, 24.0, 1.0), n = n1Measure(Quality::Normal, 3100.0, 24.0, 1.0),
+             h = n1Measure(Quality::High, 3100.0, 24.0, 1.0);
+  const auto em = n1Measure(Quality::Eco, 1000.0, 12.0, 0.5), nm = n1Measure(Quality::Normal, 1000.0, 12.0, 0.5),
+             hm = n1Measure(Quality::High, 1000.0, 12.0, 0.5);
+  // latence déclarée = latence mesurée ; dry/wet aligné (impulsion à faible niveau, chemin quasi linéaire)
+  bool lat = true;
+  for (Quality q : {Quality::Normal, Quality::High}) {
+    for (double mix : {0.0, 1.0}) {
+      DestructionSlot d;
+      d.configure(48000.0, 1, q);
+      std::vector<double> E(kNumParams);
+      ParamValues p = ParamValues::defaults();
+      const int b = idx(ParamId::DstGl1Type);
+      p.v[static_cast<size_t>(b)] = 1.0f;
+      p.v[static_cast<size_t>(b + static_cast<int>(DstOff::N1Fold))] = 0.0f;
+      p.v[static_cast<size_t>(b + static_cast<int>(DstOff::N1Tone))] = 1.0f;
+      p.v[static_cast<size_t>(b + static_cast<int>(DstOff::Mix))] = static_cast<float>(mix);
+      for (int i = 0; i < kNumParams; ++i) E[static_cast<size_t>(i)] = p.v[static_cast<size_t>(i)];
+      DestructionContext c;
+      c.fs = 48000.0;
+      c.quality = q;
+      std::vector<double> y(4096);
+      for (int i = 0; i < 4096; ++i) {
+        double l = i == 2000 ? 0.01 : 0.0, r = l;
+        d.process(l, r, E.data(), b, c);
+        y[static_cast<size_t>(i)] = l;
+      }
+      size_t arg = 0;
+      for (size_t i = 0; i < y.size(); ++i)
+        if (std::fabs(y[i]) > std::fabs(y[arg])) arg = i;
+      const long dl = static_cast<long>(arg) - 2000;
+      lat = lat && std::labs(dl - n1LatencyFor(q)) <= 1 && d.latency() == n1LatencyFor(q);
+      tk::info("N1-02 Quality %s mix %.0f : pic a +%ld (declare %d)", qualityName(q), mix, dl, n1LatencyFor(q));
+    }
+  }
+  const bool ok = n.alias <= e.alias - 3.0 && h.alias <= e.alias - 6.0 && lat;
+  TK_CHECK(ok);
+  tk::result("N1-02", ok, "N1 hybride (3,1 kHz, drive 24, fold 1) energie repliee : Eco/ADAA1 %.1f dB (%.0f ns), Normal x2 %.1f dB (%.0f ns), High x4 %.1f dB (%.0f ns) ; cas modere (1 kHz, drive 12, fold 0,5) : %.1f / %.1f / %.1f dB ; latence declaree = mesuree, dry/wet aligne %d (Normal %d, High %d ech.)",
+             e.alias, e.ns, n.alias, n.ns, h.alias, h.ns, em.alias, nm.alias, hm.alias, lat, n1LatencyFor(Quality::Normal), n1LatencyFor(Quality::High));
+}
+
 }  // namespace
 
 void runG41Tests() {
@@ -219,4 +298,5 @@ void runG41Tests() {
   testHeadroom();
   testMicrotuning();
   testFollowers();
+  testN1Hybrid();
 }

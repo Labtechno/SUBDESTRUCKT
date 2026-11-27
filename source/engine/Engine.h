@@ -89,7 +89,7 @@ class Engine {
   SpscExchange<std::array<CurvePoints, 4>>& curveExchange() noexcept { return curveExchange_; }
   Telemetry& telemetry() noexcept { return telemetry_; }
   // Latence que la configuration structurelle courante exige (hors RT : lue après publication des paramètres).
-  static int chainLatencyFor(const ParamValues& p, double engineRate, int K) noexcept;
+  static int chainLatencyFor(const ParamValues& p, double engineRate, int K, Quality q = Quality::Normal) noexcept;
 
   // ---- commandes instantanées (tout thread, atomiques)
   void setDrone(bool on) noexcept { droneCmd_.store(on ? 1 : 0, std::memory_order_release); }

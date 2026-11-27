@@ -41,7 +41,7 @@ void ProcessingChain::process(double& L, double& R, const double* E, const Chain
 
 int ProcessingChain::latency() const noexcept { return dst_[0].latency() + dst_[1].latency(); }
 
-int ProcessingChain::latencyFor(int location, const ParamValues& p, double) noexcept {
+int ProcessingChain::latencyFor(int location, const ParamValues& p, double, Quality q) noexcept {
   static constexpr ParamId kDst[3][2] = {{ParamId::DstWt1Type, ParamId::DstWt2Type},
                                          {ParamId::DstFm1Type, ParamId::DstFm2Type},
                                          {ParamId::DstGl1Type, ParamId::DstGl2Type}};
@@ -49,7 +49,7 @@ int ProcessingChain::latencyFor(int location, const ParamValues& p, double) noex
   for (int k = 0; k < 2; ++k) {
     const int base = idx(kDst[location][k]);
     lat += DestructionSlot::latencyFor(static_cast<int>(p.v[static_cast<size_t>(base)] + 0.5f),
-                                       static_cast<int>(p.v[static_cast<size_t>(base + static_cast<int>(DstOff::S2Fft))] + 0.5f));
+                                       static_cast<int>(p.v[static_cast<size_t>(base + static_cast<int>(DstOff::S2Fft))] + 0.5f), q);
   }
   return lat;
 }

@@ -46,6 +46,25 @@ struct DestructionContext {
 // Mode anti-repliement de N1 (comparaison DST-01) : 0 naïf, 1 ADAA1.
 void setN1AntiAliasForTest(int mode) noexcept;
 
+// Suréchantillonnage interne de N1 (hybride ADAA1 + OS, ARCH-G4.1) : Eco x1, Normal x2, High x4.
+int n1OversamplingFor(Quality q) noexcept;
+int n1LatencyFor(Quality q) noexcept;  // latence (échantillons moteur) du chemin traité, compensée sur le chemin sec
+
+// Filtre demi-bande FIR (longueur 4M+3) pour monter/descendre d'un facteur 2 ; histoires préallouées.
+class HalfbandOs {
+ public:
+  void configure(const std::vector<double>& h);
+  void reset() noexcept;
+  void up(double x, double* out2) noexcept;      // 1 échantillon -> 2 (gain 2)
+  double down(const double* in2) noexcept;       // 2 échantillons -> 1
+  int length() const noexcept { return static_cast<int>(h_.size()); }
+
+ private:
+  double push(std::vector<double>& buf, int& pos, double x) noexcept;
+  std::vector<double> h_, bu_, bd_;
+  int pu_ = 0, pd_ = 0;
+};
+
 class DestructionSlot {
  public:
   static constexpr int kMaxFft = 4096;
@@ -53,8 +72,10 @@ class DestructionSlot {
   void reset() noexcept;
   void process(double& L, double& R, const double* E, int base, const DestructionContext& c) noexcept;
   // Latence (échantillons moteur) de l'algorithme actif (S2 : taille FFT ; autres : 0). Dry/wet aligné en interne.
-  int latency() const noexcept { return type_ == static_cast<int>(DstType::S2) ? fftSize_ : 0; }
-  static int latencyFor(int type, int fftChoice) noexcept;
+  int latency() const noexcept {
+    return type_ == static_cast<int>(DstType::S2) ? fftSize_ : (type_ == static_cast<int>(DstType::N1) ? n1LatencyFor(quality_) : 0);
+  }
+  static int latencyFor(int type, int fftChoice, Quality q = Quality::Normal) noexcept;
   double y2Env() const noexcept { return y2Env_; }
   bool frozen() const noexcept { return autonomous_; }
   int activeType() const noexcept { return type_; }
@@ -89,6 +110,11 @@ class DestructionSlot {
     double tone = 0.0, dcx = 0.0, dcy = 0.0;
   };
   std::array<N1State, 2> n1_{};
+  std::array<std::array<HalfbandOs, 2>, 2> n1Os_{};      // [canal][étage]
+  std::array<std::array<double, 4>, 2> n1Pad_{};         // complément d'un demi-échantillon à x4
+  std::array<std::vector<double>, 2> n1Dry_;            // chemin sec retardé
+  int n1DryPos_ = 0;
+  double n1Stages(int ch, double u, const double* P) noexcept;
   // D1
   struct D1State {
     double held = 0.0, prevHeld = 0.0, lp1 = 0.0, lp2 = 0.0;

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "Decimator.h"
 #include "DspConstants.h"
 
 namespace sbd {
@@ -47,7 +48,58 @@ inline double allpass2(S& s, double x, double coef) noexcept {
 
 void setN1AntiAliasForTest(int mode) noexcept { gN1Mode = mode; }
 
-int DestructionSlot::latencyFor(int type, int fftChoice) noexcept {
+namespace {
+const std::vector<double>& n1Halfband() {
+  static const std::vector<double> h = designHalfband(0.1, 80.0);  // 4M+3 coefficients, ~80 dB
+  return h;
+}
+}  // namespace
+
+int n1OversamplingFor(Quality q) noexcept { return q == Quality::Eco ? 1 : (q == Quality::High ? 4 : 2); }
+
+int n1LatencyFor(Quality q) noexcept {
+  const int M = (static_cast<int>(n1Halfband().size()) - 3) / 4;
+  switch (n1OversamplingFor(q)) {
+    case 2: return 2 * M + 1;  // montée + descente à 2 Fs : 2 x (2M+1)/2
+    case 4: return 3 * M + 2;  // + étage à 4 Fs (2M+1)/2, complété d'un demi-échantillon
+    default: return 0;
+  }
+}
+
+void HalfbandOs::configure(const std::vector<double>& h) {
+  h_ = h;
+  bu_.assign(h.size(), 0.0);
+  bd_.assign(h.size(), 0.0);
+  reset();
+}
+void HalfbandOs::reset() noexcept {
+  std::fill(bu_.begin(), bu_.end(), 0.0);
+  std::fill(bd_.begin(), bd_.end(), 0.0);
+  pu_ = pd_ = 0;
+}
+double HalfbandOs::push(std::vector<double>& buf, int& pos, double x) noexcept {
+  const int N = static_cast<int>(buf.size());
+  buf[static_cast<size_t>(pos)] = x;
+  double y = 0.0;
+  int k = pos;
+  for (int i = 0; i < N; ++i) {
+    y += h_[static_cast<size_t>(i)] * buf[static_cast<size_t>(k)];
+    k = k == 0 ? N - 1 : k - 1;
+  }
+  pos = (pos + 1) % N;
+  return y;
+}
+void HalfbandOs::up(double x, double* out2) noexcept {
+  out2[0] = 2.0 * push(bu_, pu_, x);
+  out2[1] = 2.0 * push(bu_, pu_, 0.0);
+}
+double HalfbandOs::down(const double* in2) noexcept {
+  push(bd_, pd_, in2[0]);
+  return push(bd_, pd_, in2[1]);
+}
+
+int DestructionSlot::latencyFor(int type, int fftChoice, Quality q) noexcept {
+  if (type == static_cast<int>(DstType::N1)) return n1LatencyFor(q);
   return type == static_cast<int>(DstType::S2) ? (512 << std::min(3, std::max(0, fftChoice))) : 0;
 }
 
@@ -57,6 +109,9 @@ void DestructionSlot::configure(double fs, std::uint64_t seed, Quality q) {
   quality_ = q;
   fadeLen_ = std::max(16, static_cast<int>(std::lround(0.003 * fs)));
   for (auto& n : n2_) n.buf.assign(16384, 0.0);
+  for (auto& ch : n1Os_)
+    for (auto& st : ch) st.configure(n1Halfband());
+  for (auto& d : n1Dry_) d.assign(256, 0.0);
   d2Len_ = static_cast<int>(std::ceil(2.05 * fs)) + 8;
   for (auto& b : d2Buf_) b.assign(static_cast<size_t>(d2Len_), 0.0f);
   for (auto& s : s2_) {
@@ -79,6 +134,11 @@ void DestructionSlot::configure(double fs, std::uint64_t seed, Quality q) {
 
 void DestructionSlot::resetStates() noexcept {
   n1_.fill(N1State{});
+  for (auto& ch : n1Os_)
+    for (auto& st : ch) st.reset();
+  for (auto& p : n1Pad_) p.fill(0.0);
+  for (auto& d : n1Dry_) std::fill(d.begin(), d.end(), 0.0);
+  n1DryPos_ = 0;
   d1_.fill(D1State{});
   y1_ = DynState{};
   y2_ = DynState{};
@@ -120,12 +180,10 @@ void DestructionSlot::reset() noexcept {
 }
 
 // ---------------------------------------------------------------- N1 Asymmetric Wavefolder
-double DestructionSlot::n1(int ch, double x, const double* P) noexcept {
+double DestructionSlot::n1Stages(int ch, double u, const double* P) noexcept {
   auto& s = n1_[static_cast<size_t>(ch)];
-  const double drive = dbLin(P[static_cast<int>(DstOff::N1Drive)]), f = P[static_cast<int>(DstOff::N1Fold)];
-  const double bias = P[static_cast<int>(DstOff::N1Bias)], sym = 0.95 * P[static_cast<int>(DstOff::N1Sym)];
+  const double f = P[static_cast<int>(DstOff::N1Fold)], sym = 0.95 * P[static_cast<int>(DstOff::N1Sym)];
   const int stages = std::min(4, std::max(1, static_cast<int>(P[static_cast<int>(DstOff::N1Stages)] + 0.5)));
-  double u = x * drive + bias;
   for (int k = 0; k < stages; ++k) {
     double& pv = s.prev[static_cast<size_t>(k)];
     double y;
@@ -137,6 +195,41 @@ double DestructionSlot::n1(int ch, double x, const double* P) noexcept {
     }
     pv = u;
     u = k + 1 < stages ? y * (1.0 + 0.5 * f) : y;  // étages suivants : gain modéré
+  }
+  return u;
+}
+
+double DestructionSlot::n1(int ch, double x, const double* P) noexcept {
+  auto& s = n1_[static_cast<size_t>(ch)];
+  const double drive = dbLin(P[static_cast<int>(DstOff::N1Drive)]);
+  const double bias = P[static_cast<int>(DstOff::N1Bias)], sym = 0.95 * P[static_cast<int>(DstOff::N1Sym)];
+  const double in = x * drive + bias;
+  double u;
+  const int os = n1OversamplingFor(quality_);
+  auto& O = n1Os_[static_cast<size_t>(ch)];
+  if (os == 1) {
+    u = n1Stages(ch, in, P);
+  } else if (os == 2) {
+    double a[2];
+    O[0].up(in, a);
+    a[0] = n1Stages(ch, a[0], P);
+    a[1] = n1Stages(ch, a[1], P);
+    u = O[0].down(a);
+  } else {
+    double a[2], b[4], c2[2];
+    O[0].up(in, a);
+    O[1].up(a[0], b);
+    O[1].up(a[1], b + 2);
+    auto& pad = n1Pad_[static_cast<size_t>(ch)];
+    for (int i = 0; i < 4; ++i) {  // complément de 2 échantillons à 4 Fs (un demi-échantillon moteur)
+      const double v = n1Stages(ch, b[i], P);
+      b[i] = pad[0];
+      pad[0] = pad[1];
+      pad[1] = v;
+    }
+    c2[0] = O[1].down(b);
+    c2[1] = O[1].down(b + 2);
+    u = O[0].down(c2);
   }
   // tone : passe-bas 1 pôle de 200 Hz (0) à ~25 kHz (1), contourné au-delà de 0,45 Fs
   const double fc = 200.0 * std::exp2(7.0 * P[static_cast<int>(DstOff::N1Tone)]);
@@ -496,10 +589,20 @@ void DestructionSlot::process(double& L, double& R, const double* E, int base, c
   }
   double dryL = L, dryR = R, wL = L, wR = R;
   switch (static_cast<DstType>(type_)) {
-    case DstType::N1:
+    case DstType::N1: {
       wL = n1(0, L, P);
       wR = n1(1, R, P);
+      const int lat = n1LatencyFor(quality_);
+      if (lat > 0) {  // chemin sec retardé de la latence du suréchantillonnage (alignement dry/wet)
+        const int N = static_cast<int>(n1Dry_[0].size());
+        n1Dry_[0][static_cast<size_t>(n1DryPos_)] = dryL;
+        n1Dry_[1][static_cast<size_t>(n1DryPos_)] = dryR;
+        dryL = n1Dry_[0][static_cast<size_t>((n1DryPos_ - lat + N) % N)];
+        dryR = n1Dry_[1][static_cast<size_t>((n1DryPos_ - lat + N) % N)];
+        n1DryPos_ = (n1DryPos_ + 1) % N;
+      }
       break;
+    }
     case DstType::D1:
       wL = d1(0, L, P);
       wR = d1(1, R, P);

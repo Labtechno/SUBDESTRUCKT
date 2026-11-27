@@ -23,8 +23,9 @@ struct DSlot {
   std::array<double, kNumParams> E{};
   double fs;
   DestructionContext c;
-  explicit DSlot(double fs_, int type) : fs(fs_) {
-    d.configure(fs_, 1234, Quality::Normal);
+  // Quality Eco par défaut : N1 sans suréchantillonnage interne = configuration mesurée par DST-01 historique
+  explicit DSlot(double fs_, int type, Quality q = Quality::Eco) : fs(fs_) {
+    d.configure(fs_, 1234, q);
     set(DstOff::Type, type);
     c.fs = fs_;
   }
@@ -508,6 +509,7 @@ void testStressAndMix() {
     a.samples = 12000;
     a.state = defaultState();
     a.events = {MidiEvent::noteOn(0, 48, 100)};
+    if (t == 1) a.quality = Quality::Eco;  // N1 sans latence (le critere vise les algorithmes sans latence)
     const auto ref = renderG4(a);
     a.state.params[ParamId::DstWt1Type] = static_cast<float>(t);
     a.state.params[ParamId::DstWt1Mix] = 0.0f;

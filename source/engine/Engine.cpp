@@ -150,10 +150,10 @@ double Engine::testEffectiveDepth(int slot) const noexcept {
   return e(info.depthParam) * factor;
 }
 
-int Engine::chainLatencyFor(const ParamValues& p, double engineRate, int K) noexcept {
-  const int lw = ProcessingChain::latencyFor(ProcessingChain::Wt, p, engineRate);
-  const int lf = ProcessingChain::latencyFor(ProcessingChain::Fm, p, engineRate);
-  const int lg = ProcessingChain::latencyFor(ProcessingChain::Global, p, engineRate);
+int Engine::chainLatencyFor(const ParamValues& p, double engineRate, int K, Quality q) noexcept {
+  const int lw = ProcessingChain::latencyFor(ProcessingChain::Wt, p, engineRate, q);
+  const int lf = ProcessingChain::latencyFor(ProcessingChain::Fm, p, engineRate, q);
+  const int lg = ProcessingChain::latencyFor(ProcessingChain::Global, p, engineRate, q);
   const int le = std::max(lw, lf) + lg;
   return (le + K - 1) / std::max(K, 1);  // en échantillons hôte (arrondi supérieur, complété en interne)
 }
