@@ -144,8 +144,11 @@ physique Reason 14 / Ableton Live (R-26..R-28) est requise.
 703 StableID et identifiants VST3 inchangés (REG-ID, G-22w) ; format d'état 4 ; états v1–v3 lus ; D2 Legacy/
 Regenerative inchangés ; empreintes 0.3.1 (ZC-03, D2R-03) identiques. **Changement volontaire** : rendu de Harmonic
 Tilt (niveau) et de Harmonic Shift (phase des déplacements fractionnaires) par rapport à 0.3.2 ; aucun preset d'usine
-n'utilise Tilt ni Shift ; exemples du manuel re-rendus : e23, e24 (Tilt), e29, e30 (Shift) ; tous les autres identiques
-octet par octet à 0.3.2. Aucun mode Legacy pour l'ancien Tilt (défaut corrigé).
+n'utilise Tilt ni Shift. Exemples du manuel : les 40 fichiers 0.3.3 sont rendus par `subdestruckt_manual_render`
+au commit de code `2985901` (SHA inscrit dans le manifeste audio) ; comparés octet par octet à 0.3.2, **3 diffèrent** :
+e24 (Tilt brillant), e29, e30 (Shift) ; e23 (Tilt sombre, Gain Compensation par défaut activée) est identique après la normalisation propre à chaque exemple (gainDb) et la
+quantification 24 bits : la compensation conservait déjà l'énergie en 0.3.2 et la garde de crête n'intervient pas ;
+les 36 autres sont identiques. Aucun mode Legacy pour l'ancien Tilt (défaut corrigé).
 
 ## 12. CPU et mémoire (Windows MSVC, même machine ; ne certifie ni M3 ni M4 Max)
 

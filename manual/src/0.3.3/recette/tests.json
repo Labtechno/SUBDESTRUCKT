@@ -1,0 +1,803 @@
+{
+ "schemaVersion": 1,
+ "campaignId": "SUBDESTRUCKT-ARCH-G43R1-RECETTE-PHYSIQUE",
+ "source": "manual/src/0.3.3/recette/tests.json",
+ "groups": [
+  {
+   "id": "installation",
+   "title": "Installation",
+   "tests": [
+    "R-01",
+    "R-02",
+    "R-03",
+    "R-04"
+   ]
+  },
+  {
+   "id": "musical",
+   "title": "Validation musicale",
+   "tests": [
+    "R-05",
+    "R-06",
+    "R-07",
+    "R-08",
+    "R-09",
+    "R-10",
+    "R-11",
+    "R-19",
+    "R-20",
+    "R-21",
+    "R-22",
+    "R-23",
+    "R-29",
+    "R-30"
+   ]
+  },
+  {
+   "id": "technique",
+   "title": "Validation technique",
+   "tests": [
+    "R-12",
+    "R-13",
+    "R-14",
+    "R-15",
+    "R-16",
+    "R-24",
+    "R-25",
+    "R-26",
+    "R-27",
+    "R-28"
+   ]
+  },
+  {
+   "id": "packages",
+   "title": "Désinstallation et réinstallation",
+   "tests": [
+    "R-17",
+    "R-18"
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "id": "R-01",
+   "title": "Compilation locale",
+   "official": {
+    "procedure": "tools/local-build/build_local_macos.sh --juce-licence=<choix> (dépôt propre)",
+    "expected": "Livraison produite (Installer.pkg, Uninstaller.pkg, README_FR, CHANGELOG, SHA256SUMS, ZIP) ; seuls des échecs connus documentés ; pluginval rigueur 10 PASS ; commit identique ; rien d'installé."
+   },
+   "why": "Vérifier que le plugin construit sur votre Mac est celui du commit testé.",
+   "prerequisites": [
+    "Mac Apple Silicon, macOS 14+, Xcode Command Line Tools, cmake, ninja.",
+    "Sources au commit communiqué.",
+    "Terminal."
+   ],
+   "skills": "Coller une commande dans le Terminal.",
+   "steps": [
+    "git status : aucun changement ; git rev-parse HEAD : comparez au commit communiqué.",
+    "Lancez le script avec votre choix de licence.",
+    "Lisez le résumé (critères, échecs connus) et local-build/out-…/machine.txt ; vérifiez la présence du ZIP dans local-build/delivery-…."
+   ],
+   "expected": "Livraison produite (Installer.pkg, Uninstaller.pkg, README_FR, CHANGELOG, SHA256SUMS, ZIP) ; seuls des échecs connus documentés ; pluginval rigueur 10 PASS ; commit identique ; rien d'installé.",
+   "pass": "Commit identique, livraison complète, pluginval PASS, aucun échec non documenté.",
+   "fail": "Arrêt du script (code et message), échec non documenté, livraison absente.",
+   "onFail": "Joindre local-build/out-… (journaux) et le code de sortie.",
+   "evidenceHint": "Fichiers results.txt et machine.txt."
+  },
+  {
+   "id": "R-02",
+   "title": "Installation et mise à jour",
+   "official": {
+    "procedure": "Installer.pkg par-dessus 0.1.0-b5 ou sur un Mac propre",
+    "expected": "Installation réussie ; bundle présent ; version 0.3.3."
+   },
+   "why": "Vérifier l'installation et la mise à jour.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Fermez les DAW.",
+    "Ouvrez l'Installer et suivez-le.",
+    "Vérifiez /Library/Audio/Plug-Ins/VST3/SUBDESTRUCKT.vst3.",
+    "Si une copie existe dans ~/Library/Audio/Plug-Ins/VST3 (ancienne option --install), retirez-la d'abord."
+   ],
+   "expected": "Installation réussie ; bundle présent ; version 0.3.3.",
+   "pass": "Installation réussie, bundle présent.",
+   "fail": "Échec, message d'erreur, bundle absent.",
+   "onFail": "Noter le message ; joindre /var/log/install.log.",
+   "evidenceHint": "Capture de la fin d'installation."
+  },
+  {
+   "id": "R-03",
+   "title": "Découverte dans la DAW",
+   "official": {
+    "procedure": "Analyse des plugins VST3",
+    "expected": "SUBDESTRUCKT (Labtechno, instrument) listé et instanciable."
+   },
+   "why": "Vérifier la découverte VST3.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Relancez l'analyse des plugins.",
+    "Insérez SUBDESTRUCKT sur une piste instrument.",
+    "Ouvrez l'éditeur."
+   ],
+   "expected": "SUBDESTRUCKT (Labtechno, instrument) listé et instanciable.",
+   "pass": "Plugin trouvé, éditeur affiché.",
+   "fail": "Plugin absent ou plantage.",
+   "onFail": "Noter la DAW et sa version.",
+   "evidenceHint": "Capture de l'éditeur."
+  },
+  {
+   "id": "R-04",
+   "title": "Projets 0.1.0-b5 et 0.2.0",
+   "official": {
+    "procedure": "Ouvrir un projet enregistré avec 0.1.0-b5 puis un projet 0.2.0 sans N1",
+    "expected": "Le son est identique ; aucun message d'erreur."
+   },
+   "why": "Vérifier la migration d'état.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ouvrez un projet 0.1.0-b5 existant.",
+    "Ouvrez un projet 0.2.0 qui n'utilise pas N1 (N1 change volontairement en Normal/High).",
+    "Écoutez et comparez à un rendu antérieur."
+   ],
+   "expected": "Le son est identique ; aucun message d'erreur.",
+   "pass": "Son identique.",
+   "fail": "Son différent ou état refusé.",
+   "onFail": "Conserver le projet ; noter le message de la barre.",
+   "evidenceHint": "Rendu audio avant/après si disponible."
+  },
+  {
+   "id": "R-05",
+   "title": "Performance",
+   "official": {
+    "procedure": "Espace Performance",
+    "expected": "X, Y, Z, CROSS, macros et FM INDEX agissent audiblement ; aucune commande inactive."
+   },
+   "why": "Vérifier la façade jouable.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Chargez Cross Metal.",
+    "Tournez X, Y, Z, CROSS Master, Macro 1.",
+    "Tournez FM INDEX ; lisez le paramètre affiché dessous."
+   ],
+   "expected": "X, Y, Z, CROSS, macros et FM INDEX agissent audiblement ; aucune commande inactive.",
+   "pass": "Chaque commande agit.",
+   "fail": "Une commande sans effet audible.",
+   "onFail": "Noter la commande.",
+   "evidenceHint": "Courte vidéo ou description."
+  },
+  {
+   "id": "R-06",
+   "title": "Wavetable et banques",
+   "official": {
+    "procedure": "Sound Design › WT",
+    "expected": "Changement de banque, X/Y, Z (3 transformations), Clean/Raw audibles."
+   },
+   "why": "Vérifier le moteur WT.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Choisissez Formants puis Metal Spectra.",
+    "Essayez Harmonic Fold, Phase Warp, Spectral Mutation.",
+    "Comparez Clean et Raw sur une note aiguë."
+   ],
+   "expected": "Changement de banque, X/Y, Z (3 transformations), Clean/Raw audibles.",
+   "pass": "Tout est audible et sans craquement anormal.",
+   "fail": "Silence, craquement, plantage.",
+   "onFail": "Noter le réglage.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-07",
+   "title": "FM 4 opérateurs",
+   "official": {
+    "procedure": "Sound Design › FM",
+    "expected": "Modes PM/Linear/TZ/Exp et topologies changent le son."
+   },
+   "why": "Vérifier le moteur FM.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Topologie Cascade.",
+    "OP1 Mod Mode : PM, Linear FM, Through-Zero FM, Exponential FM."
+   ],
+   "expected": "Modes PM/Linear/TZ/Exp et topologies changent le son.",
+   "pass": "Changements audibles.",
+   "fail": "Absence d'effet ou instabilité.",
+   "onFail": "Noter la topologie.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-08",
+   "title": "CROSS et réseau",
+   "official": {
+    "procedure": "Engineering › Réseaux",
+    "expected": "Ajout/retrait de routes ; classes affichées ; aucune instabilité."
+   },
+   "why": "Vérifier les liaisons et la causalité.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ajoutez OP2>WT.X puis WT>OP3.",
+    "Lisez la classe (Immediate/Delayed).",
+    "Retirez-les en jouant."
+   ],
+   "expected": "Ajout/retrait de routes ; classes affichées ; aucune instabilité.",
+   "pass": "Routes ajoutées et retirées sans plantage.",
+   "fail": "Refus inexpliqué, plantage, bruit.",
+   "onFail": "Noter le message de la barre.",
+   "evidenceHint": "Capture de la liste."
+  },
+  {
+   "id": "R-09",
+   "title": "Filtres",
+   "official": {
+    "procedure": "PROCESS : F1 à F4",
+    "expected": "Chaque type agit ; Excitation (Note) fait résonner F2/F4."
+   },
+   "why": "Vérifier les filtres.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Global : F1 LP12, puis F2 Comb (Key 1), F3, F4 Metal.",
+    "Excitation Note sur F4."
+   ],
+   "expected": "Chaque type agit ; Excitation (Note) fait résonner F2/F4.",
+   "pass": "Effets audibles.",
+   "fail": "Effet absent, auto-oscillation non armée persistante au-delà de 10 s.",
+   "onFail": "Noter le type.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-10",
+   "title": "Destruction",
+   "official": {
+    "procedure": "PROCESS : N1 à S2",
+    "expected": "Chaque processeur agit ; Mix 0 = contournement."
+   },
+   "why": "Vérifier la destruction.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Essayez les 8 processeurs sur Global 1.",
+    "Mix à 0 puis 1."
+   ],
+   "expected": "Chaque processeur agit ; Mix 0 = contournement.",
+   "pass": "Effets audibles, Mix 0 neutre.",
+   "fail": "Effet absent ou plantage.",
+   "onFail": "Noter le processeur.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-11",
+   "title": "Modulation et MIDI",
+   "official": {
+    "procedure": "Inspector et matrice ; pitch bend, molette, pression, sustain",
+    "expected": "Une modulation créée agit ; l'expression MIDI agit ; MIDI Learn : affectation, remplacement, sustain refusé."
+   },
+   "why": "Vérifier la modulation et l'expressivité.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Inspector : LFO1 vers WT X.",
+    "Pitch bend, molette (source Mod Wheel), pédale de sustain.",
+    "MIDI Learn : Inspector › MIDI Learn sur WT X, bougez un potentiomètre ; recommencez sur WT Y avec le même potentiomètre (remplacement) ; tentez la pédale de sustain (refusée)."
+   ],
+   "expected": "Une modulation créée agit ; l'expression MIDI agit ; MIDI Learn : affectation, remplacement, sustain refusé.",
+   "pass": "Effets conformes.",
+   "fail": "Sans effet.",
+   "onFail": "Noter la source.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-12",
+   "title": "Presets, Undo, Randomizer",
+   "official": {
+    "procedure": "Engineering › État et Randomizer",
+    "expected": "Sauvegarde/rechargement ; Undo/Redo ; Mutate reproductible."
+   },
+   "why": "Vérifier l'état.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Sauvegardez un preset, rechargez-le.",
+    "MUTATE puis Undo, Redo."
+   ],
+   "expected": "Sauvegarde/rechargement ; Undo/Redo ; Mutate reproductible.",
+   "pass": "Retour exact ; preset identique.",
+   "fail": "Écart, perte de réglage.",
+   "onFail": "Noter l'étape.",
+   "evidenceHint": "Nom du preset."
+  },
+  {
+   "id": "R-13",
+   "title": "Rechargement de projet",
+   "official": {
+    "procedure": "Enregistrer, fermer, rouvrir le projet",
+    "expected": "Réglages identiques ; états autonomes et Drone restauré suspendus à l'arrêt ; autorisés au lancement de la lecture, sans Autoriser."
+   },
+   "why": "Vérifier l'état DAW.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Modifiez des réglages et une route.",
+    "Enregistrez, fermez, rouvrez."
+   ],
+   "expected": "Réglages identiques ; états autonomes et Drone restauré suspendus à l'arrêt ; autorisés au lancement de la lecture, sans Autoriser.",
+   "pass": "Identique.",
+   "fail": "Différence.",
+   "onFail": "Noter la différence.",
+   "evidenceHint": "Rendu avant/après."
+  },
+  {
+   "id": "R-14",
+   "title": "Fréquences et latence",
+   "official": {
+    "procedure": "44,1 / 48 / 88,2 / 96 kHz ; S2 actif",
+    "expected": "Son correct aux 4 fréquences ; compensation de latence correcte avec S2."
+   },
+   "why": "Vérifier fréquences et PDC.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Changez la fréquence de la DAW.",
+    "Activez S2 sur Global 1 ; vérifiez l'alignement avec une autre piste."
+   ],
+   "expected": "Son correct aux 4 fréquences ; compensation de latence correcte avec S2.",
+   "pass": "Correct.",
+   "fail": "Décalage, silence.",
+   "onFail": "Noter la fréquence.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-15",
+   "title": "Instances et performance",
+   "official": {
+    "procedure": "4 instances, Quality Normal puis High",
+    "expected": "Lecture sans décrochage ; charge affichée cohérente."
+   },
+   "why": "Vérifier la charge sur votre Mac (non certifiante).",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Ouvrez 4 instances avec Glitch Lab.",
+    "Lisez la charge CPU (Diagnostics) et celle de la DAW."
+   ],
+   "expected": "Lecture sans décrochage ; charge affichée cohérente.",
+   "pass": "Pas de décrochage.",
+   "fail": "Décrochages audio.",
+   "onFail": "Noter la machine et la taille de bloc.",
+   "evidenceHint": "Valeurs relevées."
+  },
+  {
+   "id": "R-16",
+   "title": "Panic et Drone",
+   "official": {
+    "procedure": "PANIC ; Drone",
+    "expected": "PANIC coupe en moins d'une seconde, désarme le Drone et retire l'autorisation ; rien ne revient pendant la même lecture ; un arrêt puis une lecture la rétablit."
+   },
+   "why": "Vérifier la sûreté.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Drone activé, note tenue.",
+    "PANIC.",
+    "Avec un gel armé : PANIC, puis vérifiez le silence et le bouton Autoriser ; Autoriser.",
+    "Pendant la lecture, avec un gel armé : PANIC ; laissez la lecture continuer 5 s (rien ne revient) ; arrêtez puis relancez la lecture (le gel revient)."
+   ],
+   "expected": "PANIC coupe en moins d'une seconde, désarme le Drone et retire l'autorisation ; rien ne revient pendant la même lecture ; un arrêt puis une lecture la rétablit.",
+   "pass": "Silence et Drone désarmé.",
+   "fail": "Son qui persiste.",
+   "onFail": "Noter le réglage.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-17",
+   "title": "Désinstallation",
+   "official": {
+    "procedure": "Uninstaller.pkg",
+    "expected": "Bundle retiré ; presets et MIDI Learn conservés."
+   },
+   "why": "Vérifier la désinstallation.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Fermez les DAW.",
+    "Lancez l'Uninstaller.",
+    "Vérifiez la conservation de vos presets."
+   ],
+   "expected": "Bundle retiré ; presets et MIDI Learn conservés.",
+   "pass": "Bundle absent, données conservées.",
+   "fail": "Bundle présent ou données perdues.",
+   "onFail": "Joindre /var/log/install.log.",
+   "evidenceHint": "Capture."
+  },
+  {
+   "id": "R-18",
+   "title": "Réinstallation",
+   "official": {
+    "procedure": "Installer.pkg après désinstallation",
+    "expected": "Plugin de nouveau disponible ; projets rechargés."
+   },
+   "why": "Vérifier la réinstallation.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Réinstallez.",
+    "Rouvrez le projet de R-13."
+   ],
+   "expected": "Plugin de nouveau disponible ; projets rechargés.",
+   "pass": "Fonctionne.",
+   "fail": "Échec.",
+   "onFail": "Noter le message.",
+   "evidenceHint": "Capture."
+  },
+  {
+   "id": "R-19",
+   "title": "Balance WT/FM",
+   "official": {
+    "procedure": "Performance : WT/FM Balance de -1 à +1",
+    "expected": "-1 : WT seule ; 0 : son inchangé ; +1 : FM seul ; jamais plus fort qu'au centre ; CROSS toujours actif."
+   },
+   "why": "Vérifier la balance audio.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Chargez Cross Metal.",
+    "Balance à -1, 0, +1 en jouant.",
+    "À +1, tournez CROSS Master : le FM reste modulé par la WT."
+   ],
+   "expected": "-1 : WT seule ; 0 : son inchangé ; +1 : FM seul ; jamais plus fort qu'au centre ; CROSS toujours actif.",
+   "pass": "Conforme.",
+   "fail": "Saut de niveau, CROSS coupé, son plus fort qu'au centre.",
+   "onFail": "Noter la position.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-20",
+   "title": "Enveloppes : Trigger et Sync",
+   "official": {
+    "procedure": "MOD : ENV AUX1 vers WT X ; Trigger Voice/Note/Gate ; Tempo Sync",
+    "expected": "Legato + Note : relance à chaque note ; Gate : relance seulement après relâchement total ; Sync suit le tempo."
+   },
+   "why": "Vérifier les nouvelles règles.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Voice Mode Legato, route ENV AUX1 → WT X.",
+    "Trigger Voice puis Note : jouez legato.",
+    "Trigger Gate.",
+    "Tempo Sync, Attack 1 : changez le tempo de la DAW (60 puis 120)."
+   ],
+   "expected": "Legato + Note : relance à chaque note ; Gate : relance seulement après relâchement total ; Sync suit le tempo.",
+   "pass": "Conforme, sans saut de niveau.",
+   "fail": "Relance incorrecte, saut, tempo ignoré.",
+   "onFail": "Noter le réglage.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-21",
+   "title": "Captures D2/S2",
+   "official": {
+    "procedure": "Capturer gels ; enregistrer le preset et le projet ; recharger",
+    "expected": "Après réouverture, rien ne joue à l'arrêt ; la lecture restitue le fragment capturé ; le preset arrive désarmé."
+   },
+   "why": "Vérifier les captures R2.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Suivez l'exercice 13.",
+    "Enregistrez aussi le projet pendant le gel armé ; fermez et rouvrez.",
+    "À la réouverture, DAW à l'arrêt : silence ; lancez la lecture : le fragment capturé est rejoué sans Autoriser."
+   ],
+   "expected": "Après réouverture, rien ne joue à l'arrêt ; la lecture restitue le fragment capturé ; le preset arrive désarmé.",
+   "pass": "Silence à l'arrêt ; fragment restitué au lancement de la lecture ; preset désarmé.",
+   "fail": "Son à l'arrêt sans action, fragment perdu ou non restitué à la lecture, preset armé.",
+   "onFail": "Noter l'étape.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-22",
+   "title": "Éditeur et bibliothèque de banques",
+   "official": {
+    "procedure": "Engineering › Banques",
+    "expected": "Génération, dessin, Undo, enregistrement .sdwt et rechargement fonctionnent."
+   },
+   "why": "Vérifier les banques utilisateur.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Générez Random Spectra 16×4.",
+    "Dessinez une forme, Appliquer, Undo, Redo.",
+    "Enregistrez (.sdwt), chargez une autre banque, rechargez la vôtre.",
+    "Enregistrez le projet, rouvrez-le sur une autre machine si possible."
+   ],
+   "expected": "Génération, dessin, Undo, enregistrement .sdwt et rechargement fonctionnent.",
+   "pass": "Conforme.",
+   "fail": "Échec ou banque différente.",
+   "onFail": "Noter l'étape.",
+   "evidenceHint": "Fichier .sdwt."
+  },
+  {
+   "id": "R-23",
+   "title": "Morph spectral",
+   "official": {
+    "procedure": "WT X Morph Spectral ; balayage de X",
+    "expected": "Transition harmonique audible, sans clic."
+   },
+   "why": "Vérifier le morph spectral.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Banque Metal Spectra, OP1 Level 0.",
+    "Comparez Linear et Spectral en balayant X (automation lente)."
+   ],
+   "expected": "Transition harmonique audible, sans clic.",
+   "pass": "Différence audible, sans clic.",
+   "fail": "Clic, silence.",
+   "onFail": "Noter la banque.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-24",
+   "title": "N1, Quality et ELP",
+   "official": {
+    "procedure": "N1 drive 24 / repli 1, note aiguë ; Quality Eco/Normal/High ; gains extrêmes",
+    "expected": "Repliement réduit en Normal et High ; latence compensée ; ELP signalé au-delà de +24 dBFS."
+   },
+   "why": "Vérifier N1 et la protection.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé (sauf R-01 et R-02).",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Utiliser une DAW.",
+   "steps": [
+    "Global 1 : N1 drive 24, Fold 1 ; jouez une note aiguë.",
+    "Comparez Eco, Normal, High.",
+    "Ajoutez D1 et N2 avec Out +24 dB : observez « ELP » et Diagnostics."
+   ],
+   "expected": "Repliement réduit en Normal et High ; latence compensée ; ELP signalé au-delà de +24 dBFS.",
+   "pass": "Conforme.",
+   "fail": "Aucune différence, désalignement, son abîmé sans signalement.",
+   "onFail": "Noter la Quality.",
+   "evidenceHint": "Description."
+  },
+  {
+   "id": "R-25",
+   "title": "États autonomes : duplication et autorisation",
+   "official": {
+    "procedure": "Dupliquer pendant la lecture une piste contenant un gel armé ; arrêter puis relancer ; rouvrir le projet",
+    "expected": "Copie créée pendant la lecture : suspendue jusqu'à un arrêt puis une lecture ; original inchangé ; projet rouvert : silence à l'arrêt, restitution à la lecture."
+   },
+   "why": "Vérifier qu'aucune restauration n'active seule un comportement autonome.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Dupliquer une piste dans la DAW.",
+   "steps": [
+    "Créez un gel D2 armé qui tourne (exercice 13).",
+    "Pendant la lecture, dupliquez la piste.",
+    "Copie : silence (bouton Autoriser visible) tant que la lecture continue ; original : le gel continue.",
+    "Arrêtez puis relancez la lecture : la copie joue aussi.",
+    "Enregistrez, fermez, rouvrez : silence à l'arrêt, gels restitués à la lecture."
+   ],
+   "expected": "Copie créée pendant la lecture : suspendue jusqu'à un arrêt puis une lecture ; original inchangé ; projet rouvert : silence à l'arrêt, restitution à la lecture.",
+   "pass": "Aucune activation pendant la lecture déjà en cours ; restitution après arrêt puis lecture.",
+   "fail": "La copie joue immédiatement, ou ne joue jamais après arrêt puis lecture.",
+   "onFail": "Noter l'étape et la DAW.",
+   "evidenceHint": "Description ou capture d'écran."
+  },
+  {
+   "id": "R-26",
+   "title": "TRANSPORT AUTHORIZATION dans Reason 14",
+   "official": {
+    "procedure": "Protocole en 14 étapes (projet de recette à 5 pistes), Reason 14 sur Mac Apple Silicon",
+    "expected": "Silence à l'arrêt à l'ouverture ; autorisation au lancement de la lecture ou de l'enregistrement ; conservée à l'arrêt ; PANIC prioritaire jusqu'à STOP puis PLAY ; aucune activation implicite."
+   },
+   "why": "Valider dans l'hôte réel que les comportements autonomes reviennent sans réautoriser chaque instance, et jamais par surprise.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Reason 14 (version exacte à relever).",
+    "Un clavier MIDI."
+   ],
+   "skills": "Utiliser le transport, dupliquer une piste, charger un preset dans Reason 14.",
+   "steps": [
+    "Préparez le projet de recette : piste 1 Drone + note tenue ; piste 2 gel D2 armé ; piste 3 gel S2 armé ; piste 4 Feedback D2 Regenerative ; piste 5 preset non autonome. Activez le journal : créez le fichier vide ~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_diagnostics.on .",
+    "1. Ouvrez le projet à l'arrêt : silence des pistes 1 à 4 (Engineering › Diagnostics : « retiree »).",
+    "2. PLAY : les états autonomes jouent (source « transport »). 3. RECORD (sur une piste vide) : aucune rupture.",
+    "4. STOP : ils continuent (autorisation conservée). 5. Boucle et 6. Seek pendant la lecture : aucune relance, aucun saut.",
+    "7. PANIC pendant PLAY : silence ; la lecture continue sans retour du son. 8. STOP puis PLAY : retour.",
+    "9. Chargez un preset pendant PLAY sur la piste 5 : aucun son autonome. 10. Dupliquez la piste 2 pendant PLAY : la copie reste muette jusqu'à STOP puis PLAY.",
+    "11. Insérez une nouvelle instance pendant PLAY : aucun son sans note. 12. Fermez et rouvrez l'éditeur : aucun changement.",
+    "13. Enregistrez, fermez, rouvrez le projet : étapes 1-2 identiques. 14. Plusieurs instances autonomes : chacune suit le transport, indépendamment.",
+    "Joignez ~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_log.txt (événements de transport et d'autorisation) et notez la version exacte de Reason 14."
+   ],
+   "expected": "Silence à l'arrêt à l'ouverture ; autorisation au lancement de la lecture ou de l'enregistrement ; conservée à l'arrêt ; PANIC prioritaire jusqu'à STOP puis PLAY ; aucune activation implicite.",
+   "pass": "Les 14 étapes conformes ; le journal montre les transitions attendues.",
+   "fail": "Une étape non conforme (son inattendu, son absent après PLAY, PANIC contourné).",
+   "onFail": "Noter l'étape, l'hôte, sa version et joindre ta_log.txt.",
+   "evidenceHint": "ta_log.txt, description, capture de l'onglet Diagnostics."
+  },
+  {
+   "id": "R-27",
+   "title": "TRANSPORT AUTHORIZATION dans Ableton Live",
+   "official": {
+    "procedure": "Protocole en 14 étapes (projet de recette à 5 pistes), Ableton Live sur Mac Apple Silicon",
+    "expected": "Silence à l'arrêt à l'ouverture ; autorisation au lancement de la lecture ou de l'enregistrement ; conservée à l'arrêt ; PANIC prioritaire jusqu'à STOP puis PLAY ; aucune activation implicite."
+   },
+   "why": "Valider dans l'hôte réel que les comportements autonomes reviennent sans réautoriser chaque instance, et jamais par surprise.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Ableton Live (version exacte à relever).",
+    "Un clavier MIDI."
+   ],
+   "skills": "Utiliser le transport, dupliquer une piste, charger un preset dans Ableton Live.",
+   "steps": [
+    "Préparez le projet de recette : piste 1 Drone + note tenue ; piste 2 gel D2 armé ; piste 3 gel S2 armé ; piste 4 Feedback D2 Regenerative ; piste 5 preset non autonome. Activez le journal : créez le fichier vide ~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_diagnostics.on .",
+    "1. Ouvrez le projet à l'arrêt : silence des pistes 1 à 4 (Engineering › Diagnostics : « retiree »).",
+    "2. PLAY : les états autonomes jouent (source « transport »). 3. RECORD (sur une piste vide) : aucune rupture.",
+    "4. STOP : ils continuent (autorisation conservée). 5. Boucle et 6. Seek pendant la lecture : aucune relance, aucun saut.",
+    "7. PANIC pendant PLAY : silence ; la lecture continue sans retour du son. 8. STOP puis PLAY : retour.",
+    "9. Chargez un preset pendant PLAY sur la piste 5 : aucun son autonome. 10. Dupliquez la piste 2 pendant PLAY : la copie reste muette jusqu'à STOP puis PLAY.",
+    "11. Insérez une nouvelle instance pendant PLAY : aucun son sans note. 12. Fermez et rouvrez l'éditeur : aucun changement.",
+    "13. Enregistrez, fermez, rouvrez le projet : étapes 1-2 identiques. 14. Plusieurs instances autonomes : chacune suit le transport, indépendamment.",
+    "Joignez ~/Library/Application Support/Labtechno/SUBDESTRUCKT/ta_log.txt (événements de transport et d'autorisation) et notez la version exacte de Ableton Live."
+   ],
+   "expected": "Silence à l'arrêt à l'ouverture ; autorisation au lancement de la lecture ou de l'enregistrement ; conservée à l'arrêt ; PANIC prioritaire jusqu'à STOP puis PLAY ; aucune activation implicite.",
+   "pass": "Les 14 étapes conformes ; le journal montre les transitions attendues.",
+   "fail": "Une étape non conforme (son inattendu, son absent après PLAY, PANIC contourné).",
+   "onFail": "Noter l'étape, l'hôte, sa version et joindre ta_log.txt.",
+   "evidenceHint": "ta_log.txt, description, capture de l'onglet Diagnostics."
+  },
+  {
+   "id": "R-28",
+   "title": "Exports audio avec états autonomes (Reason 14 et Ableton Live)",
+   "official": {
+    "procedure": "Exports sans lecture préalable, hors temps réel, bounce / rendu de piste / Freeze de piste, région décalée, comparaison lecture/export, annulation",
+    "expected": "Chaque export contient le Drone, les gels D2/S2 restitués et le Feedback ; lecture et export concordent selon le protocole ; aucune activation après annulation sans transport."
+   },
+   "why": "Un export peut démarrer dans une nouvelle instance, sans lecture ni éditeur : il doit quand même contenir la composition.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Reason 14 et Ableton Live (versions relevées).",
+    "Projet de recette de R-26/R-27."
+   ],
+   "skills": "Exporter l'audio d'un projet, d'une piste et d'une région ; comparer deux fichiers dans un éditeur audio.",
+   "steps": [
+    "15. Ouvrez le projet et exportez IMMÉDIATEMENT (sans lecture, sans Autoriser).",
+    "16. Export hors temps réel (mode par défaut de l'hôte) ; puis en temps réel s'il est proposé.",
+    "17. Bounce, rendu de piste et Freeze de piste (selon l'hôte).",
+    "18. Export d'une région qui ne commence pas au début du projet.",
+    "19. Comparez lecture enregistrée et export : présence et niveau des états autonomes (écart par bande, pas d'égalité bit à bit exigée : le gel S2 décroît et les phases dépendent du point de départ).",
+    "20. Lancez un export, annulez-le, puis relancez la lecture : comportement normal (TA).",
+    "Notez pour chaque export : hôte, mode, temps réel ou non, présence de chaque état autonome, et joignez ta_log.txt (l'événement « hors temps reel » et la source « rendu hors temps reel » attestent la détection)."
+   ],
+   "expected": "Chaque export contient le Drone, les gels D2/S2 restitués et le Feedback ; lecture et export concordent selon le protocole ; aucune activation après annulation sans transport.",
+   "pass": "Tous les exports contiennent les états autonomes ; journal cohérent.",
+   "fail": "Un export sans états autonomes, ou avec une activation inattendue.",
+   "onFail": "Noter l'hôte, le mode d'export, joindre ta_log.txt et les fichiers exportés ; contournement : Autoriser avant l'export.",
+   "evidenceHint": "Fichiers exportés, ta_log.txt, mesures comparatives."
+  },
+  {
+   "id": "R-29",
+   "title": "Écoute : transformations Z et D2 Regenerative",
+   "official": {
+    "procedure": "Exemples audio du chapitre 6 et du chapitre 10 ; puis réglages en direct",
+    "expected": "Chaque transformation Z a un effet distinct ; Tilt sans saut de niveau (avec ou sans compensation) ; Shift sans clic ; Regenerative rend le Feedback audible à Position 0."
+   },
+   "why": "Juger musicalement les cinq nouvelles transformations et le nouveau mode D2.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Une DAW et un clavier MIDI."
+   ],
+   "skills": "Régler un paramètre, automatiser un paramètre.",
+   "steps": [
+    "Écoutez les exemples e23 à e34 (comparez e23/e24 et e29/e30 avec l'édition 0.3.2 : niveau de Tilt et continuité de Shift).",
+    "Sur WT, essayez chaque transformation avec Z Master, Depth et Shape ; automatisez Depth et Shape.",
+    "Harmonic Tilt : balayez Shape de -1 à +1 avec Gain Compensation activé PUIS désactivé : le niveau doit rester du même ordre, sans saut ni saturation.",
+    "Harmonic Shift : balayez la profondeur lentement sur Metal Spectra : aucun clic ; notez si la non-monotonie du timbre vous convient.",
+    "Phase Scatter : avec Fold, N1 et le CROSS.",
+    "D2 : Position 0, Feedback 0,5 à 1, Legacy puis Regenerative."
+   ],
+   "expected": "Chaque transformation Z a un effet distinct ; Tilt sans saut de niveau (avec ou sans compensation) ; Shift sans clic ; Regenerative rend le Feedback audible à Position 0.",
+   "pass": "Effets conformes, utilisables musicalement.",
+   "fail": "Effet inaudible, brutal, ou niveau dangereux.",
+   "onFail": "Noter le réglage exact (banque, X/Y, Z, Shape) et le comportement.",
+   "evidenceHint": "Description, enregistrement court."
+  },
+  {
+   "id": "R-30",
+   "title": "Captures R2 entre fréquences d'échantillonnage : écoute A/B",
+   "official": {
+    "procedure": "Écouter docs/r1-audio/r2ab_*.wav (capture 48 kHz restituée à 44,1 / 48 / 88,2 / 96 kHz, même gain) ; puis, dans la DAW, enregistrer un projet avec un gel S2 armé à 48 kHz et le rouvrir à 96 kHz",
+    "expected": "Même timbre et même niveau global ; à 88,2/96 kHz (et 44,1 kHz), éventuel léger flou des partiels graves (résolution du gel S2) jugé acceptable ou non."
+   },
+   "why": "La restitution entre fréquences conserve l'énergie mais la résolution du gel S2 change avec la fréquence : seul votre jugement d'écoute valide l'usage.",
+   "prerequisites": [
+    "SUBDESTRUCKT 0.3.3 compilé et installé.",
+    "Casque ou moniteurs ; une DAW permettant de changer la fréquence du projet."
+   ],
+   "skills": "Changer la fréquence d'échantillonnage d'un projet.",
+   "steps": [
+    "Écoutez la référence puis chaque restitution (même gain, aucune normalisation séparée).",
+    "Dans la DAW : gel S2 armé, enregistrez à 48 kHz, rouvrez à 96 kHz puis 44,1 kHz ; lancez la lecture (autorisation par le transport).",
+    "Notez toute différence de niveau, de hauteur des partiels graves ou de timbre."
+   ],
+   "expected": "Même timbre et même niveau global ; à 88,2/96 kHz (et 44,1 kHz), éventuel léger flou des partiels graves (résolution du gel S2) jugé acceptable ou non.",
+   "pass": "Différences jugées acceptables.",
+   "fail": "Différence gênante (niveau, hauteur, timbre).",
+   "onFail": "Noter les fréquences et la nature de la différence.",
+   "evidenceHint": "Description d'écoute."
+  }
+ ]
+}

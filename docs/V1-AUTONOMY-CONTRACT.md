@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — Contrat des états et autorisations autonomes (ARCH-G4.3, 0.3.2)
+# SUBDESTRUCKT — Contrat des états et autorisations autonomes (ARCH-G4.3, inchangé en ARCH-G4.3-R1 / 0.3.3)
 
 Statut : **implémenté et validé en automatique** (TA-01..25, TA-xxw, AUT-01..08, R2-01..05) ; **validation physique en
 attente** (Reason 14, Ableton Live, exports : recette R-26, R-27, R-28). Critères : `docs/V1-ARCH-G4.3-SPEC.md` §3, §6.

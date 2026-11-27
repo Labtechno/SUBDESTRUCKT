@@ -83,6 +83,24 @@
    "audioChapter": 16,
    "screenshot": "assets/ui_performance.png",
    "exportFileName": "SUBDESTRUCKT_ARCH_G43_RESULTS.json"
+  },
+  {
+   "version": "0.3.3",
+   "label": "correction DSP ARCH-G4.3-R1 : Harmonic Tilt a energie constante, continuite de Harmonic Shift, recette A/B R2, aucun binaire diffuse",
+   "buildSourceSha": "2985901c98b602a7b9b50f25e9c63811fe035b10",
+   "documentationSha": "",
+   "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
+   "deliveryZipSha256": "",
+   "deliveryZipBytes": 0,
+   "recetteCampaignId": "SUBDESTRUCKT-ARCH-G43R1-RECETTE-PHYSIQUE",
+   "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g43r1-recette.v1",
+   "resultsSchemaVersion": 1,
+   "registry": "g4",
+   "recetteCount": 30,
+   "chapterCount": 18,
+   "audioChapter": 16,
+   "screenshot": "assets/ui_performance.png",
+   "exportFileName": "SUBDESTRUCKT_ARCH_G43R1_RESULTS.json"
   }
  ]
 }
