@@ -70,7 +70,7 @@
    "version": "0.3.2",
    "label": "developpement integre ARCH-G4.3, TRANSPORT AUTHORIZATION, D2 Regenerative, catalogue Z complet, aucun binaire diffuse",
    "buildSourceSha": "d7dcc22fcb741127460943e0a8ebdce6fe908cac",
-   "documentationSha": "",
+   "documentationSha": "c7b8573ad3910a11eb4283cf2a4784e42532aa21",
    "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
    "deliveryZipSha256": "",
    "deliveryZipBytes": 0,
