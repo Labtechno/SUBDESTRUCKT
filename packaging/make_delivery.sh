@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.1
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.2
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,7 +22,7 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate du developpement integre ARCH-G4.1 (P0/P1). Ce n'est NI une beta NI une version
+STATUT : livraison interne candidate du developpement integre ARCH-G4.2 (socle DSP et securite). Ce n'est NI une beta NI une version
 publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
@@ -108,8 +108,25 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.1 (build interne, non diffusee)
+${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.2 (build interne, non diffusee)
 -------------------------------------------------------------------------------------------
+Securite des etats autonomes
+- Projet DAW, duplication d'instance ou preset portant un armement autonome ou une capture : etats autonomes
+  SUSPENDUS (rien ne joue seul) jusqu'au bouton Autoriser ; reglages et captures restaures a l'identique.
+- PANIC suspend aussi les etats autonomes armes (Autoriser les relance) ; l'autorisation n'est jamais enregistree.
+MIDI Learn
+- Une commande <-> un reglage ; armements, reglages non automatisables et CC reservees (0, 6, 32, 38, 64, 96-101,
+  120-127) refuses ; profil partage entre instances sans perte d'affectation.
+Protection d'extreme niveau (SPEC-HR-01, toujours proposee)
+- Marge portee sur l'asymptote : sortie float strictement < +30,10 dBFS (atteignait la garde en 0.3.0) ; identique
+  bit a bit sous +24 dBFS.
+Compilation locale
+- Script durci : arret au premier echec, pluginval obligatoire, livraison complete verifiee, aucune installation.
+Inchange
+- Son, parametres (695 StableID), identifiants VST3, format d'etat 3 ; D2 Feedback a Position 0 inchange (etude).
+
+0.3.0 — developpement integre ARCH-G4.1 (build interne, non diffusee)
+---------------------------------------------------------------------
 Ajouts
 - Balance WT/FM (Performance) ; morph spectral X/Y ; editeur de formes, generateur procedural, bibliotheque .sdwt.
 - Enveloppes : declenchement Voice/Note/Gate, synchronisation au tempo (regles provisoires).
