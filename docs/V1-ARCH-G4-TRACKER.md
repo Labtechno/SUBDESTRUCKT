@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -111,6 +111,14 @@ jamais rapporté comme résultat : la CI macOS arm64 fait foi (colonne « CI »)
 
 Résultats ARCH-G4.1 (local MSVC, puis CI macOS arm64 — colonne CI de la matrice) : tous PASS sauf la clause DAW de CAP-01 (**non conforme** : la restauration DAW est fidèle, armements compris, car le critère antérieur G-21w exige un état DAW identique après rechargement ; arbitrage A-G41-03). G-15 et DST-09 : FAIL historiques au commit c741fb8 (consignés) ; PASS au commit courant **uniquement sous SPEC-HR-01 proposée** (si refusée : retour à FAIL).
 
+### 3ter. Critères ARCH-G4.2 (enregistrés le 2026-11-27, avant toute mesure)
+Texte intégral : `docs/V1-ARCH-G4.2-SPEC.md` (commits 87d1ed6 et 1ef1c67, antérieurs aux mesures) : ELP-01..07,
+AUT-01..08, D2-01..05, ML-01w..07w, LB-01..07. Additifs consignés pendant l'exécution (§7 du document) : D2-04c et
+AUT-02c, **complémentaires, définis après diagnostic**, qui ne remplacent pas les critères en échec ; CAP-02w : étape
+« Autoriser » insérée (résultat G4.1 conservé). Échecs documentés (`tests/known_failures.txt`) : ELP-01 (plateau
+numérique de tanh), D2-04 (moteur historique, fluctuation bornée), D2-04c (une fenêtre après coupure), AUT-02
+clause (c) (S2 décroît par contrat). Résultats : rapport `docs/V1-ARCH-G4.2-REPORT.md`.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -124,7 +132,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | run 33 |
 | R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | run 33 |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
-| R10 | Tail/Drone/Panic | F | PASS (CI run 9) | — |
+| R10 | Tail/Drone/Panic | F | PASS (G4.2 : Panic suspend aussi les états autonomes (AUT-05)) | @CI42@ |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
 | R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | run 33 |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
@@ -154,17 +162,17 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R37 | Randomize/Mutate/Evolve (verrous, intensité, seed, profils) | STATE | PASS (CI run 9) | — |
 | R38 | Undo/Redo transactionnel (128, RNG) | STATE | PASS (CI run 9) | — |
 | R39 | Quality Eco/Normal/High, transition contrôlée, latence | Q | PASS (CI run 9) | — |
-| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (CI run 9) | — |
+| R40 | Limiteur musical optionnel, garde numérique | Q | PASS (G4.2 : ELP / limiteur / garde distincts et comptés séparément (ELP-07)) | @CI42@ |
 | R41 | Benchmark CPU reproductible | Q | PASS (PERF-01 rapporté, sans seuil normatif) | — |
 | R42 | UI Performance | UI | IMPLEMENTED (captures réelles ; tâches UX01..18 non mesurées) | — |
 | R43 | UI Sound Design (WT/FM/CROSS central/Process/Mod) | UI | IMPLEMENTED | — |
 | R44 | UI Engineering (réseaux, matrice, banques, état, diagnostics) | UI | IMPLEMENTED | — |
 | R45 | Inspector, moniteurs (scope/spectre/XY/FM), zoom/accessibilité | UI | IMPLEMENTED (G4.1 : UI-01w PASS (navigation, tailles, Inspector, titres accessibles) ; contrastes/DPI/zoom par niveau non mesurés) | run 33 |
-| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.1 : 695 paramètres, état v3 (G-21w/G-22w, REG-ID)) | run 33 |
-| R47 | MIDI Learn global séparé des presets | PLG | IMPLEMENTED (file audio->message, latence ≤ 33 ms) | — |
-| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.1 : paquets 0.3.0 construits et recette VM (CI) ; NON publiés) | run 33 |
-| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.1 : manuel 0.3.0 : contrôles bloquants + Playwright (local et CI ubuntu) ; publication gh-pages manual/0.3.0) | run 33 |
-| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.1 : CAP-01/CAP-02w PASS ; clause DAW de CAP-01 non conforme (A-G41-03)) | run 33 |
+| R46 | Wrapper VST3 : 684 paramètres, état v2, MIDI étendu, latence dynamique | PLG | PASS (G4.2 : G-21w inchangé et PASS ; G-22w) | @CI42@ |
+| R47 | MIDI Learn global séparé des presets | PLG | PASS (G4.2 : ML-01w..07w (affectation, remplacement, profil isolé, presets, multi-instance, conflits, RT) ; recette physique R-11 à faire) | @CI42@ |
+| R48 | Packaging 0.2.0 testé (sans diffusion publique) | PKG | PASS (G4.2 : paquets 0.3.1 construits et recette VM (CI) ; NON publiés ; compilation locale LB-01..07) | @CI42@ |
+| R49 | Manuel HTML édition G4 + assistant de recette | DOC | PASS (G4.2 : manuel 0.3.1 (comportements modifiés) : contrôles bloquants + Playwright) | @CI42@ |
+| R50 | Captures créatives Freeze/Glitch (R2) | STATE | IMPLEMENTED (G4.2 : non-conformité DAW corrigée (AUT-01, 03..08, AUT-02 a/b, CAP-02w PASS) ; AUT-02 clause (c) FAIL documenté (S2 décroît par contrat), AUT-02c PASS : PASS soumis à l'arbitrage A-G42-04) | @CI42@ |
 
 ## 5. Journal
 | Date | Lot | Commit | Résultat |
@@ -188,15 +196,20 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | AUD-01 + correctifs suiveurs / modulation de sortie | 7a82590 | Local PASS (686 effectifs, 9 exceptions) |
 | 2026-11-27 | UI ; banques utilisateur ; perf ; licence ; manuel 0.3.0 ; §9 | e9d6919..feafcb6 | voir rapport ARCH-G4.1 |
 
+| 2026-11-27 | G4.2 : critères avant mesure | 87d1ed6, 1ef1c67 | — |
+| 2026-11-27 | G4.2 : ELP, autorisation autonome, étude D2, MIDI Learn | 4912ea6 | Local : cœur sans régression (seuls ELP-01, D2-04, D2-04c documentés) ; wrapper : AUT-02 (c) documenté |
+| 2026-11-27 | G4.2 : compilation locale sécurisée, harnais LB, version 0.3.1 | 49bfa0c | Local : LB-01..07 PASS ; CI : voir rapport G4.2 |
+| 2026-11-27 | G4.2 : manuel 0.3.1, propositions Z, rapport | (voir git) | Playwright 0.3.1 local : 46 PASS, 4 ignorés (b5) |
+
 ## 6. Prochaine action
-Arbitrages groupés du rapport ARCH-G4.1 (§8) : D-LIC-1 (licence JUCE pour la compilation locale), SPEC-HR-01,
-A-G41-03 (armements DAW), règles provisoires des enveloppes. Puis recette physique 0.3.0 sur Mac Studio M4 Max
-(compilation locale, chapitre 2 du manuel 0.3.0).
+Arbitrages groupés du rapport ARCH-G4.2 (§8) : D-LIC-1 (licence JUCE pour la compilation locale), SPEC-HR-01
+(et ELP-01), A-G42-01 (D2 Feedback), A-G42-04 (AUT-02 c), B-01 (Z). Puis recette physique 0.3.1 sur Mac Studio
+M4 Max (compilation locale sécurisée, chapitre 2 du manuel 0.3.1). ARCH-UI-04 non commencé (non autorisé).
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |
 |---|---|---|
-| B-01 | Cinq transformations Z historiques (P0-C28/C29) | R19 BLOCKED ; 3 transformations développées |
+| B-01 | Cinq transformations Z historiques (P0-C28/C29) | R19 BLOCKED ; 3 transformations développées ; G4.2 : recherche négative, 6 propositions NOUVELLES non implémentées (`docs/V1-ARCH-G4.2-Z-PROPOSALS.md`) |
 | B-02 | Sémantique WT/FM balance (AUD-A05) | Levé par ARCH-G4.1 : balance audio post-Amp, centre = 0.2.0 (BAL-01) ; conflit éventuel avec Cross Audio Crossfade documenté |
 | B-03 | Règles de retrigger/loop/sync tempo des enveloppes | Implémenté provisoirement (Voice/Note/Gate, Sync en noires) ; à confirmer |
 | B-05 | (proposition SPEC-HR-01 en attente) Plages de gain des étages (Out filtres/destruction jusqu'à +24 dB, makeup Y1 +36 dB) : en cumul extrême, la garde +30 dBFS se déclenche (G-15 étendu, DST-09 FAIL, rapportés) | Décider : conserver les plages (garde = comportement voulu) ou les réduire (ex. +12 dB) |
