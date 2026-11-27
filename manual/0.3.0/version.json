@@ -1,0 +1,259 @@
+{
+  "version": "0.3.0",
+  "label": "developpement integre ARCH-G4.1, compilation locale, aucun binaire diffuse",
+  "buildSourceSha": "4f7a49cf24b7d3f0d222aa76044b7d5b95d4ccf1",
+  "documentationSha": "1bf461d1aa0e15cf7c2c9f9a057fc007c6473d31",
+  "deliveryZip": "non publie (licence JUCE : decision utilisateur ; compilation locale)",
+  "deliveryZipSha256": "",
+  "deliveryZipBytes": 0,
+  "recetteCampaignId": "SUBDESTRUCKT-ARCH-G41-RECETTE-PHYSIQUE",
+  "recetteStorageKey": "labtechno.subdestruckt.manual.arch-g41-recette.v1",
+  "resultsSchemaVersion": 1,
+  "registry": "g4",
+  "recetteCount": 24,
+  "chapterCount": 18,
+  "audioChapter": 16,
+  "screenshot": {
+    "file": "assets/ui_performance.png",
+    "sha256": "f6995848d01db92ab88b569bd4cd1bc971b55ffa2178e281060c6073b2e14702"
+  },
+  "exportFileName": "SUBDESTRUCKT_ARCH_G41_RESULTS.json",
+  "generator": "manual/build.py",
+  "audioExamples": [
+    {
+      "id": "e01_init",
+      "file": "audio/e01_init.wav",
+      "sha256": "6612a0914a76daeda6e5556e8cac9a6de080f4f0cee838d79652a4fa0d0663da"
+    },
+    {
+      "id": "e02_xy_basic",
+      "file": "audio/e02_xy_basic.wav",
+      "sha256": "4d80be104d2750373bef415d46503c58e0a4a42e4a2be257220929ab1966a215"
+    },
+    {
+      "id": "e03_xy_square",
+      "file": "audio/e03_xy_square.wav",
+      "sha256": "fe6498ac8ab0c0d58b56e49d96d68da2776606c8d8510aaeb75a6b89c1a4be8d"
+    },
+    {
+      "id": "e04_z_fold",
+      "file": "audio/e04_z_fold.wav",
+      "sha256": "60f0614e5f53659a390668018c382ab4828cba66b50314309b4671a95a6a7a1c"
+    },
+    {
+      "id": "e05_z_warp",
+      "file": "audio/e05_z_warp.wav",
+      "sha256": "2e48ca891b83d676efb003f54ab8b10559df9f6c21f0cb5f6a0d55b85ebf4ce4"
+    },
+    {
+      "id": "e06_z_mutation",
+      "file": "audio/e06_z_mutation.wav",
+      "sha256": "7bf8d1b4d3f1d191333b783a67fb03f16825552cb6c950b49c27edba2633ee73"
+    },
+    {
+      "id": "e07_fm_pm",
+      "file": "audio/e07_fm_pm.wav",
+      "sha256": "dd1dbe72c14b00bc85ba46ebc9e9d7bb36ac959e985242965c03e2b25f5077d7"
+    },
+    {
+      "id": "e08_fm_lin",
+      "file": "audio/e08_fm_lin.wav",
+      "sha256": "2902d9b37d7cccc363c5c076bfbf8929cfd0407239383609fcbd9f824af630e2"
+    },
+    {
+      "id": "e09_fm_exp",
+      "file": "audio/e09_fm_exp.wav",
+      "sha256": "434dda53bc9bdab4524d823b0c4449a808f9fa1e9fe6c9be0e8240733bab02a4"
+    },
+    {
+      "id": "e10_f1_lp",
+      "file": "audio/e10_f1_lp.wav",
+      "sha256": "371128554f75722ef5b5cf99ab7688cc5b5f14e34800d2a571358284f4a8e4aa"
+    },
+    {
+      "id": "e11_f2_comb",
+      "file": "audio/e11_f2_comb.wav",
+      "sha256": "d342f432d631e2084451846963026c0b43506119b820d3e916f32d6cfe9b0ba3"
+    },
+    {
+      "id": "e12_f4_modal",
+      "file": "audio/e12_f4_modal.wav",
+      "sha256": "3ea0701b1c3c16361608a6f6414c33a063305870c8cf3f9837c40182f2a7dd75"
+    },
+    {
+      "id": "e13_n1_fold",
+      "file": "audio/e13_n1_fold.wav",
+      "sha256": "6a9883bff7e9a1da8261bcc8b68e545e7b24965eae5cac27e7e03dc27912a85a"
+    },
+    {
+      "id": "e14_d1_crush",
+      "file": "audio/e14_d1_crush.wav",
+      "sha256": "84b8e5e5f6df7a31db08e3c3fab7150a4b6749ced8cf4b6bdd20a88d09cf25ec"
+    },
+    {
+      "id": "e15_s1_ring",
+      "file": "audio/e15_s1_ring.wav",
+      "sha256": "6ea6db9b3730054e674b7e98ae8de2c2002fc916cf1b548bf69fe105e91b1b45"
+    },
+    {
+      "id": "e16_mod_lfo",
+      "file": "audio/e16_mod_lfo.wav",
+      "sha256": "e22d4af62846c0be5581fff4662d8ee4de337e72b73668005a72258ff6e2f28d"
+    },
+    {
+      "id": "e17_cross_ring",
+      "file": "audio/e17_cross_ring.wav",
+      "sha256": "fcff164ab9f9701208b4dd35092f355422ad13aeba65f6adba2aa1d28383b7fe"
+    },
+    {
+      "id": "e18_morph_linear",
+      "file": "audio/e18_morph_linear.wav",
+      "sha256": "88a0ab06211c6ef8d0664660c7cedf62fc50513fd6a72c38774c87beb89cf148"
+    },
+    {
+      "id": "e19_morph_spectral",
+      "file": "audio/e19_morph_spectral.wav",
+      "sha256": "731b60742e9c2a6549866d3dbb4226b7287720eb50b2f13eaf8d00156d22d30c"
+    },
+    {
+      "id": "e20_n1_eco",
+      "file": "audio/e20_n1_eco.wav",
+      "sha256": "0f40a2c0033238043526d14321a7b27f45e682eb80b2b3d8855072dc874c5d67"
+    },
+    {
+      "id": "e21_n1_high",
+      "file": "audio/e21_n1_high.wav",
+      "sha256": "1aa57413130e0589a5265cc35191fd005ed0a861d7e310a0f5c394be97aeef5f"
+    },
+    {
+      "id": "e22_balance",
+      "file": "audio/e22_balance.wav",
+      "sha256": "76fa6e31fa96fe3fd70d81bf68d19ff7d38123b81a85265cd249676b9d279301"
+    },
+    {
+      "id": "p_cross_metal",
+      "file": "audio/p_cross_metal.wav",
+      "sha256": "76de81a9f802123eb989766b86c03e73f0ddc91e07eaefe6fcbfb7126e8f9af9"
+    },
+    {
+      "id": "p_fm_bell_bank",
+      "file": "audio/p_fm_bell_bank.wav",
+      "sha256": "bc098039aa9d618ea440c6a7ca46b7f801800a4dea3344b1c4c05e69831d8200"
+    },
+    {
+      "id": "p_doom_fold_comb",
+      "file": "audio/p_doom_fold_comb.wav",
+      "sha256": "4f3ead6c7610b118d8c58be604903bbaa1a2c434ea8b63fa6b714a0d6d137327"
+    },
+    {
+      "id": "p_glitch_lab",
+      "file": "audio/p_glitch_lab.wav",
+      "sha256": "05fa95ae304b59ac4d298374a58cba130f84efbe78352c5c2fcdfae4fcf638fe"
+    },
+    {
+      "id": "p_spectral_formants",
+      "file": "audio/p_spectral_formants.wav",
+      "sha256": "44c55e9bae37d4269f56caac2ad89bbbac65aba48054ee30f251e20c7328687a"
+    },
+    {
+      "id": "p_ring_destroyer",
+      "file": "audio/p_ring_destroyer.wav",
+      "sha256": "2c6873795effad9e0c6130ca92176406e6d66da58f1e4871000a6660f5ac7ad8"
+    }
+  ],
+  "files": {
+    "assets/fig/mesure_onde_e01_init.svg": "6bd2dcaa96e2ec02065fa2fa3bd03c4f300efd78570979e1e38a0b946b1f5b08",
+    "assets/fig/mesure_onde_e02_xy_basic.svg": "fd1cdca069f8c919e1336eb8683b548db2b97ee9cbd5160a76be063f9ac42832",
+    "assets/fig/mesure_onde_e03_xy_square.svg": "e500c0ae943c32ad8b5d8c5ff39c912960ab6f6102f5dd1d1410b6d2329c30da",
+    "assets/fig/mesure_onde_e04_z_fold.svg": "7ef42b7c251333ac26a48e1ecae6535409ef33339a1c0573c3bb858bcc78f458",
+    "assets/fig/mesure_onde_e05_z_warp.svg": "a684417443a462f3dafbc77e1488855edb5f379e408386a46e31fccbd769b1da",
+    "assets/fig/mesure_onde_e06_z_mutation.svg": "55f412e5db37aae9660fd24d2f7fda835228220264ca23f9bd43b9cb34ef52d0",
+    "assets/fig/mesure_onde_e07_fm_pm.svg": "ca9e6fda5dfe62b077b3589503563cc51f7dc88e31343032bb95778388d1b642",
+    "assets/fig/mesure_onde_e08_fm_lin.svg": "d33587f1d8f0b9c46977827f73207ad166fbceca761ae42e775e5d02b041f590",
+    "assets/fig/mesure_onde_e09_fm_exp.svg": "92e706be0001ec6902bb5b295b2803efcc750c152b155da8ac5e9f1da039d841",
+    "assets/fig/mesure_onde_e10_f1_lp.svg": "b073fbf62f6cde08b605e31055cacb373cab7e655a61ca4a11bfb9f68db4d96d",
+    "assets/fig/mesure_onde_e11_f2_comb.svg": "82fcceb8825e8a5c644a1b3a375b55094ca13283bb140e0bf6a2b3467c75f1ae",
+    "assets/fig/mesure_onde_e12_f4_modal.svg": "d05995a0cff21bc0e04e40fca22c3b019338b3f392a468aa59182d6d48e23f0a",
+    "assets/fig/mesure_onde_e13_n1_fold.svg": "4eb44a77aff194f69f4fcce3b8baa61bb5f14ba2798e058ef1217a9b74236518",
+    "assets/fig/mesure_onde_e14_d1_crush.svg": "5cfe6497f684bf66433e546ed1a10cd6f0299783282dd031d58a04c7d27ad4a2",
+    "assets/fig/mesure_onde_e15_s1_ring.svg": "64457a0c49fd8cad47640dd4aaa61433ccb0bc549dd456d5bacc32f8a25da51e",
+    "assets/fig/mesure_onde_e16_mod_lfo.svg": "d50ecd41e6202c83bddfbb78bc640b9175c3490efe30cb1ad909fa0730b49764",
+    "assets/fig/mesure_onde_e17_cross_ring.svg": "f8ebbe987838aa22c335f378ef7cf3120e03cfaa820854a3c2f925c019085e13",
+    "assets/fig/mesure_onde_p_cross_metal.svg": "34f7b57a2cfa6fd0578cf38867b5c99d3d9af8954b9c313c95faedcfdc2906fd",
+    "assets/fig/mesure_onde_p_doom_fold_comb.svg": "1bd276a09359307d44f1871cfb15c8a3df1ab3f4109e9bd8a99cef4463d3df8f",
+    "assets/fig/mesure_onde_p_fm_bell_bank.svg": "5e4baf12c54bc2b3a2ec1d586cdb294e2e81cd077c30764f72ed44d35b110ac3",
+    "assets/fig/mesure_onde_p_glitch_lab.svg": "d12d61a7299059640b4fe893d1914f12593679edc29fa036b254949938cc88df",
+    "assets/fig/mesure_onde_p_ring_destroyer.svg": "a9eb66716e8ce0c4ba4a195ad1dfd52a0f756d34ad6b0631221f7e3c69008810",
+    "assets/fig/mesure_onde_p_spectral_formants.svg": "d28ac4054ff59b58740e585e1c2e5101cb4ad65f7194a274c3d4a25fad4f48ef",
+    "assets/fig/mesure_spectre_e01_init.svg": "3d2341b8ecdf4dc2ef410eb99d515439be5e1a36de09c8816abb082cfae7a596",
+    "assets/fig/mesure_spectre_e02_xy_basic.svg": "d6e3c8c17686dc8de28ca02842f83a5134f6fbdc5e8239f794730baf0d32a505",
+    "assets/fig/mesure_spectre_e03_xy_square.svg": "f9a854e00335e64e02901d3df9b624ed0f9d8e07a68a056d4c4c6d8b86e5fe7a",
+    "assets/fig/mesure_spectre_e04_z_fold.svg": "7be6b22279c0bbcd819c76e0ed89f8eefcf27ee9943ca5c5fc9ce4a19aac1083",
+    "assets/fig/mesure_spectre_e05_z_warp.svg": "efc7c2dec295ee0e3ed7cd957f2465cceea812f3853df053c33dd3fe8b1eefe4",
+    "assets/fig/mesure_spectre_e06_z_mutation.svg": "3c9fc95db1de57a405c7f345f8980507f55722538462063f617fa52979ba5422",
+    "assets/fig/mesure_spectre_e07_fm_pm.svg": "a9691e909c3442285104c060e206634d0a58daf55fd91483fcdc23ab1a7d585d",
+    "assets/fig/mesure_spectre_e08_fm_lin.svg": "13550ef4c317f9720da6e20fa790396b12130aa302ac57d29167d8ec92abf949",
+    "assets/fig/mesure_spectre_e09_fm_exp.svg": "0e9976bf5d9f1e53d05e33ff99650aaee32a2c3d6605cc447e94a566b71b765e",
+    "assets/fig/mesure_spectre_e10_f1_lp.svg": "a7885118f39677fc91487e9047ae8ccf97a4c3b2ef0c65458925c641f1bae25b",
+    "assets/fig/mesure_spectre_e11_f2_comb.svg": "49e1c704d2a8c3d46d74119eef91ebed6c921b2b9499c3cd67bccbc30d72a90c",
+    "assets/fig/mesure_spectre_e12_f4_modal.svg": "25198a752682564763691428aa226f632150c1bc0b6adfa871dce975496f73af",
+    "assets/fig/mesure_spectre_e13_n1_fold.svg": "503e02344b9f38310cb91518e9ff2b4c7064ceb85dc8c209fb887f58bcb5f14b",
+    "assets/fig/mesure_spectre_e14_d1_crush.svg": "cd5507c26aa59f1e646e933a399c39278e4ef0eb025d14fe25916b8b2b654682",
+    "assets/fig/mesure_spectre_e15_s1_ring.svg": "e4b1fc5829680bcfdd72a81deb130491c1a431e35c9bf8ad2a80cdf8acecc9b5",
+    "assets/fig/mesure_spectre_e16_mod_lfo.svg": "6f4945b3cca0596ccf115a35d354944aede6fa4b46d9943148dac131ba001731",
+    "assets/fig/mesure_spectre_e17_cross_ring.svg": "a846e1b66f27bc02f0780b537669f5117b1ffcabb445edd5df7bbc9f5c6ad7c1",
+    "assets/fig/mesure_spectre_p_cross_metal.svg": "8ea1a757b24aea0887157e3c311076f9729fc76e44f770f32bcdcab6ff597507",
+    "assets/fig/mesure_spectre_p_doom_fold_comb.svg": "fa3023aeab818fcec6c0a7d2dd01e307a7b77e7900fa512f05ce3fabd0043d1c",
+    "assets/fig/mesure_spectre_p_fm_bell_bank.svg": "86aa85c69fd4c26f7009647dd8a5f6f1e083a393ff4ce30e9f1774bc8cbf79fd",
+    "assets/fig/mesure_spectre_p_glitch_lab.svg": "b6d76dd938f1cef6ee1c621795f9e10f6418ba071fc7a9ff218e4d56a8076cdb",
+    "assets/fig/mesure_spectre_p_ring_destroyer.svg": "c415871360b599323c933e0f6feaa66f1c09b90640e0de32407f7277aba8dedf",
+    "assets/fig/mesure_spectre_p_spectral_formants.svg": "6d5b7ff254a76176fdf248913f859709b9c9bcde1a95b7ac66be5397177afa05",
+    "assets/ui_eng_banks.png": "bbe3b3b191a537bad2caf870493977cf114cc67f1334ddeeafe1951bf9b4254a",
+    "assets/ui_eng_diag.png": "3185666a6d31cc0650ca25795fd7a7d434d6769d11c0eb257c863b2009ebc3e1",
+    "assets/ui_eng_mod.png": "411ff34ced9d859ec7484d33851b3531dfe627bd142a99686102e8fe4e185902",
+    "assets/ui_eng_network.png": "405cb97332f2a6435da8a069152ac5d17c6fc38cf777da472b0809dfe20206dd",
+    "assets/ui_eng_random.png": "fda23386029b52698f23e8602bc16d4fe0e2664679c4c867574e6a849836b626",
+    "assets/ui_performance.png": "f6995848d01db92ab88b569bd4cd1bc971b55ffa2178e281060c6073b2e14702",
+    "assets/ui_sound_mod.png": "17bcc428ea886b8f87292375c459ef69bd13560aa7a768f68cd873e1ffaac664",
+    "assets/ui_sound_process.png": "0eb65be5767d34dad41ec6335947179bb4093f2fb233d8da37b48ddab3a139cf",
+    "audio/e01_init.wav": "6612a0914a76daeda6e5556e8cac9a6de080f4f0cee838d79652a4fa0d0663da",
+    "audio/e02_xy_basic.wav": "4d80be104d2750373bef415d46503c58e0a4a42e4a2be257220929ab1966a215",
+    "audio/e03_xy_square.wav": "fe6498ac8ab0c0d58b56e49d96d68da2776606c8d8510aaeb75a6b89c1a4be8d",
+    "audio/e04_z_fold.wav": "60f0614e5f53659a390668018c382ab4828cba66b50314309b4671a95a6a7a1c",
+    "audio/e05_z_warp.wav": "2e48ca891b83d676efb003f54ab8b10559df9f6c21f0cb5f6a0d55b85ebf4ce4",
+    "audio/e06_z_mutation.wav": "7bf8d1b4d3f1d191333b783a67fb03f16825552cb6c950b49c27edba2633ee73",
+    "audio/e07_fm_pm.wav": "dd1dbe72c14b00bc85ba46ebc9e9d7bb36ac959e985242965c03e2b25f5077d7",
+    "audio/e08_fm_lin.wav": "2902d9b37d7cccc363c5c076bfbf8929cfd0407239383609fcbd9f824af630e2",
+    "audio/e09_fm_exp.wav": "434dda53bc9bdab4524d823b0c4449a808f9fa1e9fe6c9be0e8240733bab02a4",
+    "audio/e10_f1_lp.wav": "371128554f75722ef5b5cf99ab7688cc5b5f14e34800d2a571358284f4a8e4aa",
+    "audio/e11_f2_comb.wav": "d342f432d631e2084451846963026c0b43506119b820d3e916f32d6cfe9b0ba3",
+    "audio/e12_f4_modal.wav": "3ea0701b1c3c16361608a6f6414c33a063305870c8cf3f9837c40182f2a7dd75",
+    "audio/e13_n1_fold.wav": "6a9883bff7e9a1da8261bcc8b68e545e7b24965eae5cac27e7e03dc27912a85a",
+    "audio/e14_d1_crush.wav": "84b8e5e5f6df7a31db08e3c3fab7150a4b6749ced8cf4b6bdd20a88d09cf25ec",
+    "audio/e15_s1_ring.wav": "6ea6db9b3730054e674b7e98ae8de2c2002fc916cf1b548bf69fe105e91b1b45",
+    "audio/e16_mod_lfo.wav": "e22d4af62846c0be5581fff4662d8ee4de337e72b73668005a72258ff6e2f28d",
+    "audio/e17_cross_ring.wav": "fcff164ab9f9701208b4dd35092f355422ad13aeba65f6adba2aa1d28383b7fe",
+    "audio/e18_morph_linear.wav": "88a0ab06211c6ef8d0664660c7cedf62fc50513fd6a72c38774c87beb89cf148",
+    "audio/e19_morph_spectral.wav": "731b60742e9c2a6549866d3dbb4226b7287720eb50b2f13eaf8d00156d22d30c",
+    "audio/e20_n1_eco.wav": "0f40a2c0033238043526d14321a7b27f45e682eb80b2b3d8855072dc874c5d67",
+    "audio/e21_n1_high.wav": "1aa57413130e0589a5265cc35191fd005ed0a861d7e310a0f5c394be97aeef5f",
+    "audio/e22_balance.wav": "76fa6e31fa96fe3fd70d81bf68d19ff7d38123b81a85265cd249676b9d279301",
+    "audio/examples.json": "41e24ed2c7f649d32383321c05d723e376b97cdbbf2a9f812be4e476ecce468c",
+    "audio/p_cross_metal.wav": "76de81a9f802123eb989766b86c03e73f0ddc91e07eaefe6fcbfb7126e8f9af9",
+    "audio/p_doom_fold_comb.wav": "4f3ead6c7610b118d8c58be604903bbaa1a2c434ea8b63fa6b714a0d6d137327",
+    "audio/p_fm_bell_bank.wav": "bc098039aa9d618ea440c6a7ca46b7f801800a4dea3344b1c4c05e69831d8200",
+    "audio/p_glitch_lab.wav": "05fa95ae304b59ac4d298374a58cba130f84efbe78352c5c2fcdfae4fcf638fe",
+    "audio/p_ring_destroyer.wav": "2c6873795effad9e0c6130ca92176406e6d66da58f1e4871000a6660f5ac7ad8",
+    "audio/p_spectral_formants.wav": "44c55e9bae37d4269f56caac2ad89bbbac65aba48054ee30f251e20c7328687a",
+    "css/manual.css": "bcd179e569c1b3655987c7b550b8ed316370d5248781639810313aedd09770c8",
+    "index.html": "dad98301e1e0df4f4bd91b0af6f080dd30b94ef01a90e396169aa86ee313e14c",
+    "js/audio-ab.js": "60aa85f9d649af5b576bcbf70118f455da394a0dafd4a7f448f49d0fcfa4fd3c",
+    "js/demos.js": "6799afa7e8855a7518d52d83e58810100546fab3af820aff1c92dbe4a30512bc",
+    "js/manual.js": "2456080020aa659088b75e1258fe4aa80b14dc51ec26fdcb05ea07e65d59abee",
+    "recette/recette.js": "0d365eaa0867e931a6be8564a48fb0ff674037b0bad8e14f85e75c42f0406783",
+    "recette/store.js": "20af7ff8dba64b69eda53672abd79df8e5328c06fc113c4384f91bd7fde3610a",
+    "recette/tests.json": "043e9092fac53bbdec9de9d5cf437e029afdc37b9f47ed02e039f30b319bd0a5",
+    "recette.html": "14d59e495c0cc98a585f4fd4eabad18318a8061edef3778adae65d6309dca005",
+    "schema/results.schema.json": "c235ac6f23ee49ab8f77642ef8048cadeaf977c7d98d755499ad2cdf5085828a"
+  }
+}
