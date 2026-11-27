@@ -373,6 +373,12 @@ void Engine::applyEnvelopeParameters() noexcept {
     auto v = [&](int d) { return static_cast<double>(b.v[static_cast<size_t>(o + d)]); };
     envs_[static_cast<size_t>(k + 1)].setParameters(kt * v(0), kt * v(1), kt * v(2), kt * v(3), v(4), kt * v(5), v(6) >= 0.5, v(7) >= 0.5);
   }
+  // suiveurs d'enveloppe : temps d'attaque/relâchement (correctif ARCH-G4.1 : paramètres auparavant non appliqués,
+  // suiveurs instantanés ; détecté par l'audit AUD-01)
+  static constexpr ParamId kFolA[3] = {ParamId::Fol1Attack, ParamId::Fol2Attack, ParamId::Fol3Attack};
+  static constexpr ParamId kFolR[3] = {ParamId::Fol1Release, ParamId::Fol2Release, ParamId::Fol3Release};
+  const double fsE = setup_.engineRate > 0.0 ? setup_.engineRate : 48000.0;
+  for (int k = 0; k < 3; ++k) followers_[static_cast<size_t>(k)].setup(fsE, b[kFolA[k]], b[kFolR[k]]);
 }
 
 void Engine::setParameters(const ParamValues& base) noexcept {
@@ -598,10 +604,15 @@ void Engine::renderSegment(int a, int b, float* outL, float* outR, double* tap) 
   decL_.process(engineL_.data(), hostL_.data(), nh);
   decR_.process(engineR_.data(), hostR_.data(), nh);
   const bool limiter = base_.flag(ParamId::OutLimiter);
-  const double ceiling = dbToGain(base_[ParamId::OutCeiling]);
+  // modulation (control-rate) du gain de sortie et du plafond : correctif ARCH-G4.1 (routes auparavant sans effet,
+  // détecté par AUD-01) ; sans modulation, le chemin est inchangé bit à bit.
+  const int og = idx(ParamId::OutGain), oc = idx(ParamId::OutCeiling);
+  const double gainMod = modulated_[static_cast<size_t>(og)] ? dbToGain(eff_[static_cast<size_t>(og)] - base_[ParamId::OutGain]) : 1.0;
+  const double ceiling = dbToGain(modulated_[static_cast<size_t>(oc)] ? eff_[static_cast<size_t>(oc)] : base_[ParamId::OutCeiling]);
   const double limRelease = std::exp(-1.0 / (0.1 * setup_.hostRate));
   for (int h = 0; h < nh; ++h) {
-    const double g = outGain_.next();
+    double g = outGain_.next();
+    if (gainMod != 1.0) g *= gainMod;
     double y[2] = {hostL_[static_cast<size_t>(h)] * g, hostR_[static_cast<size_t>(h)] * g};
     if (tap) tap[a + h] = y[0];
     for (int c = 0; c < 2; ++c) {
