@@ -27,8 +27,13 @@ juce_add_plugin(SUBDESTRUCKT
 set(SUBDESTRUCKT_WRAPPER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/plugin/PluginProcessor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ui/DiagnosticEditor.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/ui/Widgets.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/Components.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/SymbioticLook.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/CurveEditors.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ui/Monitors.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/PerformanceView.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/SoundDesignView.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ui/EngineeringView.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ui/MainEditor.cpp)
 
 set(SUBDESTRUCKT_JUCE_DEFINITIONS
