@@ -1,5 +1,5 @@
 # SUBDESTRUCKT — UI/UX Design V1
-Révision fonctionnelle 0.2 — 2026-11-24.
+Révision fonctionnelle 0.2 — 2026-11-24 (historique). Actualisation 2026-11-27 : voir [ARCH-UI-03](V1-ARCH-UI-03-SPEC.md), prioritaire pour les choix visuels, le Symbiotic Core et l'exhaustivité. Les mentions CRT/vintage, interdiction d'animation permanente et budget hardware ci-dessous sont supersédées dans cette portée; les autres exigences et parcours restent applicables.
 Référence : [V1-DESIGN-BASELINE.md](V1-DESIGN-BASELINE.md). Ce chapitre actualise la proposition UI/UX de la section 12 du référentiel, sans modifier les autres décisions. Aucun développement ni test exécuté.
 
 ## 1. Décisions utilisateur validées
@@ -87,3 +87,6 @@ Ces décisions clôturent les arbitrages fonctionnels UI/UX V1. Restent à mesur
 ## 11. North Star d'identité — VALIDÉ
 **« Cette machine est construite autour de l'interaction entre ces deux moteurs. »**
 Cette phrase devient le test de cohérence principal pour les décisions produit, DSP et UI. Le CROSS doit rester lisible comme signature centrale, sans transformer l'interface en patcher générique ni réduire WT/FM à de simples sources secondaires. Toute fonction future qui dilue cette lecture doit être challengée avant intégration.
+
+## 12. Actualisation ARCH-UI-03 — 2026-11-27
+La direction SYMBIOTIC INDUSTRIAL, le Design System révisé et l'organisation des trois espaces ont été validés. Voir [contrat technique](V1-ARCH-UI-03-SPEC.md) et [cartographie StableID](V1-ARCH-UI-03-STABLEID-MAP.md). Les maquettes restent consultatives; aucun code autorisé, aucune recette déclarée.
