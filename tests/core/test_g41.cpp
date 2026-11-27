@@ -561,12 +561,49 @@ void testCharacterTopologyDeps() {
              a1, a2, a3, a4, a5);
 }
 
+// ENV-02 (clause BPM) : changement de tempo pendant l'attaque synchronisée, pris en compte au bloc suivant sans saut
+void testEnvBpmChange() {
+  ParamValues p = ParamValues::defaults();
+  p[ParamId::EnvAux1Sync] = 1.0f;
+  p[ParamId::EnvAux1Attack] = 1.0f;  // une noire
+  Engine e(FactoryBanks::get("factory:saw"));
+  e.setParameters(p);
+  e.prepare(48000, 64);
+  TransportInfo t;
+  t.valid = true;
+  t.bpm = 120.0;
+  e.setTransport(t);
+  float L[64], R[64];
+  MidiEvent on = MidiEvent::noteOn(0, 60, 100);
+  e.process(L, R, 64, &on, 1);
+  int n = 64;
+  while (n < 12000) {
+    e.process(L, R, 64, nullptr, 0);
+    n += 64;
+  }
+  const double mid = e.testSource(ModSource::EnvAux1);
+  t.bpm = 60.0;  // une noire = 1 s : le reste de l'attaque ralentit
+  e.setTransport(t);
+  double prev = mid, jump = 0.0;
+  while (e.testSource(ModSource::EnvAux1) < 1.0 && n < 200000) {
+    e.process(L, R, 64, nullptr, 0);
+    n += 64;
+    jump = std::max(jump, e.testSource(ModSource::EnvAux1) - prev);
+    prev = e.testSource(ModSource::EnvAux1);
+  }
+  // attendu : ~12000 éch. à 120 bpm (moitié) puis la moitié restante à 60 bpm (48000 x 0,5 = 24000) : ~36000
+  const bool ok = std::abs(n - 36000) <= 128 && jump <= 64.0 / 48000.0 + 1e-9;
+  TK_CHECK(ok);
+  tk::result("ENV-03", ok, "sync tempo : BPM 120 -> 60 a mi-attaque : fin d'attaque a %d ech. (36000 +-128), pas max %.5f (<= pente 60 bpm), niveau a la bascule %.3f", n, jump, mid);
+}
+
 }  // namespace
 
 void runG41Tests() {
   std::printf("[arch-g4.1]\n");
   testBalance();
   testEnvelopes2();
+  testEnvBpmChange();
   testHeadroom();
   testMicrotuning();
   testFollowers();
