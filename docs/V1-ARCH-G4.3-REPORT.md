@@ -24,9 +24,9 @@ l'exécution). Suivi : `docs/V1-ARCH-G4-TRACKER.md`. ARCH-UI-04, Design System f
 ## 2. Branche et SHA
 
 Commits ARCH-G4.3 : 2a228d4 (spécification, empreintes 0.3.1), 528a000 (TRANSPORT AUTHORIZATION), d7dcc22 (D2, Z,
-R2, compilation locale, barrière, 0.3.2), puis le commit de livraison (manuel 0.3.2, documentation, mesure TA-20).
-**SHA livré : voir §11** (dernier commit de code et de manuel, CI verte) ; les commits ultérieurs éventuels ne touchent
-que ce rapport et le tracker.
+R2, compilation locale, barrière, 0.3.2), c7b8573 (manuel 0.3.2, documentation, mesure TA-20), 97100b0
+(`documentationSha` du manuel). **SHA livré : `97100b0e4cdeb1a52dcb603c5e54b811ec7df477`** (CI run 42 SUCCESS, §11) ;
+les commits ultérieurs ne touchent que ce rapport et le tracker.
 
 ## 3. Arbitrages intégrés
 
@@ -148,8 +148,20 @@ Inchangées depuis G4.2 et PASS : R01–R09, R11–R17, R20–R26, R29–R39, R4
 
 ## 11. CI
 
-Voir l'addendum en fin de rapport (run de validation du SHA livré). Run 40 (`d7dcc22`, code complet hors manuel 0.3.2) :
-https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45988842150 .
+**Run 42 — SUCCESS (tous les jobs), SHA livré `97100b0`** : https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/45992835990
+
+| Job | Résultat |
+|---|---|
+| build-test-package (macos-15 arm64, VM) | SUCCESS : suites cœur (155) et wrapper (33) ; barrière exhaustive PASS (seuls échecs : core ELP-01, D2-04, D2-04c, R2-02, ZC-05, ZC-13 ; wrapper AUT-02 — tous documentés) ; empreintes 0.3.1 clang-arm64 identiques (ZC-03, D2R-03) ; G-22w 703 paramètres ; hôte VST3 ; **pluginval 1.0.4 rigueur 10 PASS** (44,1–96 kHz, blocs 32–512) ; G-24 bundle 0.3.2 arm64 signé ad hoc ; paquets construits et recette VM, **non publiés** |
+| RealtimeSanitizer | SUCCESS : 0 violation dans Engine::process (TA, Z, D2 compris) ; contrôle négatif détecté |
+| local-build-script (ubuntu) | SUCCESS : LB-01..13 (liens symboliques réels sous Linux), INV-01 |
+| manual-playwright (ubuntu) | SUCCESS : éditions 0.1.0-b5, 0.2.0, 0.3.0, 0.3.1, 0.3.2 |
+
+Runs précédents : 39 (`2a228d4`) SUCCESS (empreintes de référence) ; 40 (`d7dcc22`) SUCCESS ; 41 (`c7b8573`) : job
+manuel en échec, deux causes — `documentationSha` de l'édition 0.3.2 vide (corrigé en 97100b0) et
+`test_s01_platform_still_works` : la page S0.1 publiée (externe, inchangée) remplace son titre en JavaScript après
+chargement du manifeste, le test lit le titre au chargement (dépendance temporelle préexistante, non modifiée ; PASS
+pour les autres éditions du même job et au run 42). Mesures CI = machine virtuelle : aucune certification M3/M4 Max.
 
 ## 12. Compilation et installation privées
 

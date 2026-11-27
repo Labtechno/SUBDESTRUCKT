@@ -213,8 +213,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | G4.2 : verdict du wrapper à la barrière | 6ac4b83 | **CI run 37 (45951352395) SUCCESS complet** (pluginval 10, paquets, RTSan, LB, manuel) ; FAIL documentés seuls |
 | 2026-11-27 | G4.3 : critères avant mesure, empreintes 0.3.1 (msvc-x64, clang-arm64) | 2a228d4 | CI run 39 SUCCESS (empreintes publiées en annotation) |
 | 2026-11-27 | G4.3 : TRANSPORT AUTHORIZATION, purge Panic | 528a000 | Local : TA 24/24, TA-xxw 9/9 |
-| 2026-11-27 | G4.3 : D2 Legacy/Regenerative, Z, R2, topologie par défaut, barrière exhaustive, LB-08..13, 0.3.2 | d7dcc22 | CI run 40 : voir rapport G4.3 §11 |
-| 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport | (livraison) | rapport G4.3 §11 |
+| 2026-11-27 | G4.3 : D2 Legacy/Regenerative, Z, R2, topologie par défaut, barrière exhaustive, LB-08..13, 0.3.2 | d7dcc22 | CI run 40 SUCCESS |
+| 2026-11-27 | G4.3 : manuel 0.3.2, contrats, rapport ; documentationSha | c7b8573, 97100b0 | run 41 : job manuel en échec (documentationSha vide ; titre S0.1 dynamique) ; **run 42 (45992835990) SUCCESS complet, SHA livré 97100b0** |
 
 ## 6. Prochaine action
 Recette physique 0.3.2 sur Mac Studio M4 Max (compilation locale au SHA livré : `docs/V1-LOCAL-BUILD.md`) : R-26 Reason 14,
