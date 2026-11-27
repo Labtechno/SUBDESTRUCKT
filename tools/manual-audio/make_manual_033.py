@@ -69,7 +69,7 @@ pp.write_text(pp.read_text(encoding="utf-8").replace('"0.3.2 : tableau genere', 
 
 tp = DST / "recette/tests.json"
 t = json.loads(tp.read_text(encoding="utf-8"))
-t["campaignId"] = "SUBDESTRUCKT-ARCH-G43R1-RECETTE-PHYSIQUE"
+t["campaignId"] = "SUBDESTRUCKT-ARCH-G431-RECETTE-PHYSIQUE"
 t["source"] = "manual/src/0.3.3/recette/tests.json"
 by = {x["id"]: x for x in t["tests"]}
 for x in t["tests"]:
