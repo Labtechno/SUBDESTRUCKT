@@ -1,5 +1,6 @@
 #!/bin/bash
-# SUBDESTRUCKT — harnais de test de build_local_macos.sh (ARCH-G4.2, critères LB-01..07 : docs/V1-ARCH-G4.2-SPEC.md).
+# SUBDESTRUCKT — harnais de test de build_local_macos.sh (ARCH-G4.2, LB-01..07 : docs/V1-ARCH-G4.2-SPEC.md ; ARCH-G4.3,
+# LB-08..13 : docs/V1-ARCH-G4.3-SPEC.md §8).
 # Vérifie le FLUX DE CONTRÔLE du script (refus, arrêts, absence de livraison après échec, livraison complète, aucune
 # écriture dans les dossiers de plugins, suppressions bornées) dans un dépôt git temporaire, avec les commandes macOS
 # simulées (uname, cmake, codesign, plutil, lipo, pkgutil, curl, pluginval, paquets). La compilation réelle, pluginval
@@ -37,7 +38,6 @@ printf '#!/bin/bash\necho 15.0\n' > "$BIN/sw_vers"
 printf '#!/bin/bash\necho "clang simule"\n' > "$BIN/xcrun"
 printf '#!/bin/bash\necho 1.12.0\n' > "$BIN/ninja"
 printf '#!/bin/bash\nexit 0\n' > "$BIN/codesign"
-printf '#!/bin/bash\nexit 0\n' > "$BIN/pkgutil"
 cat > "$BIN/plutil" <<'EOF'
 #!/bin/bash
 # plutil -extract <clé> raw -o - <fichier> : Info.plist simulé au format clé=valeur
@@ -47,6 +47,21 @@ EOF
 cat > "$BIN/lipo" <<'EOF'
 #!/bin/bash
 echo "${FAKE_ARCH:-arm64}"
+EOF
+cat > "$BIN/date" <<'EOF'
+#!/bin/bash
+# numéro de build figé (collisions, LB-12) ; autres formats : date réelle
+if [ "${1-}" = "+%y%j%H%M" ]; then echo "${FAKE_BUILDNO:-261231200}"; exit 0; fi
+exec /usr/bin/date "$@"
+EOF
+cat > "$BIN/pkgutil" <<'EOF'
+#!/bin/bash
+# pkgutil --expand-full <pkg> <dest> : charge utile simulée (copie du bundle déposé par build_packages simulé)
+if [ "${1-}" = "--expand-full" ]; then
+  mkdir -p "$3/SUBDESTRUCKT.pkg/Payload/Library/Audio/Plug-Ins/VST3"
+  cp -R "$(dirname "$2")/.payload/SUBDESTRUCKT.vst3" "$3/SUBDESTRUCKT.pkg/Payload/Library/Audio/Plug-Ins/VST3/"
+fi
+exit 0
 EOF
 cat > "$BIN/curl" <<'EOF'
 #!/bin/bash
@@ -60,18 +75,30 @@ case "$*" in *--version*) echo "cmake version 3.30.0 (simule)"; exit 0 ;; esac
 if [ "$1" = "--build" ]; then
   B="$2"; . "$B/fake.env"
   mkdir -p "$B/subdestruckt_wrapper_tests_artefacts/Release" "$B/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3/Contents/MacOS"
-  cat > "$B/subdestruckt_core_tests" <<EOT
+  cat > "$B/subdestruckt_core_tests" <<'EOT'
 #!/bin/bash
-echo "RESULT G-01 PASS simule"
-[ -n "\${FAKE_CORE_RESULTS-}" ] && printf '%b\n' "\$FAKE_CORE_RESULTS"
-[ -n "\${FAKE_CORE_CRASH-}" ] && exit 139
-echo "core_tests : 1 controles, 0 echecs"
-exit \${FAKE_CORE_EXIT:-0}
+# résultats simulés : G-01 et K-01 (inventaire) ; variables FAKE_* : échec, doublon, absence, crash, troncature
+lines=("RESULT G-01 PASS simule")
+[ -z "${FAKE_DROP_K01-}" ] && lines+=("RESULT K-01 ${FAKE_K01:-PASS} simule")
+[ -n "${FAKE_DUP-}" ] && lines+=("RESULT G-01 PASS doublon")
+[ -n "${FAKE_CORE_RESULTS-}" ] && lines+=("$FAKE_CORE_RESULTS")
+m=0
+for l in "${lines[@]}"; do echo "$l"; case "$l" in *" FAIL "*) m=$((m + 1)) ;; esac; done
+[ -n "${FAKE_CORE_CRASH-}" ] && exit 139
+k=${#lines[@]}
+[ -n "${FAKE_TRUNC-}" ] && k=$((k + 1))
+echo "core_tests : 9 controles, $m echecs, $k criteres rapportes"
+if [ -n "${FAKE_CORE_EXIT-}" ]; then exit "$FAKE_CORE_EXIT"; fi
+[ "$m" = 0 ] || exit 1
+exit 0
 EOT
-  cat > "$B/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests" <<EOT
+  cat > "$B/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests" <<'EOT'
 #!/bin/bash
 echo "RESULT G-21w PASS simule"
-echo "wrapper_tests : 1 controles, 0 echecs"
+m=0
+if [ -n "${FAKE_W_K01-}" ]; then echo "RESULT K-01 FAIL hors portee"; m=1; fi
+echo "wrapper_tests : 3 controles, $m echecs, $((1 + m)) criteres rapportes"
+[ "$m" = 0 ]
 EOT
   chmod +x "$B/subdestruckt_core_tests" "$B/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests"
   P="$B/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3/Contents"
@@ -107,14 +134,22 @@ PV_SHA="$(shasum -a 256 "$T/pv.zip" | awk '{print $1}')"
 R="$T/repo"
 mkdir -p "$R/tools/local-build" "$R/.github/workflows" "$R/tests/host" "$R/packaging"
 cp "$REPO/tools/local-build/build_local_macos.sh" "$REPO/tools/local-build/lib_safe_rm.sh" "$R/tools/local-build/"
-cp "$REPO/tests/known_failures.txt" "$R/tests/"
+mkdir -p "$R/tools"
+cp "$REPO/tools/check_results.sh" "$R/tools/"
+printf '# simule\ncore:K-01 echec connu simule (portee core)\n' > "$R/tests/known_failures.txt"
+printf 'core G-01\ncore K-01\nwrapper G-21w\n' > "$R/tests/expected_results.txt"
 echo "ids" > "$R/tests/host/expected_vst3_param_ids.txt"
 printf '/local-build/\n' > "$R/.gitignore"
 cat > "$R/packaging/build_packages.sh" <<'EOF'
 #!/bin/bash
-# paquets simulés : bundle « signé » copié, deux paquets
+# paquets simulés : --prepare-only (bundle « signé ») ; --prepared (paquets à partir du bundle validé, charge utile)
 set -e
-RAW="$1"; OUT="$2"; mkdir -p "$OUT/signed"; cp -R "$RAW" "$OUT/signed/SUBDESTRUCKT.vst3"
+MODE=full; case "$1" in --prepare-only) MODE=prepare; shift ;; --prepared) MODE=prepared; shift ;; esac
+RAW="$1"; OUT="$2"; mkdir -p "$OUT/signed"; rm -rf "$OUT/signed/SUBDESTRUCKT.vst3"; cp -R "$RAW" "$OUT/signed/SUBDESTRUCKT.vst3"
+echo "packages $MODE" >> "$FAKE_LOG"
+[ "$MODE" = prepare ] && exit 0
+mkdir -p "$OUT/.payload"; cp -R "$RAW" "$OUT/.payload/SUBDESTRUCKT.vst3"
+[ -n "${FAKE_PAYLOAD_ALTER-}" ] && echo altere >> "$OUT/.payload/SUBDESTRUCKT.vst3/Contents/MacOS/SUBDESTRUCKT"
 echo pkg > "$OUT/SUBDESTRUCKT_Installer.pkg"; echo pkg > "$OUT/SUBDESTRUCKT_Uninstaller.pkg"
 exit "${FAKE_PKG_EXIT:-0}"
 EOF
@@ -127,7 +162,12 @@ echo readme > "$S/README_FR.txt"; echo changelog > "$S/CHANGELOG.txt"
 (cd "$S" && shasum -a 256 SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt > SHA256SUMS.txt)
 [ -n "${FAKE_BAD_SUMS-}" ] && echo alteration >> "$S/README_FR.txt"
 . "$MKZIP_LIB"
-mkzip "$DL/$NAME.zip" "$S" SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt SHA256SUMS.txt
+if [ -n "${FAKE_ZIP_ALTER-}" ]; then  # ZIP construit depuis une copie altérée : seul le contrôle du ZIP réextrait le voit
+  Z="$DL/zsrc"; mkdir -p "$Z"; cp "$S"/* "$Z/"; echo alteration >> "$Z/CHANGELOG.txt"
+  mkzip "$DL/$NAME.zip" "$Z" SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt SHA256SUMS.txt; rm -rf "$Z"
+else
+  mkzip "$DL/$NAME.zip" "$S" SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt SHA256SUMS.txt
+fi
 echo "$NAME" > "$DL/NAME"
 EOF
 declare -f mkzip > "$T/mkzip.sh"
@@ -191,10 +231,8 @@ run FAKE_CORE_RESULTS="RESULT X-99 FAIL simule" FAKE_CORE_EXIT=1 -- --juce-licen
 p1=0; none packages- && none delivery- && ! grep -q pluginval "$FAKE_LOG" && p1=1; clean
 run FAKE_CORE_CRASH=1 -- --juce-licence=agplv3; b=$RC
 p2=0; none packages- && none delivery- && p2=1; clean
-known="$( (grep -v '^#' "$REPO/tests/known_failures.txt" || true) | awk 'NF {print $1; exit}')"
-if [ -n "$known" ]; then
-  run FAKE_CORE_RESULTS="RESULT $known FAIL echec connu documente" FAKE_CORE_EXIT=1 -- --juce-licence=agplv3; c=$RC
-else c=0; fi
+known="K-01"
+run FAKE_K01=FAIL -- --juce-licence=agplv3; c=$RC
 clean
 result LB-03 "$([ $a = 5 ] && [ $b = 5 ] && [ $p1 = 1 ] && [ $p2 = 1 ] && [ $c = 0 ] && echo 1 || echo 0)" "critere FAIL non documente : code $a, ni pluginval ni paquets ni livraison $p1 ; tests interrompus : code $b, aucune livraison $p2 ; echec connu documente ($known) seul : code $c (0 : non bloquant, consigne)"
 
@@ -244,6 +282,56 @@ done
 removed=0; [ $ok = 0 ] && [ ! -e "$WORK/a" ] && [ -d "$WORK/JUCE-9.0.6" ] && [ -d "$ROOT/tools" ] && removed=1
 rm=0; grep -q 'rm -rf' "$REPO/tools/local-build/build_local_macos.sh" && rm=1
 result LB-07 "$([ $refused = 9 ] && [ $removed = 1 ] && [ $rm = 0 ] && echo 1 || echo 0)" "9/9 chemins hors perimetre refuses ($refused) ; sous-chemin de local-build/ supprime, reste intact $removed ; aucune suppression recursive directe dans le script hors safe_rm ($([ $rm = 0 ] && echo oui || echo NON))"
+
+# ---------------------------------------------------------------- LB-08 : ordre et bundle empaqueté = bundle validé
+run X=1 -- --juce-licence=starter; a=$RC
+seq="$(grep -E '^(packages|pluginval)' "$FAKE_LOG" | awk '{ if ($1 == "packages") print $1 "-" $2; else print $1 }' | tr '\n' ' ')"
+order=0; [ "$seq" = "packages-prepare pluginval packages-prepared " ] && order=1
+same=0; echo "$OUTT" | grep -q "charge utile de l'installateur = bundle valide" && same=1
+clean
+run FAKE_PV_EXIT=1 -- --juce-licence=starter; b=$RC; np=0; none packages- && none validated- && none delivery- && np=1; clean
+run FAKE_PAYLOAD_ALTER=1 -- --juce-licence=starter; c=$RC; nd=0; none packages- && none delivery- && nd=1; clean
+result LB-08 "$([ $a = 0 ] && [ $order = 1 ] && [ $same = 1 ] && [ $b = 7 ] && [ $np = 1 ] && [ $c = 8 ] && [ $nd = 1 ] && echo 1 || echo 0)" "succes : code $a, ordre [$seq] $order, charge utile = bundle valide $same ; pluginval en echec : code $b, aucun paquet ni bundle valide ni livraison $np ; charge utile alteree : code $c, paquets et livraison retires $nd"
+
+# ---------------------------------------------------------------- LB-09 : échec après paquets, aucune livraison présentée
+run FAKE_ZIP_ALTER=1 -- --juce-licence=starter; a=$RC; n1=0; none delivery- && none packages- && n1=1; clean
+run FAKE_BAD_SUMS=1 -- --juce-licence=starter; b=$RC; n2=0; none delivery- && none packages- && n2=1; clean
+result LB-09 "$([ $a = 8 ] && [ $n1 = 1 ] && [ $b = 8 ] && [ $n2 = 1 ] && echo 1 || echo 0)" "ZIP final non conforme (fichier altere seulement dans le ZIP) : code $a, livraison et paquets retires $n1 ; SHA256SUMS incoherent : code $b, retires $n2"
+
+# ---------------------------------------------------------------- LB-10 : barrière exhaustive
+codes=""
+for envv in FAKE_DROP_K01=1 FAKE_DUP=1 FAKE_CORE_CRASH=1 FAKE_TRUNC=1 FAKE_CORE_EXIT=1 "FAKE_K01=FAIL FAKE_CORE_EXIT=0" FAKE_W_K01=1 "FAKE_CORE_RESULTS=RESULT G-01b PASS hors inventaire" "FAKE_CORE_RESULTS=RESULT X-99 FAIL inattendu"; do
+  # shellcheck disable=SC2086
+  if [[ "$envv" == FAKE_CORE_RESULTS=* ]]; then run "$envv" -- --juce-licence=agplv3; else run $envv -- --juce-licence=agplv3; fi
+  codes="$codes $RC"; none packages- || codes="$codes!"; clean
+done
+run FAKE_K01=FAIL -- --juce-licence=agplv3; k=$RC; clean
+all5=1; for c in $codes; do [ "$c" = 5 ] || all5=0; done
+result LB-10 "$([ $all5 = 1 ] && [ $k = 0 ] && echo 1 || echo 0)" "resultat absent, doublon, crash, synthese incoherente (troncature), code non nul sans echec, code 0 avec FAIL, echec connu hors de sa portee, resultat hors inventaire, FAIL inattendu : codes$codes (5 attendus, aucun paquet) ; echec connu dans sa portee : code $k (0)"
+
+# ---------------------------------------------------------------- LB-11 : variable de filtrage
+run SBD_ONLY=dsp -- --juce-licence=agplv3; a=$RC; n=0; none build- && none packages- && n=1; clean
+gb=0; (SBD_ONLY=x bash "$REPO/tools/check_results.sh" "$R/tests/expected_results.txt" "$R/tests/known_failures.txt" x=/nonexistent:0 >/dev/null 2>&1) || gb=1
+result LB-11 "$([ $a = 5 ] && [ $n = 1 ] && [ $gb = 1 ] && echo 1 || echo 0)" "SBD_ONLY defini : code $a, rien construit $n ; barriere seule : refus $gb"
+
+# ---------------------------------------------------------------- LB-12 : symlinks et collisions
+run X=1 -- --juce-licence=agplv3; first=$RC
+run X=1 -- --juce-licence=agplv3; coll=$RC
+kept=0; [ -n "$(ls "$R"/local-build/delivery-*/*.zip 2>/dev/null)" ] && kept=1
+clean
+mv "$R/local-build" "$T/lb-real"; ln -s "$T/lb-real" "$R/local-build" 2>/dev/null
+if [ -L "$R/local-build" ]; then
+  run X=1 -- --juce-licence=agplv3; sym=$RC; symnote="code $sym (3)"
+  rm -f "$R/local-build"
+else  # Git Bash (MSYS) : ln -s copie au lieu de lier ; le controle est effectif sous Linux (CI) et macOS
+  sym=3; symnote="non verifiable sur cette plate-forme (liens symboliques non pris en charge par ln -s)"
+  rm -rf "$R/local-build"
+fi
+mv "$T/lb-real" "$R/local-build"
+result LB-12 "$([ $first = 0 ] && [ $coll = 9 ] && [ $kept = 1 ] && [ $sym = 3 ] && echo 1 || echo 0)" "meme version et meme build : 1er code $first, 2e code $coll (9 : aucun ecrasement), livraison existante conservee $kept ; local-build symbolique : $symnote ; ZIP reextrait et verifie : LB-09"
+
+# ---------------------------------------------------------------- LB-13 : non-régression LB-01..07
+result LB-13 "$([ "$fails" = 0 ] && echo 1 || echo 0)" "LB-01..12 : $fails echec(s) avant ce controle"
 
 echo "test_build_local : $fails echec(s)"
 [ "$fails" = 0 ]

@@ -695,3 +695,11 @@ env.aux1.trigger Choice 3
 env.aux1.sync Bool 3
 env.aux2.trigger Choice 3
 env.aux2.sync Bool 3
+dst.wt1.d2.fb_mode Choice 4
+dst.wt2.d2.fb_mode Choice 4
+dst.fm1.d2.fb_mode Choice 4
+dst.fm2.d2.fb_mode Choice 4
+dst.gl1.d2.fb_mode Choice 4
+dst.gl2.d2.fb_mode Choice 4
+wt.za.shape Float 4
+wt.zb.shape Float 4

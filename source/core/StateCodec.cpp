@@ -560,6 +560,12 @@ bool decodeState(const std::string& text, PluginState& out, std::string& error) 
     if (!seen[static_cast<size_t>(i)] && paramSpec(i).version <= version)
       return fail(std::string("parametre manquant : ") + paramSpec(i).stableId);
   if (v1) s.hasInstance = false;  // 0.1.0-b5 : aucune préférence d'instance enregistrée
+  // migration explicite vers le format 4 (ARCH-G4.3, RF-04) : tout état ou preset antérieur conserve le rendu historique
+  // du Feedback D2 (Legacy) ; les nouvelles instances et les états de format 4 portent leur mode explicitement
+  if (version < 4)
+    for (ParamId id : {ParamId::DstWt1D2FbMode, ParamId::DstWt2D2FbMode, ParamId::DstFm1D2FbMode, ParamId::DstFm2D2FbMode,
+                       ParamId::DstGl1D2FbMode, ParamId::DstGl2D2FbMode})
+      s.params[id] = 0.0f;
   if (!validateState(s, error)) return false;
   std::sort(s.routes.begin(), s.routes.end(), [](const Route& a, const Route& b) { return a.id < b.id; });
   s.sourceVersion = version;

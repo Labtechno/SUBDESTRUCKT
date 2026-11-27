@@ -7,6 +7,11 @@
 set -euo pipefail
 trap 'echo "ECHEC $(basename "$0") ligne $LINENO : $BASH_COMMAND" >&2' ERR
 HERE="$(cd "$(dirname "$0")" && pwd)"
+# Modes (ARCH-G4.3, LB-08) : par défaut, préparation du bundle livré puis paquets (CI) ; --prepare-only : préparation
+# et signature seulement (bundle à valider par pluginval) ; --prepared : paquets construits à partir d'un bundle déjà
+# préparé et validé, SANS le modifier (identité, mentions et signature vérifiées) : le bundle empaqueté = le bundle testé.
+MODE=full
+case "${1-}" in --prepare-only) MODE=prepare; shift ;; --prepared) MODE=prepared; shift ;; esac
 SRC_BUNDLE="$1"; OUT="$2"; VERSION="$3"; BUILD="$4"; COMMIT="$5"; MIN_MACOS="$6"
 BUILD_ID="$VERSION-b$BUILD"
 PKG_VERSION="$VERSION.$BUILD"
@@ -28,8 +33,12 @@ mkdir -p "$(dirname "$B")"
 ditto "$SRC_BUNDLE" "$B"
 echo "== etape 1 : bundle livre"
 ls -la "$B/Contents" || true
-mkdir -p "$B/Contents/Resources"
-cp "$HERE/THIRD_PARTY_NOTICES.txt" "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt"
+if [ "$MODE" != prepared ]; then
+  mkdir -p "$B/Contents/Resources"
+  cp "$HERE/THIRD_PARTY_NOTICES.txt" "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt"
+else
+  cmp -s "$HERE/THIRD_PARTY_NOTICES.txt" "$B/Contents/Resources/THIRD_PARTY_NOTICES.txt" || { echo "ECHEC bundle prepare : mentions tierces absentes ou differentes"; exit 1; }
+fi
 expect() {  # expect <clé> <valeur attendue>
   local got
   got="$(plist "$B" "$1" 2>/dev/null || true)"
@@ -42,9 +51,10 @@ expect SUBDESTRUCKTBuild "$BUILD_ID"
 expect SUBDESTRUCKTCommit "$COMMIT"
 archs="$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT")"
 [ "$archs" = "arm64" ] || { echo "ECHEC binaire : architectures '$archs' (attendu arm64 uniquement)"; exit 1; }
-codesign --force --sign - --timestamp=none "$B"
+[ "$MODE" = prepared ] || codesign --force --sign - --timestamp=none "$B"
 codesign --verify --strict --verbose=2 "$B"
 rm -rf "$OUT/signed" && mkdir -p "$OUT/signed" && ditto "$B" "$OUT/signed/SUBDESTRUCKT.vst3"
+if [ "$MODE" = prepare ]; then echo "bundle prepare et signe : $OUT/signed/SUBDESTRUCKT.vst3"; exit 0; fi
 
 # ---- 2. scripts finaux (champs remplacés)
 echo "== etape 2 : scripts"

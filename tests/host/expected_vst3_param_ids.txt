@@ -696,3 +696,11 @@ env.aux1.trigger 1480544792
 env.aux1.sync 952269371
 env.aux2.trigger 1820573977
 env.aux2.sync 980898522
+dst.wt1.d2.fb_mode 2034862633
+dst.wt2.d2.fb_mode 16461704
+dst.fm1.d2.fb_mode 1945762067
+dst.fm2.d2.fb_mode 2074844786
+dst.gl1.d2.fb_mode 1733606449
+dst.gl2.d2.fb_mode 1862689168
+wt.za.shape 1836211723
+wt.zb.shape 576231756

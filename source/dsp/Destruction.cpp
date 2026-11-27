@@ -431,7 +431,7 @@ void DestructionSlot::d2(double& L, double& R, const double* P, bool armed) noex
     const double vr = d2Buf_[1][static_cast<size_t>(i0)] + fr * (d2Buf_[1][static_cast<size_t>(i1)] - d2Buf_[1][static_cast<size_t>(i0)]);
     outL = vl * std::max(0.0, env);
     outR = vr * std::max(0.0, env);
-    // candidat C1 (non adopté) : l'échantillon lu est régénéré dans la boucle, hors gel ; fb = 0 : aucune écriture
+    // REGENERATIVE (C1, ARCH-G4.3) : l'échantillon lu est régénéré dans la boucle, hors gel ; fb = 0 : aucune écriture
     const double g = P[static_cast<int>(DstOff::D2Fb)];
     if (d2FbMode_ == 1 && !freeze && g > 0.0) {
       const double in[2] = {L, R};
@@ -621,16 +621,32 @@ void DestructionSlot::restoreFrom(const float* src, int frames, int kind, double
   } else if (kind == 1 && frames > 1) {
     const int B = fftSize_ / 2 + 1;
     const double srcN = 2.0 * (frames - 1);
-    for (int ch = 0; ch < 2; ++ch)
-      for (int k = 0; k < B; ++k) {
-        const double hz = k * fs_ / fftSize_;
-        const double sp = hz * srcN / srcRate;  // bin source de même fréquence
-        const int a = std::min(static_cast<int>(sp), frames - 1), b = std::min(a + 1, frames - 1);
-        const double f = std::min(1.0, sp - a);
-        const double m = src[ch * frames + a] + f * (src[ch * frames + b] - src[ch * frames + a]);
-        s2_[static_cast<size_t>(ch)].held[static_cast<size_t>(k)] = m * fftSize_ / srcN;  // normalisation de taille
-        s2_[static_cast<size_t>(ch)].mag[static_cast<size_t>(k)] = s2_[static_cast<size_t>(ch)].held[static_cast<size_t>(k)];
+    const double wSrc = srcRate / srcN, wDst = fs_ / fftSize_;  // largeurs de bin (Hz)
+    const bool sameGrid = std::fabs(wSrc - wDst) <= 1e-9 * wDst && frames == B;
+    for (int ch = 0; ch < 2; ++ch) {
+      const float* m0 = src + ch * frames;
+      auto& st = s2_[static_cast<size_t>(ch)];
+      if (sameGrid) {  // même grille : copie exacte (R2-02)
+        for (int k = 0; k < B; ++k) st.held[static_cast<size_t>(k)] = st.mag[static_cast<size_t>(k)] = m0[k];
+        continue;
       }
+      // ARCH-G4.3 (R2-02) : grille différente (fréquence moteur ou taille FFT) : rééchantillonnage en énergie — la
+      // puissance par Hz de la capture est intégrée sur la bande de chaque bin cible, puis normalisée à la taille FFT
+      // (amplitude d'un bin proportionnelle à N) ; la puissance par bande est conservée.
+      int j = 0;
+      for (int k = 0; k < B; ++k) {
+        const double lo = (k - 0.5) * wDst, hi = (k + 0.5) * wDst;
+        while (j < frames - 1 && (j + 0.5) * wSrc <= lo) ++j;
+        double acc = 0.0;
+        for (int i = j; i < frames; ++i) {
+          const double sl = (i - 0.5) * wSrc, sh = (i + 0.5) * wSrc;
+          if (sl >= hi) break;
+          const double ov = std::min(hi, sh) - std::max(lo, sl);
+          if (ov > 0.0) acc += static_cast<double>(m0[i]) * m0[i] * ov / wSrc;
+        }
+        st.held[static_cast<size_t>(k)] = st.mag[static_cast<size_t>(k)] = std::sqrt(acc) * fftSize_ / srcN;
+      }
+    }
   }
 }
 

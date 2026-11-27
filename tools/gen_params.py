@@ -144,7 +144,10 @@ C("WtSync", "wt.sync", "WT Sync", ["Off", "Hard", "Soft"], **W)
 C("WtSyncSrc", "wt.sync_src", "WT Sync Source", ["Internal", "OP1", "OP2", "OP3", "OP4"], **W)
 F("WtChar", "wt.char", "WT Character", "lin", 0.0, 1.0, 0.0, rates="C", **W)
 C("WtCharMode", "wt.char_mode", "WT Character Profile", ["Phase Quantize", "Bit Reduce", "Sample Hold"], **W)
-ZT = ["Off", "Harmonic Fold", "Phase Warp", "Spectral Mutation"]  # 5 transformations historiques : BLOQUÉES
+# Énumération append-only : indices 0-3 inchangés depuis la v2 ; ARCH-G4.3 ajoute en fin les cinq transformations du
+# catalogue validé par le propriétaire (Z1 Harmonic Tilt, Z4 Mask, Z5 Focus, Z6 Shift, Z7 Phase Scatter).
+ZT = ["Off", "Harmonic Fold", "Phase Warp", "Spectral Mutation", "Harmonic Tilt", "Harmonic Mask", "Harmonic Focus",
+      "Harmonic Shift", "Phase Scatter"]
 ZC = ["Linear", "Exponential", "Logarithmic", "S-Curve"]
 for s in ("a", "b"):
     S = s.upper()
@@ -333,6 +336,18 @@ for key, label in (("amp", "Amp"), ("env.wt", "ENV WT"), ("env.fm", "ENV FM"), (
     g = "env.amp" if key == "amp" else key
     C(f"{E}Trigger", f"{key}.trigger", f"{label} Trigger", ["Voice", "Note", "Gate"], group=g, **V3)
     B(f"{E}Sync", f"{key}.sync", f"{label} Tempo Sync", group=g, **V3)
+
+# ------------------------------------------------------------------ v4 (ARCH-G4.3) — ajout en fin de liste uniquement
+V4 = dict(ver=4)
+# D2 Glitch Buffer : mode de Feedback par emplacement (Legacy = rendu historique ; Regenerative = régénération dans la
+# boucle). Défaut des nouvelles instances : Regenerative ; tout état antérieur au format 4 est migré en Legacy.
+for key, label, stg in (("wt1", "WT1", 1), ("wt2", "WT2", 1), ("fm1", "FM1", 2), ("fm2", "FM2", 2), ("gl1", "GL1", 4),
+                        ("gl2", "GL2", 4)):
+    C(f"Dst{key.capitalize()}D2FbMode", f"dst.{key}.d2.fb_mode", f"DST {label} D2 Feedback Mode", ["Legacy", "Regenerative"],
+      df=1, group=f"dst.{key}", stage=stg, **V4)
+# Z : second axe des transformations spectrales (Tilt, Mask, Focus, Shift, Scatter) ; ignoré par Fold, Warp, Mutation
+for s_ in ("a", "b"):
+    F(f"WtZ{s_.upper()}Shape", f"wt.z{s_}.shape", f"WT Z{s_.upper()} Shape", "bip", -1.0, 1.0, 0.0, rates="C", group="wt", stage=0, **V4)
 
 
 # ------------------------------------------------------------------ sorties

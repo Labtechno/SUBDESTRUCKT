@@ -1,6 +1,6 @@
 # SUBDESTRUCKT — Registre des paramètres (généré)
 
-Généré par `tools/gen_params.py` depuis la table compilée. 695 paramètres. Ne pas éditer.
+Généré par `tools/gen_params.py` depuis la table compilée. 703 paramètres. Ne pas éditer.
 
 | # | StableID | Nom | Type | Unité | Min | Max | Défaut | Auto | Rates | Domaine | Version |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -129,10 +129,10 @@ Généré par `tools/gen_params.py` depuis la table compilée. 695 paramètres. 
 | 122 | `wt.sync_src` | WT Sync Source | Choice (Internal / OP1 / OP2 / OP3 / OP4) | — | 0 | 4 | 0 | non | E | Disc | 2 |
 | 123 | `wt.char` | WT Character | Float | lin | 0.0 | 1.0 | 0.0 | oui | C | Lin | 2 |
 | 124 | `wt.char_mode` | WT Character Profile | Choice (Phase Quantize / Bit Reduce / Sample Hold) | — | 0 | 2 | 0 | non | E | Disc | 2 |
-| 125 | `wt.za.type` | WT ZA Transform | Choice (Off / Harmonic Fold / Phase Warp / Spectral Mutation) | — | 0 | 3 | 0 | non | E | Disc | 2 |
+| 125 | `wt.za.type` | WT ZA Transform | Choice (Off / Harmonic Fold / Phase Warp / Spectral Mutation / Harmonic Tilt / Harmonic Mask / Harmonic Focus / Harmonic Shift / Phase Scatter) | — | 0 | 8 | 0 | non | E | Disc | 2 |
 | 126 | `wt.za.depth` | WT ZA Depth | Float | lin | 0.0 | 1.0 | 1.0 | oui | CA | Lin | 2 |
 | 127 | `wt.za.curve` | WT ZA Curve | Choice (Linear / Exponential / Logarithmic / S-Curve) | — | 0 | 3 | 0 | non | E | Disc | 2 |
-| 128 | `wt.zb.type` | WT ZB Transform | Choice (Off / Harmonic Fold / Phase Warp / Spectral Mutation) | — | 0 | 3 | 0 | non | E | Disc | 2 |
+| 128 | `wt.zb.type` | WT ZB Transform | Choice (Off / Harmonic Fold / Phase Warp / Spectral Mutation / Harmonic Tilt / Harmonic Mask / Harmonic Focus / Harmonic Shift / Phase Scatter) | — | 0 | 8 | 0 | non | E | Disc | 2 |
 | 129 | `wt.zb.depth` | WT ZB Depth | Float | lin | 0.0 | 1.0 | 1.0 | oui | CA | Lin | 2 |
 | 130 | `wt.zb.curve` | WT ZB Curve | Choice (Linear / Exponential / Logarithmic / S-Curve) | — | 0 | 3 | 0 | non | E | Disc | 2 |
 | 131 | `wt.z_order` | WT Z Order | Choice (A>B / B>A) | — | 0 | 1 | 0 | non | E | Disc | 2 |
@@ -699,3 +699,11 @@ Généré par `tools/gen_params.py` depuis la table compilée. 695 paramètres. 
 | 692 | `env.aux1.sync` | ENV AUX1 Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
 | 693 | `env.aux2.trigger` | ENV AUX2 Trigger | Choice (Voice / Note / Gate) | — | 0 | 2 | 0 | non | E | Disc | 3 |
 | 694 | `env.aux2.sync` | ENV AUX2 Tempo Sync | Bool | — | 0 | 1 | 0 | non | E | Disc | 3 |
+| 695 | `dst.wt1.d2.fb_mode` | DST WT1 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 696 | `dst.wt2.d2.fb_mode` | DST WT2 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 697 | `dst.fm1.d2.fb_mode` | DST FM1 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 698 | `dst.fm2.d2.fb_mode` | DST FM2 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 699 | `dst.gl1.d2.fb_mode` | DST GL1 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 700 | `dst.gl2.d2.fb_mode` | DST GL2 D2 Feedback Mode | Choice (Legacy / Regenerative) | — | 0 | 1 | 1 | non | E | Disc | 4 |
+| 701 | `wt.za.shape` | WT ZA Shape | Float | bip | -1.0 | 1.0 | 0.0 | oui | C | Lin | 4 |
+| 702 | `wt.zb.shape` | WT ZB Shape | Float | bip | -1.0 | 1.0 | 0.0 | oui | C | Lin | 4 |

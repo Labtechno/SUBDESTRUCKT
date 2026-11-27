@@ -1,6 +1,7 @@
 // SUBDESTRUCKT — L1 — état persistant versionné (preset + état DAW).
 //
-// Format texte v3 (UTF-8, une entrée par ligne ; v3 = v2 + paramètres de version 3, ARCH-G4.1) :
+// Format texte v4 (UTF-8, une entrée par ligne ; v3 = v2 + paramètres de version 3, ARCH-G4.1 ; v4 = v3 + paramètres de
+// version 4, ARCH-G4.3 : modes de Feedback D2 et Shape Z ; un état < 4 est migré avec D2 en Legacy) :
 //   SUBDESTRUCKT_STATE 2
 //   writer <identité de build>                        (informatif, ignoré)
 //   scope preset|daw                                  (daw : inclut la section instance)
@@ -18,6 +19,8 @@
 //   seed <master 16 hex> <randomize> <mutate> <evolve>  (compteurs de flux)
 //   instance quality=<Eco|Normal|High> drone=<0|1> drone_restore=<0|1>   (scope daw uniquement)
 //   end
+// Aucune autorisation d'exécution n'est jamais enregistrée (TRANSPORT AUTHORIZATION, ARCH-G4.3) ; `drone_restore`
+// décide de restaurer la configuration du Drone, pas son exécution.
 // Le format v1 (0.1.0-b5) reste lisible : migration explicite (paramètres v1 requis, les autres à leur défaut,
 // banque usine, matrice vide). Lecture stricte et transactionnelle : toute anomalie refuse l'état entier ; la sortie
 // n'est modifiée qu'en cas de succès. Une version future est refusée explicitement. Le Runtime State n'est pas persisté.
@@ -33,7 +36,7 @@
 
 namespace sbd {
 
-constexpr int kStateVersion = 3;
+constexpr int kStateVersion = 4;  // 4 : ARCH-G4.3 (modes D2, Shape Z) ; < 4 : D2 migré en Legacy
 
 
 struct CurvePoints {

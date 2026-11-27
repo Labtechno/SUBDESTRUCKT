@@ -1,6 +1,9 @@
 #!/bin/bash
 # SUBDESTRUCKT — compilation LOCALE privée et sécurisée sur Mac Apple Silicon (recette Mac Studio M4 Max).
-# ARCH-G4.1 §13, durci en ARCH-G4.2 §7 (critères LB-01..07 : docs/V1-ARCH-G4.2-SPEC.md).
+# ARCH-G4.1 §13, durci en ARCH-G4.2 §7 (LB-01..07 : docs/V1-ARCH-G4.2-SPEC.md) et ARCH-G4.3 §8 (LB-08..13 :
+# docs/V1-ARCH-G4.3-SPEC.md) : ordre compilation -> tests -> signature ad hoc -> identité -> pluginval -> paquets
+# construits à partir du bundle VALIDÉ (empreinte vérifiée jusque dans la charge utile de l'installateur) -> ZIP
+# réextrait et vérifié ; barrière exhaustive partagée avec la CI (tools/check_results.sh).
 #
 # But : produire sur la machine de l'utilisateur, à partir des sources EXACTES d'un commit, une LIVRAISON DE RECETTE
 # complète (SUBDESTRUCKT_Installer.pkg, SUBDESTRUCKT_Uninstaller.pkg, README_FR.txt, CHANGELOG.txt, SHA256SUMS.txt,
@@ -24,8 +27,8 @@
 #
 # Usage : tools/local-build/build_local_macos.sh --juce-licence=<choix> [--commit=<sha>]
 # Prérequis : macOS 14+, arm64, Xcode Command Line Tools, cmake >= 3.22, ninja (brew install cmake ninja), git, curl.
-# Codes de sortie : 0 livraison prête ; 2 usage ; 3 dépôt/commit ; 4 dépendances/outils ; 5 tests ; 6 bundle ;
-#                   7 pluginval ; 8 paquets/livraison.
+# Codes de sortie : 0 livraison prête ; 2 usage ; 3 dépôt/commit/chemins ; 4 dépendances/outils ; 5 tests ; 6 bundle ;
+#                   7 pluginval ; 8 paquets/livraison ; 9 collision (sortie existante : aucun écrasement).
 set -euo pipefail
 trap 'echo "ECHEC $(basename "$0") ligne $LINENO : $BASH_COMMAND" >&2' ERR
 
@@ -51,10 +54,19 @@ for t in git cmake ninja xcrun shasum curl unzip codesign plutil lipo pkgutil; d
   command -v "$t" >/dev/null || die 4 "outil manquant : $t (brew install cmake ninja ; xcode-select --install)"
 done
 
+# suite partielle interdite (LB-11) : une variable de filtrage des tests rendrait la livraison non probante
+[ -z "${SBD_ONLY+x}" ] || die 5 "SBD_ONLY=${SBD_ONLY} defini : suite de tests partielle, livraison refusee (unset SBD_ONLY)"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)"
 WORK="$ROOT/local-build"      # ignoré par git (.gitignore) : rien n'est commité ni publié
+[ -L "$WORK" ] && die 3 "local-build est un lien symbolique : refus (les sorties doivent rester dans le depot)"
 mkdir -p "$WORK"
 WORK="$(cd "$WORK" && pwd -P)"
+[ "$WORK" = "$ROOT/local-build" ] || die 3 "local-build resolu hors du depot ($WORK) : refus"
+fresh() {  # fresh <chemin> : sortie neuve obligatoire (aucun écrasement, aucun lien symbolique)
+  [ -L "$1" ] && die 3 "sortie symbolique refusee : $1"
+  [ -e "$1" ] && die 9 "sortie existante (collision de version/build) : $1 ; aucun ecrasement"
+  mkdir -p "$1"
+}
 
 # suppression récursive bornée (LB-07) : uniquement un sous-chemin strict de local-build/
 # shellcheck source=lib_safe_rm.sh
@@ -81,7 +93,7 @@ PV_VER="$(pin PLUGINVAL_VERSION)"; PV_SHA="$(pin PLUGINVAL_SHA256)"
 for v in JUCE_TAG JUCE_SHA VERSION MIN_MACOS PV_VER PV_SHA; do [ -n "${!v}" ] || die 4 "epinglage $v absent du workflow du commit"; done
 BUILD="$(date +%y%j%H%M)"     # numérique (CFBundleVersion, version de paquet) ; identité : $VERSION-b$BUILD
 OUT="$WORK/out-$SHORT-$BUILD"
-mkdir -p "$OUT"
+fresh "$OUT"
 {
   echo "SUBDESTRUCKT compilation locale privee (non publiee)"
   echo "date        : $(date -u +%FT%TZ)"
@@ -105,34 +117,27 @@ cmake -S "$SRC" -B "$BLD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DSUBDESTRUCKT_JUC
   -DSUBDESTRUCKT_BUILD_NUMBER="$BUILD" -DSUBDESTRUCKT_COMMIT="$COMMIT" > "$OUT/configure.log" 2>&1 || die 4 "configuration CMake en echec ($OUT/configure.log)"
 cmake --build "$BLD" > "$OUT/build.log" 2>&1 || die 4 "compilation en echec ($OUT/build.log)"
 
-# ---- 4. tests obligatoires et bloquants (LB-03) : mêmes exécutables et même barrière que la CI
+# ---- 4. tests obligatoires et bloquants (LB-03, LB-10) : mêmes exécutables et même barrière que la CI
 set +e
 "$BLD/subdestruckt_core_tests" > "$OUT/core_tests.log" 2>&1; core=$?
 (cd "$SRC" && "$BLD/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests" tests/host/expected_vst3_param_ids.txt "$OUT/ui.png") > "$OUT/wrapper_tests.log" 2>&1; wrap=$?
+bash "$SRC/tools/check_results.sh" "$SRC/tests/expected_results.txt" "$SRC/tests/known_failures.txt" \
+  "core=$OUT/core_tests.log:$core" "wrapper=$OUT/wrapper_tests.log:$wrap" > "$OUT/gate.log" 2>&1; gate=$?
 set -e
-grep -q "^core_tests :" "$OUT/core_tests.log" || die 5 "tests du coeur interrompus (code $core) : $OUT/core_tests.log"
-grep -q "^wrapper_tests :" "$OUT/wrapper_tests.log" || die 5 "tests du wrapper interrompus (code $wrap) : $OUT/wrapper_tests.log"
+cat "$OUT/gate.log"
 grep -h "^RESULT " "$OUT/core_tests.log" "$OUT/wrapper_tests.log" > "$OUT/results.txt" || true
-known="$( (grep -v '^#' "$SRC/tests/known_failures.txt" || true) | awk 'NF {print $1}' | sort -u)"
-unexpected=0
-while read -r line; do
-  [ -n "$line" ] || continue
-  id="$(echo "$line" | awk '{print $2}')"
-  if echo "$known" | grep -qx -- "$id"; then echo "echec connu (documente) : $id"; else echo "ECHEC NON ATTENDU : $line"; unexpected=1; fi
-done < <(grep " FAIL " "$OUT/results.txt" || true)
 echo "criteres : $(grep -c ' PASS ' "$OUT/results.txt" || true) PASS, $(grep -c ' FAIL ' "$OUT/results.txt" || true) FAIL"
-[ "$unexpected" = 0 ] || die 5 "test obligatoire en echec : aucune livraison produite"
-if [ "$core" != 0 ] || [ "$wrap" != 0 ]; then echo "codes de sortie non nuls ($core/$wrap) expliques par les seuls echecs connus documentes"; fi
-grep -E "^RESULT PERF-0" "$OUT/results.txt" > "$OUT/perf_this_machine.txt" || true
+[ "$gate" = 0 ] || die 5 "barriere des tests refusee ($OUT/gate.log) : aucune livraison produite"
+grep -E "^RESULT (PERF-0|ZC-17)" "$OUT/results.txt" > "$OUT/perf_this_machine.txt" || true
 
-# ---- 5. paquets (contrat de packaging : identité, signature ad hoc, Installer/Uninstaller)
+# ---- 5. bundle de recette : préparé et signé ad hoc, identité vérifiée (LB-05, LB-08)
 RAW="$BLD/SUBDESTRUCKT_artefacts/Release/VST3/SUBDESTRUCKT.vst3"
 [ -d "$RAW" ] || die 6 "bundle absent : $RAW"
-PKG="$WORK/packages-$SHORT-$BUILD"
-[ -e "$PKG" ] && safe_rm "$PKG"
-bash "$SRC/packaging/build_packages.sh" "$RAW" "$PKG" "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" > "$OUT/packaging.log" 2>&1 \
-  || die 8 "construction des paquets en echec ($OUT/packaging.log)"
-B="$PKG/signed/SUBDESTRUCKT.vst3"
+VALD="$WORK/validated-$SHORT-$BUILD"
+fresh "$VALD"
+bash "$SRC/packaging/build_packages.sh" --prepare-only "$RAW" "$VALD" "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" > "$OUT/prepare.log" 2>&1 \
+  || die 6 "preparation du bundle en echec ($OUT/prepare.log)"
+B="$VALD/signed/SUBDESTRUCKT.vst3"
 pl() { plutil -extract "$1" raw -o - "$B/Contents/Info.plist" 2>/dev/null || true; }
 bad=""
 [ "$(pl CFBundleIdentifier)" = "com.labtechno.subdestruckt" ] || bad="$bad identifiant=$(pl CFBundleIdentifier)"
@@ -141,10 +146,12 @@ bad=""
 [ "$(pl SUBDESTRUCKTCommit)" = "$COMMIT" ] || bad="$bad commit=$(pl SUBDESTRUCKTCommit)"
 [ "$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT" 2>/dev/null || true)" = "arm64" ] || bad="$bad architectures=$(lipo -archs "$B/Contents/MacOS/SUBDESTRUCKT" 2>/dev/null || echo '?')"
 codesign --verify --strict "$B" >/dev/null 2>&1 || bad="$bad signature-ad-hoc-invalide"
-[ -z "$bad" ] || die 6 "identite du bundle incoherente :$bad"
-echo "bundle verifie : com.labtechno.subdestruckt $VERSION build $BUILD, commit $SHORT, arm64, signe ad hoc" | tee -a "$OUT/machine.txt"
+[ -z "$bad" ] || { safe_rm "$VALD"; die 6 "identite du bundle incoherente :$bad"; }
+treehash() { (cd "$1" && find . -type f -print | LC_ALL=C sort | while read -r f; do printf '%s ' "$f"; shasum -a 256 < "$f" | awk '{print $1}'; done) | shasum -a 256 | awk '{print $1}'; }
+HVAL="$(treehash "$B")"
+echo "bundle de recette : com.labtechno.subdestruckt $VERSION build $BUILD, commit $SHORT, arm64, signe ad hoc ; empreinte d'arbre $HVAL" | tee -a "$OUT/machine.txt"
 
-# ---- 6. pluginval obligatoire et bloquant (LB-04), empreinte vérifiée
+# ---- 6. pluginval obligatoire et bloquant sur CE bundle (LB-04, LB-08), empreinte de l'outil vérifiée
 PVD="$WORK/tools/pluginval-$PV_VER"
 PVZ="$WORK/tools/pluginval-$PV_VER.zip"
 mkdir -p "$WORK/tools"
@@ -155,28 +162,50 @@ unzip -q -o "$PVZ" -d "$PVD"
 set +e
 "$PVD/pluginval.app/Contents/MacOS/pluginval" --strictness-level 10 --timeout-ms 900000 --validate "$B" > "$OUT/pluginval.log" 2>&1; pv=$?
 set -e
-[ "$pv" = 0 ] || die 7 "pluginval $PV_VER rigueur 10 en echec (code $pv, $OUT/pluginval.log) : aucune livraison produite"
-echo "pluginval $PV_VER rigueur 10 : PASS" | tee -a "$OUT/machine.txt"
+[ "$pv" = 0 ] || { safe_rm "$VALD"; die 7 "pluginval $PV_VER rigueur 10 en echec (code $pv, $OUT/pluginval.log) : aucun paquet ni livraison"; }
+[ "$(treehash "$B")" = "$HVAL" ] || { safe_rm "$VALD"; die 7 "bundle modifie pendant pluginval : refus"; }
+echo "pluginval $PV_VER rigueur 10 : PASS (bundle $HVAL)" | tee -a "$OUT/machine.txt"
 
-# ---- 7. livraison complète et vérifiée (LB-06)
+# ---- 7. paquets construits à partir du bundle validé, sans modification (LB-08)
+PKG="$WORK/packages-$SHORT-$BUILD"
 DL="$WORK/delivery-$SHORT-$BUILD"
-[ -e "$DL" ] && safe_rm "$DL"
-echo "RESULT LOCAL-PLUGINVAL PASS pluginval $PV_VER rigueur 10 (compilation locale)" >> "$OUT/results.txt"
+fresh "$PKG"
+[ -e "$DL" ] && die 9 "sortie existante (collision de version/build) : $DL ; aucun ecrasement"
+fail_pkg() { safe_rm "$PKG"; [ -e "$DL" ] && safe_rm "$DL"; die 8 "$1"; }
+bash "$SRC/packaging/build_packages.sh" --prepared "$B" "$PKG" "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" > "$OUT/packaging.log" 2>&1 \
+  || fail_pkg "construction des paquets en echec ($OUT/packaging.log)"
+[ "$(treehash "$PKG/signed/SUBDESTRUCKT.vst3")" = "$HVAL" ] || fail_pkg "bundle empaquete different du bundle valide"
+XP="$PKG/expanded"
+pkgutil --expand-full "$PKG/SUBDESTRUCKT_Installer.pkg" "$XP" >/dev/null 2>&1 || fail_pkg "Installer.pkg illisible (pkgutil --expand-full)"
+PB="$(find "$XP" -type d -name SUBDESTRUCKT.vst3 -prune | head -1)"
+[ -n "$PB" ] && [ "$(treehash "$PB")" = "$HVAL" ] || fail_pkg "charge utile de Installer.pkg differente du bundle valide"
+safe_rm "$XP"
+echo "paquets : charge utile de l'installateur = bundle valide ($HVAL)" | tee -a "$OUT/machine.txt"
+
+# ---- 8. livraison complète et vérifiée (LB-06, LB-09, LB-12)
+echo "RESULT LOCAL-PLUGINVAL PASS pluginval $PV_VER rigueur 10 (compilation locale, bundle $HVAL)" >> "$OUT/results.txt"
 bash "$SRC/packaging/make_delivery.sh" "$PKG" "$DL" "$VERSION" "$BUILD" "$COMMIT" "$MIN_MACOS" "$OUT/results.txt" \
   "compilation locale privee (non publiee)" "macOS $(sw_vers -productVersion) (machine locale)" > "$OUT/delivery.log" 2>&1 \
-  || { [ -e "$DL" ] && safe_rm "$DL"; die 8 "assemblage de la livraison en echec ($OUT/delivery.log)"; }
+  || fail_pkg "assemblage de la livraison en echec ($OUT/delivery.log)"
 NAME="$(cat "$DL/NAME")"
 ZIP="$DL/$NAME.zip"
 expected="CHANGELOG.txt README_FR.txt SHA256SUMS.txt SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg"
 listed="$(unzip -Z1 "$ZIP" 2>/dev/null | sort | tr '\n' ' ' | sed 's/ $//')"
-fail_dl() { safe_rm "$DL"; die 8 "$1"; }
-[ "$listed" = "$expected" ] || fail_dl "contenu du ZIP inattendu : '$listed' (attendu '$expected')"
-(cd "$DL/$NAME" && shasum -a 256 -c SHA256SUMS.txt >/dev/null 2>&1) || fail_dl "SHA256SUMS.txt non verifie"
+[ "$listed" = "$expected" ] || fail_pkg "contenu du ZIP inattendu : '$listed' (attendu '$expected')"
+(cd "$DL/$NAME" && shasum -a 256 -c SHA256SUMS.txt >/dev/null 2>&1) || fail_pkg "SHA256SUMS.txt non verifie"
 for f in SUBDESTRUCKT_Installer.pkg SUBDESTRUCKT_Uninstaller.pkg README_FR.txt CHANGELOG.txt SHA256SUMS.txt; do
-  [ -s "$DL/$NAME/$f" ] || fail_dl "element de livraison absent ou vide : $f"
+  [ -s "$DL/$NAME/$f" ] || fail_pkg "element de livraison absent ou vide : $f"
 done
+# ZIP final réextrait : ce sont SES fichiers qui sont vérifiés (et non les fichiers d'origine)
+ZX="$DL/zip-check"
+mkdir -p "$ZX"
+unzip -q "$ZIP" -d "$ZX" || fail_pkg "ZIP illisible"
+(cd "$ZX" && shasum -a 256 -c SHA256SUMS.txt >/dev/null 2>&1) || fail_pkg "fichiers du ZIP final non conformes a SHA256SUMS.txt"
+cmp -s "$ZX/SUBDESTRUCKT_Installer.pkg" "$PKG/SUBDESTRUCKT_Installer.pkg" || fail_pkg "Installer.pkg du ZIP different du paquet verifie"
+safe_rm "$ZX"
+safe_rm "$VALD"
 
-# ---- 8. installations existantes : constat uniquement, jamais modifiées (doublons utilisateur / système)
+# ---- 9. installations existantes : constat uniquement, jamais modifiées (doublons utilisateur / système)
 found=0
 SYS_VST3="${SBD_SYSTEM_VST3_DIR:-/Library/Audio/Plug-Ins/VST3}"  # surcharge réservée au harnais de test (lecture seule)
 for d in "$HOME/Library/Audio/Plug-Ins/VST3" "$SYS_VST3"; do

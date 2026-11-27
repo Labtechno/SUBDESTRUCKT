@@ -106,6 +106,14 @@ std::vector<Ctx> contextsFor(int p) {
         setKey(st, slot + ".d2.pos", 0.02f);  // Pos > 0 : le segment remonte dans la zone enregistrée en boucle (feedback)
         setKey(st, slot + ".s1.mode", 1.0f);
       });
+    if (algo == 6)  // ARCH-G4.3 : Feedback > 0 en boucle (le mode LEGACY / REGENERATIVE n'agit qu'avec du Feedback)
+      out.push_back([slot](PluginState& st, std::vector<MidiEvent>&) {
+        setKey(st, slot + ".type", 6.0f);
+        setKey(st, slot + ".d2.fb", 0.8f);
+        setKey(st, slot + ".d2.repeat", 1.0f);
+        setKey(st, slot + ".d2.size", 30.0f);
+        setKey(st, slot + ".d2.pos", 0.0f);
+      });
     if (algo == 6)  // décisions de segments pseudo-aléatoires (graine par emplacement) : plusieurs densités
       for (float rep : {0.3f, 0.8f})
         out.push_back([slot, rep](PluginState& st, std::vector<MidiEvent>&) {
@@ -147,6 +155,15 @@ std::vector<Ctx> contextsFor(int p) {
         setKey(st, "wt.za.depth", 0.6f);
         setKey(st, "wt.zb.depth", 0.6f);
         setKey(st, "wt.z", 0.5f);
+      });
+    // ARCH-G4.3 : valeurs ajoutées en fin d'énumération (transformations spectrales) sur les deux emplacements ; Shape
+    for (int t = 4; t <= 8; ++t)
+      out.push_back([t](PluginState& st, std::vector<MidiEvent>&) {
+        setKey(st, "wt.za.type", static_cast<float>(t));
+        setKey(st, "wt.zb.type", static_cast<float>(4 + (t - 3) % 5));
+        setKey(st, "wt.za.depth", 0.6f);
+        setKey(st, "wt.zb.depth", 0.6f);
+        setKey(st, "wt.z", 0.8f);
       });
   } else if (startsWith(key, "wt.")) {
     out.push_back([](PluginState& st, std::vector<MidiEvent>&) {

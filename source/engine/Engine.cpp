@@ -1,4 +1,6 @@
 #include "Engine.h"
+
+#include "../dsp/ZSpectral.h"
 #include "../dsp/Elp.h"
 
 #include <algorithm>
@@ -112,7 +114,10 @@ std::shared_ptr<const WtBank> opWavesShared() {
 Engine::Engine(std::shared_ptr<const WtBank> bank)
     : ownedBank_(bank ? std::move(bank) : FactoryBanks::get("factory:saw")), opWaves_(opWavesShared()) {
   bank_ = ownedBank_.get();
-  active_ = new CompiledTopology();  // topologie vide par défaut (hors RT)
+  // topologie vide par défaut (hors RT) : compilée depuis une table vide (ordre d'évaluation valide, chaque nœud une
+  // fois). ARCH-G4.3 : un CompiledTopology construit par défaut a un ordre nul (six évaluations du nœud WT par
+  // échantillon) ; seuls les moteurs utilisés sans setTopologyImmediate (tests directs) étaient concernés.
+  active_ = new CompiledTopology(RouteTable().compile());
   mod_ = new CompiledMod();
   for (int i = 0; i < kNumParams; ++i) cur_[static_cast<size_t>(i)] = eff_[static_cast<size_t>(i)] = base_.v[static_cast<size_t>(i)];
 }
@@ -207,6 +212,11 @@ bool Engine::prepare(double hostRate, int maxBlockHost, Quality q) {
   smA_.assign(WtBank::kStride, 0.0);
   smB_.assign(WtBank::kStride, 0.0);
   smWork_.assign(WtBank::kLength, std::complex<double>(0.0, 0.0));
+  smCoef_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
+  smOrig_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
+  smZWork_.assign(WtBank::kHarmonics + 2, std::complex<double>(0.0, 0.0));
+  zSpecActive_ = false;
+  smBlendKey_.fill(0.0);
   if (smFft_.size() != WtBank::kLength) smFft_.init(WtBank::kLength);
   smCounter_ = 0;
   smValid_ = false;
@@ -528,6 +538,8 @@ void Engine::processChunk(float* outL, float* outR, int n, const MidiEvent* even
     if (!drone_) releaseGateIfIdle();
   }
   applyAutonomyMask();  // autorisation lue à la frontière de bloc (aucune attente, aucune allocation)
+  // D2 : mode de Feedback par emplacement (ARCH-G4.3), lu à la frontière de bloc ; le tampon n'est ni vidé ni réinitialisé
+  for (int k = 0; k < 6; ++k) slotAt(k).setD2FeedbackMode(ch(static_cast<ParamId>(idx(ParamId::DstWt1D2FbMode) + k)));
   if (crossResetCmd_.exchange(false, std::memory_order_acq_rel)) crossReset();
   if (exciteCmd_.exchange(false, std::memory_order_acq_rel)) manualExcitePending_ = true;
   // captures R2 : copie cohérente à une frontière de bloc, dans les tampons préalloués (aucune allocation)
@@ -877,7 +889,7 @@ bool Engine::spectralActive() const noexcept {
 // kSpectralPeriod échantillons moteur, à partir des spectres préparés de la banque (amplitudes interpolées, phases par
 // moyenne circulaire pondérée), limitée en bande d'après la fréquence instantanée (Clean) ; fondu linéaire entre la
 // table précédente et la nouvelle. Aucune allocation, aucune FFT par échantillon.
-void Engine::spectralUpdate(double x, double y, double absInc) noexcept {
+void Engine::spectralUpdate(double x, double y, double absInc, const int* zt, const double* zv, const double* zs) noexcept {
   if (smCounter_ > 0) {
     --smCounter_;
     return;
@@ -921,9 +933,41 @@ void Engine::spectralUpdate(double x, double y, double absInc) noexcept {
   int H = WtBank::kHarmonics;
   if (!raw && absInc > 1e-12) H = std::max(1, std::min(H, static_cast<int>(0.5 / absInc)));
   const int N = WtBank::kLength;
-  // optimisation (ARCH-G4.1, PERF-03) : position, poids et bande inchangés -> table identique, resynthèse sautée
-  const std::array<double, 7> key{static_cast<double>(wv[0] * 4096 + wv[1]), static_cast<double>(wv[2] * 4096 + wv[3]), wt[0], wt[1], wt[2],
-                                  static_cast<double>(H), static_cast<double>(reinterpret_cast<std::uintptr_t>(&B))};
+  // Z spectral (ARCH-G4.3) : transformations de rang appliquées aux coefficients complexes de la forme morphée
+  const bool zOn = (zSpectral(zt[0]) && zv[0] > 0.0) || (zSpectral(zt[1]) && zv[1] > 0.0);
+  const bool morphSpectral = spectralActive();
+  // profil de bande : morph spectral = coupure à H (inchangé) ; sinon profil de la lecture mip (niveaux i0, i0+1, poids
+  // w) pour que le chemin spectral soit continu avec la lecture temporelle à profondeur nulle
+  int hLo = H, hHi = H;
+  double wPart = 0.0;
+  if (zOn && !morphSpectral) {
+    if (raw || !(absInc > 1e-12)) {
+      hLo = hHi = WtBank::kHarmonics;
+    } else {
+      const double lf = 10.0 - std::log2(0.5 / absInc);
+      if (lf <= -1.0) {
+        hLo = hHi = WtBank::kHarmonics;
+      } else {
+        int i0 = static_cast<int>(std::ceil(lf));
+        double w = lf - static_cast<double>(i0 - 1);
+        if (i0 < 0) i0 = 0, w = 0.0;
+        if (i0 >= WtBank::kLevels - 1) {
+          hLo = hHi = 1;
+        } else {
+          hHi = 1 << (10 - i0);
+          hLo = 1 << (9 - i0);
+          wPart = w;
+        }
+      }
+    }
+  }
+  // optimisation (ARCH-G4.1, PERF-03) : position, poids, bande et Z inchangés -> table identique, resynthèse sautée
+  const std::array<double, 18> key{static_cast<double>(wv[0] * 4096 + wv[1]), static_cast<double>(wv[2] * 4096 + wv[3]), wt[0], wt[1], wt[2],
+                                   static_cast<double>(H), static_cast<double>(reinterpret_cast<std::uintptr_t>(&B)),
+                                   zOn ? static_cast<double>(zt[0]) : 0.0, zOn ? zv[0] : 0.0, zOn ? zs[0] : 0.0,
+                                   zOn ? static_cast<double>(zt[1]) : 0.0, zOn ? zv[1] : 0.0, zOn ? zs[1] : 0.0,
+                                   zOn ? static_cast<double>(ch(ParamId::WtZFund)) : 0.0, zOn ? static_cast<double>(ch(ParamId::WtZGain)) : 0.0,
+                                   static_cast<double>(hLo), static_cast<double>(hHi), wPart};
   if (smValid_ && key == smKey_) {
     if (!smSettled_) {
       std::copy(smB_.begin(), smB_.end(), smA_.begin());  // fondu terminé : départ = arrivée
@@ -935,20 +979,59 @@ void Engine::spectralUpdate(double x, double y, double absInc) noexcept {
   smKey_ = key;
   smSettled_ = false;
   std::fill(smWork_.begin(), smWork_.end(), std::complex<double>(0.0, 0.0));
-  for (int h = 1; h <= H; ++h) {
-    double m = 0.0, re = 0.0, im = 0.0;
-    for (int k = 0; k < 4; ++k) {
-      if (wt[k] <= 0.0) continue;
-      const double mk = B.specMag(wv[k])[h - 1], pk = B.specPhase(wv[k])[h - 1];
-      m += wt[k] * mk;
-      re += wt[k] * mk * std::cos(pk);
-      im += wt[k] * mk * std::sin(pk);
+  if (!zOn) {
+    for (int h = 1; h <= H; ++h) {
+      double m = 0.0, re = 0.0, im = 0.0;
+      for (int k = 0; k < 4; ++k) {
+        if (wt[k] <= 0.0) continue;
+        const double mk = B.specMag(wv[k])[h - 1], pk = B.specPhase(wv[k])[h - 1];
+        m += wt[k] * mk;
+        re += wt[k] * mk * std::cos(pk);
+        im += wt[k] * mk * std::sin(pk);
+      }
+      const double ph = (re * re + im * im) > 1e-18 * (m * m + 1e-300) ? std::atan2(im, re) : B.specPhase(wv[dom])[h - 1];
+      const std::complex<double> c = std::polar(0.5 * m * N, ph);
+      smWork_[static_cast<size_t>(h)] = c;
+      if (h < N / 2) smWork_[static_cast<size_t>(N - h)] = std::conj(c);
     }
-    const double ph = (re * re + im * im) > 1e-18 * (m * m + 1e-300) ? std::atan2(im, re) : B.specPhase(wv[dom])[h - 1];
-    const std::complex<double> c = std::polar(0.5 * m * N, ph);
-    smWork_[static_cast<size_t>(h)] = c;
-    if (h < N / 2) smWork_[static_cast<size_t>(N - h)] = std::conj(c);
+  } else {
+    auto* c = smCoef_.data();
+    // coefficients de la forme morphée mis en cache : une modulation de Z seule (profondeur, Shape, Master) ne refait pas
+    // la combinaison des quatre formes (ARCH-G4.3, coût)
+    const std::array<double, 8> bkey{key[0], key[1], key[2], key[3], key[4], key[6], morphSpectral ? 1.0 : 0.0, 1.0};
+    const bool blendCached = bkey == smBlendKey_;
+    smBlendKey_ = bkey;
+    if (blendCached) std::copy(smOrig_.begin(), smOrig_.end(), smCoef_.begin());
+    else
+      ++smBlends_;
+    for (int h = 1; h <= WtBank::kHarmonics && !blendCached; ++h) {
+      double m = 0.0, re = 0.0, im = 0.0;
+      for (int k = 0; k < 4; ++k) {
+        if (wt[k] <= 0.0) continue;
+        const double mk = B.specMag(wv[k])[h - 1], pk = B.specPhase(wv[k])[h - 1];
+        m += wt[k] * mk;
+        re += wt[k] * mk * std::cos(pk);
+        im += wt[k] * mk * std::sin(pk);
+      }
+      if (morphSpectral) {
+        const double ph = (re * re + im * im) > 1e-18 * (m * m + 1e-300) ? std::atan2(im, re) : B.specPhase(wv[dom])[h - 1];
+        c[h] = std::polar(m, ph);
+      } else {
+        c[h] = std::complex<double>(re, im);  // combinaison linéaire complexe = interpolation temporelle des formes
+      }
+      smOrig_[static_cast<size_t>(h)] = c[h];
+    }
+    auto band = [&](int h) { return morphSpectral ? (h <= H ? 1.0 : 0.0) : (h <= hLo ? 1.0 : (h <= hHi ? 1.0 - wPart : 0.0)); };
+    zspec::process(c, smOrig_.data(), smZWork_.data(), zt, zv, zs, ch(ParamId::WtZFund) == 1, ch(ParamId::WtZGain) == 1, band);
+    for (int h = 1; h <= WtBank::kHarmonics; ++h) {
+      const double g = band(h);
+      if (g <= 0.0) continue;
+      const std::complex<double> v = c[h] * (0.5 * N * g);
+      smWork_[static_cast<size_t>(h)] = v;
+      if (h < N / 2) smWork_[static_cast<size_t>(N - h)] = std::conj(v);
+    }
   }
+  ++smResynth_;
   smFft_.transform(smWork_.data(), true);
   std::swap(smA_, smB_);  // la table cible précédente devient la table de départ
   for (int i = 0; i < N; ++i) smB_[static_cast<size_t>(i)] = smWork_[static_cast<size_t>(i)].real() / N;
@@ -964,7 +1047,7 @@ double Engine::readWt(double phase, double inc, double slope, double x, double y
   const WtBank& B = *bank_;
   const bool raw = ch(ParamId::WtRender) == 1, cubic = ch(ParamId::WtInterp) == 1;
   const int nx = B.nx(), ny = B.ny();
-  if (smValid_ && spectralActive()) {
+  if (smValid_ && (spectralActive() || zSpecActive_)) {
     const double t = 1.0 - static_cast<double>(smCounter_) / kSpectralPeriod;
     const double xx = phase * WtBank::kLength;
     int i = std::min(static_cast<int>(xx), WtBank::kLength - 1);
@@ -1137,7 +1220,7 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         const double zm = clampd(e(ParamId::WtZ) + acc[kPortWtZ], 0.0, 1.0);
         double slope = 1.0, ampMul = 1.0;
         int zt[2] = {0, 0};
-        double zv[2] = {0.0, 0.0};
+        double zv[2] = {0.0, 0.0}, zs[2] = {0.0, 0.0};
         bool anyZ = false;
         if (zm > 0.0) {
           const bool rev = ch(ParamId::WtZOrder) == 1;
@@ -1148,6 +1231,7 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
             const ParamId cp = slot == 0 ? ParamId::WtZACurve : ParamId::WtZBCurve;
             zt[s] = ch(tp);
             zv[s] = e(dp) * zCurve(ch(cp), zm);
+            zs[s] = e(slot == 0 ? ParamId::WtZAShape : ParamId::WtZBShape);
             if (zt[s] != 0 && zv[s] > 0.0) anyZ = true;
           }
           // transformations de phase (ordre de la liste) ; le repli élargit la bande d'un facteur ~gain : la lecture
@@ -1180,7 +1264,8 @@ void Engine::evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept
         }
         const double xpos = e(ParamId::WtX) + acc[kPortWtX], ypos = e(ParamId::WtY) + acc[kPortWtY];
         const double inst = inc + (pm - prevPmWT_) / kTwoPi;
-        if (spectralActive()) spectralUpdate(xpos, ypos, std::fabs(inc) * slope);
+        zSpecActive_ = (zSpectral(zt[0]) && zv[0] > 0.0) || (zSpectral(zt[1]) && zv[1] > 0.0);
+        if (spectralActive() || zSpecActive_) spectralUpdate(xpos, ypos, std::fabs(inc) * slope, zt, zv, zs);
         else smValid_ = false;
         y = readWt(ph, inst, slope, xpos, ypos);
         if (syncFade_ > 0) {  // fondu court depuis la trajectoire d'avant la sync (anti-repliement de la discontinuité)

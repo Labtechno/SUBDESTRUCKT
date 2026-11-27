@@ -17,6 +17,7 @@
 #include "TestKit.h"
 #include "core/StateCodec.h"
 #include "dsp/Destruction.h"
+#include "dsp/Elp.h"
 
 using namespace sbd;
 using namespace g4;
@@ -159,10 +160,71 @@ void testGolden() {
   TK_CHECK(ok);
   tk::result("ZC-03", ok, "transformations Z existantes et D2 LEGACY vs empreintes 0.3.1 (a9cde4b, %s) : %d/%d rendus identiques bit a bit (Z existant %d/14, D2 fb>0 %d/10 ; Shape aleatoire ignore)",
              platformTag().c_str(), same, kGolden, sameZ, sameD2);
+  const bool d3 = sameD2 == 10;
+  TK_CHECK(d3);
+  tk::result("D2R-03", d3, "LEGACY = moteur historique : 10 configurations D2 a Feedback > 0 (WT1, FM1, GL1 ; tailles, vitesses +-2, Repeat, Position, Crossfade aleatoires), etats migres en LEGACY : empreintes 0.3.1 identiques bit a bit %d/10",
+             sameD2);
+}
+
+// ------------------------------------------------------------------ ELP-01R : critère prospectif (plateau accepté)
+void testElp01R() {
+  bool ident = true, sym = true, mono = true, cont = true, lip = true, bound = true;
+  for (int i = 0; i <= 1000000; ++i) {
+    const double y = -16.0 + 32.0 * i / 1000000.0;
+    if (elpTransfer(y) != y) ident = false;
+  }
+  double prev = elpTransfer(16.0);
+  const double lmax = std::log(DBL_MAX / 16.0);
+  for (int i = 1; i <= 100000; ++i) {
+    const double y = 16.0 * std::exp(lmax * i / 100000.0);  // ]16, DBL_MAX]
+    const double f = elpTransfer(y);
+    if (f < prev) mono = false;
+    if (y <= 1e300 && elpTransfer(-y) != -f) sym = false;
+    if (!(std::fabs(f) < kOutputGuard) || !(static_cast<float>(f) < 32.0f) || !(static_cast<float>(-f) > -32.0f)) bound = false;
+    prev = f;
+  }
+  std::mt19937_64 rng(0xE101ULL);
+  std::uniform_real_distribution<double> u(0.0, 1.0);
+  for (int i = 0; i < 1000000; ++i) {
+    double a = 16.0 * std::exp(u(rng) * 700.0), b = 16.0 * std::exp(u(rng) * 700.0);
+    if (!std::isfinite(a) || !std::isfinite(b)) continue;
+    if (a > b) std::swap(a, b);
+    if (elpTransfer(b) < elpTransfer(a) || elpTransfer(-a) < elpTransfer(-b)) mono = false;
+  }
+  for (double eps : {1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1})
+    if (std::fabs(elpTransfer(16.0 + eps) - (16.0 + eps)) > eps * eps / 16.0) cont = false;
+  std::uniform_real_distribution<double> w(-400.0, 400.0);
+  for (int i = 0; i < 100000; ++i) {
+    const double a = w(rng), b = w(rng);
+    if (std::fabs(elpTransfer(a) - elpTransfer(b)) > std::fabs(a - b) * (1.0 + 1e-12)) lip = false;
+  }
+  for (double y : {std::nextafter(16.0, 100.0), 1e3, 1e6, 1e300, DBL_MAX})
+    if (!(elpTransfer(y) < kOutputGuard) || !(static_cast<float>(elpTransfer(y)) < 32.0f)) bound = false;
+  // (f) non-finis : jamais traités par ELP (garde numérique, compteur distinct)
+  Engine e(FactoryBanks::get("factory:saw"));
+  ParamValues p = ParamValues::defaults();
+  e.setParameters(p);
+  e.prepare(48000.0, 256);
+  RouteTable rt;  // routes à historique de retard (protocole G-16)
+  rt.apply({RouteTable::Op::add(kNodeOP2, kNodeOP1), RouteTable::Op::add(kNodeWT, kNodeOP1), RouteTable::Op::add(kNodeOP1, kNodeWT)});
+  e.setTopologyImmediate(rt.compile());
+  std::vector<float> L(256), R(256);
+  const MidiEvent on = MidiEvent::noteOn(0, 60, 100);
+  e.process(L.data(), R.data(), 256, &on, 1);
+  e.testInjectNaN();
+  for (int b = 0; b < 20; ++b) e.process(L.data(), R.data(), 256, nullptr, 0);
+  const auto tc = e.testCounters();
+  const bool nonFinite = e.telemetry().nonFiniteResets.load() > 0 && tc.elp == 0;
+  const bool ok = ident && sym && mono && cont && lip && bound && nonFinite;
+  TK_CHECK(ok);
+  tk::result("ELP-01R", ok, "ELP (plateau numerique accepte) : (a) identite exacte sur 10^6 points %d ; (b) symetrie exacte %d ; (c) monotonie non stricte (10^5 points jusqu'a DBL_MAX, 10^6 paires) %d ; (d) continuite au seuil et 1-lipschitzienne %d %d ; (e) |f| < 32 et (float)f < 32.0f %d ; (f) non-finis traites par la garde (reinitialisations %u, engagements ELP %u) %d",
+             ident, sym, mono, cont, lip, bound, e.telemetry().nonFiniteResets.load(), tc.elp, nonFinite);
 }
 
 }  // namespace
 
 void runG43Tests() {
+  std::printf("[ARCH-G4.3 : empreintes 0.3.1, ELP]\n");
   testGolden();
+  testElp01R();
 }

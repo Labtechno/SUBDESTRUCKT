@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "Analysis.h"
 #include "G4Helper.h"
 #include "RenderHelper.h"
 #include "TestKit.h"
@@ -678,6 +679,257 @@ void testTransportAuthorization(const std::vector<CaptureAsset>& caps) {
   }
 }
 
+// ------------------------------------------------------------------ R2-01..05 : captures R2 (clôture R50)
+ParamValues s2Params(double decay, bool frozen, bool armedSlot = true) {
+  ParamValues p = ParamValues::defaults();
+  auto slot = [&](DstOff o) -> float& { return p.v[static_cast<size_t>(idx(ParamId::DstGl2Type) + static_cast<int>(o))]; };
+  slot(DstOff::Type) = static_cast<float>(DstType::S2);
+  slot(DstOff::Mix) = 1.0f;
+  slot(DstOff::S2Decay) = static_cast<float>(decay);
+  slot(DstOff::S2Freeze) = frozen ? 1.0f : 0.0f;
+  slot(DstOff::Arm) = armedSlot ? 1.0f : 0.0f;
+  return p;
+}
+
+CaptureAsset makeS2Capture(double fs, double decay) {
+  Rig r(s2Params(decay, false), fs);
+  const int blocks = static_cast<int>(std::lround(0.5 * fs / 256));
+  r.step(tinfo(TransportObs::Unknown), {MidiEvent::noteOn(0, 45, 110)});
+  r.run(blocks, tinfo(TransportObs::Unknown));
+  r.p = s2Params(decay, true);
+  r.run(blocks, tinfo(TransportObs::Unknown));
+  r.e->requestCapture(5);
+  r.step(tinfo(TransportObs::Unknown));
+  CaptureAsset c;
+  r.e->fetchCapture(5, c);
+  return c;
+}
+
+// énergies par bande de tiers d'octave d'une trame (Hann, zéro-padding 16384)
+std::vector<double> bands(const std::vector<float>& L, const std::vector<float>& R, size_t a, size_t n, double fs) {
+  std::vector<std::complex<double>> b(16384);
+  std::vector<double> p(8193, 0.0);
+  for (const auto* x : {&L, &R}) {
+    std::fill(b.begin(), b.end(), std::complex<double>(0.0, 0.0));
+    for (size_t i = 0; i < n && a + i < x->size(); ++i) b[i] = (*x)[a + i] * (0.5 - 0.5 * std::cos(2.0 * an::kPi * i / n));
+    an::fft(b);
+    for (size_t k = 0; k <= 8192; ++k) p[k] += std::norm(b[k]);
+  }
+  std::vector<double> e;
+  for (int k = -13; k <= 13; ++k) {
+    const double fc = 1000.0 * std::pow(2.0, k / 3.0);
+    if (fc * std::pow(2.0, 1.0 / 6.0) > 0.45 * fs) break;
+    const double lo = fc / std::pow(2.0, 1.0 / 6.0), hi = fc * std::pow(2.0, 1.0 / 6.0);
+    double s = 0.0;
+    for (size_t j = static_cast<size_t>(std::ceil(lo * 16384 / fs)); j <= static_cast<size_t>(std::floor(hi * 16384 / fs)) && j <= 8192; ++j) s += p[j];
+    e.push_back(s);
+  }
+  return e;
+}
+
+struct Traj {
+  double bandRms = 0.0, frameMax = 0.0;  // dB
+};
+// compare deux rendus à temps écoulé égal depuis l'activation (trames de 100 ms sur `secs`)
+Traj compareTraj(const Rig& x, size_t ax, const Rig& y, size_t ay, double fs, double secs, double fMin = 0.0) {
+  const size_t n = static_cast<size_t>(std::lround(0.1 * fs));
+  double acc = 0.0, cnt = 0.0, fm = 0.0;
+  for (size_t f = 0; f + 1 <= static_cast<size_t>(secs * 10.0); ++f) {
+    const auto bx = bands(x.L, x.R, ax + f * n, n, fs), by = bands(y.L, y.R, ay + f * n, n, fs);
+    double mx = 0.0, ex = 0.0, ey = 0.0;
+    for (double v : bx) mx = std::max(mx, v);
+    for (size_t k = 0; k < bx.size() && k < by.size(); ++k) {
+      const double fc = 1000.0 * std::pow(2.0, (static_cast<int>(k) - 13) / 3.0);
+      ex += bx[k];
+      ey += by[k];
+      if (fc < fMin || bx[k] < mx * 1e-6 || bx[k] <= 0.0 || by[k] <= 0.0) continue;
+      const double d = 10.0 * std::log10(by[k] / bx[k]);
+      acc += d * d;
+      cnt += 1.0;
+    }
+    if (ex > 0.0 && ey > 0.0) fm = std::max(fm, std::fabs(10.0 * std::log10(ey / ex)));
+  }
+  return Traj{cnt > 0.0 ? std::sqrt(acc / cnt) : 99.0, fm};
+}
+
+size_t activation(const Rig& r) {  // échantillon de début du bloc où la capture a été appliquée
+  for (const auto& x : r.log)
+    if (x.type == TaEventType::CaptureApplied) return static_cast<size_t>(x.sample);
+  return 0;
+}
+
+void testR2() {
+  const auto Stop = tinfo(TransportObs::Stopped), Play = tinfo(TransportObs::Rolling);
+  // R2-01, R2-03, R2-04 : trajectoires (référence activée depuis C ; restaurée, suspendue, réautorisée par le transport)
+  double worstBand = 0.0, worstFrame = 0.0, worstSlopeErr = 0.0, worstRender = 0.0;
+  bool allOk = true;
+  std::string detail;
+  for (double fs : {44100.0, 48000.0, 96000.0})
+    for (double decay : {0.3, 0.5, 0.8, 0.95, 1.0}) {
+      const CaptureAsset c = makeS2Capture(fs, decay);
+      const int secsBlocks = static_cast<int>(std::lround(5.6 * fs / 256));
+      Rig a(s2Params(decay, true), fs);
+      publish(*a.e, {c}, true);
+      a.run(secsBlocks, Stop);
+      Rig b(s2Params(decay, true), fs);
+      restoreSuspended(b, s2Params(decay, true), false, {c});
+      b.run(40, Stop);
+      b.run(secsBlocks, Play);
+      Rig rr(s2Params(decay, true), fs);  // R2-04 : restitution par le rendu hors temps réel
+      restoreSuspended(rr, s2Params(decay, true), false, {c});
+      rr.run(41, tinfo(TransportObs::Rolling, false, true));  // premier bloc : grant RENDER
+      rr.run(secsBlocks, tinfo(TransportObs::Rolling, false, true));
+      const size_t a0 = activation(a), b0 = activation(b), r0 = activation(rr);
+      const Traj t = compareTraj(a, a0, b, b0, fs, 5.0), tr = compareTraj(a, a0, rr, r0, fs, 5.0);
+      // R2-03 : pente d'énergie (régression sur les trames 0,5..5 s) vs -6,02 dB par demi-vie
+      const size_t n = static_cast<size_t>(std::lround(0.1 * fs));
+      double sx = 0, sy = 0, sxx = 0, sxy = 0, m = 0;
+      for (int f = 5; f < 50; ++f) {
+        const double e = rms(a.L, a0 + f * n, a0 + (f + 1) * n);
+        const double db = 20.0 * std::log10(std::max(e, 1e-30)), x = f * 0.1;
+        sx += x, sy += db, sxx += x * x, sxy += x * db, m += 1;
+      }
+      const double slope = (m * sxy - sx * sy) / (m * sxx - sx * sx);
+      const double T = 0.1 + 30.0 * decay * decay, want = decay >= 0.999 ? 0.0 : -6.0206 / T;
+      const double slopeErr = decay >= 0.999 ? std::fabs(slope * 4.5) : std::fabs(slope - want) / std::fabs(want);
+      const bool slopeOk = decay >= 0.999 ? slopeErr <= 0.1 : slopeErr <= 0.10;
+      const bool ok = t.bandRms <= 0.5 && t.frameMax <= 0.5 && tr.bandRms <= 0.5 && tr.frameMax <= 0.5 && slopeOk && b.authorized() && a0 > 0 && b0 > 0;
+      allOk = allOk && ok;
+      worstBand = std::max(worstBand, t.bandRms);
+      worstFrame = std::max(worstFrame, t.frameMax);
+      worstRender = std::max(worstRender, std::max(tr.bandRms, tr.frameMax));
+      if (decay < 0.999) worstSlopeErr = std::max(worstSlopeErr, slopeErr);
+      char s[200];
+      std::snprintf(s, sizeof s, " [%.1f kHz Decay %.2f : bandes %.3f dB, trame %.3f dB, rendu %.3f dB, pente %.2f dB/s (contrat %.2f)%s]", fs / 1000.0, decay,
+                    t.bandRms, t.frameMax, std::max(tr.bandRms, tr.frameMax), slope, want, ok ? "" : " ECHEC");
+      detail += s;
+    }
+  TK_CHECK(allOk);
+  tk::result("R2-01", allOk, "trajectoire S2 (reference activee depuis C vs restauree, suspendue, reautorisee par STOP->PLAY ; et par rendu hors temps reel) : pire ecart RMS par bande %.3f dB, pire trame %.3f dB, pire rendu %.3f dB (<= 0,5) ; pente vs contrat : pire ecart relatif %.1f %% (<= 10 %%) ;%s",
+             worstBand, worstFrame, worstRender, 100.0 * worstSlopeErr, detail.c_str());
+  tk::result("R2-03", allOk, "decroissance contractuelle (demi-vie T = 0,1 + 30 Decay^2) : pire ecart relatif de pente %.1f %% (<= 10 %%) ; Decay = 1 : energie constante (voir R2-01)", 100.0 * worstSlopeErr);
+  tk::result("R2-04", allOk, "restitution via TRANSPORT AUTHORIZATION (STOP->PLAY) et via rendu hors temps reel : criteres R2-01 tenus ; D2 : segment identique bit a bit (TA-12)");
+
+  // R2-02 : contenu initial restauré (Fs égale : exact ; Fs différente : enveloppe par bande)
+  {
+    const double fs = 48000.0;
+    const CaptureAsset c1 = makeS2Capture(fs, 1.0);
+    Rig b(s2Params(1.0, true), fs);
+    restoreSuspended(b, s2Params(1.0, true), false, {c1});
+    b.run(10, Stop);
+    b.step(Play);
+    b.run(2, Play);
+    b.e->requestCapture(5);
+    b.step(Play);
+    CaptureAsset back;
+    const bool got = b.e->fetchCapture(5, back);
+    double rel = 0.0;
+    for (size_t i = 0; got && i < c1.data.size() && i < back.data.size(); ++i)
+      rel = std::max(rel, std::fabs(static_cast<double>(back.data[i]) - c1.data[i]) / std::max(1e-12, std::fabs(static_cast<double>(c1.data[i]))));
+    const bool exact = got && back.frames == c1.frames && rel <= 1e-6;
+    // Fs différente : capture 48 kHz restituée à 44,1 et 96 kHz ; comparaison des sorties (bandes >= 200 Hz)
+    double worst = 0.0;
+    std::string detail2, analysis;
+    Rig ref(s2Params(1.0, true), fs);
+    publish(*ref.e, {c1}, true);
+    ref.run(200, Stop);
+    for (double fs2 : {44100.0, 96000.0}) {
+      Rig o(s2Params(1.0, true), fs2);
+      publish(*o.e, {c1}, true);
+      o.run(static_cast<int>(200 * fs2 / fs), Stop);
+      const size_t ra = activation(ref) + static_cast<size_t>(0.1 * fs), oa = activation(o) + static_cast<size_t>(0.1 * fs2);
+      // trames de même durée : comparaison des niveaux par bande (normalisés à la durée de trame)
+      const auto br = bands(ref.L, ref.R, ra, static_cast<size_t>(0.1 * fs), fs), bo = bands(o.L, o.R, oa, static_cast<size_t>(0.1 * fs2), fs2);
+      double mx = 0.0;
+      for (double v : br) mx = std::max(mx, v);
+      // analyse descriptive (le verdict reste le critère par bande) : perte d'énergie totale ; écart pondéré par
+      // l'énergie ; pire écart parmi les bandes à moins de 20 dB du maximum ; niveau des bandes hors tolérance
+      double et = 0.0, eo = 0.0, wacc = 0.0, wsum = 0.0, strong = 0.0;
+      std::string outliers;
+      for (size_t k = 0; k < br.size() && k < bo.size(); ++k) {
+        const double fc = 1000.0 * std::pow(2.0, (static_cast<int>(k) - 13) / 3.0);
+        if (fc < 200.0) continue;
+        et += br[k] / (0.1 * fs);
+        eo += bo[k] / (0.1 * fs2);
+        if (br[k] < mx * 1e-4 || bo[k] <= 0.0) continue;
+        const double dd = 10.0 * std::log10((bo[k] / (0.1 * fs2)) / (br[k] / (0.1 * fs)));
+        wacc += br[k] * dd * dd;
+        wsum += br[k];
+        if (br[k] >= mx * 1e-2) strong = std::max(strong, std::fabs(dd));
+        if (std::fabs(dd) > 0.5)
+          outliers += " " + std::to_string(static_cast<int>(fc)) + " Hz (bande a " + std::to_string(static_cast<int>(std::lround(10.0 * std::log10(br[k] / mx)))) + " dB : " +
+                      std::to_string(dd).substr(0, 5) + " dB)";
+      }
+      analysis += " [" + std::to_string(static_cast<int>(fs2)) + " Hz : energie totale " + std::to_string(10.0 * std::log10(eo / et)).substr(0, 6) +
+                  " dB ; ecart pondere par l'energie " + std::to_string(std::sqrt(wacc / wsum)).substr(0, 5) + " dB ; pire bande a -20 dB du max " +
+                  std::to_string(strong).substr(0, 5) + " dB ; hors tolerance :" + (outliers.empty() ? " aucune" : outliers) + "]";
+      for (size_t k = 0; k < br.size() && k < bo.size(); ++k) {
+        const double fc = 1000.0 * std::pow(2.0, (static_cast<int>(k) - 13) / 3.0);
+        if (fc < 200.0 || br[k] < mx * 1e-4 || bo[k] <= 0.0) continue;
+        // énergie d'une bande (somme des bins, Parseval) proportionnelle à la durée de trame n : normalisation par n
+        const double d = std::fabs(10.0 * std::log10((bo[k] / (0.1 * fs2)) / (br[k] / (0.1 * fs))));
+        detail2 += " " + std::to_string(static_cast<int>(fs2 / 100) / 10.0).substr(0, 4) + "k/" + std::to_string(static_cast<int>(fc)) + "Hz:" +
+                   std::to_string(10.0 * std::log10((bo[k] / (0.1 * fs2)) / (br[k] / (0.1 * fs)))).substr(0, 5);
+        worst = std::max(worst, d);
+      }
+    }
+    const bool ok = exact && worst <= 0.5;
+    TK_CHECK(ok);
+    tk::result("R2-02", ok, "contenu initial : spectre tenu relu apres application = capture (Decay 1, ecart relatif max %.2e <= 1e-6, trames %d/%d) %d ; capture 48 kHz restituee a 44,1 et 96 kHz : pire ecart par bande (>= 200 Hz, -40 dB) %.3f dB (<= 0,5) ; analyse :%s",
+               rel, back.frames, c1.frames, exact, worst, analysis.c_str());
+  }
+
+  // R2-05 : Panic pendant un gel restauré ; réautorisation = capture (et non l'état décru)
+  {
+    const double fs = 48000.0;
+    const CaptureAsset c = makeS2Capture(fs, 0.3);
+    Rig a(s2Params(0.3, true), fs);
+    restoreSuspended(a, s2Params(0.3, true), false, {c});
+    a.run(10, Stop);
+    a.run(30, Play);
+    const size_t n = 4800;
+    const size_t a0 = activation(a);
+    a.run(600, Play);  // ~3 s : décroissance (demi-vie 2,8 s)
+    const double initial = rms(a.L, a0 + 2 * n, a0 + 3 * n), decayed = a.rmsLast(19);
+    a.step(Play, {MidiEvent::allSoundOff(0)});
+    a.run(40, Play);
+    const double silence = a.rmsLast(30);
+    const size_t mark = a.L.size();
+    a.run(5, Stop);
+    a.run(200, Play);
+    size_t a1 = 0;
+    for (const auto& x : a.log)
+      if (x.type == TaEventType::CaptureApplied && x.sample >= mark) a1 = static_cast<size_t>(x.sample);
+    const double again = rms(a.L, a1 + 2 * n, a1 + 3 * n);
+    const double dAgain = std::fabs(20.0 * std::log10(again / initial)), dDecayed = 20.0 * std::log10(decayed / initial);
+    // contenu = capture : spectre tenu relu après la réapplication = C x r^m (m trames de décroissance écoulées depuis
+    // l'application, r = 0,5^(trame/T)), et non l'état décru d'avant Panic
+    Rig chk(s2Params(0.3, true), fs);
+    restoreSuspended(chk, s2Params(0.3, true), false, {c});
+    chk.run(10, Stop);
+    a.e->requestCapture(5);
+    a.step(Play);
+    CaptureAsset back;
+    const bool got = a.e->fetchCapture(5, back);
+    const double r = std::pow(0.5, (512.0 / fs) / (0.1 + 30.0 * 0.3 * 0.3));
+    double best = 1e9;
+    int bestM = -1;
+    for (int m = 0; m < 400 && got; ++m) {
+      double rel = 0.0;
+      const double g = std::pow(r, m);
+      for (size_t i = 0; i < c.data.size() && i < back.data.size(); ++i)
+        if (std::fabs(c.data[i]) > 1e-9 * 1e3) rel = std::max(rel, std::fabs(back.data[i] - g * c.data[i]) / (g * std::fabs(c.data[i])));
+      if (rel < best) best = rel, bestM = m;
+    }
+    const double elapsedFrames = static_cast<double>(a.L.size() - a1) / 512.0;
+    const bool content = got && best <= 1e-6 && bestM <= static_cast<int>(elapsedFrames) + 1;
+    const bool ok = silence < 1e-9 && a1 > mark && content && dDecayed < -3.0;
+    TK_CHECK(ok);
+    tk::result("R2-05", ok, "Panic pendant un gel restaure : silence %.2e (< 1e-9) ; reautorisation (STOP->PLAY) : spectre tenu = capture x r^%d (ecart relatif %.2e <= 1e-6 ; %d trames ecoulees depuis la reapplication), et non l'etat decru avant Panic (%.2f dB) ; descriptif : niveau de trame vs premiere activation %.3f dB",
+               silence, bestM, best, static_cast<int>(elapsedFrames), dDecayed, dAgain);
+  }
+}
+
 }  // namespace
 
 void runG43TaTests() {
@@ -687,5 +939,7 @@ void runG43TaTests() {
   TK_CHECK(capOk);
   if (!capOk) return;
   testTransportAuthorization(caps);
+  std::printf("[ARCH-G4.3 : captures R2]\n");
+  testR2();
 }
 

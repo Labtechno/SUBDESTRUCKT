@@ -21,7 +21,7 @@ env:
   PLUGINVAL_VERSION: "v1.0.4"
   PLUGINVAL_SHA256: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
   MIN_MACOS: "14.0"
-  VERSION: "0.3.1"
+  VERSION: "0.3.2"
 
 jobs:
   build-test-package:
@@ -83,21 +83,20 @@ jobs:
           ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/ui_snapshot.png 2>&1 | tee out/wrapper_tests.log; echo "${PIPESTATUS[0]}" > out/wrapper_exit.txt
           true  # ARCH-G4.2 : verdict a la barriere finale, comme le coeur (echec non documente ou interruption : bloquant)
 
-      - name: Barrière des résultats (échecs connus documentés uniquement)
+      - name: Barrière des résultats (exhaustive, ARCH-G4.3 LB-10 ; échecs connus bornés à leur portée)
         run: |
-          set -euo pipefail
-          grep -h "^RESULT .* FAIL " out/*.log > out/fails.txt || true
-          known="$( (grep -v '^#' tests/known_failures.txt || true) | awk 'NF {print $1}' | sort -u)"  # liste vide autorisee
-          unexpected=0
-          while read -r line; do
-            id="$(echo "$line" | awk '{print $2}')"
-            if echo "$known" | grep -qx -- "$id"; then echo "echec connu (documente) : $line"; else echo "ECHEC NON ATTENDU : $line"; echo "::error title=ECHEC $id::${line:0:900}"; unexpected=1; fi
-          done < out/fails.txt
-          crash="$(cat out/core_exit.txt)"
-          if ! grep -q "^wrapper_tests :" out/wrapper_tests.log; then echo "tests du wrapper interrompus (code $(cat out/wrapper_exit.txt))"; echo "::error title=wrapper_tests interrompus::code $(cat out/wrapper_exit.txt) ; derniere ligne : $(tail -1 out/wrapper_tests.log | cut -c1-300)"; unexpected=1; fi
-          if ! grep -q "core_tests :" out/core_tests.log; then echo "tests du coeur interrompus (code $crash)"; echo "::error title=core_tests interrompus::code $crash ; derniere ligne : $(tail -1 out/core_tests.log | cut -c1-300)"; unexpected=1; fi
+          set -uo pipefail
+          # cœur et wrapper : inventaire attendu, doublons, synthèse, cohérence des codes, exceptions par portée
+          bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt             "core=out/core_tests.log:$(cat out/core_exit.txt)" "wrapper=out/wrapper_tests.log:$(cat out/wrapper_exit.txt)" 2>&1 | tee out/gate.log
+          unexpected=${PIPESTATUS[0]}
+          grep "^BARRIERE : \|ECHEC NON ATTENDU" out/gate.log | while read -r l; do echo "::error title=barriere::${l:0:900}"; done || true
+          # autres journaux de ce job (hôte, bundle, pluginval) : aucun échec toléré
+          for f in out/*.log; do
+            case "$f" in out/core_tests.log|out/wrapper_tests.log|out/gate.log) continue ;; esac
+            if grep -q "^RESULT [^ ]* FAIL " "$f"; then grep "^RESULT [^ ]* FAIL " "$f"; unexpected=1; fi
+          done
           # controles echoues (TK_CHECK) : localisation publique pour le diagnostic
-          grep -h "ECHEC " out/*.log | head -20 | while read -r l; do echo "::warning title=controle::${l:0:300}"; done || true
+          grep -h "ECHEC " out/core_tests.log out/wrapper_tests.log | head -20 | while read -r l; do echo "::warning title=controle::${l:0:300}"; done || true
           exit $unexpected
 
       - name: Paquets Installer / Uninstaller (bundle livré re-signé ad hoc)
@@ -293,13 +292,26 @@ jobs:
             out/*.txt
 
   local-build-script:
-    # ARCH-G4.2 §7 : flux de controle du script de compilation locale macOS (LB-01..07) avec commandes simulees.
+    # ARCH-G4.2 §7 / ARCH-G4.3 §8 : flux de controle du script de compilation locale macOS (LB-01..13) avec commandes
+    # simulees, et coherence de l'inventaire des resultats (INV-01).
     # Aucune compilation ni aucun binaire ici ; la compilation reelle est verifiee par build-test-package.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
-      - name: Harnais build_local_macos.sh (LB-01..07)
+      - name: Inventaire des résultats (INV-01) — tout critère des sources figure dans tests/expected_results.txt
+        shell: bash
+        run: |
+          set -uo pipefail
+          miss=0
+          for scope in core wrapper; do
+            for id in $(grep -rhoE 'tk::result\("[^"]+"' "tests/$scope" | sed 's/tk::result("//; s/"$//' | sort -u); do
+              awk -v s="$scope" -v i="$id" '$1 == s && $2 == i {f = 1} END {exit !f}' tests/expected_results.txt || { echo "::error title=INV-01::$scope $id absent de tests/expected_results.txt"; miss=1; }
+            done
+          done
+          if [ "$miss" = 0 ]; then echo "RESULT INV-01 PASS identifiants des sources presents dans l'inventaire" | tee -a "$GITHUB_STEP_SUMMARY"; else echo "RESULT INV-01 FAIL inventaire incomplet"; fi
+          exit $miss
+      - name: Harnais build_local_macos.sh (LB-01..13)
         shell: bash
         run: |
           set -o pipefail

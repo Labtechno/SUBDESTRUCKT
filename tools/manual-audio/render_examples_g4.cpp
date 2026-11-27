@@ -13,6 +13,7 @@
 
 #include "core/PresetOps.h"
 #include "core/StateCodec.h"
+#include "dsp/Destruction.h"
 #include "core/WtAssets.h"
 #include "engine/Engine.h"
 
@@ -114,7 +115,12 @@ int main(int argc, char** argv) {
   }
   const std::string dir = argv[1], commit = argv[2];
   std::vector<Example> ex;
-  auto add = [&](const char* id, const char* title, PluginState s, int note = 45) {
+  // legacyD2 : exemples antérieurs à ARCH-G4.3 rendus avec le Feedback D2 historique (fichiers identiques à 0.3.1)
+  auto add = [&](const char* id, const char* title, PluginState s, int note = 45, bool legacyD2 = true) {
+    if (legacyD2)
+      for (ParamId m : {ParamId::DstWt1D2FbMode, ParamId::DstWt2D2FbMode, ParamId::DstFm1D2FbMode, ParamId::DstFm2D2FbMode,
+                        ParamId::DstGl1D2FbMode, ParamId::DstGl2D2FbMode})
+        s.params[m] = 0.0f;
     Example e;
     e.id = id;
     e.title = title;
@@ -228,6 +234,60 @@ int main(int argc, char** argv) {
     s.params[ParamId::CrossMaster] = 1.0f;
     add("e22_balance", "Balance WT/FM : de -1 (WT seule) a +1 (FM seul), CROSS inchange", s, 50);
     ex.back().automate = [](ParamValues& p, double t) { p[ParamId::PerfBalance] = static_cast<float>(std::clamp(-1.0 + t / 1.1, -1.0, 1.0)); };
+  }
+  // ---- ARCH-G4.3 : transformations Z du catalogue (deux exemples par transformation, moteur réel) et D2
+  auto zEx = [&](const char* id, const char* title, int type, float depth, float shape, const char* bank, int note,
+                 std::function<void(ParamValues&, double)> automate, int typeB = 0, float depthB = 0.0f) {
+    PluginState s = bare();
+    s.bank = bank;
+    s.params[ParamId::WtZ] = 1.0f;
+    s.params[ParamId::WtZAType] = static_cast<float>(type);
+    s.params[ParamId::WtZADepth] = depth;
+    s.params[ParamId::WtZAShape] = shape;
+    s.params[ParamId::WtZBType] = static_cast<float>(typeB);
+    s.params[ParamId::WtZBDepth] = depthB;
+    add(id, title, s, note);
+    ex.back().automate = std::move(automate);
+  };
+  auto rampDepth = [](ParamValues& p, double t) { p[ParamId::WtZADepth] = static_cast<float>(std::min(1.0, t / 2.2)); };
+  auto rampShape = [](ParamValues& p, double t) { p[ParamId::WtZAShape] = static_cast<float>(std::min(1.0, -1.0 + 2.0 * t / 2.2)); };
+  zEx("e23_z_tilt_dark", "Z1 Harmonic Tilt, Shape -1 (sombre) : profondeur 0 -> 1 (dent de scie)", 4, 0.0f, -1.0f, "factory:saw", 45, rampDepth);
+  zEx("e24_z_tilt_bright", "Z1 Harmonic Tilt, Shape +0,3 (brillant, compensation de gain) : profondeur 0 -> 1", 4, 0.0f, 0.3f, "factory:saw", 45, rampDepth);
+  zEx("e25_z_mask_hollow", "Z4 Harmonic Mask, Shape -1 (harmoniques paires attenuees, creux) : profondeur 0 -> 1", 5, 0.0f, -1.0f, "factory:saw", 45, rampDepth);
+  zEx("e26_z_mask_sweep", "Z4 Harmonic Mask, profondeur 1 : Shape -1 -> +1 (periode du peigne 2 -> 8)", 5, 1.0f, -1.0f, "factory:saw", 45, rampShape);
+  zEx("e27_z_focus_formant", "Z5 Harmonic Focus, profondeur 0,8 : Shape -1 -> +1 (le formant monte)", 6, 0.8f, -1.0f, "factory:saw", 40, rampShape);
+  zEx("e28_z_focus_metal", "Z5 Harmonic Focus sur Metal Spectra, Shape 0 : profondeur 0 -> 1 (cavite resonante)", 6, 0.0f, 0.0f, "factory:metal", 45, rampDepth);
+  zEx("e29_z_shift_up", "Z6 Harmonic Shift, Shape 0 (vers le haut, fondamentale conservee) : profondeur 0 -> 1", 7, 0.0f, 0.0f, "factory:saw", 40, rampDepth);
+  zEx("e30_z_shift_down", "Z6 Harmonic Shift, Shape -1 (vers le bas) sur Formants : profondeur 0 -> 1", 7, 0.0f, -1.0f, "factory:formant", 45, rampDepth);
+  zEx("e31_z_scatter_fold", "Z7 Phase Scatter (A) puis Harmonic Fold (B, 0,6) : profondeur du Scatter 0 -> 1", 8, 0.0f, 0.0f, "factory:saw", 45, rampDepth, 1, 0.6f);
+  {
+    PluginState s = bare();
+    s.bank = "factory:saw";
+    s.params[ParamId::WtZ] = 1.0f;
+    s.params[ParamId::WtZAType] = 8.0f;
+    s.params[ParamId::WtLevel] = 0.0f;
+    s.params[ParamId::Op1Level] = 0.6f;
+    s.params[ParamId::CrossMaster] = 1.0f;
+    s.params[ParamId::CrossFwd] = 1.0f;
+    s.params[ParamId::DepthWtOp1] = 0.5f;
+    setRoutes(s, {Op::add(kNodeWT, kNodeOP1)});
+    add("e32_z_scatter_fm", "Z7 Phase Scatter : WT muette, module OP1 par CROSS WT>OP1 ; profondeur 0 -> 1 (spectre WT inchange)", s, 45);
+    ex.back().automate = rampDepth;
+  }
+  for (int mode = 0; mode < 2; ++mode) {
+    PluginState s = bare();
+    const int b = idx(ParamId::DstWt1Type);
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::Type))] = static_cast<float>(DstType::D2);
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::Mix))] = 1.0f;
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::D2Size))] = 120.0f;
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::D2Repeat))] = 1.0f;
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::D2Pos))] = 0.0f;
+    s.params.v[static_cast<size_t>(b + static_cast<int>(DstOff::D2Fb))] = 0.8f;
+    s.params[ParamId::DstWt1D2FbMode] = static_cast<float>(mode);
+    add(mode ? "e34_d2_regenerative" : "e33_d2_legacy",
+        mode ? "D2 Glitch Buffer, Position 0, Feedback 0,8 : REGENERATIVE (defaut des nouvelles instances)"
+             : "D2 Glitch Buffer, Position 0, Feedback 0,8 : LEGACY (rendu historique, Feedback inaudible)",
+        s, 45, mode == 0);
   }
   for (const auto& fp : factoryPresets()) {
     if (fp.first.name == "Init (0.1.0-b5)") continue;

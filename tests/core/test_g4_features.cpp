@@ -178,7 +178,12 @@ void testMigration() {
     bool same = g.sourceVersion == 1 && !g.hasInstance && g.bank == "factory:saw" && g.mod.routes.empty() &&
                 g.nextRouteId == b.nextRouteId && g.routes.size() == b.routes.size();
     for (int p = 0; p < kNumV1Params; ++p) same = same && g.params.v[static_cast<size_t>(p)] == b.params.v[static_cast<size_t>(p)];
-    for (int p = kNumV1Params; p < kNumParams; ++p) same = same && g.params.v[static_cast<size_t>(p)] == paramSpec(p).defaultValue;
+    // « autres au défaut » ; révision fonctionnelle RF-04 (ARCH-G4.3, définie avant mesure) : les modes D2 d'un état
+    // antérieur au format 4 prennent leur valeur de migration documentée (Legacy) et non le défaut des nouvelles instances
+    for (int p = kNumV1Params; p < kNumParams; ++p) {
+      const bool d2Mode = p >= idx(ParamId::DstWt1D2FbMode) && p <= idx(ParamId::DstGl2D2FbMode);
+      same = same && g.params.v[static_cast<size_t>(p)] == (d2Mode ? 0.0f : paramSpec(p).defaultValue);
+    }
     for (size_t k = 0; k < g.routes.size() && same; ++k)
       same = g.routes[k].id == b.routes[k].id && g.routes[k].src == b.routes[k].src && g.routes[k].dst == b.routes[k].dst &&
              static_cast<int>(g.routes[k].cls) == static_cast<int>(b.routes[k].cls);

@@ -85,9 +85,10 @@ class DestructionSlot {
   void restoreFrom(const float* src, int frames, int kind, double srcRate) noexcept;
   static int captureCapacity(double fs) noexcept { return static_cast<int>(std::ceil(2.05 * fs)) + 8; }
   bool frozen() const noexcept { return autonomous_; }
-  // D2 Feedback (étude ARCH-G4.2, arbitrage A-G41-06) : 0 = historique (défaut, seul comportement des états et presets),
-  // 1 = candidat C1 « régénération dans la boucle ». Option interne de test : ni paramètre, ni état, ni UI.
+  // D2 Feedback (ARCH-G4.3, A-G42-01 adopté) : 0 = LEGACY (historique), 1 = REGENERATIVE (C1, régénération dans la
+  // boucle) ; fixé par le moteur à chaque bloc depuis `dst.<slot>.d2.fb_mode` (défaut de l'emplacement isolé : LEGACY).
   void setD2FeedbackMode(int m) noexcept { d2FbMode_ = m; }
+  const std::vector<float>& testD2Buffer(int ch) const noexcept { return d2Buf_[static_cast<size_t>(ch)]; }  // tests
   int activeType() const noexcept { return type_; }
   bool settled() const noexcept { return pendingType_ < 0 && !fadingOut_; }
 

@@ -153,6 +153,8 @@ class Engine {
   const CompiledTopology* testActiveTopology() const noexcept { return active_; }
   int testCurrentNote() const noexcept { return gate_ ? currentNote_ : -1; }
   double testF0() const noexcept { return f0_; }
+  long long testSpectralResynth() const noexcept { return smResynth_; }
+  long long testSpectralBlends() const noexcept { return smBlends_; }
 
  private:
   enum class Transition { Idle = 0, FadeOut = 1, FadeIn = 2 };
@@ -168,7 +170,7 @@ class Engine {
   void evaluateNetwork(double& wtAudio, double& fmL, double& fmR) noexcept;
   double readWt(double phase, double inc, double slope, double x, double y) const noexcept;
   bool spectralActive() const noexcept;
-  void spectralUpdate(double x, double y, double absInc) noexcept;
+  void spectralUpdate(double x, double y, double absInc, const int* zt, const double* zv, const double* zs) noexcept;
   double readOpWave(int op, int wave, double phase, double inc) const noexcept;
   void handleEvent(const MidiEvent& e) noexcept;
   void noteOn(int note, int velocity) noexcept;
@@ -282,7 +284,12 @@ class Engine {
   Fft smFft_;
   int smCounter_ = 0;
   bool smValid_ = false, smSettled_ = false;
-  std::array<double, 7> smKey_{};
+  std::array<double, 18> smKey_{};
+  // Z spectral (ARCH-G4.3) : coefficients de la forme morphée, copie d'origine, tampon de travail (préalloués)
+  std::vector<std::complex<double>> smCoef_, smOrig_, smZWork_;
+  bool zSpecActive_ = false;
+  std::array<double, 8> smBlendKey_{};  // clé de la combinaison des formes en cache (smOrig_)
+  long long smResynth_ = 0, smBlends_ = 0;  // compteurs de test (resynthèses, combinaisons recalculées)
   std::array<double, 2> foldPrev_{};          // ADAA1 du repli (par emplacement Z)
   std::array<double, kNumNodes> lastInc_{};   // incrément de phase du dernier échantillon (sync sous-échantillon)
   double syncGhostPhase_ = 0.0;

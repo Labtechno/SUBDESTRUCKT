@@ -278,6 +278,10 @@ std::vector<std::pair<PresetInfo, PluginState>> factoryPresets() {
     i.name = name;
     i.tags = std::move(tags);
     i.factory = true;
+    // presets d'usine antérieurs à ARCH-G4.3 : Feedback D2 historique explicite (rendu inchangé, RF-04)
+    for (ParamId m : {ParamId::DstWt1D2FbMode, ParamId::DstWt2D2FbMode, ParamId::DstFm1D2FbMode, ParamId::DstFm2D2FbMode,
+                      ParamId::DstGl1D2FbMode, ParamId::DstGl2D2FbMode})
+      s.params[m] = 0.0f;
     v.emplace_back(i, std::move(s));
   };
   add("Init (0.1.0-b5)", {"init"}, defaultState());

@@ -319,6 +319,15 @@ class ChainColumn : public juce::Component {
     }
     refresh();
   }
+  // paramètres de l'algorithme actif ; D2 : mode de Feedback de l'emplacement (ARCH-G4.3, hors bloc contigu, append-only)
+  static std::vector<ParamId> dstParams(ParamId base, int type) {
+    auto v = filterOffsets(base, dstOffsetsFor(type));
+    if (type == static_cast<int>(DstType::D2)) {
+      const int slot = (idx(base) - idx(ParamId::DstWt1Type)) / static_cast<int>(DstOff::Count);
+      v.push_back(static_cast<ParamId>(idx(ParamId::DstWt1D2FbMode) + slot));
+    }
+    return v;
+  }
   // Renvoie vrai si la disposition a changé (type d'algorithme ou ordre Pre/Post).
   bool refresh() {
     const auto pv = ctx_.proc.parameters().values();
@@ -330,8 +339,8 @@ class ChainColumn : public juce::Component {
     t2_ = t2;
     post_ = post;
     filter_.grid.setParams(filterOffsets(fBase_, filterOffsetsFor(tf)));
-    d1_.grid.setParams(filterOffsets(dBase_[0], dstOffsetsFor(t1)));
-    d2_.grid.setParams(filterOffsets(dBase_[1], dstOffsetsFor(t2)));
+    d1_.grid.setParams(dstParams(dBase_[0], t1));
+    d2_.grid.setParams(dstParams(dBase_[1], t2));
     return true;
   }
   void refreshTelemetry() {
@@ -376,8 +385,8 @@ class SoundDesignView : public juce::Component {
     wt_.grid.setParams(P({ParamId::WtLevel, ParamId::WtX, ParamId::WtY, ParamId::WtZ, ParamId::WtCoarse, ParamId::WtFine, ParamId::WtChar,
                           ParamId::WtCharMode, ParamId::WtRender, ParamId::WtInterp, ParamId::WtXBound, ParamId::WtYBound, ParamId::WtXMorph,
                           ParamId::WtYMorph, ParamId::WtPhaseMode, ParamId::WtPhase, ParamId::WtSync, ParamId::WtSyncSrc, ParamId::WtZAType,
-                          ParamId::WtZADepth, ParamId::WtZACurve, ParamId::WtZBType, ParamId::WtZBDepth, ParamId::WtZBCurve, ParamId::WtZOrder,
-                          ParamId::WtZFund, ParamId::WtZGain}));
+                          ParamId::WtZADepth, ParamId::WtZACurve, ParamId::WtZAShape, ParamId::WtZBType, ParamId::WtZBDepth, ParamId::WtZBCurve,
+                          ParamId::WtZBShape, ParamId::WtZOrder, ParamId::WtZFund, ParamId::WtZGain}));
     cross_.grid.setCellSize(72, 84);
     cross_.grid.setParams(P({ParamId::CrossMaster, ParamId::CrossFwd, ParamId::CrossRev, ParamId::CrossDir, ParamId::DepthWtOp1, ParamId::DepthWtOp2,
                              ParamId::DepthWtOp3, ParamId::DepthWtOp4, ParamId::DepthOp1Wt, ParamId::DepthOp2Wt, ParamId::DepthOp3Wt, ParamId::DepthOp4Wt,

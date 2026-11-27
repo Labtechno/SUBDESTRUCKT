@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.2
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-G4.3
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,7 +22,7 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate du developpement integre ARCH-G4.2 (socle DSP et securite). Ce n'est NI une beta NI une version
+STATUT : livraison interne candidate du developpement integre ARCH-G4.3 (DSP FINAL LOCK, recette physique en attente). Ce n'est NI une beta NI une version
 publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
@@ -108,8 +108,27 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.2 (build interne, non diffusee)
+${BUILD_ID} (commit ${COMMIT}) — developpement integre ARCH-G4.3 (build interne, non diffusee)
 -------------------------------------------------------------------------------------------
+TRANSPORT AUTHORIZATION (a valider dans Reason 14 et Ableton Live, exports compris)
+- Un projet ouvert a l'arret garde ses etats autonomes suspendus ; le lancement de la LECTURE (ou de
+  l'enregistrement) les autorise automatiquement ; un export hors temps reel aussi. Bouton Autoriser conserve.
+- PANIC (et CC120) revoque toujours l'autorisation ; elle ne revient qu'apres un ARRET puis une LECTURE, ou Autoriser.
+- Le Drone restaure par un projet (drone_restore) est lui aussi soumis a cette autorisation.
+- Captures R2 retenues et restituees exactement a l'autorisation ; restitution S2 entre frequences d'echantillonnage
+  corrigee (niveau conserve).
+- Panic purge aussi les lignes d'alignement de latence (residu audible corrige).
+D2 Glitch Buffer : mode de Feedback par emplacement LEGACY / REGENERATIVE
+- Nouvelles instances : REGENERATIVE (Feedback audible a Position 0) ; projets et presets anterieurs : LEGACY
+  (rendu historique inchange). Format d'etat 4 (les versions anterieures refusent ces etats).
+Wavetable Z : catalogue de huit transformations
+- Ajouts : Harmonic Tilt, Harmonic Mask, Harmonic Focus, Harmonic Shift, Phase Scatter, et un reglage Shape par
+  emplacement Z. Fold, Warp et Mutation inchanges. Attention : Harmonic Tilt brillant sans compensation de gain peut
+  produire des niveaux tres eleves (protection ELP engagee) : arbitrage en cours.
+Parametres : 703 (695 historiques inchanges + 8 ajoutes en fin) ; identifiants VST3 historiques inchanges.
+
+0.3.1 — developpement integre ARCH-G4.2 (build interne, non diffusee)
+---------------------------------------------------------------------
 Securite des etats autonomes
 - Projet DAW, duplication d'instance ou preset portant un armement autonome ou une capture : etats autonomes
   SUSPENDUS (rien ne joue seul) jusqu'au bouton Autoriser ; reglages et captures restaures a l'identique.
@@ -124,6 +143,7 @@ Compilation locale
 - Script durci : arret au premier echec, pluginval obligatoire, livraison complete verifiee, aucune installation.
 Inchange
 - Son, parametres (695 StableID), identifiants VST3, format d'etat 3 ; D2 Feedback a Position 0 inchange (etude).
+
 
 0.3.0 — developpement integre ARCH-G4.1 (build interne, non diffusee)
 ---------------------------------------------------------------------
