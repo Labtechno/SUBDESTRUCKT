@@ -27,7 +27,11 @@ assertions (OUT GAIN reste à 0 dB, BALANCE reste à 0,5, la saisie s'ouvre sans
 frontières de zone, les glissers commencés hors canal et dans le canal, le clic absolu aux extrémités, la prise en main,
 le focus, et l'absence d'écriture, de geste et de transaction parasites, aux trois zooms.
 
-## DB2-09 — Double-clic dans le canal d'un PLASMA (EC-19) : **À ARBITRER avant la clôture de R2-B2**
+## DB2-09 — Double-clic dans le canal d'un PLASMA (EC-19) : **VALIDÉ, option B** (2026-11-28)
+
+La réinitialisation par double-clic dans le canal est supprimée, pour les PLASMA verticaux et horizontaux, en STANDARD
+comme en COMPACT. Cette décision complète DB2-02 et DB2-08. Contrat définitif : `B2-00-ADDENDUM-B2-03.md` §2. L'analyse
+soumise est conservée ci-dessous.
 
 Ce point ne bloque ni la fondation R1 ni la correction d'EC-17. Aucun comportement ne change avant l'arbitrage.
 

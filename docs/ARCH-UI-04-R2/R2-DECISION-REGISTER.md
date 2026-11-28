@@ -121,6 +121,17 @@ PB-02a (Core) et PB-02d (éditeur d'enveloppe) sont **reclassés défauts foncti
 en R2-C et R2-D avant toute validation pré-BETA. **DB2-09** (EC-19) est ouvert. Texte :
 `B2-PRODUCTION-INTEGRATION/B2-DECISIONS-PENDING.md`.
 
+## 3 septies. DB2-09 et CE-B2-06 à CE-B2-08 (2026-11-28)
+
+| ID | Option | Décision |
+|---|---|---|
+| DB2-09 | B | Plus de réinitialisation par double-clic dans le canal des PLASMA ; retour au défaut par Alt+clic, Suppr et menu |
+| CE-B2-06 | — | Performances audio : l'intégrité de `source/` et de `plugin/` ne suffit pas ; GS-04 et GS-07 restent non concluants sans preuve |
+| CE-B2-07 | — | Évolution du banc GC-01 versionnée, référence rejouée, A/A, aucune comparaison entre méthodologies |
+| CE-B2-08 | — | Indicateur MIDI Learn (CC) des NEXUS conservé en surimpression R1 (EC-21) |
+
+B2-02 : GO technique avec réserves GC-01. B2-03 : exécution autorisée. Texte : `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM-B2-03.md`.
+
 ## 4. Orientation rejetée
 
 | ID | Orientation | Motif |

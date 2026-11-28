@@ -9,6 +9,7 @@ DB2-01 à DB2-07 et amendements CE-B2-01 à CE-B2-05 consignés.
 
 | Document | Contenu |
 |---|---|
+| [B2-00-ADDENDUM-B2-03.md](B2-00-ADDENDUM-B2-03.md) | **Addendum normatif B2-03** : DB2-09 = B, CE-B2-06 à 08, contrat NEXUS / PLASMA définitif, critères EC-19 |
 | [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md) | **Addendum normatif** : GO, DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, seuils GS définitifs, PL-06 amendé (prime sur le dossier) |
 | [B2-00-DOSSIER.md](B2-00-DOSSIER.md) | Dossier d'exécution : état du dépôt, stratégie, dépendances, risques, PB-01 et PB-02, performances, fichiers, décisions, verdict |
 | [B2-00-COMPONENT-MAP.md](B2-00-COMPONENT-MAP.md) | Cartographie de la production, du laboratoire et des données disponibles |

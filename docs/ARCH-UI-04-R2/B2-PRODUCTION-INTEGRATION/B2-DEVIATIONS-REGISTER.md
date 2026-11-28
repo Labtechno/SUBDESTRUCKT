@@ -57,3 +57,10 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 | EC-18 | **Reclassé : défaut fonctionnel majeur** (PB-02a, Core : correction en R2-C ; PB-02d, éditeur d'enveloppe : correction en R2-D). Correction **obligatoire avant toute validation pré-BETA**. Aucune correction anticipée en R2-B2. Un `GestureGuard` générique ne vaut pas correction sans preuve spécifique sur ces deux scénarios. |
 | EC-19 | Ouvert, distinct de DB2-08 : arbitrage **DB2-09** préparé (`B2-DECISIONS-PENDING.md`), décision exigée avant la clôture de R2-B2 ; aucun changement avant |
 | EC-20 | PB-01e : correction autorisée pendant l'intégration NEXUS, contrôle de la classe commune et des PLASMA |
+
+## Mise à jour B2-03 (2026-11-28)
+
+| Écart | État |
+|---|---|
+| EC-19 | **DB2-09 validé (B)** : correction autorisée en B2-03 (2), critères amendés (`B2-00-ADDENDUM-B2-03.md` §4) |
+| EC-21 | **Nouveau, mineur (CE-B2-08)** : l'indicateur MIDI Learn (CC) des NEXUS n'a pas de variante R1. Il est conservé en surimpression avec la typographie et les couleurs R1, à partir des données MIDI Learn de 0.4.1. B2-03 (1). |

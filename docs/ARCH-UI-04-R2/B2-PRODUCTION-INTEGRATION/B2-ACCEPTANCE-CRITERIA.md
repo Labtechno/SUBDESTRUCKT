@@ -65,3 +65,13 @@ Les seuils SC du protocole GC-01 sont désormais **définitifs** (GS-01 à GS-07
 | PLAS-Z | Contrat de zone active des PLASMA (DB2-08) : PB-J1 (OUT GAIN reste à 0 dB), PB-J2 et PB-J3 (BALANCE reste à 0,5), PB-01c (saisie sans saut) en **assertions** ; frontières de zone, glisser commencé hors canal (aucune écriture, aucun geste hôte), glisser commencé dans le canal (historique), clic absolu aux extrémités, prise en main sans saut, focus, aucune écriture, aucun geste ni transaction Undo parasites ; PLASMA vertical et horizontal, STANDARD et COMPACT dans le périmètre ; zooms 75, 100 et 150 % ; aucune régression NEXUS | O | AUTO |
 | PB01E-FIX | PB-01e en assertion après correction : profondeur max 1, appariement, aucun résidu, transactions Undo cohérentes, automation préservée, aucune régression des autres interactions (NEXUS et PLASMA) | O | AUTO |
 | EC19-DEC | DB2-09 tranché avant la clôture de R2-B2 | O | AUDIT |
+
+## Addendum B2-03 (2026-11-28, enregistré avant mesure)
+
+| ID | Critère | Nature | Vérif. |
+|---|---|---|---|
+| EC19-FIX | PLASMA : double-clic dans le canal = position absolue sans retour au défaut ; assertions et scénarios de `B2-00-ADDENDUM-B2-03.md` §4 | O | AUTO |
+| MIDI-CC | Indicateur MIDI Learn conservé sur les NEXUS (CE-B2-08), sans masquer BASE, EFF, les marques ni les états ; XL, S et Micro ; trois zooms | O | AUTO + SUBJ |
+| AUDIO-UI | CE-B2-06 : aucun timer d'interface actif éditeur fermé ; aucune croissance après réouvertures répétées ; instances multiples ; destruction de l'éditeur sans geste résiduel | O | AUTO |
+
+EC19-DEC est **satisfait** par DB2-09 = B.
