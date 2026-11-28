@@ -7,6 +7,11 @@
 //   NEURAL CELL ............... interrupteur à états textuels OFF / ARMÉ / ACTIF (armements autonomes) ; ActionCell :
 //                               action momentanée distincte d'un interrupteur.
 //   OPTICAL DISPLAY / Plate ... verre optique fumé / plaque usinée titrée à accent sémantique.
+//
+// ARCH-UI-04-R2-B2-03 : rendu R1 par les peintres partagés (ui/r2/R2Painters.h), même géométrie pour le rendu et les
+// gestes, comportements de production inchangés sauf corrections autorisées (PB-01e, DB2-08, DB2-09). NEXUS : toujours
+// R1. PLASMA, NEURAL CELL, SYNAPTIC TRACK : R1 quand le gabarit tient réellement (CE-B2-02 ; aucun texte tronqué),
+// sinon rendu 0.4.1 conservé avec une raison publiée (plasmaBlockReason, r1BlockReason).
 //   ParamPanel ................ disposition en flux de commandes liées, sans troncature (libellés sur deux lignes).
 //
 // Règles : une commande liée édite la valeur Base du paramètre hôte (juce::ParameterAttachment : begin/end de geste
