@@ -195,6 +195,15 @@ abandonné). Livrable : `docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/`, n
 `docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv` (la révision R2-A reste reproductible à l'identique). Critères AR-01 à
 AR-15 ; AR-15 (validation artistique) est exclusivement humain.
 
+### 3duodecies. AR-15 et ARCH-UI-04-R2-B2-00 (2026-11-28)
+Décision humaine du propriétaire : **AR-15 PASS** (option A, validation artistique complète), **B1-R1 GO FINAL**, gel du
+Design System R1, LAB-A01 à LAB-A08 validés, R2-B2 autorisé (`B1-R1-FINAL-ARTISTIC-REFINEMENT/OWNER-DECISION-AR15.md`).
+La validation artistique ne vaut ni validation fonctionnelle du plugin intégré ni recette physique.
+R2-B2-00 : critères **INT-01 à INT-21** enregistrés avant mesure (`B2-PRODUCTION-INTEGRATION/B2-ACCEPTANCE-CRITERIA.md`),
+protocole GC-01 et seuils candidats GS-01 à GS-07 (à confirmer avant mesure, DB2-07), écarts EC-01 à EC-16, décisions
+DB2-01 à DB2-07. Contradiction normative relevée et soumise (non tranchée) : matériel minimum M1 (mission) / M3 de base
+(`V1-PLATFORM-REQUIREMENTS.md`, révision validée du 2026-11-25).
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -305,14 +314,17 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : planche 07 sans chevauchement ; planche-contact Windows (erratum B1) | 50cc8aa | laboratoire seulement |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : documentation, validation P1, référentiel, tracker, rendus Windows | 7cbfa43 | CI de production 54 et 55 SUCCESS |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats macOS finals (component-lab run 5) | 17da3e6 | commit du workflow |
-| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats CI consignés | (ce commit) | documentaire, `[skip ci]` |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats CI consignés | 73b633b | documentaire, `[skip ci]` |
+| 2026-11-28 | Décision du propriétaire : AR-15 PASS (option A), B1-R1 GO FINAL, Design System R1 gelé | (ce commit) | décision humaine consignée sans réécriture des preuves |
+| 2026-11-28 | ARCH-UI-04-R2-B2-00 : audit préalable et contractualisation (dossier pour contre-expertise) | (ce commit) | documentaire ; aucune intégration de production ; `git diff d2d08ac -- source/` vide |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
-documentaire. ARCH-UI-04-R2-B1 : GO technique après contre-expertise (preuves finales `786c6ad`). ARCH-UI-04-R2-B1-R1
-(raffinement artistique final, LAB-A01 à LAB-A08) livré : `docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/`. En
-attente : contre-expertise de l'architecte et validation artistique finale du propriétaire (AR-15). R2-B2, R2-C,
-ARCH-UI-05 et ARCH-UI-06 non autorisés.
+documentaire. ARCH-UI-04-R2-B1 : GO technique (preuves finales `786c6ad`). ARCH-UI-04-R2-B1-R1 : **GO FINAL** (AR-15 PASS,
+décision du propriétaire du 2026-11-28 ; Design System R1 gelé). ARCH-UI-04-R2-B2 autorisé : **R2-B2-00** (audit et
+contractualisation) publié dans `docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/`. En attente : contre-expertise de
+ChatGPT sur R2-B2-00, puis GO, et décisions DB2-01 à DB2-07 du propriétaire. Aucune intégration de production avant ce GO.
+R2-C, R2-D, R2-E, ARCH-UI-05 et ARCH-UI-06 non autorisés.
 Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 
 ### Indicateurs d'avancement (2026-11-28)

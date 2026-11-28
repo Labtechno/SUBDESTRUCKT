@@ -280,3 +280,14 @@ Sortie (toutes O d'abord, puis OBJ et SC documentés) : INV-01…13 ; NAM-01…1
 NC-01…10 ; CD-01…08 ; PL-01…06 ; AX-01, AX-03 ; UR-01, ED-01 (absence de crash), MI-01, SV-01, RT-01, ZM-01 pour les
 composants ; GC-01 mesuré ; aucune régression des inventaires de tests (`tools/check_results.sh`) ; CI macOS
 SUCCESS ; recette physique ciblée NC-05 / NC-07 / NC-03 ; validation subjective NAM-14, DS-03, CD-03.
+
+## Addendum R2-B2-00 (2026-11-28)
+
+- **NAM-07** se lit avec les distinctions de LAB-A08 (arbitrage normatif postérieur, R2-B1-R1) : XAUDIO AMT est
+  remplacé par AMOUNT et MODE sous l'en-tête CROSS AUDIO (XAUDIO abandonné). Les autres distinctions de NAM-07 sont
+  inchangées. Écart EC-04 (`B2-PRODUCTION-INTEGRATION/B2-DEVIATIONS-REGISTER.md`).
+- **PL-06** contredit le comportement de 0.4.1 et celui du laboratoire (EC-05). Il n'est pas modifié avant la décision
+  DB2-02.
+- Les critères de R2-B2 (INT-01 à INT-21) regroupent les critères de cette matrice sans les remplacer
+  (`B2-PRODUCTION-INTEGRATION/B2-ACCEPTANCE-CRITERIA.md`).
+

@@ -192,3 +192,9 @@ message de clôture, après vérification par `git ls-remote`.
 6. **Coût de rendu** des primitives R1 (dégradés, stries, rails) non mesuré (GC-01) ; à mesurer à l'intégration.
 7. **PB-01 et PB-02** restent au backlog : reproduction préalable obligatoire en R2-B2 (OD-10).
 8. **Restriction inter-domaines** des transformations Z toujours non arbitrée. LAB-A08 ne la tranche pas.
+
+## Addendum — décision du propriétaire (2026-11-28)
+
+**AR-15 : PASS** (option A, validation artistique complète, décision humaine). ARCH-UI-04-R2-B1-R1 : **GO FINAL**. Design
+System R1 gelé. Détail et portée : [OWNER-DECISION-AR15.md](OWNER-DECISION-AR15.md). Le contenu ci-dessus est conservé tel
+qu'il a été publié avant la décision.

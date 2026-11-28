@@ -36,6 +36,9 @@ les lots de développement R2-B à R2-H, puis ARCH-UI-05 (Core 3D) et ARCH-UI-06
 | 11 | [R2-EXECUTION-PLAN.md](R2-EXECUTION-PLAN.md) | Lots R2-B à R2-H, ARCH-UI-05/06, dépendances, prototypes, ordonnancement recommandé |
 | 12 | [R2-RISKS-AND-OPEN-DECISIONS.md](R2-RISKS-AND-OPEN-DECISIONS.md) | Risques techniques, ergonomiques et de gouvernance ; décisions restant à arbitrer |
 | 13 | [R2-A-REPORT.md](R2-A-REPORT.md) | Rapport de clôture de R2-A |
+| 14 | [B1-COMPONENT-LAB/](B1-COMPONENT-LAB/README.md) | R2-B1 : Component Lab (preuves historiques) |
+| 15 | [B1-R1-FINAL-ARTISTIC-REFINEMENT/](B1-R1-FINAL-ARTISTIC-REFINEMENT/README.md) | R2-B1-R1 : Design System R1 final (AR-15 PASS, gelé) |
+| 16 | [B2-PRODUCTION-INTEGRATION/](B2-PRODUCTION-INTEGRATION/README.md) | R2-B2 : intégration en production (R2-B2-00 : audit et contractualisation) |
 
 ## Conventions
 

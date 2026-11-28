@@ -78,3 +78,9 @@ B1 inchangées ; la planche-contact Windows publiée en B1 était noire, voir l'
 
 Voir [`lab/README.md`](../../../lab/README.md). En résumé : `sbd_component_lab --all` sur la révision R1, avec `--b1`
 pointant vers les captures B1 de la même plateforme, puis `py -3.11 lab/tools/build_validation_r1.py`.
+
+## Addendum — décision du propriétaire (2026-11-28)
+
+**AR-15 : PASS** (option A, validation artistique complète, décision humaine). ARCH-UI-04-R2-B1-R1 : **GO FINAL**. Design
+System R1 gelé. Détail et portée : [OWNER-DECISION-AR15.md](OWNER-DECISION-AR15.md). Le contenu ci-dessus est conservé tel
+qu'il a été publié avant la décision.

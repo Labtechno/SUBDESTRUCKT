@@ -87,6 +87,15 @@ Corrections issues de la contre-expertise de R2-A, intégrées en R2-B1 :
 Application et preuves : `B1-R1-FINAL-ARTISTIC-REFINEMENT/LAB-ARTISTIC-DECISIONS.md`. PR-05 et PR-08 sont
 précisées par LAB-A08 ; la variante PANIC et le gabarit PLASMA vertical, soumis en B1, sont tranchés.
 
+## 3 quater. Validation artistique finale (AR-15) et gel du Design System R1
+
+| ID | Option | Décision | Date |
+|---|---|---|---|
+| AR-15 | A | Validation artistique complète du Component Lab R1 : **PASS** (décision humaine). B1-R1 GO FINAL ; Design System R1 gelé (NEXUS Hybrid, NEURAL CELL Machined Titanium, SYNAPTIC Machined Track, Cybernetic HUD, PLASMA STANDARD et COMPACT, PANIC carbone sur rouge, tokens Symbiotic Industrial Hybrid, nomenclature R1) ; R2-B2 autorisé en commençant par R2-B2-00 seul. Toute modification du Design System R1 exige un nouvel arbitrage. | 2026-11-28 |
+
+Trace : `B1-R1-FINAL-ARTISTIC-REFINEMENT/OWNER-DECISION-AR15.md`. Décisions ouvertes par R2-B2-00 : DB2-01 à DB2-07
+(`B2-PRODUCTION-INTEGRATION/B2-00-DOSSIER.md` §12).
+
 ## 4. Orientation rejetée
 
 | ID | Orientation | Motif |

@@ -35,3 +35,9 @@ produite et le critère d'acceptation correspondant (AR-01 à AR-15).
 | AR-13 | Production et DSP inchangés | `git diff`, CI de production | voir rapport §11 à §13 |
 | AR-14 | Captures macOS finales publiées | `CAPTURES/macos/`, planche-contact | voir rapport §15 |
 | AR-15 | Validation artistique du propriétaire | **décision humaine exclusivement** | **EN ATTENTE** (jamais déclaré PASS par l'agent) |
+
+## Addendum — décision du propriétaire (2026-11-28)
+
+**AR-15 : PASS** (option A, validation artistique complète, décision humaine). ARCH-UI-04-R2-B1-R1 : **GO FINAL**. Design
+System R1 gelé. Détail et portée : [OWNER-DECISION-AR15.md](OWNER-DECISION-AR15.md). Le contenu ci-dessus est conservé tel
+qu'il a été publié avant la décision.
