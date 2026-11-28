@@ -1,0 +1,30 @@
+platform Mac OSX 15.8.2  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Lucida Grande / Menlo
+01-component-lab-board.png  3680x2300
+02-nexus.png  2680x1660
+03-neural-cell.png  2680x1500
+04-synaptic-track.png  2680x1400
+05-cybernetic-display.png  2680x1660
+06-plasma-channel.png  2680x1280
+07-interactive-states.png  2840x1320
+08-engine-colours.png  2680x1280
+zoom sheet composed
+09-zoom-75-100-150.png  1980x645
+10-critical-typography.png  2680x1640
+12-plate-grouping.png  1920x1000
+PT-02 Mac OSX 15.8.2 font Lucida Grande: 2213 occurrences; 100%: OK 2099, OK_MARGE<8 3, 2_LIGNES 0, DÉPASSEMENT 0, BUDGET_NON_MESURE 111; critiques 26, plancher 9 px a 75 % 26/26
+PT-05 Mac OSX 15.8.2: glyphes natifs 16/16
+Contrastes : 27/27 PASS
+RESULT LAB-G01 PASS drag 22 px = +0.10 (0.600), begin 1 end 1 nested 0 outside 0
+RESULT LAB-G02 PASS double click -> default 0.25, max depth 1, begin 2 end 2 nested 0 outside 0
+RESULT LAB-G03 PASS 3 wheel notches = 1 gesture (yes), then key; begin 2 end 2 nested 0 outside 0
+RESULT LAB-G04 PASS 5 keys = 5 complete gestures, final default; begin 5 end 5 nested 0 outside 0
+RESULT LAB-G05 PASS alt-click default; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G06 PASS editor destroyed mid-drag; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G07 PASS hidden mid-drag, late events ignored; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G08 PASS removed from parent mid-drag; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G09 PASS fine mode re-anchors: 0.600 -> 0.610; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G10 PASS plasma click, double click (default), drag then destroy; begin 3 end 3 nested 0 outside 0
+RESULT LAB-G11 PASS component ID finds PANIC after visible text change; accessible title unchanged
+RESULT LAB-G12 PASS board rendered 1840x1150, forced states painted, writes 0
+RESULT LAB-G13 PASS toggle ON, exclusive selection, ARMED text, disabled shows dash
+SELFTEST 13 PASS, 0 FAIL
