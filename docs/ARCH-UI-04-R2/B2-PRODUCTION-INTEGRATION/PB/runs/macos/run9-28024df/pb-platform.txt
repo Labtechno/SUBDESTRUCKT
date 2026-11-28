@@ -1,0 +1,4 @@
+os: Mac OSX 15.8.2
+juce: JUCE v9.0.6
+double-click timeout ms: 400
+banc: editeur reel dans un hote de test (TestPeer : couche fenetre de l'OS remplacee), evenements injectes par ComponentPeer::handleMouseEvent
