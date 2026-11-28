@@ -1,0 +1,10 @@
+etiquette : cur-0d576ed-1
+code : 0d576ede261026022f11bd06e7857d41f859e292
+os : Mac OSX 15.8.2
+cpu : Apple M1 (Virtual) (3 coeurs physiques, 3 logiques)
+memoire : 7168 Mio
+juce : JUCE v9.0.6
+audio : 48000 Hz, blocs de 256
+rendu : image natif CoreGraphics, echelle 2, rendu force (lecture d'un pixel)
+repetitions : 30 (+ 5 de chauffe)
+mode : complet
