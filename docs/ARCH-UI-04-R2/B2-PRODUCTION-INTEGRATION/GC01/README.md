@@ -99,3 +99,22 @@ série par série, aux mesures de la version intégrée.
 
 Plateformes : Windows (développement), macOS VM (comparatif, non certifiant) et macOS physique M3 (certification,
 recette du propriétaire) sont toujours publiés séparément.
+
+## 4. Contrôle A/A et plancher de bruit de la VM (CE-B2-04)
+
+**Run 5** (`macos/run5-0d576ed/`) : première alternance référence `0517426` / courant `0d576ed`. Le **rendu de production est
+identique de part et d'autre** : le module `ui/r2` est compilé dans le plugin mais n'est pas encore utilisé. C'est donc un
+contrôle A/A, qui mesure le bruit propre à la VM GitHub.
+
+| Série | Écart A/A observé | Conséquence |
+|---|---|---|
+| GP-01, rendu complet (pire vue × zoom) | jusqu'à +23 % | Marge de GS-01 (50 %) au-dessus du bruit : jugeable sur VM |
+| GP-02, rafraichissement (p95) | jusqu'à 26 % | Marge de GS-02 (50 %) au-dessus du bruit : jugeable sur VM (partie comparative) |
+| GP-04, bloc audio, éditeur fermé (p99) | **+16 %** | Marge de GS-04 et GS-07 (5 %) **dans le bruit** : **NON CONCLUANT sur VM**, mesure physique M3 requise |
+| GP-05, surcoût mémoire | 1,6 % | Jugeable |
+| GP-07, interaction (p95) | 2,4 % | Jugeable |
+
+**Outil.** `tools/gc01_compare.py <run> --aa=<run A/A>` confronte chaque run aux seuils GS définitifs. Un verdict est **NON
+CONCLUANT** lorsque l'écart A/A de la même série atteint la marge du seuil : ni PASS ni ÉCHEC. Les parties absolues de
+GS-02 (11,1 ms) et de GS-06 (16,7 ms) ne sont jamais jugées sur VM.
+

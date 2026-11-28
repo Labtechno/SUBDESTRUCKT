@@ -79,8 +79,9 @@ jobs:
             echo "macOS   : $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion)), $(uname -m), VM GitHub"
           } | tee out/pb/machine.txt
           mkdir -p out/prod
-          SBD_B2_OUT="$PWD/out/pb" ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/prod/ui.png 2>&1 | tee out/wrapper.log
+          SBD_B2_OUT="$PWD/out/pb" ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt "$PWD/out/prod/ui.png" 2>&1 | tee out/wrapper.log
           code="${PIPESTATUS[0]}"
+          ls out/prod | head -40
           grep -a '^RESULT ' out/wrapper.log > out/pb/wrapper-results.txt
           bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt "wrapper=out/wrapper.log:$code" | tee out/pb/barrier.txt
           test -s out/pb/pb-summary.csv
@@ -113,19 +114,29 @@ jobs:
           # captures de production (MainEditor reel, rendu hors ecran) : seulement sur les jalons marques [captures]
           if git log -1 --format=%B | grep -qF '[captures]'; then
             tag="run${{ github.run_number }}-${GITHUB_SHA::7}"
-            mkdir -p "$DEST_CAP/$tag"
-            cp out/prod/*.png "$DEST_CAP/$tag/"
-            cp out/pb/machine.txt "$DEST_CAP/$tag/machine.txt"
-            git add "$DEST_CAP"
+            shopt -s nullglob
+            caps=(out/prod/*.png)
+            echo "captures de production produites : ${#caps[@]}"
+            if [ ${#caps[@]} -gt 0 ]; then
+              mkdir -p "$DEST_CAP/$tag"
+              cp "${caps[@]}" "$DEST_CAP/$tag/"
+              cp out/pb/machine.txt "$DEST_CAP/$tag/machine.txt"
+              git add "$DEST_CAP"
+            else
+              echo "::warning::AUCUNE CAPTURE DE PRODUCTION PRODUITE"
+            fi
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST_PB" "$DEST_GC"
           if git diff --cached --quiet; then echo "aucun changement"; exit 0; fi
           git commit -q -m "docs(ARCH-UI-04-R2-B2): preuves macOS du wrapper et GC-01 (run ${{ github.run_number }}) [skip ci]"
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5; do
+            echo "versement : tentative $i"
             git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
-            sleep 5
+            git status --short | head -20
+            git log --oneline -3
+            sleep $((5 * i))
           done
           exit 1
 

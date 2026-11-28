@@ -4,22 +4,29 @@ calcule les rapports courant / référence (médiane des deux exécutions de cha
 COMPARATIFS. Les seuils absolus (GS-02 11,1 ms, GS-06 16,7 ms) exigent la machine physique M3 : jamais jugés ici.
 Un résultat de VM est comparatif et NON certifiant.
 
-Usage : py -3.11 tools/gc01_compare.py <dossier du run> [<csv de sortie>]
+Plancher de bruit (CE-B2-04) : --aa=<dossier d'un run A/A> (référence et courant au rendu identique). Pour chaque seuil, si
+l'écart relatif observé en A/A sur la même série atteint la marge du seuil (ex. 5 % pour GS-04), le verdict est
+NON CONCLUANT (bruit VM) : ni PASS ni ÉCHEC, mesure physique requise.
+
+Usage : py -3.11 tools/gc01_compare.py <dossier du run> [<csv de sortie>] [--aa=<dossier A/A>]
 """
 import csv, glob, pathlib, statistics, sys
 
+aa_dir = next((pathlib.Path(a.split('=', 1)[1]) for a in sys.argv[1:] if a.startswith('--aa=')), None)
+sys.argv = [a for a in sys.argv if not a.startswith('--aa=')]
 d = pathlib.Path(sys.argv[1])
 
 
-def load(prefix):
+def load(prefix, base=None):
     runs = []
-    for f in sorted(glob.glob(str(d / f'gc01-summary-{prefix}-*.csv'))):
+    for f in sorted(glob.glob(str((base or d) / f'gc01-summary-{prefix}-*.csv'))):
         runs.append({(r['metric'], r['scenario']): r for r in csv.DictReader(open(f, encoding='utf-8'), delimiter=';')})
     return runs
 
 
 ref, cur = load('ref'), load('cur')
 assert ref and cur, 'run non alterne (ref-* et cur-* attendus)'
+aa_ref, aa_cur = (load('ref', aa_dir), load('cur', aa_dir)) if aa_dir else ([], [])
 
 
 def med(runs, key, field):
@@ -64,13 +71,38 @@ verdicts.append(('GS-06 (comparatif)', 'GP-07 p95 interaction <= 1,5 x ref ; obj
 w2 = worst('GP-04', 'p99', lambda s: s.startswith('editeur-ferme'))
 verdicts.append(('GS-07', 'editeur ferme : p99 bloc <= 1,05 x ref', w2, w2 and w2[5] <= 1.05))
 
-print(f'GC-01 run alterne {d.name} : {len(ref)} execution(s) reference, {len(cur)} execution(s) courant ; VM : comparatif, NON certifiant')
+LIMITS = {'GS-01': 1.5, 'GS-02 (comparatif)': 1.5, 'GS-04': 1.05, 'GS-05': 1.25, 'GS-06 (comparatif)': 1.5, 'GS-07': 1.05}
+
+
+def aa_noise(x):  # écart relatif A/A : même série si elle existe, sinon famille (même mesure, même champ), hors séries d'information
+    if not aa_ref:
+        return None
+    devs = []
+    same = (x[0], x[1]) in aa_ref[0]
+    for k in aa_ref[0]:
+        if k[0] != x[0] or not all(k in R for R in aa_ref + aa_cur) or k[1].endswith('-info') or 'depassements' in k[1]:
+            continue
+        if same and k[1] != x[1]:
+            continue
+        a, b = med(aa_ref, k, x[2]), med(aa_cur, k, x[2])
+        if a and b is not None and a > 0:
+            devs.append(abs(b / a - 1.0))
+    return max(devs) if devs else None
+
+
+print(f'GC-01 run alterne {d.name} : {len(ref)} execution(s) reference, {len(cur)} execution(s) courant ; VM : comparatif, NON certifiant'
+      + (f' ; plancher de bruit A/A : {aa_dir.name}' if aa_dir else ''))
 for gid, desc, x, ok in verdicts:
     if x is None:
         print(f'{gid:20s} NON MESURE  {desc}')
         continue
     ratio = f'{x[5]:.3f}' if x[5] is not None else 'n/a'
-    print(f'{gid:20s} {"PASS" if ok else "ECHEC":10s} ref {x[3]:.3f} cur {x[4]:.3f} ratio {ratio}  [{x[0]} {x[1]} {x[2]}]  {desc}')
+    noise = aa_noise(x) if gid in LIMITS else None
+    verdict = 'PASS' if ok else 'ECHEC'
+    if noise is not None and noise >= LIMITS[gid] - 1.0 and not (x[5] is not None and x[5] > 1.0 + 2.0 * noise and not ok):
+        verdict = 'NON CONCLUANT'  # la marge du seuil est dans le bruit A/A de la VM : mesure physique requise
+    extra = f' bruit A/A {noise:.3f}' if noise is not None else ''
+    print(f'{gid:20s} {verdict:14s} ref {x[3]:.3f} cur {x[4]:.3f} ratio {ratio}{extra}  [{x[0]} {x[1]} {x[2]}]  {desc}')
 if len(sys.argv) > 2:
     with open(sys.argv[2], 'w', encoding='utf-8', newline='') as f:
         wr = csv.writer(f, delimiter=';')
