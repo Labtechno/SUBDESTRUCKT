@@ -303,7 +303,9 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : raffinement artistique final (LAB-A01..A08), rendus et mesures Windows | e896dba | aucun fichier de production modifié |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats macOS (component-lab run 4) | 7c68a27 | commit du workflow |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : planche 07 sans chevauchement ; planche-contact Windows (erratum B1) | 50cc8aa | laboratoire seulement |
-| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : documentation, validation P1, référentiel, tracker, rendus Windows | (ce commit) | documentaire ; résultats macOS R1 versés par le workflow |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : documentation, validation P1, référentiel, tracker, rendus Windows | 7cbfa43 | CI de production 54 et 55 SUCCESS |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats macOS finals (component-lab run 5) | 17da3e6 | commit du workflow |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats CI consignés | (ce commit) | documentaire, `[skip ci]` |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan

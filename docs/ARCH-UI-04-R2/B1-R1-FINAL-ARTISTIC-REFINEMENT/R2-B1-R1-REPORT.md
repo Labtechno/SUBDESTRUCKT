@@ -156,16 +156,19 @@ Les tests historiques ne sont pas touchés.
 
 | Workflow | Run | Commit | Résultat |
 |---|---|---|---|
-| Component Lab (macOS 15, laboratoire) | 4 | `e896dba` | **SUCCESS** : résultats versés en `7c68a27` (remplacés par le run 5) ; NEXUS et PLASMA identiques, SELFTEST 15 / 15 |
-| Component Lab (macOS 15, laboratoire) | 5 | commit de documentation (code `50cc8aa`) | EN COURS (complété au commit suivant) |
-| ARCH-G4 (production : plugin, tests, pluginval, RTSan, paquets) | 54 | `e896dba` | EN COURS (complété au commit suivant) |
-| ARCH-G4 (production) | 55 | commit de documentation | EN COURS (complété au commit suivant) |
+| Component Lab (macOS 15, laboratoire) | [4](https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46144007733) | `e896dba` | **SUCCESS** : résultats versés en `7c68a27`, remplacés par le run 5 |
+| Component Lab (macOS 15, laboratoire) | [5](https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46144906132) | `7cbfa43` (code `50cc8aa`) | **SUCCESS** : résultats finaux versés en `17da3e6` ; NEXUS et PLASMA identiques (0 pixel), SELFTEST 15 / 15, PANIC 5,08:1 |
+| ARCH-G4 (production : plugin, tests du cœur et du wrapper, pluginval, RTSan, paquets) | [54](https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46144007864) | `e896dba` | **SUCCESS** |
+| ARCH-G4 (production) | [55](https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46144906108) | `7cbfa43` | **SUCCESS** |
+
+Captures macOS finales : run 5, code `7cbfa43` (en-tête de chaque planche). Captures Windows : poste local, code `50cc8aa`.
+Le code du laboratoire est identique entre ces deux commits.
 
 ## 14. SHA final distant
 
-Consigné dans le message de clôture, après la publication de la documentation et la vérification `ls-remote`. Un
-fichier ne peut pas contenir le SHA du commit qui l'introduit. Résultat de la CI de production 54 : consigné au même
-endroit.
+Dernier commit de preuves : `17da3e6` (résultats macOS du run 5). Le SHA distant final est celui du commit qui
+introduit cette ligne : un fichier ne peut pas contenir le SHA du commit qui l'introduit. Il est consigné dans le
+message de clôture, après vérification par `git ls-remote`.
 
 ## 15. Liens directs
 
