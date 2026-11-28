@@ -70,6 +70,23 @@ Corrections issues de la contre-expertise de R2-A, intégrées en R2-B1 :
 | C05 | Trois cadences distinctes ; 30 FPS non imposé au rendu ARCH-UI-05 | DE-08, TEL-04, contrat Core §7 |
 | C06 | `tests/known_failures.txt` : dix entrées = huit échecs documentés + deux critères remplacés (ZC-15, TA-15) | INV-09, réserves |
 
+## 3 ter. Arbitrages artistiques du Component Lab (R2-B1-R1)
+
+| ID | Option | Décision |
+|---|---|---|
+| LAB-A01 | A | Conservation des NEXUS Hybrid (géométrie, moletage XL, biseau S, Micro, index, graduations, arc BASE, marqueur EFFECTIVE, fenêtre numérique, états) |
+| LAB-A02 | B | NEURAL CELL Machined Titanium |
+| LAB-A03 | B | SYNAPTIC Machined Track |
+| LAB-A04 | C | Cybernetic HUD (neuf variantes) |
+| LAB-A05 | A | Conservation de l'apparence PLASMA |
+| LAB-A06 | C | Symbiotic Industrial Hybrid |
+| LAB-A07.1 | B | PANIC : libellé carbone sur rouge (≥ 4,5:1 sur la surface rendue) |
+| LAB-A07.2 | C | PLASMA vertical STANDARD 64 x 180 et COMPACT 48 x 150, même composant |
+| LAB-A08 | B | Nomenclature P1 optimisée : AMOUNT et MODE sous CROSS AUDIO (XAUDIO abandonné), KEEP FUND, OUT GAIN ; P2 et P3 restent sous OD-02 |
+
+Application et preuves : `B1-R1-FINAL-ARTISTIC-REFINEMENT/LAB-ARTISTIC-DECISIONS.md`. PR-05 et PR-08 sont
+précisées par LAB-A08 ; la variante PANIC et le gabarit PLASMA vertical, soumis en B1, sont tranchés.
+
 ## 4. Orientation rejetée
 
 | ID | Orientation | Motif |

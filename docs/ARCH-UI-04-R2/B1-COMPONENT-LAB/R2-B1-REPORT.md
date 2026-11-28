@@ -152,8 +152,10 @@ Le [README](README.md) intègre les 12 planches macOS. Liens directs :
 | `3aab1bd` | résultats macOS, component-lab run 1 (commit du workflow, `[skip ci]`) |
 | `ab06b8c` | identifiants OD-01, variante PANIC, revue P1 |
 | `09758ba` | résultats macOS, component-lab run 2 (commit du workflow, `[skip ci]`) |
-| commit de documentation suivant | documentation B1, arbitrages OD, corrections C01 à C06, tracker, correction d'une légende de la planche 03 |
-| commit de résultats macOS suivant | component-lab run 3 sur le code final (commit du workflow) ; SHA final consigné dans le message de clôture |
+| `1530687` | documentation B1, arbitrages OD, corrections C01 à C06, tracker, correction d'une légende de la planche 03 |
+| `786c6ad` | résultats macOS, component-lab run 3 sur le code final (commit du workflow, `[skip ci]`) |
+
+**SHA des preuves finales B1 : `786c6ad8f65f573b61c6389303e3f971ed88250a`** (HEAD distant vérifié à la clôture de B1).
 
 ## 11. Vérification du DSP FINAL LOCK et de la production
 
@@ -162,8 +164,13 @@ Le [README](README.md) intègre les 12 planches macOS. Liens directs :
   .github/workflows/arch-g3.yml` : **vide**. Seuls des fichiers nouveaux sont ajoutés (`lab/`, `component-lab.yml`,
   `docs/ARCH-UI-04-R2/B1-COMPONENT-LAB/`). Le reste concerne la documentation : référentiel R2, tracker et erratum du
   DSP FINAL LOCK.
-- La CI de production `arch-g4.yml` (plugin, tests cœur et wrapper, pluginval, RTSan, paquets) s'exécute sur `a8a172b`
-  et `ab06b8c`. Résultat : voir le message de clôture.
+- CI de production `arch-g4.yml` (plugin, tests du cœur et du wrapper, barrière, pluginval, RTSan, paquets, script de
+  build local, manuel) :
+  - run 51 sur `a8a172b` : **SUCCESS** ;
+  - run 53 sur `1530687` : **SUCCESS** ;
+  - run 52 sur `ab06b8c` : annulé par GitHub, remplacé par un run plus récent dans le même groupe de concurrence (pas un échec).
+- Component Lab macOS (`component-lab.yml`) : runs 1, 2 et 3 en **SUCCESS** ; résultats versés en `3aab1bd`, `09758ba`
+  et `786c6ad`.
 - Version de production : 0.4.1, inchangée. StableID, registre et format d'état inchangés.
 
 ## 12. Critères de sortie (brief §13)
@@ -178,7 +185,7 @@ Le [README](README.md) intègre les 12 planches macOS. Liens directs :
 | Libellés P1 regroupés pour validation | PASS (323 occurrences, 11 groupes) |
 | Contrastes mesurés | PASS (mesurés : 27/28, l'échec est documenté) |
 | Plancher typographique critique vérifié | PASS (26/26, deux plateformes) |
-| Aucune régression dans le plugin de production | aucun fichier de production modifié ; CI de production : voir le message de clôture |
+| Aucune régression dans le plugin de production | PASS : aucun fichier de production modifié ; CI de production 51 et 53 SUCCESS |
 | DSP FINAL LOCK intact | PASS |
 | Captures et preuves disponibles sur GitHub | PASS |
 
@@ -202,3 +209,17 @@ Le [README](README.md) intègre les 12 planches macOS. Liens directs :
 
 Hors de R2-B2 : nouvelles dispositions (R2-C), regroupement ENGINEERING et Inspector adaptatif (R2-E), réseaux (R2-F),
 flux réactif (R2-G), Core 3D (ARCH-UI-05).
+
+## Note de clôture (ajoutée en R2-B1-R1, 2026-11-28)
+
+Ce rapport est autonome. B1 a obtenu son GO technique après la contre-expertise indépendante de ChatGPT. Les huit
+arbitrages artistiques du propriétaire (LAB-A01 à LAB-A08) sont appliqués dans
+[`../B1-R1-FINAL-ARTISTIC-REFINEMENT/`](../B1-R1-FINAL-ARTISTIC-REFINEMENT/README.md). Les preuves B1 de ce dossier sont
+conservées sans modification pour la comparaison historique.
+
+**Erratum (constaté en R2-B1-R1).** La planche-contact Windows de ce dossier
+(`CONTACT-SHEETS/contact-sheet-windows.png`) est entièrement noire. L'outil écrivait le PNG avant la destruction du
+contexte de dessin. Sous Windows (Direct2D, dessin différé), l'image n'était donc jamais remplie ; macOS n'est pas
+affecté. Les douze captures Windows individuelles de `CAPTURES/windows/` sont correctes et font foi. L'outil est corrigé
+en `50cc8aa`. Une planche-contact régénérée à partir de ces mêmes captures, sans les modifier, est publiée dans
+[`../B1-R1-FINAL-ARTISTIC-REFINEMENT/CONTACT-SHEETS/contact-sheet-windows-B1.png`](../B1-R1-FINAL-ARTISTIC-REFINEMENT/CONTACT-SHEETS/contact-sheet-windows-B1.png).

@@ -161,4 +161,46 @@ for k in crit:
       + ' | '.join(meas[p][k]['Plancher 9 px à 75 %'] for p in PLATFORMS) + ' |')
 A('')
 (D / 'P1-NAMING-VALIDATION.md').write_text('\n'.join(L) + '\n', encoding='utf-8')
+
+# 4. rapport de contraste (tokens et PANIC sur surface rendue), généré depuis les mesures brutes
+C = []
+B = C.append
+B('# ARCH-UI-04-R2-B1-R1 — rapport de contraste')
+B('')
+B('Fichier généré par `lab/tools/build_validation_r1.py` à partir de `data/<plateforme>/contrast.csv` et `panic-contrast.csv`')
+B('(Component Lab). Rapport de luminance WCAG 2.x. Seuils : 4,5:1 pour le texte (13 px gras reste un texte normal), 3:1 pour les')
+B('éléments d\'interface non textuels et le texte inactif, 1,15:1 (seuil candidat) entre niveaux de relief, 1:1 pour le décor.')
+B('')
+B('## 1. Paires de tokens')
+B('')
+B('Calcul sur la valeur des tokens, indépendant de la plateforme. Les faces en dégradé R1 sont évaluées à leurs extrémités.')
+B('')
+tok = read(D / 'data' / PLATFORMS[0] / 'contrast.csv')
+B('| Avant-plan | Fond | Usage | Rapport | Seuil | Verdict |')
+B('|---|---|---|---|---|---|')
+for r in tok:
+    B(f"| {r['Avant-plan']} | {r['Fond']} | {r['Usage']} | {r['Rapport WCAG']} | {r['Seuil']} | {r['Verdict']} |")
+npass = sum(1 for r in tok if r['Verdict'] == 'PASS')
+B('')
+fails = [f"{r['Avant-plan']} sur {r['Fond']} ({r['Usage']}, {r['Rapport WCAG']}:1)" for r in tok if r['Verdict'] != 'PASS']
+B(f'Bilan : {npass} / {len(tok)} PASS. Échecs : ' + ('; '.join(fails) if fails else 'aucun') +
+  '. Le libellé blanc de 0.4.1 et B1 est conservé comme référence historique ; R1 utilise le libellé carbone.')
+B('')
+B('## 2. PANIC sur la surface rendue (LAB-A07.1)')
+B('')
+B('La touche est rendue sans libellé, dans chaque état et à chaque échelle. Chaque pixel de la zone du libellé est comparé à la couleur')
+B('du libellé. La valeur retenue est le **minimum** : le pire pixel du dégradé réel.')
+B('')
+B('| Plateforme | Variante | État | Échelle | Pixels | Contraste min. | Contraste max. | Verdict |')
+B('|---|---|---|---|---|---|---|---|')
+worst = {}
+for p in PLATFORMS:
+    for r in read(D / 'data' / p / 'panic-contrast.csv'):
+        B(f"| {p} | {r['Variante']} | {r['État']} | {r['Échelle']} | {r['Pixels de fond mesurés']} | {r['Contraste minimal']} | {r['Contraste maximal']} | {r['Verdict']} |")
+        if r['Variante'].startswith('R1'):
+            worst[p] = min(worst.get(p, 1e9), float(r['Contraste minimal']))
+B('')
+B('Pire cas du libellé carbone R1, tous états et toutes échelles : ' + ' ; '.join(f'{p} {worst[p]:.2f}:1' for p in PLATFORMS) +
+  ' (exigence : 4,5:1). La valeur la plus basse correspond au rouge nominal, à l\'appui. L\'éclaircissement du survol et du repos la relève.')
+(D / 'CONTRAST-REPORT.md').write_text('\n'.join(C) + '\n', encoding='utf-8')
 print(f'P1 {len(P1)} ; plateformes {PLATFORMS} ; homonymies {len(hom)} ; budgets indéterminés {len(undet)} ; critiques {len(crit)}')

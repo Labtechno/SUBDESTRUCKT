@@ -1,4 +1,4 @@
-platform Windows 11  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Verdana / Lucida Console  ·  code base 786c6ad + travaux R1 locaux (non commit�s)
+platform Windows 11  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Verdana / Lucida Console  ·  code 50cc8aa
 01-final-board.png  3680x2300
 NONREG 02-nexus.png : 0 pixel(s) différent(s) sur 4095040 (hors bandeau d'en-tête), écart maximal 0/255  ->  IDENTIQUE
 02-nexus-nonregression.png  2752x974

@@ -186,6 +186,15 @@ aucun fichier de production modifié), workflow `component-lab.yml` (macOS 15 VM
 5,08:1 soumise) ; auto-tests du laboratoire LAB-G01..G13 13/13 PASS (composants R2 seulement). PB-01 et PB-02 ne sont
 pas corrigés en production (protocoles de reproduction prêts). Validation artistique du propriétaire en attente.
 
+### 3undecies. ARCH-UI-04-R2-B1-R1 (raffinement artistique final, 2026-11-28)
+Arbitrages normatifs du propriétaire : LAB-A01 A (NEXUS conservés), LAB-A02 B (NEURAL CELL Machined Titanium),
+LAB-A03 B (SYNAPTIC Machined Track), LAB-A04 C (Cybernetic HUD), LAB-A05 A (PLASMA conservé), LAB-A06 C (Symbiotic
+Industrial Hybrid), LAB-A07.1 B (PANIC carbone sur rouge), LAB-A07.2 C (PLASMA vertical STANDARD 64 x 180 et COMPACT
+48 x 150), LAB-A08 B (nomenclature P1 optimisée : AMOUNT et MODE sous CROSS AUDIO, KEEP FUND, OUT GAIN ; XAUDIO
+abandonné). Livrable : `docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/`, nomenclature révisée
+`docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv` (la révision R2-A reste reproductible à l'identique). Critères AR-01 à
+AR-15 ; AR-15 (validation artistique) est exclusivement humain.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -289,13 +298,19 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-A : référentiel Design & Ergonomics (`docs/ARCH-UI-04-R2/`) | 04dd7cf | documentaire ; `git diff d2d08ac -- source/` vide ; aucun build, aucun test modifié ; GO documentaire, R2-B non autorisé |
 | 2026-11-28 | ARCH-UI-04-R2-B1 : Component Lab isolé, captures et mesures Windows | a8a172b | aucun fichier de production modifié ; component-lab run 1 SUCCESS (macOS, résultats versés en 3aab1bd) |
 | 2026-11-28 | ARCH-UI-04-R2-B1 : identifiants OD-01, variante PANIC, revue P1 | ab06b8c | component-lab run 2 (macOS) |
-| 2026-11-28 | ARCH-UI-04-R2-B1 : documentation, arbitrages OD, corrections C01–C06 | (ce commit) | documentaire ; `git diff d2d08ac -- source/` vide |
+| 2026-11-28 | ARCH-UI-04-R2-B1 : documentation, arbitrages OD, corrections C01–C06 | 1530687 | documentaire ; `git diff d2d08ac -- source/` vide |
+| 2026-11-28 | ARCH-UI-04-R2-B1 : résultats macOS (component-lab run 3) | 786c6ad | SHA des preuves finales B1 ; CI de production 51 et 53 SUCCESS |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : raffinement artistique final (LAB-A01..A08), rendus et mesures Windows | e896dba | aucun fichier de production modifié |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats macOS (component-lab run 4) | 7c68a27 | commit du workflow |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : planche 07 sans chevauchement ; planche-contact Windows (erratum B1) | 50cc8aa | laboratoire seulement |
+| 2026-11-28 | ARCH-UI-04-R2-B1-R1 : documentation, validation P1, référentiel, tracker, rendus Windows | (ce commit) | documentaire ; résultats macOS R1 versés par le workflow |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
-documentaire. ARCH-UI-04-R2-B1 (Component Lab) livré : `docs/ARCH-UI-04-R2/B1-COMPONENT-LAB/`. En attente :
-validation artistique du propriétaire et contre-expertise de l'architecte sur B1 ; arbitrage des libellés P1 (OD-02),
-du libellé PANIC et du gabarit PLASMA vertical. R2-B2, R2-C, ARCH-UI-05 et ARCH-UI-06 non autorisés.
+documentaire. ARCH-UI-04-R2-B1 : GO technique après contre-expertise (preuves finales `786c6ad`). ARCH-UI-04-R2-B1-R1
+(raffinement artistique final, LAB-A01 à LAB-A08) livré : `docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/`. En
+attente : contre-expertise de l'architecte et validation artistique finale du propriétaire (AR-15). R2-B2, R2-C,
+ARCH-UI-05 et ARCH-UI-06 non autorisés.
 Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 
 ### Indicateurs d'avancement (2026-11-28)

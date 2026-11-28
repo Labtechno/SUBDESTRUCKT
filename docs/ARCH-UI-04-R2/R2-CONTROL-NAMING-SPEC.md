@@ -203,3 +203,20 @@ Ces résultats reposent sur une estimation de largeur. Ils DOIVENT être confirm
 La mise à jour de ces tests DOIT se faire par une stratégie d'identification stable plutôt que par le texte : identifiant
 de composant ou titre accessible technique. Cette stratégie est soumise à autorisation (OD-01) : la gouvernance interdit
 d'ajuster un critère de test pour obtenir un PASS sans décision explicite.
+
+## 12. Révision R1 (LAB-A08, R2-B1-R1)
+
+La révision R1 de la nomenclature est `R2-CONTROL-LABELS-R1.csv`, générée de façon reproductible par
+`lab/tools/gen_labels_r1.py` à partir de la révision R2-A, qui reste inchangée. Elle applique :
+
+- **XAUDIO abandonné.** `cross.audio.amount` devient AMOUNT et `cross.audio.mode` devient MODE, sous un nouvel en-tête
+  de section CROSS AUDIO (`sound.cross.section.audio`, P1). L'onglet devient BUS / CROSS AUDIO. Hors de cette section,
+  une identification contextuelle explicite reste obligatoire.
+- **KEEP F0** devient KEEP FUND.
+- **OUT GAIN** pour le gain général ; GAIN reste le gain de sortie d'un étage, dans sa plaque.
+- **Abréviations validées :** LVL, DIR, KEEP FUND, GAIN COMP, XFADE, FDBK, CHAR.
+
+Statuts : lexique P1 validé (324 occurrences, dont l'en-tête ajouté) ; P2 et P3 sous OD-02 ; statut géométrique séparé,
+mesuré par PT-02 (`B1-R1-FINAL-ARTISTIC-REFINEMENT/P1-NAMING-VALIDATION.md`). Un budget indéterminé n'est jamais
+déclaré PASS.
+

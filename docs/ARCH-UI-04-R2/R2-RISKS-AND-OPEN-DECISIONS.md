@@ -65,6 +65,15 @@
 
 Restent ouvertes : OD-03, OD-04, OD-05, OD-07, OD-08, OD-09, OD-12 à OD-16 et OD-19.
 
+## 2 ter. Points tranchés par les arbitrages LAB (R2-B1-R1)
+
+| Point soumis en B1 | Arbitrage | Effet |
+|---|---|---|
+| Libellé PANIC (blanc 3,84:1 ou carbone 5,08:1) | LAB-A07.1 B | Carbone adopté ; contraste vérifié sur la surface rendue, tous états |
+| Gabarit PLASMA vertical (64 x 180 ou 48 x 150) | LAB-A07.2 C | Les deux, même composant ; choix par emplacement en R2-B2 / R2-C |
+| Libellés P1 (OD-02) | LAB-A08 B | Lexique P1 validé ; géométrie vérifiée par mesure ; 37 budgets P1 indéterminés à vérifier dans leurs lots |
+| OUT GAIN | LAB-A08 B | Adopté pour le gain général |
+
 ## 3. Réserves maintenues (non modifiées par R2)
 
 R-29 et R-30 NON EXÉCUTÉS (risques acceptés) ; PANIC et sauvegarde pendant un export NON EXÉCUTÉS physiquement ;

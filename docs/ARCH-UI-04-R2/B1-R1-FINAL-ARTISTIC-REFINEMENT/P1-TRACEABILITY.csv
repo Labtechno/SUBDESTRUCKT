@@ -1,0 +1,325 @@
+﻿Référence,Occurrence,Famille graphique,Emplacement,Libellé R2-A,Libellé R1 (LAB-A08),Nom complet,Statut lexical,Budget px log.,macos largeur 100 % px,macos verdict,windows largeur 100 % px,windows verdict,Statut géométrique (cible macOS),Repère critique,Plancher 9 px à 75 %
+out.gain,Paramètre (canonique),PLASMA V,PERFORMANCE / PERFORMANCE,OUT GAIN,OUT GAIN,Output Gain,VALIDÉ (LAB-A08),92.00,45.37,PASS,46.29,PASS,PASS,non,n/a
+cross.op1_wt.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,PM,PM,CROSS OP1>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op2_wt.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,PM,PM,CROSS OP2>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.master,Paramètre (canonique),PLASMA V,PERFORMANCE / PERFORMANCE,CROSS LVL,CROSS LVL,CROSS Master (CROSS level),VALIDÉ (LAB-A08),70.00,48.71,PASS,50.97,PASS,PASS,non,n/a
+cross.fwd,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,WT→FM,WT→FM,CROSS WT>FM (forward),VALIDÉ (LAB-A08),80.00,36.29,PASS,34.49,PASS,PASS,non,n/a
+cross.rev,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,FM→WT,FM→WT,CROSS FM>WT (reverse),VALIDÉ (LAB-A08),80.00,36.29,PASS,34.49,PASS,PASS,non,n/a
+wt.x,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,X,X,WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+wt.y,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,Y,Y,WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+wt.z,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,WT Z,WT Z,WT Z Master (Z transform depth),VALIDÉ (LAB-A08),80.00,22.50,PASS,23.91,PASS,PASS,non,n/a
+wt.za.type,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,A TYPE,A TYPE,WT ZA Transform,VALIDÉ (LAB-A08),164.00,31.35,PASS,31.70,PASS,PASS,non,n/a
+wt.za.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.za.type=Harmonic Fold,A DEPTH,A DEPTH,WT ZA Depth,VALIDÉ (LAB-A08),80.00,39.39,PASS,39.90,PASS,PASS,non,n/a
+wt.za.curve,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.za.type=Harmonic Fold,A CURVE,A CURVE,WT ZA Curve,VALIDÉ (LAB-A08),164.00,39.41,PASS,40.52,PASS,PASS,non,n/a
+wt.zb.type,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,B TYPE,B TYPE,WT ZB Transform,VALIDÉ (LAB-A08),164.00,30.28,PASS,31.71,PASS,PASS,non,n/a
+wt.zb.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.zb.type=Harmonic Fold,B DEPTH,B DEPTH,WT ZB Depth,VALIDÉ (LAB-A08),80.00,38.32,PASS,39.92,PASS,PASS,non,n/a
+wt.zb.curve,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.zb.type=Harmonic Fold,B CURVE,B CURVE,WT ZB Curve,VALIDÉ (LAB-A08),164.00,38.34,PASS,40.54,PASS,PASS,non,n/a
+wt.z_order,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,ORDER,ORDER,WT Z Order,VALIDÉ (LAB-A08),164.00,31.13,PASS,32.41,PASS,PASS,non,n/a
+wt.z_fund,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,KEEP F0,KEEP FUND,WT Z Keep Fundamental,VALIDÉ (LAB-A08) — modifié,99.00,49.71,PASS,51.93,PASS,PASS,non,n/a
+wt.z_gain,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,GAIN COMP,GAIN COMP,WT Z Gain Compensation,VALIDÉ (LAB-A08),99.00,52.66,PASS,53.50,PASS,PASS,non,n/a
+op1.mute,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT XYZ / CROSS DIRECT / FM OP1,MUTE,MUTE,OP1 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op1.enable,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT XYZ / CROSS DIRECT / FM OP1,ON,ON,OP1 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op2.mute,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT LECTURE / CROSS WT › FM / FM OP2,MUTE,MUTE,OP2 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op2.enable,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT LECTURE / CROSS WT › FM / FM OP2,ON,ON,OP2 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op3.mute,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,MUTE,MUTE,OP3 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op3.enable,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,ON,ON,OP3 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op4.mute,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,MUTE,MUTE,OP4 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op4.enable,Paramètre (canonique),NEURAL,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,ON,ON,OP4 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+fm.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE / CROSS BUS / AUDIO / FM COMMUN,FB RESET,FB RESET,FM Feedback Reset,VALIDÉ (LAB-A08),164.00,40.30,PASS,44.09,PASS,PASS,non,n/a
+cross.op3_wt.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,PM,PM,CROSS OP3>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op4_wt.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,PM,PM,CROSS OP4>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.bus_wt.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,PM,PM,CROSS BUS>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op1_wt_freq.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,FREQ,FREQ,CROSS OP1>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op1_wt_x.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,X,X,CROSS OP1>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op1_wt_y.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Y,Y,CROSS OP1>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op1_wt_z.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Z,Z,CROSS OP1>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op1_wt_level.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,LVL,LVL,CROSS OP1>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op1_wt_char.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,CHAR,CHAR,CROSS OP1>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op2_wt_freq.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,FREQ,FREQ,CROSS OP2>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op2_wt_x.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,X,X,CROSS OP2>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op2_wt_y.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Y,Y,CROSS OP2>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op2_wt_z.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Z,Z,CROSS OP2>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op2_wt_level.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,LVL,LVL,CROSS OP2>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op2_wt_char.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,CHAR,CHAR,CROSS OP2>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op3_wt_freq.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,FREQ,FREQ,CROSS OP3>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op3_wt_x.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,X,X,CROSS OP3>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op3_wt_y.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Y,Y,CROSS OP3>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op3_wt_z.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Z,Z,CROSS OP3>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op3_wt_level.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,LVL,LVL,CROSS OP3>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op3_wt_char.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,CHAR,CHAR,CROSS OP3>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op4_wt_freq.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,FREQ,FREQ,CROSS OP4>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op4_wt_x.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,X,X,CROSS OP4>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op4_wt_y.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Y,Y,CROSS OP4>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op4_wt_z.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Z,Z,CROSS OP4>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op4_wt_level.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,LVL,LVL,CROSS OP4>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op4_wt_char.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,CHAR,CHAR,CROSS OP4>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.bus_wt_freq.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,FREQ,FREQ,CROSS BUS>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.bus_wt_x.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,X,X,CROSS BUS>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.bus_wt_y.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Y,Y,CROSS BUS>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.bus_wt_z.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,Z,Z,CROSS BUS>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.bus_wt_level.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,LVL,LVL,CROSS BUS>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.bus_wt_char.depth,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC / CROSS FM › WT / FM OP3,CHAR,CHAR,CROSS BUS>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.dir,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT XYZ / CROSS DIRECT / FM OP1,DIR,DIR,CROSS Direction,VALIDÉ (LAB-A08),164.00,15.59,PASS,17.08,PASS,PASS,non,n/a
+cross.audio.mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,XAUDIO MODE,MODE,Cross Audio Mode (post-chain),VALIDÉ (LAB-A08) — modifié,164.00,27.36,PASS,27.45,PASS,PASS,non,n/a
+cross.audio.amount,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,XAUDIO AMT,AMOUNT,Cross Audio Amount (post-chain),VALIDÉ (LAB-A08) — modifié,80.00,41.02,PASS,39.91,PASS,PASS,non,n/a
+cross.audio.am_dir,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; cross.audio.mode=AM,AM DIR,AM DIR,Cross AM Direction,VALIDÉ (LAB-A08),164.00,33.04,PASS,34.07,PASS,PASS,non,n/a
+flt.wt.pos,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; flt.wt.type=F1 Multimode,PRE/POST,PRE/POST,FLT WT Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.wt.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.wt.type=F4 Modal,FREEZE,FREEZE,FLT WT Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+flt.wt.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.wt.type=F1 Multimode,ARM,ARM,FLT WT Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+flt.fm.pos,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; flt.fm.type=F1 Multimode,PRE/POST,PRE/POST,FLT FM Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.fm.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.fm.type=F4 Modal,FREEZE,FREEZE,FLT FM Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+flt.fm.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.fm.type=F1 Multimode,ARM,ARM,FLT FM Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+flt.gl.pos,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; flt.gl.type=F1 Multimode,PRE/POST,PRE/POST,FLT GLOBAL Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.gl.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.gl.type=F4 Modal,FREEZE,FREEZE,FLT GLOBAL Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+flt.gl.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; flt.gl.type=F1 Multimode,ARM,ARM,FLT GLOBAL Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.wt1.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt1.type=N2 Feedback Waveshaper,ARM,ARM,DST WT1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.wt1.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.wt1.type=D2 Glitch Buffer,SPEED,SPEED,DST WT1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.wt1.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt1.type=D2 Glitch Buffer,FREEZE,FREEZE,DST WT1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt1.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt1.type=S2 Spectral Freeze,FREEZE,FREEZE,DST WT1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt2.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt2.type=N2 Feedback Waveshaper,ARM,ARM,DST WT2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.wt2.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.wt2.type=D2 Glitch Buffer,SPEED,SPEED,DST WT2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.wt2.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt2.type=D2 Glitch Buffer,FREEZE,FREEZE,DST WT2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt2.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.wt2.type=S2 Spectral Freeze,FREEZE,FREEZE,DST WT2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm1.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm1.type=N2 Feedback Waveshaper,ARM,ARM,DST FM1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.fm1.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.fm1.type=D2 Glitch Buffer,SPEED,SPEED,DST FM1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.fm1.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm1.type=D2 Glitch Buffer,FREEZE,FREEZE,DST FM1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm1.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm1.type=S2 Spectral Freeze,FREEZE,FREEZE,DST FM1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm2.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm2.type=N2 Feedback Waveshaper,ARM,ARM,DST FM2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.fm2.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.fm2.type=D2 Glitch Buffer,SPEED,SPEED,DST FM2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.fm2.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm2.type=D2 Glitch Buffer,FREEZE,FREEZE,DST FM2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm2.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.fm2.type=S2 Spectral Freeze,FREEZE,FREEZE,DST FM2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl1.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl1.type=N2 Feedback Waveshaper,ARM,ARM,DST GL1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.gl1.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.gl1.type=D2 Glitch Buffer,SPEED,SPEED,DST GL1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.gl1.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl1.type=D2 Glitch Buffer,FREEZE,FREEZE,DST GL1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl1.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl1.type=S2 Spectral Freeze,FREEZE,FREEZE,DST GL1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl2.arm,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl2.type=N2 Feedback Waveshaper,ARM,ARM,DST GL2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.gl2.d2.speed,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; dst.gl2.type=D2 Glitch Buffer,SPEED,SPEED,DST GL2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.gl2.d2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl2.type=D2 Glitch Buffer,FREEZE,FREEZE,DST GL2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl2.s2.freeze,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS ; dst.gl2.type=S2 Spectral Freeze,FREEZE,FREEZE,DST GL2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+macro1,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,M1,M1,Macro 1,VALIDÉ (LAB-A08),96.00,13.95,PASS,13.38,PASS,PASS,non,n/a
+macro2,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,M2,M2,Macro 2,VALIDÉ (LAB-A08),96.00,13.95,PASS,13.38,PASS,PASS,non,n/a
+macro3,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,M3,M3,Macro 3,VALIDÉ (LAB-A08),96.00,13.95,PASS,13.38,PASS,PASS,non,n/a
+macro4,Paramètre (canonique),NEXUS S,PERFORMANCE / PERFORMANCE,M4,M4,Macro 4,VALIDÉ (LAB-A08),96.00,13.95,PASS,13.38,PASS,PASS,non,n/a
+out.limiter,Paramètre (canonique),NEURAL,SOUND DESIGN / TRAITEMENTS,LIMITER,LIMITER,Musical Limiter,VALIDÉ (LAB-A08),99.00,35.28,PASS,37.88,PASS,PASS,non,n/a
+out.ceiling,Paramètre (canonique),NEXUS S,SOUND DESIGN / TRAITEMENTS ; out.limiter=On,CEILING,CEILING,Limiter Ceiling,VALIDÉ (LAB-A08),80.00,35.54,PASS,38.49,PASS,PASS,non,n/a
+perf.balance,Paramètre (canonique),PLASMA H,PERFORMANCE / PERFORMANCE,BALANCE,BALANCE,"WT/FM Balance (audio, pre-chain)",VALIDÉ (LAB-A08),129.88,41.66,PASS,42.43,PASS,PASS,non,n/a
+dst.wt1.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.wt1.type=D2 Glitch Buffer,FB MODE,FB MODE,DST WT1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.wt2.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.wt2.type=D2 Glitch Buffer,FB MODE,FB MODE,DST WT2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.fm1.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.fm1.type=D2 Glitch Buffer,FB MODE,FB MODE,DST FM1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.fm2.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.fm2.type=D2 Glitch Buffer,FB MODE,FB MODE,DST FM2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.gl1.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.gl1.type=D2 Glitch Buffer,FB MODE,FB MODE,DST GL1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.gl2.d2.fb_mode,Paramètre (canonique),SYNAPTIC,SOUND DESIGN / TRAITEMENTS ; dst.gl2.type=D2 Glitch Buffer,FB MODE,FB MODE,DST GL2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+wt.za.shape,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.za.type=Harmonic Fold,A SHAPE,A SHAPE,WT ZA Shape,VALIDÉ (LAB-A08),80.00,37.96,PASS,39.73,PASS,PASS,non,n/a
+wt.zb.shape,Paramètre (canonique),NEXUS S,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4 ; wt.zb.type=Harmonic Fold,B SHAPE,B SHAPE,WT ZB Shape,VALIDÉ (LAB-A08),80.00,36.89,PASS,39.74,PASS,PASS,non,n/a
+wt.x,Variante d'emplacement,NEXUS XL,PERFORMANCE / PERFORMANCE,X,X,WT X,VALIDÉ (LAB-A08),128.00,7.08,PASS,7.85,PASS,PASS,oui,atteint
+wt.x,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,X,X,WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+wt.y,Variante d'emplacement,NEXUS XL,PERFORMANCE / PERFORMANCE,Y,Y,WT Y,VALIDÉ (LAB-A08),128.00,7.29,PASS,7.58,PASS,PASS,oui,atteint
+wt.y,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,Y,Y,WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+wt.z,Variante d'emplacement,NEXUS XL,PERFORMANCE / PERFORMANCE,WT Z,WT Z,WT Z Master (Z transform depth),VALIDÉ (LAB-A08),128.00,27.25,PASS,29.25,PASS,PASS,oui,atteint
+wt.z,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,WT Z,WT Z,WT Z Master (Z transform depth),VALIDÉ (LAB-A08),80.00,22.50,PASS,23.91,PASS,PASS,non,n/a
+cross.master,Variante d'emplacement,PLASMA V,PERFORMANCE / PERFORMANCE,Z · CROSS LVL,Z · CROSS LVL,CROSS Master (CROSS level),VALIDÉ (LAB-A08),70.00,68.96,PASS (marge < 8 px),72.91,PASS en deux lignes,PASS (marge < 8 px),oui,atteint
+cross.master,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,CROSS LVL,CROSS LVL,CROSS Master (CROSS level),VALIDÉ (LAB-A08),80.00,53.13,PASS,55.61,PASS,PASS,oui,atteint
+cross.master,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,CROSS LVL,CROSS LVL,CROSS Master (CROSS level),VALIDÉ (LAB-A08),80.00,48.71,PASS,50.97,PASS,PASS,non,n/a
+cross.fwd,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,X · WT→FM,X · WT→FM,CROSS WT>FM (forward),VALIDÉ (LAB-A08),80.00,55.64,PASS,54.93,PASS,PASS,oui,atteint
+cross.fwd,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,WT→FM,WT→FM,CROSS WT>FM (forward),VALIDÉ (LAB-A08),80.00,36.29,PASS,34.49,PASS,PASS,non,n/a
+cross.rev,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,Y · FM→WT,Y · FM→WT,CROSS FM>WT (reverse),VALIDÉ (LAB-A08),80.00,55.61,PASS,54.24,PASS,PASS,oui,atteint
+cross.rev,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,FM→WT,FM→WT,CROSS FM>WT (reverse),VALIDÉ (LAB-A08),80.00,36.29,PASS,34.49,PASS,PASS,non,n/a
+perf.balance,Variante d'emplacement,PLASMA H,PERFORMANCE / PERFORMANCE,BALANCE,BALANCE,"WT/FM Balance (audio, pre-chain)",VALIDÉ (LAB-A08),129.88,41.66,PASS,42.43,PASS,PASS,non,n/a
+out.gain,Variante d'emplacement,PLASMA V,PERFORMANCE / PERFORMANCE,OUT GAIN,OUT GAIN,Output Gain,VALIDÉ (LAB-A08),92.00,45.37,PASS,46.29,PASS,PASS,non,n/a
+macro1,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,M1,M1,Macro 1,VALIDÉ (LAB-A08),96.00,15.22,PASS,14.60,PASS,PASS,oui,atteint
+macro2,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,M2,M2,Macro 2,VALIDÉ (LAB-A08),96.00,15.22,PASS,14.60,PASS,PASS,oui,atteint
+macro3,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,M3,M3,Macro 3,VALIDÉ (LAB-A08),96.00,15.22,PASS,14.60,PASS,PASS,oui,atteint
+macro4,Variante d'emplacement,NEXUS S,PERFORMANCE / PERFORMANCE,M4,M4,Macro 4,VALIDÉ (LAB-A08),96.00,15.22,PASS,14.60,PASS,PASS,oui,atteint
+cross.dir,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,DIR,DIR,CROSS Direction,VALIDÉ (LAB-A08),164.00,15.59,PASS,17.08,PASS,PASS,non,n/a
+op1.mute,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,MUTE,MUTE,OP1 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op1.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,ON,ON,OP1 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op1.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,ON,ON,OP1 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op2.mute,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,MUTE,MUTE,OP2 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op2.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,ON,ON,OP2 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op2.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,ON,ON,OP2 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+cross.op1_wt.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,PM,PM,CROSS OP1>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op1_wt.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_freq.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,FREQ,FREQ,CROSS OP1>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op1_wt_freq.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT Freq,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_x.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,X,X,CROSS OP1>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op1_wt_x.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT X,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_y.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Y,Y,CROSS OP1>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op1_wt_y.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT Y,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_z.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Z,Z,CROSS OP1>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op1_wt_z.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT Z,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_level.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,LVL,LVL,CROSS OP1>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op1_wt_level.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT Level,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op1_wt_char.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,CHAR,CHAR,CROSS OP1>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op1_wt_char.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP1>WT Char,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,PM,PM,CROSS OP2>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op2_wt.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_freq.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,FREQ,FREQ,CROSS OP2>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op2_wt_freq.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT Freq,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_x.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,X,X,CROSS OP2>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op2_wt_x.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT X,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_y.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Y,Y,CROSS OP2>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op2_wt_y.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT Y,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_z.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Z,Z,CROSS OP2>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op2_wt_z.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT Z,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_level.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,LVL,LVL,CROSS OP2>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op2_wt_level.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT Level,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op2_wt_char.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,CHAR,CHAR,CROSS OP2>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op2_wt_char.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP2>WT Char,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,PM,PM,CROSS OP3>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op3_wt.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_freq.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,FREQ,FREQ,CROSS OP3>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op3_wt_freq.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT Freq,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_x.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,X,X,CROSS OP3>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op3_wt_x.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT X,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_y.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Y,Y,CROSS OP3>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op3_wt_y.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT Y,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_z.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Z,Z,CROSS OP3>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op3_wt_z.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT Z,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_level.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,LVL,LVL,CROSS OP3>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op3_wt_level.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT Level,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op3_wt_char.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,CHAR,CHAR,CROSS OP3>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op3_wt_char.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP3>WT Char,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,PM,PM,CROSS OP4>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.op4_wt.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_freq.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,FREQ,FREQ,CROSS OP4>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.op4_wt_freq.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT Freq,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_x.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,X,X,CROSS OP4>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.op4_wt_x.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT X,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_y.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Y,Y,CROSS OP4>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.op4_wt_y.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT Y,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_z.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Z,Z,CROSS OP4>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.op4_wt_z.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT Z,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_level.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,LVL,LVL,CROSS OP4>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.op4_wt_level.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT Level,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.op4_wt_char.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,CHAR,CHAR,CROSS OP4>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.op4_wt_char.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS OP4>WT Char,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,PM,PM,CROSS BUS>WT,VALIDÉ (LAB-A08),80.00,13.21,PASS,13.09,PASS,PASS,non,n/a
+cross.bus_wt.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_freq.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,FREQ,FREQ,CROSS BUS>WT Freq,VALIDÉ (LAB-A08),80.00,23.23,PASS,24.34,PASS,PASS,non,n/a
+cross.bus_wt_freq.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT Freq,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_x.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,X,X,CROSS BUS>WT X,VALIDÉ (LAB-A08),80.00,5.85,PASS,6.20,PASS,PASS,non,n/a
+cross.bus_wt_x.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT X,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_y.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Y,Y,CROSS BUS>WT Y,VALIDÉ (LAB-A08),80.00,5.82,PASS,5.57,PASS,PASS,non,n/a
+cross.bus_wt_y.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT Y,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_z.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,Z,Z,CROSS BUS>WT Z,VALIDÉ (LAB-A08),80.00,5.65,PASS,6.20,PASS,PASS,non,n/a
+cross.bus_wt_z.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT Z,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_level.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,LVL,LVL,CROSS BUS>WT Level,VALIDÉ (LAB-A08),80.00,16.07,PASS,15.78,PASS,PASS,non,n/a
+cross.bus_wt_level.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT Level,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+cross.bus_wt_char.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,CHAR,CHAR,CROSS BUS>WT Char,VALIDÉ (LAB-A08),80.00,25.68,PASS,25.60,PASS,PASS,non,n/a
+cross.bus_wt_char.depth,Variante d'emplacement,NEXUS Micro,ENGINEERING / CROSS NETWORK,DEPTH,DEPTH,CROSS BUS>WT Char,VALIDÉ (LAB-A08),80.00,27.26,PASS,27.76,PASS,PASS,non,n/a
+op3.mute,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,MUTE,MUTE,OP3 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op3.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,ON,ON,OP3 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op3.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,ON,ON,OP3 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+wt.za.type,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,A TYPE,A TYPE,WT ZA Transform,VALIDÉ (LAB-A08),164.00,31.35,PASS,31.70,PASS,PASS,non,n/a
+wt.zb.type,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,B TYPE,B TYPE,WT ZB Transform,VALIDÉ (LAB-A08),164.00,30.28,PASS,31.71,PASS,PASS,non,n/a
+wt.z_order,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,ORDER,ORDER,WT Z Order,VALIDÉ (LAB-A08),164.00,31.13,PASS,32.41,PASS,PASS,non,n/a
+wt.z_fund,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,KEEP F0,KEEP FUND,WT Z Keep Fundamental,VALIDÉ (LAB-A08) — modifié,99.00,49.71,PASS,51.93,PASS,PASS,non,n/a
+wt.z_gain,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,GAIN COMP,GAIN COMP,WT Z Gain Compensation,VALIDÉ (LAB-A08),99.00,52.66,PASS,53.50,PASS,PASS,non,n/a
+op4.mute,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,MUTE,MUTE,OP4 Mute,VALIDÉ (LAB-A08),99.00,25.48,PASS,25.55,PASS,PASS,non,n/a
+op4.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,ON,ON,OP4 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op4.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,ON,ON,OP4 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op4.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,ON,ON,OP4 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+op4.enable,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ON,ON,OP4 Enable,VALIDÉ (LAB-A08),99.00,14.16,PASS,13.89,PASS,PASS,non,n/a
+cross.audio.mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,XAUDIO MODE,MODE,Cross Audio Mode (post-chain),VALIDÉ (LAB-A08) — modifié,164.00,27.36,PASS,27.45,PASS,PASS,non,n/a
+cross.audio.mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,XAUDIO MODE,MODE,Cross Audio Mode (post-chain),VALIDÉ (LAB-A08) — modifié,164.00,27.36,PASS,27.45,PASS,PASS,non,n/a
+cross.audio.mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,XAUDIO MODE,MODE,Cross Audio Mode (post-chain),VALIDÉ (LAB-A08) — modifié,164.00,27.36,PASS,27.45,PASS,PASS,non,n/a
+cross.audio.amount,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,XAUDIO AMT,AMOUNT,Cross Audio Amount (post-chain),VALIDÉ (LAB-A08) — modifié,80.00,41.02,PASS,39.91,PASS,PASS,non,n/a
+cross.audio.amount,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,XAUDIO AMT,AMOUNT,Cross Audio Amount (post-chain),VALIDÉ (LAB-A08) — modifié,80.00,41.02,PASS,39.91,PASS,PASS,non,n/a
+cross.audio.amount,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,XAUDIO AMT,AMOUNT,Cross Audio Amount (post-chain),VALIDÉ (LAB-A08) — modifié,80.00,41.02,PASS,39.91,PASS,PASS,non,n/a
+wt.za.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,A DEPTH,A DEPTH,WT ZA Depth,VALIDÉ (LAB-A08),80.00,39.39,PASS,39.90,PASS,PASS,non,n/a
+wt.za.curve,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,A CURVE,A CURVE,WT ZA Curve,VALIDÉ (LAB-A08),164.00,39.41,PASS,40.52,PASS,PASS,non,n/a
+wt.za.shape,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,A SHAPE,A SHAPE,WT ZA Shape,VALIDÉ (LAB-A08),80.00,37.96,PASS,39.73,PASS,PASS,non,n/a
+wt.zb.depth,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,B DEPTH,B DEPTH,WT ZB Depth,VALIDÉ (LAB-A08),80.00,38.32,PASS,39.92,PASS,PASS,non,n/a
+wt.zb.curve,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,B CURVE,B CURVE,WT ZB Curve,VALIDÉ (LAB-A08),164.00,38.34,PASS,40.54,PASS,PASS,non,n/a
+wt.zb.shape,Variante d'emplacement,NEXUS S,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,B SHAPE,B SHAPE,WT ZB Shape,VALIDÉ (LAB-A08),80.00,36.89,PASS,39.74,PASS,PASS,non,n/a
+cross.audio.am_dir,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,AM DIR,AM DIR,Cross AM Direction,VALIDÉ (LAB-A08),164.00,33.04,PASS,34.07,PASS,PASS,non,n/a
+cross.audio.am_dir,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,AM DIR,AM DIR,Cross AM Direction,VALIDÉ (LAB-A08),164.00,33.04,PASS,34.07,PASS,PASS,non,n/a
+cross.audio.am_dir,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,AM DIR,AM DIR,Cross AM Direction,VALIDÉ (LAB-A08),164.00,33.04,PASS,34.07,PASS,PASS,non,n/a
+fm.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,FB RESET,FB RESET,FM Feedback Reset,VALIDÉ (LAB-A08),164.00,40.30,PASS,44.09,PASS,PASS,non,n/a
+out.limiter,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,LIMITER,LIMITER,Musical Limiter,VALIDÉ (LAB-A08),99.00,35.28,PASS,37.88,PASS,PASS,non,n/a
+out.limiter,Variante d'emplacement,NEURAL,SOUND DESIGN / MODULATION / ENV AMP | LFO1,LIMITER,LIMITER,Musical Limiter,VALIDÉ (LAB-A08),99.00,35.28,PASS,37.88,PASS,PASS,non,n/a
+flt.wt.pos,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,PRE/POST,PRE/POST,FLT WT Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.wt.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,FLT WT Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+flt.wt.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,FLT WT Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+flt.fm.pos,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,PRE/POST,PRE/POST,FLT FM Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.fm.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,FLT FM Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+flt.fm.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,FLT FM Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+flt.gl.pos,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,PRE/POST,PRE/POST,FLT GLOBAL Position,VALIDÉ (LAB-A08),164.00,44.38,PASS,45.93,PASS,PASS,non,n/a
+flt.gl.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,FLT GLOBAL Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+flt.gl.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,FLT GLOBAL Modal Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt1.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST WT1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.wt1.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST WT1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.wt1.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST WT1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt1.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST WT1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.wt1.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST WT1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt2.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST WT2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.wt2.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST WT2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.wt2.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST WT2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.wt2.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST WT2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.wt2.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST WT2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm1.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST FM1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.fm1.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST FM1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.fm1.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST FM1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm1.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST FM1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.fm1.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST FM1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm2.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST FM2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.fm2.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST FM2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.fm2.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST FM2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.fm2.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST FM2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.fm2.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST FM2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl1.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST GL1 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.gl1.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST GL1 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.gl1.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST GL1 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl1.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST GL1 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.gl1.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST GL1 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl2.arm,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,ARM,ARM,DST GL2 Autonomous Armed,VALIDÉ (LAB-A08),139.00,20.39,PASS,20.11,PASS,PASS,non,n/a
+dst.gl2.d2.speed,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,SPEED,SPEED,DST GL2 D2 Playback,VALIDÉ (LAB-A08),80.00,27.31,PASS,30.07,PASS,PASS,non,n/a
+dst.gl2.d2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST GL2 D2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+dst.gl2.d2.fb_mode,Variante d'emplacement,SYNAPTIC,SOUND DESIGN / TRAITEMENTS,FB MODE,FB MODE,DST GL2 D2 Feedback Mode,VALIDÉ (LAB-A08),164.00,40.69,PASS,42.04,PASS,PASS,non,n/a
+dst.gl2.s2.freeze,Variante d'emplacement,NEURAL,SOUND DESIGN / TRAITEMENTS,FREEZE,FREEZE,DST GL2 S2 Freeze,VALIDÉ (LAB-A08),99.00,31.75,PASS,34.86,PASS,PASS,non,n/a
+out.ceiling,Variante d'emplacement,NEXUS S,SOUND DESIGN / TRAITEMENTS,CEILING,CEILING,Limiter Ceiling,VALIDÉ (LAB-A08),80.00,35.54,PASS,38.49,PASS,PASS,non,n/a
+wt.z_order#0,Option de liste (segments),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,A>B,A>B,A>B (indice 0 inchangé),VALIDÉ (LAB-A08),76,19.24,PASS,19.80,PASS,PASS,non,n/a
+wt.z_order#1,Option de liste (segments),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,B>A,B>A,B>A (indice 1 inchangé),VALIDÉ (LAB-A08),76,19.24,PASS,19.80,PASS,PASS,non,n/a
+cross.audio.mode#0,Option de liste (liste),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,MIX,MIX,Mix (indice 0 inchangé),VALIDÉ (LAB-A08),136,16.58,PASS,17.64,PASS,PASS,non,n/a
+cross.audio.mode#1,Option de liste (liste),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,XFADE,XFADE,Crossfade (indice 1 inchangé),VALIDÉ (LAB-A08),136,29.36,PASS,29.84,PASS,PASS,non,n/a
+cross.audio.mode#2,Option de liste (liste),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,RING,RING,Ring (indice 2 inchangé),VALIDÉ (LAB-A08),136,22.25,PASS,23.89,PASS,PASS,non,n/a
+cross.audio.mode#3,Option de liste (liste),SYNAPTIC TRACK,SOUND DESIGN / MOTEURS / WT Z / CROSS BUS / AUDIO / FM OP4,AM,AM,AM (indice 3 inchangé),VALIDÉ (LAB-A08),136,14.49,PASS,13.82,PASS,PASS,non,n/a
+bar.peak,Hors registre,Hors registre,Barre globale,PEAK,PEAK,"Output Peak (dBFS, block peak at plugin output)",VALIDÉ (LAB-A08),indéterminé,27.10,INDÉTERMINÉ (gabarit futur),29.26,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+bar.authorize,Hors registre,Hors registre,Barre globale,AUTHORIZE,AUTHORIZE,Authorize autonomous states (this instance),VALIDÉ (LAB-A08),indéterminé,61.47,INDÉTERMINÉ (gabarit futur),65.77,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+bar.panic,Hors registre,Hors registre,Barre globale,PANIC,PANIC,"Panic (All Sound Off, revoke)",VALIDÉ (LAB-A08),indéterminé,32.22,INDÉTERMINÉ (gabarit futur),35.80,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+bar.drone,Hors registre,Hors registre,Barre globale,DRONE,DRONE,Drone (hold gate),VALIDÉ (LAB-A08),indéterminé,37.45,INDÉTERMINÉ (gabarit futur),39.42,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+perf.core.status,Hors registre,Hors registre,Performance / Core,STATIC PREVIEW,STATIC PREVIEW,"Static preview (illustrative, not measured)",VALIDÉ (LAB-A08),indéterminé,79.39,INDÉTERMINÉ (gabarit futur),88.53,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+perf.core.x-axis,Hors registre,Hors registre,Performance / Core,X · WT→FM,X · WT→FM,X axis: CROSS WT>FM (cross.fwd),VALIDÉ (LAB-A08),indéterminé,61.55,INDÉTERMINÉ (gabarit futur),59.29,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+perf.core.y-axis,Hors registre,Hors registre,Performance / Core,Y · FM→WT,Y · FM→WT,Y axis: CROSS FM>WT (cross.rev),VALIDÉ (LAB-A08),indéterminé,61.75,INDÉTERMINÉ (gabarit futur),59.03,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+perf.auth.armed,Hors registre,Hors registre,Performance / Autonomy,ARMED,ARMED,Armed modules (configured),VALIDÉ (LAB-A08),indéterminé,37.98,INDÉTERMINÉ (gabarit futur),39.69,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+perf.auth.exec,Hors registre,Hors registre,Performance / Autonomy,AUTONOMY,AUTONOMY,Autonomous execution (authorized / suspended / revoked / render),VALIDÉ (LAB-A08),indéterminé,62.89,INDÉTERMINÉ (gabarit futur),64.19,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+perf.balance.note,Hors registre,Hors registre,Performance / Balance,PRE-CHAIN,PRE-CHAIN,Audio balance before WT/FM chains,VALIDÉ (LAB-A08),indéterminé,54.84,INDÉTERMINÉ (gabarit futur),58.00,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.cross.tab.forward,Titre,Titre,Sound Design / CROSS,WT→FM,WT→FM,CROSS forward routes,VALIDÉ (LAB-A08),indéterminé,38.07,INDÉTERMINÉ (gabarit futur),37.98,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.cross.tab.reverse,Titre,Titre,Sound Design / CROSS,FM→WT,FM→WT,CROSS reverse routes,VALIDÉ (LAB-A08),indéterminé,38.07,INDÉTERMINÉ (gabarit futur),37.98,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.wtz.slot-a,Titre,Titre,Sound Design / WT Z,SLOT A,SLOT A,Z slot A,VALIDÉ (LAB-A08),indéterminé,34.86,INDÉTERMINÉ (gabarit futur),36.18,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.wtz.slot-b,Titre,Titre,Sound Design / WT Z,SLOT B,SLOT B,Z slot B,VALIDÉ (LAB-A08),indéterminé,33.86,INDÉTERMINÉ (gabarit futur),36.05,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.wtz.order,Hors registre,Hors registre,Sound Design / WT Z,EFFECTIVE Z ORDER,EFFECTIVE Z ORDER,Effective Z order (engine),VALIDÉ (LAB-A08),indéterminé,96.04,INDÉTERMINÉ (gabarit futur),102.89,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.chain.capture,Hors registre,Hors registre,Sound Design / Process,CAPTURE,CAPTURE,Capture frozen D2/S2 content (saved with preset/project),VALIDÉ (LAB-A08),149,44.63,PASS,46.99,PASS,PASS,non,n/a
+eng.group.network,Titre,Titre,Engineering / Groupes (DA-A10),NETWORK,NETWORK,"Network: FM, CROSS",VALIDÉ (LAB-A08),indéterminé,48.44,INDÉTERMINÉ (gabarit futur),51.98,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.group.modulation,Titre,Titre,Engineering / Groupes (DA-A10),MODULATION,MODULATION,"Modulation: Mod Matrix, MIDI Learn",VALIDÉ (LAB-A08),indéterminé,67.17,INDÉTERMINÉ (gabarit futur),70.40,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.group.banklab,Titre,Titre,Engineering / Groupes (DA-A10),BANK LAB,BANK LAB,Bank Lab,VALIDÉ (LAB-A08),indéterminé,47.84,INDÉTERMINÉ (gabarit futur),51.34,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.group.state,Titre,Titre,Engineering / Groupes (DA-A10),STATE,STATE,"State: Voice/Tuning, Presets, Captures/Assets",VALIDÉ (LAB-A08),indéterminé,30.71,INDÉTERMINÉ (gabarit futur),31.98,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.group.tools,Titre,Titre,Engineering / Groupes (DA-A10),TOOLS,TOOLS,"Tools: Randomize, Diagnostics",VALIDÉ (LAB-A08),indéterminé,32.59,INDÉTERMINÉ (gabarit futur),33.76,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.view.neural,Titre,Titre,Engineering / Réseaux,NEURAL,NEURAL,Neural network view,VALIDÉ (LAB-A08),indéterminé,38.42,INDÉTERMINÉ (gabarit futur),41.07,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.view.table,Titre,Titre,Engineering / Réseaux,TABLE,TABLE,Table view,VALIDÉ (LAB-A08),indéterminé,30.25,INDÉTERMINÉ (gabarit futur),32.04,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.matrix.port,Hors registre,Hors registre,Engineering / CROSS,WT FREQ,WT FREQ,Destination port WT frequency,VALIDÉ (LAB-A08),84,43.07,PASS,46.32,PASS,PASS,non,n/a
+eng.state.drone,Hors registre,Hors registre,Engineering / State,RESTORE DRONE,RESTORE DRONE,Restore Drone configuration on project load (never its execution),VALIDÉ (LAB-A08),indéterminé,80.98,INDÉTERMINÉ (gabarit futur),86.05,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+eng.captures.now,Hors registre,Hors registre,Engineering / State,CAPTURE,CAPTURE,Capture frozen D2/S2 content now,VALIDÉ (LAB-A08),indéterminé,44.63,INDÉTERMINÉ (gabarit futur),46.99,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+inspector.base,Champ,Champ,Inspector,BASE,BASE,Base value,VALIDÉ (LAB-A08),indéterminé,21.91,INDÉTERMINÉ (gabarit futur),24.26,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+inspector.effective,Champ,Champ,Inspector,EFFECTIVE,EFFECTIVE,"Effective value (engine, decimated)",VALIDÉ (LAB-A08),indéterminé,46.37,INDÉTERMINÉ (gabarit futur),49.47,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+state.off,État,État,États NEURAL CELL,OFF,OFF,Off,VALIDÉ (LAB-A08),indéterminé,18.42,INDÉTERMINÉ (gabarit futur),19.47,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+state.on,État,État,États NEURAL CELL,ON,ON,On,VALIDÉ (LAB-A08),indéterminé,14.87,INDÉTERMINÉ (gabarit futur),15.36,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+state.armed,État,État,États NEURAL CELL,ARMED,ARMED,"Armed, execution suspended (authorization required)",VALIDÉ (LAB-A08),indéterminé,37.98,INDÉTERMINÉ (gabarit futur),39.69,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.active,État,État,États NEURAL CELL,ACTIVE,ACTIVE,Armed and authorized,VALIDÉ (LAB-A08),indéterminé,38.41,INDÉTERMINÉ (gabarit futur),41.22,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.render,État,État,États autonomie,RENDER,RENDER,Temporary render authorization (0.4.1),VALIDÉ (LAB-A08),indéterminé,42.21,INDÉTERMINÉ (gabarit futur),45.49,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.configured,État,État,États autonomie,SUSPENDED,SUSPENDED,"Drone configured, execution suspended (authorization required)",VALIDÉ (LAB-A08),indéterminé,61.62,INDÉTERMINÉ (gabarit futur),67.53,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.suspended,État,État,États autonomie,SUSPENDED,SUSPENDED,Autonomous execution suspended,VALIDÉ (LAB-A08),indéterminé,61.62,INDÉTERMINÉ (gabarit futur),67.53,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.authorized,État,État,États autonomie,AUTHORIZED,AUTHORIZED,Autonomous execution authorized,VALIDÉ (LAB-A08),indéterminé,69.55,INDÉTERMINÉ (gabarit futur),73.96,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+state.revoked,État,État,États autonomie,REVOKED,REVOKED,Revoked by Panic (latched),VALIDÉ (LAB-A08),indéterminé,50.09,INDÉTERMINÉ (gabarit futur),52.96,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),oui,atteint
+units.peak,Unité,Unité,Valeurs,dBFS,dBFS,Peak level,VALIDÉ (LAB-A08),indéterminé,21.29,INDÉTERMINÉ (gabarit futur),23.23,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a
+sound.cross.section.audio,Titre,Titre,Sound Design / CROSS / BUS / AUDIO,—,CROSS AUDIO,Cross Audio section (post-chain),VALIDÉ (LAB-A08) — modifié,indéterminé,66.48,INDÉTERMINÉ (gabarit futur),71.80,INDÉTERMINÉ (gabarit futur),INDÉTERMINÉ (gabarit futur),non,n/a

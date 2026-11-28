@@ -200,3 +200,19 @@ mesure (CD-04).
 | AX-01 | Chaque commande liée à un StableID expose son nom complet anglais (titre accessible) et sa valeur. La présence AX a été relevée par Codex sur macOS (`Présence AX physique`). |
 | AX-02 | L'ordre de tabulation suit l'ordre visuel. Le focus n'est jamais perdu lors d'un repli de disposition (Codex P1-04). |
 | AX-03 | Toute action au pointeur a un équivalent clavier (déjà vrai pour NEXUS, SYNAPTIC et NEURAL CELL ; à garantir pour le Core et les réseaux). |
+
+## 9. Révision R1 du Component Lab (LAB-A01 à LAB-A07)
+
+Arbitrages de R2-B1-R1 :
+
+- NEXUS et PLASMA STANDARD sont gelés ; leur non-régression est prouvée pixel à pixel.
+- NEURAL CELL passe en Machined Titanium : alvéole, chanfrein diagonal, face bombée ou en cuvette, témoins encastrés,
+  course d'un pixel.
+- SYNAPTIC passe en Machined Track.
+- Les afficheurs passent en Cybernetic HUD, avec les pastilles de nature BASE, EFF, MEAS, INDICATIVE et STATE.
+- PANIC prend un libellé carbone (≥ 4,5:1 sur la surface rendue).
+- PLASMA vertical existe en deux gabarits, STANDARD 64 × 180 et COMPACT 48 × 150.
+
+Référence de conception pour R2-B2 : `B1-R1-FINAL-ARTISTIC-REFINEMENT/COMPONENT-DESIGN-FINAL.md`. Elle remplace le §5.3
+(PANIC) et le §7 (gabarit PLASMA) de ce document.
+
