@@ -1,0 +1,37 @@
+platform Mac OSX 15.8.2  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Lucida Grande / Menlo  ·  code 0d576ed
+01-final-board.png  3680x2300
+NONREG 02-nexus.png : 0 pixel(s) différent(s) sur 4095040 (hors bandeau d'en-tête), écart maximal 0/255  ->  IDENTIQUE
+02-nexus-nonregression.png  2752x974
+NONREG 06-plasma-channel.png : 0 pixel(s) différent(s) sur 3076640 (hors bandeau d'en-tête), écart maximal 0/255  ->  IDENTIQUE
+06c-plasma-nonregression.png  2752x784
+03-neural-cell-before-after.png  3000x1960
+04-synaptic-track-before-after.png  3000x1400
+05a-cybernetic-hud.png  2680x1660
+05b-cybernetic-hud-before-after.png  2240x4180
+06a-plasma-standard-compact.png  2680x1280
+06b-plasma-zoom-75-100-150.png  1460x465
+07-panic-final.png  2680x1200
+08-assembly-wt-cross-fm.png  2800x1000
+09-zoom-75-100-150.png  2240x660
+10-critical-nomenclature.png  2680x1720
+11-materials-palette.png  2680x1520
+PT-02 Mac OSX 15.8.2 font Lucida Grande: 2214 occurrences; 100%: OK 2099, OK_MARGE<8 3, 2_LIGNES 0, DÉPASSEMENT 0, BUDGET_NON_MESURE 112; critiques 26, plancher 9 px a 75 % 26/26
+PT-05 Mac OSX 15.8.2: glyphes natifs 16/16
+Contrastes : 37/38 PASS
+PANIC R1 carbone, surface rendue : contraste minimal 5.08:1 sur 4 etats x 2 echelles -> PASS
+RESULT LAB-G01 PASS drag 22 px = +0.10 (0.600), begin 1 end 1 nested 0 outside 0
+RESULT LAB-G02 PASS double click -> default 0.25, max depth 1, begin 2 end 2 nested 0 outside 0
+RESULT LAB-G03 PASS 3 wheel notches = 1 gesture (yes), then key; begin 2 end 2 nested 0 outside 0
+RESULT LAB-G04 PASS 5 keys = 5 complete gestures, final default; begin 5 end 5 nested 0 outside 0
+RESULT LAB-G05 PASS alt-click default; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G06 PASS editor destroyed mid-drag; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G07 PASS hidden mid-drag, late events ignored; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G08 PASS removed from parent mid-drag; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G09 PASS fine mode re-anchors: 0.600 -> 0.610; begin 1 end 1 nested 0 outside 0
+RESULT LAB-G10 PASS plasma click, double click (default), drag then destroy; begin 3 end 3 nested 0 outside 0
+RESULT LAB-G11 PASS component ID finds PANIC after visible text change; accessible title unchanged
+RESULT LAB-G12 PASS board rendered 1840x1150, forced states painted, writes 0
+RESULT LAB-G13 PASS toggle ON, exclusive selection, ARMED text, disabled shows dash
+RESULT LAB-G14 PASS PANIC carbon label, rendered surface, worst 5.08:1 over 7760 px
+RESULT LAB-G15 PASS compact 48x150 / standard 64x180 same component; drag, double click, destroy; begin 3 end 3 nested 0 outside 0
+SELFTEST 15 PASS, 0 FAIL

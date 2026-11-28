@@ -1,0 +1,39 @@
+﻿Avant-plan,Fond,Usage,Avant-plan hex,Fond hex,Rapport WCAG,Seuil,Verdict
+text,relief1 (plaque),"sérigraphie, valeurs",#DCE4E9,#22282D,11.58,4.50,PASS
+text,carbon (fenêtre de valeur),valeur numérique,#DCE4E9,#0A0D10,15.14,4.50,PASS
+text,glass (afficheur),titre d'afficheur,#DCE4E9,#0D1215,14.64,4.50,PASS
+text,relief3 (touche d'action),libellé d'action,#DCE4E9,#3A434B,7.83,4.50,PASS
+text,relief2 (touche plate),libellé de bascule,#DCE4E9,#2C343A,9.83,4.50,PASS
+textDim,relief1,texte secondaire,#98A5AE,#22282D,5.91,4.50,PASS
+textDim,glass,source d'afficheur,#98A5AE,#0D1215,7.47,4.50,PASS
+textDim,relief2,état OFF,#98A5AE,#2C343A,5.02,4.50,PASS
+textMute,relief1,libellé inactif,#7D8A93,#22282D,4.21,3.00,PASS
+textMute,glass,graduation,#7D8A93,#0D1215,5.32,3.00,PASS
+wt,glass,trace WT,#5CE2CB,#0D1215,11.84,3.00,PASS
+fm,glass,trace FM,#F2A05E,#0D1215,8.94,3.00,PASS
+cross,glass,trace CROSS,#B095FF,#0D1215,7.71,3.00,PASS
+mod,glass,trace MOD / EFFECTIVE,#7FA9E8,#0D1215,7.84,3.00,PASS
+wt,relief1,arc BASE WT sur plaque,#5CE2CB,#22282D,9.36,3.00,PASS
+fm,relief1,arc BASE FM sur plaque,#F2A05E,#22282D,7.07,3.00,PASS
+cross,relief1,arc BASE CROSS sur plaque,#B095FF,#22282D,6.09,3.00,PASS
+mod,relief1,anneau EFFECTIVE sur plaque,#7FA9E8,#22282D,6.20,3.00,PASS
+warn,relief2,état ARMED,#E6C35A,#2C343A,7.42,4.50,PASS
+warn,glass,étiquettes INDICATIVE / DEMO DATA,#E6C35A,#0D1215,11.05,4.50,PASS
+white,alert,texte PANIC 0.4.1 et B1 (13 px gras = texte normal WCAG),#FFFFFF,#E0524A,3.84,4.50,FAIL
+carbon,alert,"texte PANIC R1 adopté (LAB-A07.1), rouge nominal ; surface rendue : panic-contrast.csv",#0A0D10,#E0524A,5.08,4.50,PASS
+alert,glass,crête > 0 dBFS,#E0524A,#0D1215,4.91,3.00,PASS
+focus,relief1,anneau de focus,#DCE4E9,#22282D,11.58,3.00,PASS
+track,relief1,piste d'arc (décor),#10151A,#22282D,1.23,1.00,PASS
+relief1,relief0,niveau plaque / châssis,#22282D,#161A1D,1.17,1.15,PASS
+relief2,relief1,niveau corps / plaque,#2C343A,#22282D,1.18,1.15,PASS
+relief3,relief2,niveau action / corps,#3A434B,#2C343A,1.26,1.15,PASS
+text,titane R1 haut,"libellé d'action R1, haut du dégradé",#DCE4E9,#555C62,5.27,4.50,PASS
+text,titane R1 bas,"libellé d'action R1, bas du dégradé",#DCE4E9,#282E34,10.66,4.50,PASS
+text,touche plate R1 haut,libellé de bascule R1,#DCE4E9,#394146,8.08,4.50,PASS
+textDim,touche plate R1 bas,état OFF R1,#98A5AE,#282F34,5.39,4.50,PASS
+text,verre HUD cœur,titre et valeur HUD,#DCE4E9,#0E161B,14.20,4.50,PASS
+textDim,verre HUD cœur,source et clés HUD,#98A5AE,#0E161B,7.25,4.50,PASS
+textMute,verre HUD cœur,graduations HUD,#7D8A93,#0E161B,5.16,3.00,PASS
+warn,verre HUD profond,pastilles INDICATIVE et DEMO DATA,#E6C35A,#070B0E,11.59,4.50,PASS
+mod,verre HUD cœur,repères EFF,#7FA9E8,#0E161B,7.61,3.00,PASS
+hudRail,verre HUD cœur,rails et graduations d'encadrement (décor),#22313B,#0E161B,1.37,1.00,PASS
