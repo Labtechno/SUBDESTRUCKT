@@ -13,7 +13,13 @@ le Mac du propriétaire (protocole §9) et CI macOS arm64 complète sur le SHA l
 ## 2. Version, commits, CI
 
 Version **0.4.1** (correctif d'une livraison 0.4.0 : incrément de correctif, comme 0.3.1–0.3.3). Commits :
-`7d57d94` (tests de reproduction, échec attendu), puis commit de correction (SHA livré et run CI : tracker §5).
+`7d57d94` (tests de reproduction) — **CI run 49 (46104379578) en ÉCHEC comme attendu** : la barrière refuse les
+reproductions sur macOS arm64 (TA-R01 « autorisation du rendu par transport », 0,19 RMS après le rendu, comme en local) ;
+puis `d2d08ac` (correction). **SHA livré : `d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af`, build CI 0.4.1-b50 ; CI run 50
+(46105804592) SUCCESS complet** : barrière PASS (seuls FAIL documentés, dont TA-15 critère remplacé), pluginval 1.0.4
+rigueur 10 avec tests d'interface PASS, RTSan 0 violation sur toute la suite du cœur (TA-R comprise), bundle arm64 0.4.1
+signé ad hoc, installation réelle en VM et découverte VST3 0.4.1 PASS, paquets et livraison construits (non publiés),
+script de compilation locale (LB) PASS, manuel PASS.
 
 ## 3. Analyse causale (confirmée par les tests)
 
@@ -76,8 +82,8 @@ Tests historiques : cœur 184 critères (169 + 15) — verdicts identiques à 0.
 comportement fautif ; test inchangé, rapporté FAIL et documenté comme **critère remplacé** (`tests/known_failures.txt`),
 remplacé par TA-R08/TA-R09 ; ses clauses (a)–(d) passent. Seules diffèrent par ailleurs des mesures de durée. Les 8 FAIL
 historiques sont inchangés. Wrapper 57 critères (33 + 20 UI04 + 4 TA-R) : seul AUT-02 (documenté) échoue ; les 20 critères
-UI04 passent. Barrière `tools/check_results.sh` : PASS. ASan (wrapper complet) : voir tracker. RTSan, pluginval, paquets :
-CI macOS uniquement.
+UI04 passent. Barrière `tools/check_results.sh` : PASS (local et CI run 50). ASan MSVC (suite wrapper complète, sources finales) :
+0 erreur. RTSan (CI) : 0 violation. pluginval rigueur 10 (CI) : PASS.
 
 ## 6. Non-régression
 
@@ -114,8 +120,10 @@ Reason 14.1 :
 4. ARRÊT puis PLAY : la restitution reprend (autorisation « transport »).
 5. Panic pendant un export, puis fin de l'export : silence ; le PLAY suivant (après un ARRÊT) autorise de nouveau.
 6. Autoriser avant un export : l'autorisation est conservée après l'export.
-7. Joindre `~/Library/Labtechno/SUBDESTRUCKT/ta_log.txt` : y vérifier « autorisation (rendu hors temps reel) » pendant
-   l'export puis « fin de l'autorisation de rendu » au retour en temps réel ; supprimer ensuite `ta_diagnostics.on`.
+7. Joindre `~/Library/Labtechno/SUBDESTRUCKT/ta_log.txt`. Lignes attendues pour l'étape 2 : `hors temps reel`,
+   `transport lecture source=rendu hors temps reel`, `autorisation source=rendu hors temps reel`, puis au retour
+   `temps reel` et `fin de l'autorisation de rendu source=rendu hors temps reel` ; **aucune** ligne
+   `autorisation source=transport` avant un ARRÊT puis une LECTURE réels. Supprimer ensuite `ta_diagnostics.on`.
 
 ## 10. Limitations
 

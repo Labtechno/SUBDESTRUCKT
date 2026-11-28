@@ -254,11 +254,12 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | ARCH-UI-04 : version 0.4.0, livraison, cartographie, captures, rapport | 8a61b12 | Local : barrière PASS (cœur 8 FAIL + wrapper 1 FAIL documentés, identiques à 0.3.3) |
 | 2026-11-28 | ARCH-UI-04 : CI | dafa6be, 8a61b12 | run 47 SUCCESS ; **run 48 (46078289226) SUCCESS complet, SHA livré 8a61b124abc45449174dbd1f07e4b4f95f47a38e, 0.4.0-b48** (pluginval 10 avec UI, RTSan, paquets, LB, manuel) |
 | 2026-11-28 | ARCH-UI-04-R1 : tests de reproduction R-28 avant correction | 7d57d94 | Local : 15 reproductions FAIL sur 0.4.0, non-régressions PASS ; CI : échec attendu de la barrière |
-| 2026-11-28 | ARCH-UI-04-R1 : correction TRANSPORT AUTHORIZATION, 0.4.1, contrat, rapport | (ce commit) | Local : cœur 184 critères (9 FAIL documentés dont TA-15 remplacé), wrapper 57 (AUT-02 seul), barrière PASS, ASan 0 erreur ; CI : ligne suivante |
+| 2026-11-28 | ARCH-UI-04-R1 : correction TRANSPORT AUTHORIZATION, 0.4.1, contrat, rapport | d2d08ac | Local : cœur 184 critères (9 FAIL documentés dont TA-15 remplacé), wrapper 57 (AUT-02 seul), barrière PASS, ASan 0 erreur |
+| 2026-11-28 | ARCH-UI-04-R1 : CI | 7d57d94, d2d08ac | run 49 ÉCHEC attendu (reproductions sur macOS) ; **run 50 (46105804592) SUCCESS complet, SHA livré d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af, 0.4.1-b50** (pluginval 10 avec UI, RTSan 0 violation, paquets, LB, manuel) |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 : correction livrée en 0.4.1 (`docs/V1-ARCH-UI-04-R1-REPORT.md`). Codex : validation physique de R-28
-(protocole du rapport §9) sur le SHA livré, compilé par `build_local_macos.sh` ; R-28 n'est PAS déclaré PASS avant ce
+(protocole du rapport §9) sur le SHA livré `d2d08ac`, compilé par `build_local_macos.sh` ; R-28 n'est PAS déclaré PASS avant ce
 retour. La recette courte ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`) reste applicable. ARCH-UI-05 : non lancé.
 
 ## 7. Blocages et arbitrages à grouper
