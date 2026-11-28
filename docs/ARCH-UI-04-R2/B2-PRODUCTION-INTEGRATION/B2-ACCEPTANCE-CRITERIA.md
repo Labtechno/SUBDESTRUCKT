@@ -57,3 +57,11 @@ INT-19 à INT-21 complètent la liste proposée par la mission (§9).
 Critères amendés (INT-02, INT-04 à INT-07, INT-10, INT-12, INT-18) et nouveau critère PLAS-G : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.
 
 Les seuils SC du protocole GC-01 sont désormais **définitifs** (GS-01 à GS-07, addendum §4).
+
+## Addendum DB2-08 (2026-11-28, enregistré avant mesure)
+
+| ID | Critère | Nature | Vérif. |
+|---|---|---|---|
+| PLAS-Z | Contrat de zone active des PLASMA (DB2-08) : PB-J1 (OUT GAIN reste à 0 dB), PB-J2 et PB-J3 (BALANCE reste à 0,5), PB-01c (saisie sans saut) en **assertions** ; frontières de zone, glisser commencé hors canal (aucune écriture, aucun geste hôte), glisser commencé dans le canal (historique), clic absolu aux extrémités, prise en main sans saut, focus, aucune écriture, aucun geste ni transaction Undo parasites ; PLASMA vertical et horizontal, STANDARD et COMPACT dans le périmètre ; zooms 75, 100 et 150 % ; aucune régression NEXUS | O | AUTO |
+| PB01E-FIX | PB-01e en assertion après correction : profondeur max 1, appariement, aucun résidu, transactions Undo cohérentes, automation préservée, aucune régression des autres interactions (NEXUS et PLASMA) | O | AUTO |
+| EC19-DEC | DB2-09 tranché avant la clôture de R2-B2 | O | AUDIT |

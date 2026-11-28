@@ -88,3 +88,14 @@ Windows : `windows/baseline/`, poste de développement.
 
 Les valeurs chiffrées complètes sont dans `gc01-summary-*.csv`. Le rapport de performances de B2-07 les comparera,
 série par série, aux mesures de la version intégrée.
+
+## 3. Statut des mesures
+
+| Mesures | Statut |
+|---|---|
+| `macos/run2-ad180b9/`, `windows/baseline-v1/` (banc v1) | **Invalidées** (artefacts GP-04 et GP-05), conservées pour la traçabilité, **jamais utilisées en comparaison** |
+| `macos/run3-44fc225/`, `windows/baseline-v2/` (banc v2) | **Remplacées** (mémoire non concluante sans série), conservées, jamais utilisées en comparaison |
+| `macos/run4-0517426/`, `windows/baseline/` (banc v3, arbre `0517426`) | **Référence figée.** Elle n'est jamais recalculée pour faciliter une validation. |
+
+Plateformes : Windows (développement), macOS VM (comparatif, non certifiant) et macOS physique M3 (certification,
+recette du propriétaire) sont toujours publiés séparément.

@@ -329,7 +329,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v3 (série mémoire sur 200 cycles), ligne de base Windows v3 | 0517426 | aucun fichier `ui/` modifié : **arbre de référence GC-01** ; ligne de base macOS run 4 versée en 0ddff52 |
 | 2026-11-28 | CI de production 59 sur 0517426 : FAILURE du seul job manual-playwright (`test_s01_platform_unchanged` : `URLError [Errno 104] Connection reset by peer` en téléchargeant une page externe) ; build, tests, pluginval, RTSan, script local : SUCCESS ; aucun lien avec le commit (manual/ non modifié) | — | incident réseau consigné, non masqué |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : valeurs de référence GC-01 consignées (GC01/README) | 3f1c1f1 | documentaire ; **aucune CI déclenchée** : le message de commit citait le jeton de saut de CI, détecté par GitHub même dans une phrase (erreur de l'agent) |
-| 2026-11-28 | Relance de la CI de production sur le code de référence inchangé (correction de l'erreur précédente) | (ce commit) | documentaire ; CI de production attendue |
+| 2026-11-28 | Relance de la CI de production sur le code de référence inchangé (correction de l'erreur précédente) | c74745d | CI de production 60 **SUCCESS** (4 jobs, manual-playwright compris) : l'échec de la 59 était une défaillance externe |
+| 2026-11-28 | DB2-08 validé (option A) ; PB-02a/d reclassés défauts fonctionnels majeurs (R2-C / R2-D, avant pré-BETA) ; DB2-09 préparé | (ce commit) | documentaire, CI non requise |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
@@ -337,7 +338,8 @@ documentaire. ARCH-UI-04-R2-B1 : GO technique (preuves finales `786c6ad`). ARCH-
 décision du propriétaire du 2026-11-28 ; Design System R1 gelé). ARCH-UI-04-R2-B2 autorisé : **R2-B2-00** (audit et
 contractualisation) publié dans `docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/`. En attente : contre-expertise de
 ChatGPT sur R2-B2-00 : **obtenue** ; R2-B2-00 **GO**, DB2-01 à DB2-07 et CE-B2-01 à CE-B2-05 validés
-(`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`). R2-B2 en exécution. **B2-01** : PB-01 (double-clic) NON REPRODUIT ;
+(`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`). R2-B2 en exécution. **DB2-08 validé** (zone active PLASMA, B2-03 (2)) ; **DB2-09** (EC-19) à arbitrer avant clôture ;
+PB-02a/d **défauts fonctionnels majeurs**, corrections R2-C / R2-D obligatoires avant pré-BETA. **B2-01** : PB-01 (double-clic) NON REPRODUIT ;
 PB-01e (molette puis clic) REPRODUIT, correction en B2-03 (1) ; PB-02a/d REPRODUITS (Undo de session bloqué), corrections
 R2-C / R2-D ; nouveau défaut PLASMA (saut au clic hors canal) soumis : **DB2-08** (STOP ciblé, B2-03 (2) seulement).
 Suite : B2-02 (ligne de base GC-01, fondation).
@@ -353,6 +355,8 @@ Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouve
   humaine et validation artistique ARCH-UI-04. Ableton Live : non certifié. M3 : non certifié.
 
 ### Backlog pré-BETA
+- **PB-02a / PB-02d (EC-18) : défauts fonctionnels majeurs** — fermeture de l'éditeur pendant un glisser du Core ou d'une poignée d'enveloppe : geste hôte laissé ouvert, Undo de la session bloqué. Correction obligatoire en R2-C (Core) et R2-D (enveloppe) avant toute validation pré-BETA ; preuves `docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/`.
+
 | ID | Observation | Origine | État |
 |---|---|---|---|
 | PB-01 | Double-clic sur un NEXUS : deux gestes hôte imbriqués possibles (début, début, fin, fin) | audit statique H-04 (ARCH-UI-04-R1 §8) | sans impact démontré ; non corrigé |

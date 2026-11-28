@@ -49,3 +49,11 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 | EC-19 | PRE | Un double-clic dans le canal d'un PLASMA passe d'abord par la position cliquée (2 transactions Undo, valeur transitoire) ; inhérent au clic absolu (DB2-02) | PB-01b | Information ; aucune modification proposée | — | — |
 | EC-20 | PRE | **PB-01e REPRODUIT** : molette puis clic avant 450 ms : gestes hôte imbriqués (profondeur 2) sur un NEXUS ou un PLASMA | PB-01e | Correction autorisée (famille PB-01, gestes NEXUS et PLASMA) : refermer le geste molette au `mouseDown` ; test permanent en assertion BE | B2-03 (1) | — |
 
+## Mise à jour du 2026-11-28 (instruction de reprise R2-B2)
+
+| Écart | Nouvel état |
+|---|---|
+| EC-17 | **DB2-08 validé (option A)** : correction autorisée en B2-03 (2) ; contrat et tests dans `B2-DECISIONS-PENDING.md` |
+| EC-18 | **Reclassé : défaut fonctionnel majeur** (PB-02a, Core : correction en R2-C ; PB-02d, éditeur d'enveloppe : correction en R2-D). Correction **obligatoire avant toute validation pré-BETA**. Aucune correction anticipée en R2-B2. Un `GestureGuard` générique ne vaut pas correction sans preuve spécifique sur ces deux scénarios. |
+| EC-19 | Ouvert, distinct de DB2-08 : arbitrage **DB2-09** préparé (`B2-DECISIONS-PENDING.md`), décision exigée avant la clôture de R2-B2 ; aucun changement avant |
+| EC-20 | PB-01e : correction autorisée pendant l'intégration NEXUS, contrôle de la classe commune et des PLASMA |

@@ -111,6 +111,16 @@ Trace : `B1-R1-FINAL-ARTISTIC-REFINEMENT/OWNER-DECISION-AR15.md`. Décisions ouv
 
 Texte normatif : `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`. R2-B2-00 : GO ; R2-B2 : exécution autorisée.
 
+## 3 sexies. DB2-08 (2026-11-28)
+
+| ID | Option | Décision |
+|---|---|---|
+| DB2-08 | A | Zone active des PLASMA limitée au canal : clic absolu et geste de modification seulement dans le canal ; libellé et valeur sans écriture (valeur : double-clic = saisie). Vertical et horizontal. Correction d'EC-17 en B2-03 (2). |
+
+PB-02a (Core) et PB-02d (éditeur d'enveloppe) sont **reclassés défauts fonctionnels majeurs**, à corriger obligatoirement
+en R2-C et R2-D avant toute validation pré-BETA. **DB2-09** (EC-19) est ouvert. Texte :
+`B2-PRODUCTION-INTEGRATION/B2-DECISIONS-PENDING.md`.
+
 ## 4. Orientation rejetée
 
 | ID | Orientation | Motif |
