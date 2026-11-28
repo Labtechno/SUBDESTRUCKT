@@ -1,0 +1,3 @@
+run     : https://github.com/Labtechno/SUBDESTRUCKT/actions/runs/46153201188
+commit  : 44fc225f7c89fd2d47c98f7ffbf0fe5f8896aaf9
+macOS   : macOS 15.8.2 (24H232), arm64, VM GitHub
