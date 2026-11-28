@@ -117,6 +117,8 @@ class Engine {
       auth_.requestSuspend();
   }
   bool autonomyAuthorized() const noexcept { return auth_.authorizedView(); }
+  // ARCH-UI-04-R1 : autorisation NORMALE seulement (une autorisation temporaire de rendu n'écrit jamais l'état persistant)
+  bool autonomyNormallyAuthorized() const noexcept { return auth_.normalAuthorizedView(); }
   TaLog& taLog() noexcept { return taLog_; }
   // captures retenues dont l'application est en attente (le thread de contrôle ne doit pas les remplacer par un tampon
   // d'exécution non encore restauré)
@@ -184,6 +186,7 @@ class Engine {
   void swapToIncoming() noexcept;
   void advanceTransition() noexcept;
   void purgeStates() noexcept;
+  void resetAfterRender() noexcept;  // ARCH-UI-04-R1 : retour temps réel sans autorisation normale
   void crossReset() noexcept;
   void applyEnvelopeParameters() noexcept;
   void applyAutonomyMask() noexcept;

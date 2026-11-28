@@ -21,7 +21,7 @@ env:
   PLUGINVAL_VERSION: "v1.0.4"
   PLUGINVAL_SHA256: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
   MIN_MACOS: "14.0"
-  VERSION: "0.4.0"
+  VERSION: "0.4.1"
 
 jobs:
   build-test-package:

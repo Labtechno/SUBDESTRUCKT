@@ -338,7 +338,9 @@ void SubdestrucktProcessor::getStateInformation(juce::MemoryBlock& destData) {
   // instance suspendue (AUT-06) : aucune capture du tampon d'exécution (vide ou non autorisé) ; les captures restaurées
   // sont conservées telles quelles
   // captures retenues non encore restituées (autorisation récente) : conservées telles quelles (aucune perte)
-  for (int k = 0; k < 6 && engine_.autonomyAuthorized() && !engine_.capturesPending(); ++k) {
+  // ARCH-UI-04-R1 (R-28, TA-R14) : seule une autorisation NORMALE permet la capture automatique ; un rendu hors temps
+  // réel sous autorisation temporaire n'écrit jamais dans les captures persistées
+  for (int k = 0; k < 6 && engine_.autonomyNormallyAuthorized() && !engine_.capturesPending(); ++k) {
     const int b = idx(ParamId::DstWt1Type) + k * static_cast<int>(DstOff::Count);
     const int t = static_cast<int>(bridge_.values().v[static_cast<size_t>(b)] + 0.5f);
     if ((t == static_cast<int>(DstType::D2) || t == static_cast<int>(DstType::S2)) &&
@@ -887,7 +889,9 @@ std::uint32_t SubdestrucktProcessor::collectCaptures(std::uint32_t mask) {
 }
 
 void SubdestrucktProcessor::requestCapture(int slot) {
-  if (!engine_.autonomyAuthorized()) {  // instance suspendue : ne jamais remplacer une capture par un tampon inactif
+  // instance suspendue, ou rendu sous autorisation temporaire (ARCH-UI-04-R1) : ne jamais remplacer une capture
+  // persistée par un tampon inactif ou par le contenu d'un rendu
+  if (!engine_.autonomyNormallyAuthorized()) {
     std::lock_guard<std::mutex> lock(controlMutex_);
     lastMessage_ = "Capture refusee : etats autonomes suspendus (Autoriser d'abord)";
     return;

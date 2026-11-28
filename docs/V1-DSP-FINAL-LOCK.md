@@ -63,3 +63,21 @@ corrigé.
 Pour toute mission postérieure (ARCH-UI-04 et suivantes) : `git diff 0469c4d -- source/` doit être vide, la liste
 `tests/core/expected_param_ids.txt` inchangée, et les rendus de référence (REG-01, goldens `tests/core/golden_g43_*`)
 identiques. Le rapport ARCH-UI-04 publie ce contrôle.
+
+## 6. Dérogation ciblée ARCH-UI-04-R1 (0.4.1) — TRANSPORT AUTHORIZATION, anomalie R-28
+
+Autorisée par le propriétaire (« GO ARCH-UI-04-R1 ») pour la seule correction d'autorisation autonome. Aucune
+modification des algorithmes de synthèse, des transformations Z, des algorithmes des chaînes de destruction et de
+filtrage, des 703 StableID ni du format d'état 4. Chaque modification de `source/` est justifiée par un test qui
+échouait sur la baseline 0.4.0 (`tests/core/test_ui04r1_ta.cpp`, commit de reproduction `7d57d94`) :
+
+| Fichier | Modification | Justification démontrée |
+|---|---|---|
+| `source/engine/AutonomyGate.h/.cpp` | autorisation temporaire de RENDU distincte de l'autorisation normale ; fin au premier bloc temps réel ; historique temps réel et verrou Panic figés pendant le rendu ; première observation après le rendu sans arête ; Panic et suspension retirent aussi l'autorisation de rendu ; vue « normale » pour le thread de contrôle ; événement de journal « fin de l'autorisation de rendu » (ajouté en fin d'énumération, non persisté) | TA-R01..R03, R05..R11, R13 : autorisation « transport » permanente obtenue par un export, conservée après le rendu ; ARRÊT pendant le rendu levant le verrou Panic (TA-R06) |
+| `source/engine/Engine.h/.cpp` | `resetAfterRender()` au retour en temps réel sans autorisation normale (voix, lignes, chaînes, lignes d'alignement remises à zéro par les primitives existantes de fin de rampe Panic) ; accesseur `autonomyNormallyAuthorized()` | contre-épreuve : machine d'états corrigée SANS cette remise à zéro → restitution résiduelle après la fin du rendu (D2 Legacy 6,9e-3, D2 Regenerative 8,8e-3, S2 9,1e-2, N2 1,9e-2, Drone 5,0e-2 RMS sur la première seconde ; TA-R01, R02, R16 en échec) |
+| `plugin/PluginProcessor.cpp` (hors `source/`) | capture automatique à la sauvegarde et capture demandée conditionnées par l'autorisation NORMALE | TA-R14 : la sauvegarde DAW pendant ou après un export réécrivait les captures persistées |
+
+Coût mesuré de la machine d'autorisation (Windows MSVC, TA-20) : 5,8 → 7,8 ns par bloc hôte (0,011 % d'un bloc de
+256 échantillons). Aucune allocation, aucun verrou, aucun accès disque ajoutés sur le thread audio (TA-R15, TA-R15w,
+TA-20 ; RTSan en CI). Tous les verdicts historiques sont inchangés, sauf TA-15 clause (e), critère remplacé
+(`tests/known_failures.txt`).

@@ -1,4 +1,4 @@
-# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 / G4.3-R1 / ARCH-UI-04 — Suivi d'avancement (fichier central de reprise)
+# SUBDESTRUCKT — ARCH-G4 / ARCH-G4.1 / ARCH-G4.2 / ARCH-G4.3 / G4.3-R1 / ARCH-UI-04 / ARCH-UI-04-R1 — Suivi d'avancement (fichier central de reprise)
 
 Branche : `feature/arch-g4-full-development`, créée depuis `feature/arch-g3-vertical-slice` @ `8d23342` + docs `main` @ `58a8022`.
 Mission : `docs/V1-ARCH-G4-FULL-MISSION.md` + instruction « développement séquentiel accéléré » du 2026-11-26.
@@ -149,6 +149,15 @@ UI04-INV, COV, BIND, ALIAS, INACT, NAV, CLIP, PANIC, UNDO, AUTO, STATE, KEY, COR
 critère UI04-NAV sans en retirer de clause : aucune destruction de composant par la navigation ou la sélection.
 Résultats : `docs/V1-ARCH-UI-04-REPORT.md` (20/20 PASS en local et en CI run 48). Version 0.4.0.
 
+### 3octies. ARCH-UI-04-R1 (TRANSPORT AUTHORIZATION, anomalie R-28 ; critères enregistrés avant correction)
+Audit physique Codex (0.4.0-b263320407) : NO GO sur R-28 (export sans PLAY puis annulation : signal à l'arrêt, D2 à
+−11,8 dBFS). Critères : `tests/core/test_ui04r1_ta.cpp` (TA-R01..R13, R15, R16) et `tests/wrapper/TaR1Tests.cpp`
+(TA-R01w, R13w, R14, R15w), commit `7d57d94` avant toute modification du code : 15 reproductions en ÉCHEC sur 0.4.0, 4
+non-régressions PASS. Correction 0.4.1 : toutes PASS ; TA-15 clause (e) = critère remplacé (`tests/known_failures.txt`).
+Contrat : `docs/V1-AUTONOMY-CONTRACT.md` §2 bis ; dérogation au DSP FINAL LOCK : `docs/V1-DSP-FINAL-LOCK.md` §6 ; rapport :
+`docs/V1-ARCH-UI-04-R1-REPORT.md`. H-04 : cause établie par Codex (⌘Q déclenché par le raccourci Computer Use sur AZERTY,
+fermeture normale, 0 crash) ; plus un blocage ; aucun correctif UI.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -162,7 +171,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | run 33 |
 | R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | run 33 |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
-| R10 | Tail/Drone/Panic | F | PASS (G4.3 : Panic révoque systématiquement, purge des lignes d'alignement ; TA-09..12, TA-21/22) | G4.3 |
+| R10 | Tail/Drone/Panic | F | PASS (G4.3 : Panic révoque systématiquement, purge des lignes d'alignement ; TA-09..12, TA-21/22 ; ARCH-UI-04-R1 : autorisation de rendu temporaire, état d'exécution remis à zéro au retour temps réel, TA-R01..R16 ; R-28 physique à valider par Codex) | UI-04-R1 |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
 | R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | run 33 |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
@@ -244,11 +253,13 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-27 | ARCH-UI-04 : cycle de vie des composants (diagnostic ASan) | dafa6be | Local : wrapper 53 critères (AUT-02 seul, documenté), ASan 0 erreur |
 | 2026-11-27 | ARCH-UI-04 : version 0.4.0, livraison, cartographie, captures, rapport | 8a61b12 | Local : barrière PASS (cœur 8 FAIL + wrapper 1 FAIL documentés, identiques à 0.3.3) |
 | 2026-11-28 | ARCH-UI-04 : CI | dafa6be, 8a61b12 | run 47 SUCCESS ; **run 48 (46078289226) SUCCESS complet, SHA livré 8a61b124abc45449174dbd1f07e4b4f95f47a38e, 0.4.0-b48** (pluginval 10 avec UI, RTSan, paquets, LB, manuel) |
+| 2026-11-28 | ARCH-UI-04-R1 : tests de reproduction R-28 avant correction | 7d57d94 | Local : 15 reproductions FAIL sur 0.4.0, non-régressions PASS ; CI : échec attendu de la barrière |
+| 2026-11-28 | ARCH-UI-04-R1 : correction TRANSPORT AUTHORIZATION, 0.4.1, contrat, rapport | (ce commit) | Local : cœur 184 critères (9 FAIL documentés dont TA-15 remplacé), wrapper 57 (AUT-02 seul), barrière PASS, ASan 0 erreur ; CI : ligne suivante |
 
 ## 6. Prochaine action
-ARCH-UI-04 : GO CONDITIONNEL (`docs/V1-ARCH-UI-04-REPORT.md`). Le propriétaire : compiler le SHA livré `8a61b12` par
-`build_local_macos.sh`, installer, exécuter la recette courte `docs/V1-ARCH-UI-04-RECETTE.md` (H-01..H-09), reporter
-le verdict ici. ARCH-UI-05 : non lancé (autorisation requise).
+ARCH-UI-04-R1 : correction livrée en 0.4.1 (`docs/V1-ARCH-UI-04-R1-REPORT.md`). Codex : validation physique de R-28
+(protocole du rapport §9) sur le SHA livré, compilé par `build_local_macos.sh` ; R-28 n'est PAS déclaré PASS avant ce
+retour. La recette courte ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`) reste applicable. ARCH-UI-05 : non lancé.
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |

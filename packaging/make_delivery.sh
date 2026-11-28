@@ -14,7 +14,7 @@ n_pass=$(grep -c "^RESULT .* PASS " "$RESULTS" || true)
 n_fail=$(grep -c "^RESULT .* FAIL " "$RESULTS" || true)
 
 cat > "$STAGE/README_FR.txt" <<EOF
-SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-UI-04
+SUBDESTRUCKT ${BUILD_ID} — macOS Apple Silicon (arm64) — BUILD INTERNE ARCH-UI-04-R1
 ================================================================================
 
 Version            : ${VERSION} (build ${BUILD}, identite ${BUILD_ID})
@@ -22,17 +22,19 @@ Commit source      : ${COMMIT}
 Format             : plugin instrument VST3 uniquement, arm64 natif (pas d'AU, pas de standalone, pas d'Intel/Rosetta)
 Construction       : GitHub Actions, runner macos-15 arm64 (machine virtuelle), ${RUN_URL}
 
-STATUT : livraison interne candidate ARCH-UI-04 (interface SYMBIOTIC INDUSTRIAL ; moteur DSP identique a 0.3.3, DSP FINAL LOCK).
+STATUT : livraison interne candidate ARCH-UI-04-R1 (correction TRANSPORT AUTHORIZATION / exports, anomalie R-28 ; synthese
+identique a 0.3.3, DSP FINAL LOCK ; interface ARCH-UI-04).
 Ce n'est NI une beta NI une version publique. DIFFUSION BINAIRE PUBLIQUE BLOQUEE (licence JUCE non arbitree, pas de signature Developer ID ni de notarisation).
 
 1. Systemes et hotes testes
 ---------------------------
 - Teste automatiquement sur : ${VM_OS}, machine virtuelle Apple Silicon de GitHub Actions (pas un Mac physique).
 - Hotes utilises : hote VST3 de test sans interface (hebergement VST3 de JUCE 9.0.6) et pluginval 1.0.4.
-- Cette build ${VERSION} n'a pas encore ete testee sur Mac physique ni dans une DAW (recette humaine courte ARCH-UI-04 a
-  faire). Moteur DSP identique a 0.3.3, recette physique 0.3.3 : Reason 14.1 sur Mac Studio M4 Max, macOS 26.5.2,
-  44,1 kHz, R-26 GO (declare par le proprietaire). Ableton Live : NON certifie (R-27 retire). Exports hors ligne (R-28),
-  ecoutes Z (R-29) et captures A/B (R-30) : NON executes, risques acceptes (docs/V1-DSP-FINAL-LOCK.md).
+- Cette build ${VERSION} n'a pas encore ete testee sur Mac physique : la validation physique de la correction R-28
+  (export puis annulation sans PLAY dans Reason 14.1) est confiee a Codex sur le Mac du proprietaire ; elle n'est PAS
+  declaree reussie. Synthese identique a 0.3.3 ; recette physique 0.3.3 : Reason 14.1, Mac Studio M4 Max, macOS 26.5.2,
+  44,1 kHz, R-26 GO (declare par le proprietaire). Ableton Live : NON certifie (R-27 retire). Ecoutes Z (R-29) et
+  captures A/B (R-30) : non executees, risques acceptes (docs/V1-DSP-FINAL-LOCK.md).
 - Resultats automatiques de cette build : ${n_pass} criteres PASS, ${n_fail} ECHEC (detail : docs/V1-ARCH-G4-REPORT.md
   et journal du run CI).
 - Cible materielle : Apple M3 minimum (non encore certifiee). M1/M2 hors support officiel, sans blocage.
@@ -113,8 +115,21 @@ cat > "$STAGE/CHANGELOG.txt" <<EOF
 SUBDESTRUCKT — journal des modifications
 ========================================
 
-${BUILD_ID} (commit ${COMMIT}) — interface ARCH-UI-04 SYMBIOTIC INDUSTRIAL (build interne, non diffusee)
-------------------------------------------------------------------------------------------------------
+${BUILD_ID} (commit ${COMMIT}) — correction ARCH-UI-04-R1 : TRANSPORT AUTHORIZATION et exports (build interne)
+-------------------------------------------------------------------------------------------------------------
+Exports hors temps reel (anomalie R-28, reproduite sur 0.3.3 et 0.4.0)
+- Un export lance sans PLAY prealable puis annule ou termine ne laisse plus l'instrument jouer ses captures ou ses
+  etats autonomes a l'arret : l'autorisation obtenue pour un rendu est temporaire et prend fin au retour en temps reel,
+  et l'etat d'execution laisse par le rendu (tampons D2/S2, feedback, resonateurs, voix, Drone) est remis a zero.
+- Une autorisation normale (lecture, enregistrement, Autoriser) obtenue avant l'export est conservee.
+- Un ARRET observe pendant un export ne leve plus le verrou du Panic ; apres un export, la lecture autonome reprend au
+  premier veritable ARRET -> LECTURE (ou par Autoriser).
+- Une sauvegarde du projet pendant ou apres un export ne reecrit plus les captures D2/S2 enregistrees.
+Aucune modification des algorithmes de synthese, des transformations Z, des chaines sonores, des 703 parametres ni du
+format d'etat 4 ; projets et presets 0.3.x / 0.4.0 lus a l'identique.
+
+0.4.0 — interface ARCH-UI-04 SYMBIOTIC INDUSTRIAL (build interne, non diffusee ; SHA 8a61b12)
+------------------------------------------------------------------------------------------
 Interface (aucune modification DSP : moteur, etat et parametres identiques a 0.3.3)
 - Design System SYMBIOTIC INDUSTRIAL : NEXUS XL/S/Micro, PLASMA CHANNEL, SYNAPTIC TRACK, NEURAL CELL, OPTICAL DISPLAY ;
   Base / Effective / mesure reelle distinctes ; reglage fin, saisie numerique, reset explicite, clavier, molette.

@@ -459,6 +459,9 @@ void Engine::process(float* outL, float* outR, int numSamples, const MidiEvent* 
       captureWait_ = 0;
     }
     if (was && !auth_.authorized() && drone_) releaseGateIfIdle();  // suspension : le Drone ne maintient plus le Gate
+    // ARCH-UI-04-R1 (R-28) : retour en temps réel (rendu terminé ou annulé) sans autorisation normale : l'état d'exécution
+    // laissé par le rendu (tampons D2/S2, boucles de feedback, résonateurs, voix, Gate) ne doit rien restituer
+    if (auth_.returnedToRealtime() && !auth_.authorized()) resetAfterRender();
     taClock_ += static_cast<std::uint64_t>(numSamples);
   }
   if (transport_.bpm != envBpm_) {  // tempo modifié : durées synchronisées recalculées (sans allocation)
@@ -1773,6 +1776,31 @@ void Engine::releaseGateIfIdle() noexcept {
   if (droneEff() || stackSize_ > 0 || !gate_) return;  // Drone autorisé maintient le Gate normal (P0-C05)
   gate_ = false;
   for (auto& en : envs_) en.noteOff();
+}
+
+// Fin d'un rendu hors temps réel sans autorisation normale : retour à l'état d'exécution d'une instance suspendue, au
+// premier bloc temps réel, avant tout échantillon produit. Voix au repos (pile, sustain, Gate, enveloppes), lignes et
+// historiques purgés, chaînes de traitement remises à zéro (D2 Legacy/Regenerative, S2, N2, filtres et résonateurs),
+// lignes d'alignement vidées. Configuration intacte (paramètres, Drone configuré, armements configurés) ; captures
+// retenues conservées pour la prochaine autorisation légitime. Pas de rampe : la sortie temps réel antérieure est déjà
+// interrompue par le rendu. Ce n'est PAS un Panic (aucun désarmement du Drone, aucun verrou, aucun comptage).
+// Aucune allocation, aucun verrou (mêmes primitives que la fin de rampe du Panic).
+void Engine::resetAfterRender() noexcept {
+  stackSize_ = 0;
+  sustained_.fill(false);
+  sustainPedal_ = false;
+  gate_ = false;
+  for (auto& en : envs_) en.reset();
+  purgeStates();
+  chainWt_.reset();
+  chainFm_.reset();
+  chainGl_.reset();
+  for (auto* a : {&alignWtL_, &alignWtR_, &alignFmL_, &alignFmR_, &alignOutL_, &alignOutR_}) a->reset();
+  captureApplyPending_ = false;
+  captureApplied_ = 0;
+  captureWait_ = 0;
+  panicActive_ = false;
+  panicLeft_ = 0;
 }
 
 void Engine::purgeStates() noexcept {
