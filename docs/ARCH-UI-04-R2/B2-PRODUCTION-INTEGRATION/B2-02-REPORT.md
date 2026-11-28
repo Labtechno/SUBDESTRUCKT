@@ -84,4 +84,40 @@ fondation, avec l'habillage R1, est consignée au §7.
 
 ## 7. Mesure après fondation et verdict
 
-À compléter avec le run de preuves sur l'habillage R1 et la CI de production correspondante.
+**GC-01 après fondation** : run 7 sur `42a605e` (code de rendu de `25702f5`, habillage R1), comparé à la référence
+`0517426` en alternance. Plancher de bruit : contrôle A/A (run 5) et dispersion interne des deux exécutions de chaque
+binaire. Verdicts : [`GC01/macos/run7-42a605e/gc01-verdicts.txt`](GC01/macos/run7-42a605e/gc01-verdicts.txt).
+
+| Seuil | Verdict (VM, comparatif) | Rapport courant / référence |
+|---|---|---|
+| GS-01 rendu complet | PASS | ×0,99 (pire vue × zoom) |
+| GS-02 rafraîchissement (partie comparative) | PASS | ×0,94 ; partie absolue (11,1 ms) : M3 physique |
+| GS-03 repos | PASS | 1 zone par rafraîchissement, identique à la référence (oscilloscope 0.4.1) |
+| GS-04 audio | **NON CONCLUANT** | ×1,47 sur le p99, éditeur fermé, mais le **même binaire de référence** varie de ×2,2 en p99 (×6 en médiane) d'une exécution à l'autre. Sur la VM Apple Silicon, un thread ordinaire est placé tantôt sur un cœur performance, tantôt sur un cœur efficacité. Le traitement audio ne peut pas dépendre de l'habillage, éditeur fermé : `source/` et `plugin/` sont intacts. |
+| GS-05 mémoire | PASS | ×1,02 ; croissance de la seconde moitié non supérieure à la référence |
+| GS-06 interaction (partie comparative) | PASS | ×1,04 ; objectif absolu (16,7 ms) : M3 physique |
+| GS-07 éditeur fermé | **NON CONCLUANT** | Même série que GS-04 |
+
+GS-04 et GS-07 restent **ouverts** pour la mesure physique M3 (DB2-01). Amélioration prévue du banc en B2-07 : thread
+audio en priorité temps réel, comme dans un hôte, appliquée de façon identique aux deux arbres.
+
+**CI** :
+
+- production 62 (`0d576ed`) SUCCESS ;
+- production 63 (`25702f5`) SUCCESS ;
+- Component Lab macOS 6 et 7 SUCCESS ;
+- preuves 5 et 7 SUCCESS.
+
+La preuve 6 a échoué au versement ; le workflow a été rendu robuste et relancé (run 7).
+
+**Captures de production macOS** : [`CAPTURES/macos/run7-42a605e/`](CAPTURES/macos).
+
+**Verdict B2-02 : GO technique.**
+
+- Module partagé en place, extraction prouvée sans dérive sur les deux plateformes.
+- Identifiants et libellés générés et testés.
+- Habillage R1 intégré.
+- Mesures comparatives conformes là où elles sont concluantes.
+- Aucun invariant touché.
+
+Réserves : GS-04 et GS-07 (physique M3) ; étapes 2 et 3 de CE-B2-03 à faire par famille en B2-03.

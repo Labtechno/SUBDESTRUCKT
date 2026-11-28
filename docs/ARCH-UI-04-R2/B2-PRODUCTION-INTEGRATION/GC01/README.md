@@ -118,3 +118,13 @@ contrôle A/A, qui mesure le bruit propre à la VM GitHub.
 CONCLUANT** lorsque l'écart A/A de la même série atteint la marge du seuil : ni PASS ni ÉCHEC. Les parties absolues de
 GS-02 (11,1 ms) et de GS-06 (16,7 ms) ne sont jamais jugées sur VM.
 
+## 5. Dispersion interne et première mesure après fondation (run 7)
+
+Le run 7 révèle une **dispersion bimodale du traitement audio sur la VM**. Le même binaire de référence donne une médiane
+par bloc de 0,08 ms puis de 0,51 ms d'une exécution à l'autre. Un thread ordinaire est placé sur un cœur performance ou
+sur un cœur efficacité de la VM Apple Silicon. L'outil intègre donc la **dispersion interne** des exécutions d'un même
+binaire au plancher de bruit (CE-B2-04). GS-04 et GS-07 sont NON CONCLUANTS sur VM.
+
+Verdicts du run 7 : [`macos/run7-42a605e/gc01-verdicts.txt`](macos/run7-42a605e/gc01-verdicts.txt) ; détail par série :
+`gc01-compare.csv`.
+

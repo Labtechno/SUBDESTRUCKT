@@ -74,10 +74,20 @@ verdicts.append(('GS-07', 'editeur ferme : p99 bloc <= 1,05 x ref', w2, w2 and w
 LIMITS = {'GS-01': 1.5, 'GS-02 (comparatif)': 1.5, 'GS-04': 1.05, 'GS-05': 1.25, 'GS-06 (comparatif)': 1.5, 'GS-07': 1.05}
 
 
+def side_dispersion(x):  # dispersion interne : écart relatif max entre les exécutions d'un même binaire (référence, courant)
+    k = (x[0], x[1])
+    devs = []
+    for runs in (ref, cur):
+        v = [float(R[k][x[2]]) for R in runs if k in R]
+        if len(v) >= 2 and min(v) > 0:
+            devs.append(max(v) / min(v) - 1.0)
+    return max(devs) if devs else 0.0
+
+
 def aa_noise(x):  # écart relatif A/A : même série si elle existe, sinon famille (même mesure, même champ), hors séries d'information
     if not aa_ref:
-        return None
-    devs = []
+        return side_dispersion(x)
+    devs = [side_dispersion(x)]
     same = (x[0], x[1]) in aa_ref[0]
     for k in aa_ref[0]:
         if k[0] != x[0] or not all(k in R for R in aa_ref + aa_cur) or k[1].endswith('-info') or 'depassements' in k[1]:
@@ -90,6 +100,7 @@ def aa_noise(x):  # écart relatif A/A : même série si elle existe, sinon fami
     return max(devs) if devs else None
 
 
+print("Plancher de bruit = max(ecart A/A de la meme serie, dispersion interne des executions d'un meme binaire) (CE-B2-04)")
 print(f'GC-01 run alterne {d.name} : {len(ref)} execution(s) reference, {len(cur)} execution(s) courant ; VM : comparatif, NON certifiant'
       + (f' ; plancher de bruit A/A : {aa_dir.name}' if aa_dir else ''))
 for gid, desc, x, ok in verdicts:
