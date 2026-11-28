@@ -99,5 +99,7 @@ indépendant et archive de preuves conservés localement par le propriétaire.
 | Échecs historiques | neuf, documentés (`tests/known_failures.txt`), dont TA-15 clause (e) critère remplacé |
 | Limites d'API VST3 | `docs/V1-AUTONOMY-CONTRACT.md` §5 |
 
+Erratum (ARCH-UI-04-R2-B1, 2026-11-28, correction C06) : `tests/known_failures.txt` contient **dix** entrées en 0.4.1 et non neuf. Ce sont huit échecs documentés (ELP-01, D2-04, D2-04c, AUT-02 clause c, R2-02, ZC-05, ZC-13, R2-02R) et deux critères remplacés (ZC-15 depuis ARCH-G4.3-R1, TA-15 clause (e) depuis ARCH-UI-04-R1). Les résultats et justifications historiques sont inchangés. Le décompte de neuf du §3 (0.3.3) était exact à cette date.
+
 Contrôle de non-modification pour les missions suivantes : `git diff d2d08ac -- source/` vide (remplace la référence
 `0469c4d` du §5).

@@ -36,7 +36,7 @@ reprise dans [R2-ACCEPTANCE-MATRIX.md](R2-ACCEPTANCE-MATRIX.md) (série INV).
 | INV-06 | Les gestes hôte (`beginChangeGesture`/`endChangeGesture` via `juce::ParameterAttachment`) et la granularité Undo restent inchangés. Une action utilisateur produit une seule transaction. |
 | INV-07 | Les 703 StableID restent accessibles depuis l'interface (UI04-COV), y compris les paramètres conditionnels et inactifs. |
 | INV-08 | Aucun rendu 3D avant ARCH-UI-05. Aucune nouvelle dépendance, aucun nouveau SDK, aucune licence nouvelle. |
-| INV-09 | Les réserves R-29 et R-30, les limites d'API VST3 (`../V1-AUTONOMY-CONTRACT.md` §5) et les neuf échecs historiques (`tests/known_failures.txt`) restent consignés tels quels. Un essai non exécuté n'est jamais déclaré PASS. |
+| INV-09 | Les réserves R-29 et R-30, les limites d'API VST3 (`../V1-AUTONOMY-CONTRACT.md` §5) et les dix entrées de `tests/known_failures.txt` (huit échecs documentés et deux critères remplacés, ZC-15 et TA-15) restent consignés tels quels. Un essai non exécuté n'est jamais déclaré PASS. |
 | INV-10 | PB-01 et PB-02 restent au backlog pré-BETA. Un lot qui modifie les gestes concernés DOIT les traiter dans un périmètre autorisé explicitement (voir [R2-RISKS-AND-OPEN-DECISIONS.md](R2-RISKS-AND-OPEN-DECISIONS.md) OD-10). |
 | INV-11 | Aucune mesure, aucune activité de signal, aucune valeur n'est affichée si la télémétrie ne la publie pas ([R2-TELEMETRY-FEASIBILITY.md](R2-TELEMETRY-FEASIBILITY.md)). Une donnée illustrative est marquée comme telle. |
 | INV-12 | Le rouge (`tok::alert`) reste réservé aux alertes et à PANIC. La couleur n'est jamais le seul porteur d'un état. Chaque état porte aussi une forme et un texte. |

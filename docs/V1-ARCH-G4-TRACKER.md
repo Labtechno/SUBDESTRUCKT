@@ -173,6 +173,19 @@ enregistrée **avant mesure** (`docs/ARCH-UI-04-R2/R2-ACCEPTANCE-MATRIX.md`) ; 1
 développement autorisé : R2-B attend la contre-expertise de l'architecte et la validation du propriétaire.
 `git diff d2d08ac -- source/` vide.
 
+### 3decies. ARCH-UI-04-R2-B1 (Component Lab, 2026-11-28)
+Arbitrages du propriétaire : OD-01 B, OD-02 B, OD-06 B, OD-10 B (jamais sans reproduction préalable), OD-11 B, OD-17 A
+(le Component Lab n'est pas une version ; première livraison intégrée R2-B en 0.5.0), OD-18 A. Corrections C01 à C06 de
+la contre-expertise intégrées au référentiel (`docs/ARCH-UI-04-R2/R2-DECISION-REGISTER.md` §3 bis). **C06** :
+`tests/known_failures.txt` compte dix entrées, soit huit échecs documentés et deux critères remplacés (ZC-15, TA-15),
+et non neuf (erratum en `docs/V1-DSP-FINAL-LOCK.md` §7). Livrable : laboratoire isolé `lab/` (projet CMake séparé,
+aucun fichier de production modifié), workflow `component-lab.yml` (macOS 15 VM, résultats versés par commit
+[skip ci]), `docs/ARCH-UI-04-R2/B1-COMPONENT-LAB/`. Résultats : PT-02 mesuré sur 2 213 occurrences × 2 plateformes,
+0 dépassement ; PT-05 macOS 16/16 glyphes natifs, Windows 14/16 (→ substitué dans Verdana) ; plancher critique de 9 px
+à 75 % atteint 26/26 ; contrastes 27/28 (libellé PANIC 0.4.1 blanc sur rouge 3,84:1 < 4,5:1, variante carbone
+5,08:1 soumise) ; auto-tests du laboratoire LAB-G01..G13 13/13 PASS (composants R2 seulement). PB-01 et PB-02 ne sont
+pas corrigés en production (protocoles de reproduction prêts). Validation artistique du propriétaire en attente.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -273,12 +286,16 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R1 : CI | 7d57d94, d2d08ac | run 49 ÉCHEC attendu (reproductions sur macOS) ; **run 50 (46105804592) SUCCESS complet, SHA livré d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af, 0.4.1-b50** (pluginval 10 avec UI, RTSan 0 violation, paquets, LB, manuel) |
 | 2026-11-28 | ARCH-UI-04-R1 : clôture documentaire (contre-audit physique Codex) | 6286b49 | R-28 PASS physique (périmètre Reason 14 exécuté) ; GO technique avec réserves ; aucun changement de code ni de version |
 | 2026-11-28 | ARCH-UI-04-DA : revue artistique et ergonomique indépendante (Codex) | dbc21c8 | documentaire ; 6,7/10 descriptif ; aucune modification de code |
-| 2026-11-28 | ARCH-UI-04-R2-A : référentiel Design & Ergonomics (`docs/ARCH-UI-04-R2/`) | (ce commit) | documentaire ; `git diff d2d08ac -- source/` vide ; aucun build, aucun test modifié ; GO documentaire, R2-B non autorisé |
+| 2026-11-28 | ARCH-UI-04-R2-A : référentiel Design & Ergonomics (`docs/ARCH-UI-04-R2/`) | 04dd7cf | documentaire ; `git diff d2d08ac -- source/` vide ; aucun build, aucun test modifié ; GO documentaire, R2-B non autorisé |
+| 2026-11-28 | ARCH-UI-04-R2-B1 : Component Lab isolé, captures et mesures Windows | a8a172b | aucun fichier de production modifié ; component-lab run 1 SUCCESS (macOS, résultats versés en 3aab1bd) |
+| 2026-11-28 | ARCH-UI-04-R2-B1 : identifiants OD-01, variante PANIC, revue P1 | ab06b8c | component-lab run 2 (macOS) |
+| 2026-11-28 | ARCH-UI-04-R2-B1 : documentation, arbitrages OD, corrections C01–C06 | (ce commit) | documentaire ; `git diff d2d08ac -- source/` vide |
 
 ## 6. Prochaine action
-ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A livré (référentiel
-documentaire `docs/ARCH-UI-04-R2/`). En attente : contre-expertise de l'architecte et validation du propriétaire sur
-R2-A ; décisions bloquantes pour R2-B (OD-01, OD-02, OD-06, OD-10, OD-18) ; R2-B, ARCH-UI-05 et ARCH-UI-06 non autorisés.
+ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
+documentaire. ARCH-UI-04-R2-B1 (Component Lab) livré : `docs/ARCH-UI-04-R2/B1-COMPONENT-LAB/`. En attente :
+validation artistique du propriétaire et contre-expertise de l'architecte sur B1 ; arbitrage des libellés P1 (OD-02),
+du libellé PANIC et du gabarit PLASMA vertical. R2-B2, R2-C, ARCH-UI-05 et ARCH-UI-06 non autorisés.
 Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 
 ### Indicateurs d'avancement (2026-11-28)

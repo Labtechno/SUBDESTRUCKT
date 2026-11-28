@@ -218,7 +218,7 @@ std::unique_ptr<Sheet> sheetNeural() {
   dis.setDisabledReason("nothing frozen");
   s->caption(u8("Convexe, icône d'impulsion,\nretour en creux à l'appui"), RF(36.0f, 174.0f, 190.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
   s->caption(u8("Plate, témoin encastré,\ntexte OFF / ON"), RF(236.0f, 174.0f, 190.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
-  s->caption(u8("Liseré d'attente ambre, témoin\nanneau (ARMED) ou plein (ACTIVE)"), RF(436.0f, 174.0f, 190.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
+  s->caption(u8("Liseré ambre, témoin anneau\n(ARMED) ou plein (ACTIVE)"), RF(436.0f, 174.0f, 190.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
   s->caption(u8("Fond carbone, losange plein et soulignement\ndu domaine sur l'option active"), RF(572.0f, 174.0f, 330.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
   s->caption(u8("Rouge réservé, isolée,\ndouble biseau"), RF(980.0f, 174.0f, 140.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);
   s->caption(u8("Contour seul, hachures,\n« — » et raison en infobulle"), RF(1120.0f, 174.0f, 190.0f, 40.0f), 9.5f, kMute, juce::Justification::topLeft);

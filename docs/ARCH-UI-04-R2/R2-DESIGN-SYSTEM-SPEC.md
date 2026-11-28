@@ -173,7 +173,7 @@ et la monture. Pas de balayage, pas de rémanence simulée, pas de grain (DS-05)
 | Courbe | Courbe de modulation, courbe custom (8 points au plus) | `ModRoute` (thread de contrôle) | Disponible | Édition dans l'éditeur dédié, Undo |
 | Enveloppe | Forme DAHDSR configurée | Paramètres Base | Disponible | Le niveau instantané n'existe que pour AMP (`envelope`). L'étape courante n'est **pas publiée** (T-08). Pas de curseur d'étape. |
 | Table WT | Formes de la banque, position X/Y/Z | Banque (thread de contrôle), `wtX/Y/Z` effectifs | Disponible | Base = réticule, Effective = point `effective` |
-| Analyseurs | Oscilloscope, spectre | `ScopeRing` (4 096 valeurs, mono, décimation × 2, sortie finale après gain, limiteur et rampe PANIC) | Disponible | Spectre calculé côté UI. Le point de prélèvement est nommé à l'écran. |
+| Analyseurs | Oscilloscope, spectre (INDICATIVE, C03) | `ScopeRing` (4 096 valeurs, mono, décimation × 2, sortie finale après gain, limiteur et rampe PANIC) | Disponible | Spectre calculé côté UI. Le point de prélèvement est nommé à l'écran. |
 | Crête | PEAK dBFS L/R | `peakL/peakR` (crête de bloc, sortie finale) | Disponible | Toujours visible (DA-A08). Maintien de crête calculé côté UI. Rouge seulement au-delà de 0 dBFS. |
 | États / diagnostics | Autonomie, transport, compteurs de sûreté, CPU | Télémétrie (§3 du document télémétrie) | Disponible | `cpuLoad` = dernier bloc seulement, pas de moyenne publiée |
 | Ordre Z | Ordre effectif des transformations Z | Moteur | Disponible | Restriction inter-domaines non validée, signalée comme telle |

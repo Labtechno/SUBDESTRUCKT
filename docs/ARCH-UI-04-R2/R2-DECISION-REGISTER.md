@@ -37,7 +37,7 @@ Les identifiants d'exigences renvoient à [R2-ACCEPTANCE-MATRIX.md](R2-ACCEPTANC
 | DE-05 | Les vues NEURAL et TABLE partagent les composants de liaison (`ParamLink`) et les transactions (`Topology` / `ModMatrix`) | DA-A14 | Aucun second modèle |
 | DE-06 | Le Core accepte le geste XY sur le plan X/Y et le geste Z sur un canal dédié. Les trois axes restent pilotables au clavier et par saisie numérique. | DA-A07 | Accessibilité, automation |
 | DE-07 | Les cinq groupes ENGINEERING sont des niveaux de navigation, pas de nouveaux espaces | DA-A10 | Les trois espaces restent |
-| DE-08 | Toute animation est une projection d'une donnée publiée, à cadence au plus égale à `tok::refreshHz` (30 Hz) | DA-A02, A05, A15 | INV-11 |
+| DE-08 | Toute animation est une projection d'une donnée publiée. Trois cadences distinctes (C05) : lecture de la télémétrie (30 Hz en 0.4.1), rafraîchissement des composants (à la lecture ou à l'événement) et rendu du futur Core 3D (fixé par ARCH-UI-05, pas imposé à 30 FPS). Une interpolation visuelle ne crée pas de donnée. | DA-A02, A05, A15 | INV-11 |
 
 ## 3. Propositions non validées (non normatives)
 
@@ -53,6 +53,22 @@ Les identifiants d'exigences renvoient à [R2-ACCEPTANCE-MATRIX.md](R2-ACCEPTANC
 | PR-08 | Exemples du brief (X, WT Z, CROSS LVL, FREQ, RES, FDBK, FB MODE, ATK, REL, MIX, GAIN, ARM, FREEZE, AUTHORIZE, CAPTURE, BASE, EFFECTIVE) | Propriétaire, à titre d'orientation | « Orientation propriétaire (§7) — à confirmer R2-B ». Écart R2-A : `out.gain` → OUT GAIN (et non GAIN), pour le distinguer du GAIN de sortie des étages. |
 | PR-09 | Rattacher l'application de la nomenclature à R2-B (le brief définit R2-B comme « composants et tokens graphiques ») | R2-A | Proposition (OD-18) |
 | PR-10 | Sous-lots R2-F1 (réseaux fixes FM, CROSS) et R2-F2 (matrice configurable) | R2-A, brief §19 | Proposition (OD-19) |
+
+## 3 bis. Arbitrages complémentaires (R2-B1)
+
+OD-01 B, OD-02 B, OD-06 B, OD-10 B, OD-11 B, OD-17 A, OD-18 A : détail dans `R2-RISKS-AND-OPEN-DECISIONS.md` §2 bis.
+PR-09 (nomenclature rattachée à R2-B) est donc retenue (OD-18 A).
+
+Corrections issues de la contre-expertise de R2-A, intégrées en R2-B1 :
+
+| ID | Correction | Documents |
+|---|---|---|
+| C01 | Les 2 213 occurrences sont mesurées avec les polices JUCE (PT-02). Les largeurs du CSV R2-A restent des estimations. | `B1-COMPONENT-LAB/TYPOGRAPHY-MEASUREMENTS.csv` |
+| C02 | Les outils de génération et de vérification sont versionnés (`lab/tools/`). Le CSV se régénère à l'identique, octet pour octet. | `lab/README.md` |
+| C03 | Le spectre est indicatif dans toute sa bande affichée, la limite à fs/4 n'empêche pas la contamination par repliement | `R2-TELEMETRY-FEASIBILITY.md` T-19, RK-17, CD-06 |
+| C04 | STOP, SUSPENDED et silence sont trois états distincts ; SUBDESTRUCKT peut produire un signal transport arrêté | TEL-05 |
+| C05 | Trois cadences distinctes ; 30 FPS non imposé au rendu ARCH-UI-05 | DE-08, TEL-04, contrat Core §7 |
+| C06 | `tests/known_failures.txt` : dix entrées = huit échecs documentés + deux critères remplacés (ZC-15, TA-15) | INV-09, réserves |
 
 ## 4. Orientation rejetée
 

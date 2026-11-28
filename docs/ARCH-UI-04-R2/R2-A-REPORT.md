@@ -169,3 +169,16 @@ SHA du commit qui l'introduit.
 - Dossier : https://github.com/Labtechno/SUBDESTRUCKT/tree/feature/arch-g4-full-development/docs/ARCH-UI-04-R2
 - Revue Codex : https://github.com/Labtechno/SUBDESTRUCKT/tree/feature/arch-g4-full-development/docs/ARCH-UI-04-DA
 - Tracker : https://github.com/Labtechno/SUBDESTRUCKT/blob/feature/arch-g4-full-development/docs/V1-ARCH-G4-TRACKER.md
+
+## Errata (R2-B1, 2026-11-28)
+
+Corrections issues de la contre-expertise, intégrées au référentiel sans réécrire ce rapport (registre des décisions §3 bis) :
+
+- §4 : les largeurs « estimées » sont désormais **mesurées** (PT-02). macOS (Lucida Grande) et Windows (Verdana) donnent
+  chacun 0 dépassement. `Z · CROSS LVL` tient sur une ligne sous macOS (marge 1,0 px) et demande deux lignes sous
+  Windows. L'écart mesure − estimation va de −19,7 à +16,7 px sous macOS (C01).
+- §7 : le spectre est indicatif dans toute la bande affichée, et pas seulement au-delà de fs/4 (C03).
+- §12 : `tests/known_failures.txt` contient dix entrées : huit échecs documentés et deux critères remplacés, ZC-15 et
+  TA-15 (C06). Le chiffre de neuf est erroné.
+- Cadences et états STOP / SUSPENDED / silence : C04 et C05 (`R2-TELEMETRY-FEASIBILITY.md` TEL-04, TEL-05).
+

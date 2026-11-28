@@ -99,7 +99,7 @@ Le passage 2D ↔ 3D ne change ni les gestes, ni les valeurs, ni l'Undo, ni l'ac
 | Entrées | Bases X, Y, Z ; Effectives et drapeaux `modulated` ; état de geste (au repos, en geste) ; disposition ; zoom ; données de télémétrie **publiées** seulement ([R2-TELEMETRY-FEASIBILITY.md](R2-TELEMETRY-FEASIBILITY.md) classe A ou B) |
 | Sorties | Aucune écriture. Les gestes restent gérés par le composant d'enveloppe (§4). |
 | Zone | Le carré `pad_`, rogné (CORE-06) |
-| Cadence | ≤ 30 Hz (`tok::refreshHz`) |
+| Cadence | Données : lecture de télémétrie à 30 Hz (0.4.1). Rendu : cadence propre au moteur 3D, fixée par ARCH-UI-05, **non imposée à 30 FPS** (C05). Interpolation visuelle admise entre deux lectures, sans création de donnée. |
 | Budget de rendu | Seuil candidat ≤ 4 ms par image sur la machine de recette, à mesurer. Repli 2D automatique en cas de dépassement soutenu. |
 | Dépendances | Aucune nouvelle dépendance (INV-08). L'usage éventuel du module JUCE `juce_opengl` est une décision d'ARCH-UI-05 (OD-12). |
 | Accessibilité | Le rendu est décoratif pour l'accessibilité. Les titres et valeurs passent par l'enveloppe. |

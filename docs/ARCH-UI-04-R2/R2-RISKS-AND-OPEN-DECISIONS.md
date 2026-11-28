@@ -22,7 +22,7 @@
 | RK-14 | Lisibilité à 75 % : 7,125 px écran au plancher actuel | É | M | OD-06 | B |
 | RK-15 | Les contrats historiques restent contradictoires si les remplacements du master §7 ne sont pas consignés | M | M | Report des remplacements à chaque lot, puis consolidation en ARCH-UI-06 | B–06 |
 | RK-16 | Couverture physique limitée : une machine, Reason 14 seul (Ableton non certifié, M3 non certifié) | — | M | Maintenu. Ne pas extrapoler. | H |
-| RK-17 | Spectre replié au-delà de fs/4 (décimation sans filtre dans le moteur verrouillé), trompeur en IMMERSIVE | M | F | Bande affichée (CD-06). Aucune correction sans dérogation DSP. | B, G |
+| RK-17 | Spectre contaminé par repliement, y compris dans la bande affichée 20 Hz – fs/4 (décimation sans filtre anti-repliement dans le moteur verrouillé ; correction C03) : spectre indicatif seulement, trompeur en IMMERSIVE | M | F | Bande affichée (CD-06). Aucune correction sans dérogation DSP. | B, G |
 | RK-18 | Le DRAWER de l'Inspector masque le moniteur pendant l'édition au minimum | É | F | Rang « — » assumé, avec indicateur (WS-P04) | E |
 | RK-19 | Une modification de l'interface ou du wrapper affecte l'audio sans toucher `source/` : écriture de paramètre pendant la navigation, capture, autorisation, chargement d'état | F | É | INV-13 : REG-01, suite TA, test d'absence d'écriture | tous |
 | RK-20 | Le regroupement ENGINEERING allonge les parcours (jusqu'à +1 clic) | M | F | WS-E08 ; mémorisation du dernier outil ; liens internes directs | E |
@@ -51,8 +51,22 @@
 | OD-18 | Rattachement de l'application de la nomenclature (le brief définit R2-B comme « composants et tokens graphiques ») | Dans R2-B ; sous-lot R2-B2 ; dans chaque lot d'espace | Dans R2-B, car la sérigraphie fait partie du design system et les tests en dépendent | R2-B |
 | OD-19 | Sous-lots de R2-F (brief : « prévoir des sous-lots si risques significatifs ») | Un lot ; R2-F1 (FM, CROSS) puis R2-F2 (matrice) | Deux sous-lots : les risques de la matrice configurable diffèrent de ceux des réseaux fixes | R2-F |
 
+## 2 bis. Décisions arbitrées par le propriétaire (R2-B1, 2026-11-28)
+
+| ID | Option retenue | Décision | Précision |
+|---|---|---|---|
+| OD-01 | B | Identifiant de composant stable | Stratégie : `B1-COMPONENT-LAB/INTERACTION-TEST-PLAN.md` §1 |
+| OD-02 | B | Validation progressive des libellés par priorité | Revue P1 : `B1-COMPONENT-LAB/P1-NAMING-REVIEW.md` ; aucun libellé validé à ce jour |
+| OD-06 | B | 9 px minimum à 75 % pour les repères critiques | Soit 12 px logiques ; vérifié 26/26 (macOS et Windows) |
+| OD-10 | B | Correction de PB-01 et PB-02 dans les lots concernés | Jamais sans reproduction préalable ; protocoles : plan de test §4 et §5 |
+| OD-11 | B | Unicode vérifié avec repli ASCII | `B1-COMPONENT-LAB/GLYPH-VALIDATION.md` |
+| OD-17 | A | Version 0.5.x par lot livré | Pour les livraisons fonctionnelles seulement ; le Component Lab n'est pas une version ; première livraison intégrée R2-B : 0.5.0 |
+| OD-18 | A | Nomenclature intégrée à R2-B | Application en R2-B2 |
+
+Restent ouvertes : OD-03, OD-04, OD-05, OD-07, OD-08, OD-09, OD-12 à OD-16 et OD-19.
+
 ## 3. Réserves maintenues (non modifiées par R2)
 
 R-29 et R-30 NON EXÉCUTÉS (risques acceptés) ; PANIC et sauvegarde pendant un export NON EXÉCUTÉS physiquement ;
-Ableton Live non certifié ; limites d'API VST3 (`../V1-AUTONOMY-CONTRACT.md` §5) ; neuf échecs historiques documentés ;
+Ableton Live non certifié ; limites d'API VST3 (`../V1-AUTONOMY-CONTRACT.md` §5) ; les dix entrées de `tests/known_failures.txt` (huit échecs documentés et deux critères remplacés, ZC-15 et TA-15) ;
 licence JUCE (B-04) non résolue ; PB-01 et PB-02 au backlog.

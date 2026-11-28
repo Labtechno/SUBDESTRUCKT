@@ -13,7 +13,7 @@ proposition de R2-A.
 | Lot | Objet | Arbitrages | Entrées | Sorties | Critères (matrice) |
 |---|---|---|---|---|---|
 | **R2-A** | Référentiel documentaire (ce dossier) | DA-A01…A15 | Revue Codex, code 0.4.1 | 14 documents | — |
-| **R2-B** | Design System (brief : composants et tokens graphiques) : tokens R2, typographie, NEXUS Hybrid, NEURAL CELL Hybrid, Plasma Hybrid, variantes Cybernetic Display. **Proposition** : y rattacher l'application de la sérigraphie anglaise (table d'alias d'affichage) et la stratégie d'identification des tests (OD-18). | A01–A06 | CSV validé, OD-01, OD-06, OD-10, OD-11, OD-18 | Composants, table d'alias, tests NAM/NX/NC/CD/PL | §11 de la matrice |
+| **R2-B** | **B1 Component Lab** (réalisé le 2026-11-28 : laboratoire isolé, PT-02, PT-05 ; `B1-COMPONENT-LAB/`), puis **B2 Integration** (première livraison intégrée, version 0.5.0, OD-17). Design System (brief : composants et tokens graphiques) : tokens R2, typographie, NEXUS Hybrid, NEURAL CELL Hybrid, Plasma Hybrid, variantes Cybernetic Display. **Proposition** : y rattacher l'application de la sérigraphie anglaise (table d'alias d'affichage) et la stratégie d'identification des tests (OD-18). | A01–A06 | CSV validé, OD-01, OD-06, OD-10, OD-11, OD-18 | Composants, table d'alias, tests NAM/NX/NC/CD/PL | §11 de la matrice |
 | **R2-C** | PERFORMANCE Adaptive Instrument : dispositions par seuils, barre (PEAK, autonomie, une rangée), enveloppe du Core en 2D | A07, A08 | R2-B ; OD-04 ; prototype géométrique | Dispositions, Core 2D conforme au contrat | WS-P*, CORE-01…14, AX-02 |
 | **R2-D** | SOUND DESIGN Adaptive Engine Workspace : contexte, ancrage, ordre moteur, conditionnels, éditeurs de courbes et d'enveloppes | A09 | R2-B | Plaques réorganisées | WS-S*, CD-07, CD-08 |
 | **R2-E** | ENGINEERING Workbench (5 groupes, 10 outils) et Adaptive Inspector (DOCKED / BAND / DRAWER) | A10, A11 | R2-B ; OD-05 ; OD-01 (UI-01w) | Navigation à deux niveaux, Inspector adaptatif | WS-E*, WS-I*, WS-P03 |
@@ -45,10 +45,10 @@ R2-A ─► R2-B ─► R2-C ─► R2-D ─► R2-E ─► R2-F ─► R2-G ─
 | ID | Étude | Lot | Livrable | Décision attendue |
 |---|---|---|---|---|
 | PT-01 | Prototype géométrique de la disposition COMPACT à 960 × 640 (mesure du pad, des rangs 1 à 9 et du défilement) | début de R2-C | Mesures automatiques, captures | Confirmation de WS-P02 et des seuils OD-04 |
-| PT-02 | Mesure JUCE des 2 213 libellés proposés | début de R2-B | CSV mesuré (remplace les estimations) | Confirmation de NAM-08 |
+| PT-02 | Mesure JUCE des 2 213 libellés proposés | **exécuté en R2-B1** (macOS 15 VM, Windows 11) | `B1-COMPONENT-LAB/TYPOGRAPHY-MEASUREMENTS.csv` | NAM-08 : 0 dépassement ; budgets des éléments hors registre à fixer en R2-C |
 | PT-03 | Coût de rendu des réseaux à densité maximale | début de R2-F | ms par image, machine de recette | NN-25, repli éventuel |
 | PT-04 | Coût de la réactivité | début de R2-G | ms par image | TEL-08 |
-| PT-05 | Disponibilité des glyphes `→ · … −` dans la police embarquée | R2-B | Rapport | OD-11 |
+| PT-05 | Disponibilité des glyphes `→ · … −` dans les polices de l'interface | **exécuté en R2-B1** | `B1-COMPONENT-LAB/GLYPH-VALIDATION.md` | OD-11 arbitré (B) : macOS 16/16 natifs ; Windows : → substitué dans Verdana |
 
 ## 4. Ordonnancement recommandé
 

@@ -85,7 +85,7 @@ mesurer en prototype. Aucun résultat de mesure n'est présumé.
 | CD-03 | Aucun effet CRT, balayage, grain ni rémanence simulée | O | SUBJ | B |
 | CD-04 | Mentions STATIC PREVIEW et ESTIMATE présentes là où elles s'appliquent | O | AUTO | B, G |
 | CD-05 | Maintien de crête calculé côté UI ; rouge seulement au-delà de 0 dBFS | O | AUTO | B |
-| CD-06 | Bande du spectre (fs/4) indiquée | O | AUTO | B |
+| CD-06 | Spectre marqué INDICATIVE (repliement possible dans la bande affichée, C03) et bande fs/4 indiquée | O | AUTO | B |
 | CD-07 | Pas de curseur d'étape d'enveloppe (donnée non publiée) | O | AUDIT | B, D |
 | CD-08 | Restriction Z inter-domaines signalée comme non validée | O | AUTO | B, D |
 | PL-01 | Colonne de Base, depuis le minimum ou le centre (`bip`) | O | AUTO | B |
@@ -203,8 +203,8 @@ mesurer en prototype. Aucun résultat de mesure n'est présumé.
 | TEL-01 | Données de classe A/B seulement | O | AUDIT | G, 05 |
 | TEL-02 | Mention ESTIMATE pour les dérivations approximatives | O | AUTO | G |
 | TEL-03 | Aucune donnée C ou D sans mission autorisée | O | AUDIT | G |
-| TEL-04 | Animations ≤ 30 Hz, arrêtées éditeur masqué | O | AUTO | G |
-| TEL-05 | Silence et suspension affichés explicitement | O | AUTO + SUBJ | G |
+| TEL-04 | Cadences distinguées (lecture télémétrie, rafraîchissement, rendu Core) ; animations arrêtées éditeur masqué (C05) | O | AUTO | G |
+| TEL-05 | STOP, SUSPENDED et silence affichés comme trois états distincts (C04) | O | AUTO + SUBJ | G |
 | TEL-06 | Point de prélèvement indiqué | O | AUTO | G |
 | TEL-07 | Aucune allocation ni verrou ajoutés sur le thread audio (RTSan en CI) | O | AUTO | G |
 | TEL-08 | Coût de la réactivité mesuré | F | AUTO + PHYS | G |

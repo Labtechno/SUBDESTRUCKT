@@ -46,7 +46,7 @@ verrouillé.
 | T-16 | Révision de la matrice | A | `modSerial` | Bloc | Oui | Déclenche le rafraîchissement de la vue |
 | T-17 | Crête de sortie L/R | A | `peakL`, `peakR` (maximum du bloc, sortie finale) | Bloc | Oui | Maintien et décroissance à calculer côté UI (B) |
 | T-18 | Oscilloscope | A | `scope` (anneau) | Continu | Oui | Mono, une valeur sur deux, sans filtre anti-repliement |
-| T-19 | Spectre | B | FFT côté UI de l'anneau | 30 Hz | Oui | Mono. Bande limitée à fs hôte / 4 (11,0 kHz à 44,1 kHz). Repliement possible au-delà. |
+| T-19 | Spectre | B | FFT côté UI de l'anneau | 30 Hz | Oui | **Indicatif seulement** (C03) : mono ; la décimation sans filtre anti-repliement replie les composantes situées au-delà de fs hôte / 4 dans la bande affichée 20 Hz – fs/4 (11,0 kHz à 44,1 kHz) ; la limite de bande n'élimine pas cette contamination. Aucune correction DSP autorisée. |
 | T-20 | Compteurs de sûreté (non finis, écrêtage, PM, événements perdus, PANIC, limiteur, ELP) | A | `nonFiniteResets`, `outputClampHits`, `pmClampHits`, `droppedEvents`, `panics`, `limiterHits`, `elpHits` | Bloc | Oui | Compteurs cumulés ; activité = variation entre deux lectures (B) |
 | T-21 | Charge CPU | A | `cpuLoad` (wrapper, dernier bloc) | Bloc | Oui | Pas de moyenne publiée ; moyenne glissante côté UI (B) |
 | T-22 | État des liens de la matrice (actif, raison d'inactivité) | B | `modRouteStatus` (thread de contrôle), `ModInactive` | Événement | Oui | Statut logique, pas activité |
@@ -78,8 +78,8 @@ verrouillé.
 | TEL-01 | Le Reactive Signal Flow n'utilise que des données de classe A ou B (INV-11) |
 | TEL-02 | Une donnée B approximative porte la mention ESTIMATE |
 | TEL-03 | Toute donnée C ou D exige une mission distincte, autorisée explicitement, avec son propre rapport (dérogation au DSP FINAL LOCK). R2-B à R2-H n'en dépendent pas. |
-| TEL-04 | Les animations ne dépassent pas 30 Hz et cessent quand l'éditeur est masqué |
-| TEL-05 | L'absence de signal (silence, transport arrêté, autonomie suspendue) est affichée explicitement. Aucune animation résiduelle ne la masque. |
+| TEL-04 | Trois cadences distinctes (C05) : **lecture de la télémétrie** (30 Hz en 0.4.1, `tok::refreshHz`), **rafraîchissement des composants** (au plus à la lecture pour une donnée, ou à l'événement), **rendu du futur Core 3D** (fixé par ARCH-UI-05, pas imposé à 30 FPS ; une interpolation entre deux lectures ne crée pas de donnée). Toute animation cesse quand l'éditeur est masqué. |
+| TEL-05 | Transport arrêté (STOP), autonomie suspendue (SUSPENDED) et silence en sortie sont **trois états distincts**, affichés séparément et jamais déduits l'un de l'autre (C04) : SUBDESTRUCKT peut produire un signal transport arrêté (note jouée, Drone autorisé, traîne). Le silence ne se déduit que de la crête mesurée (T-17). Aucune animation résiduelle ne masque un silence réel. |
 | TEL-06 | Le point de prélèvement de chaque mesure (sortie finale, mono) est indiqué à l'écran |
 | TEL-07 | La lecture de la télémétrie ne crée ni allocation ni verrou sur le thread audio (contrat inchangé). La lecture reste du côté de l'éditeur. |
 | TEL-08 | Le coût de rendu de la réactivité est mesuré en prototype (R2-G) |
