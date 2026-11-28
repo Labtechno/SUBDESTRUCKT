@@ -238,3 +238,7 @@ Les choix TB2-01 à TB2-08 (§4.1) relèvent de l'architecture. Ils sont soumis 
   widgets génériques (DB2-06) ; la ligne de base GC-01 sur 0.4.1 n'exige pas encore les seuils de DB2-07.
 
 **R2-B2-00 — PRÊT POUR CONTRE-EXPERTISE / AUCUNE INTÉGRATION DE PRODUCTION ENGAGÉE.**
+
+## Addendum B2-00 (2026-11-28, après GO)
+
+GO du propriétaire, arbitrages DB2-01 à DB2-07, amendements CE-B2-01 à CE-B2-05, validation de TB2-01 à TB2-08 : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.

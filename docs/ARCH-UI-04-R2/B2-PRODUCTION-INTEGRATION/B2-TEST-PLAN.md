@@ -107,3 +107,9 @@ passer avec le même critère, sans période où il échouerait.
 - SV-01 (projets 0.4.1) ;
 - GC-01 physique (selon DB2-01) ;
 - validation subjective NAM-14, DS-03 et CD-03.
+
+## Addendum B2-00 (2026-11-28, après GO)
+
+Tests de reproduction permanents (CE-B2-01), géométrie PLASMA par surface utile (CE-B2-02, critère PLAS-G), chaîne de preuve visuelle (CE-B2-03), PL-06 amendé : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.
+
+La colonne « Suite » du §3 se lit avec CE-B2-01 : un scénario qui a démontré un défaut reste un test permanent après correction.

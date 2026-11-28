@@ -34,3 +34,7 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 | EC-14 | PRE | PB-01 (gestes imbriqués au double-clic) : constat **statique** seulement (H-04) ; le même chemin existe pour les PLASMA (`ContinuousControl` commun) | `ui/Components.cpp:399-447` | Reproduction préalable obligatoire (OD-10) | B2-01 | — |
 | EC-15 | NORM | Version : OD-17 (A) fixe 0.5.0 pour la première livraison intégrée R2-B. La mission R2-B2 interdit tout changement de version sans justification ni autorisation. | `R2-RISKS-AND-OPEN-DECISIONS.md` §2 bis | Confirmation demandée ; aucun changement de version avant la clôture de R2-B2 | B2-08 | **DB2-04** |
 | EC-16 | NORM | Aucune variante HUD validée pour les éditeurs interactifs (enveloppe, courbe) ni pour les vues XY, réseau, ordre Z et flux | `B1-R1-FINAL-ARTISTIC-REFINEMENT/COMPONENT-DESIGN-FINAL.md` §5 | Décision du propriétaire | B2-03 (5) | **DB2-05** |
+
+## Addendum B2-00 (2026-11-28, après GO)
+
+État des écarts après arbitrage (§8 de l'addendum) : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.

@@ -83,3 +83,9 @@ En cas de dépassement :
 2. Optimisations sans changement visuel : mise en cache de couches statiques et réutilisation des `Path`, entre autres.
    Une simplification visible exige un arbitrage artistique.
 3. Si le dépassement persiste, déclaration au rapport et décision du propriétaire.
+
+## Addendum B2-00 (2026-11-28, après GO)
+
+Seuils GS définitifs (DB2-07) et exigences de robustesse CE-B2-04 : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.
+
+Les seuils du §5 sont remplacés par l'addendum §4. GS-02 est mesuré sur M3 de base physique pour sa partie absolue (DB2-01).

@@ -195,6 +195,10 @@ abandonné). Livrable : `docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/`, n
 `docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv` (la révision R2-A reste reproductible à l'identique). Critères AR-01 à
 AR-15 ; AR-15 (validation artistique) est exclusivement humain.
 
+### 3terdecies. R2-B2-00 GO et seuils GC-01 définitifs (2026-11-28, avant toute mesure)
+Seuils **GS-01 à GS-07 définitifs** (DB2-07) et critères INT amendés, enregistrés avant toute mesure :
+`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md` §4 et §7. Matériel de référence : M3 de base (DB2-01).
+
 ### 3duodecies. AR-15 et ARCH-UI-04-R2-B2-00 (2026-11-28)
 Décision humaine du propriétaire : **AR-15 PASS** (option A, validation artistique complète), **B1-R1 GO FINAL**, gel du
 Design System R1, LAB-A01 à LAB-A08 validés, R2-B2 autorisé (`B1-R1-FINAL-ARTISTIC-REFINEMENT/OWNER-DECISION-AR15.md`).
@@ -315,15 +319,17 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : documentation, validation P1, référentiel, tracker, rendus Windows | 7cbfa43 | CI de production 54 et 55 SUCCESS |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats macOS finals (component-lab run 5) | 17da3e6 | commit du workflow |
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats CI consignés | 73b633b | documentaire, `[skip ci]` |
-| 2026-11-28 | Décision du propriétaire : AR-15 PASS (option A), B1-R1 GO FINAL, Design System R1 gelé | (ce commit) | décision humaine consignée sans réécriture des preuves |
-| 2026-11-28 | ARCH-UI-04-R2-B2-00 : audit préalable et contractualisation (dossier pour contre-expertise) | (ce commit) | documentaire ; aucune intégration de production ; `git diff d2d08ac -- source/` vide |
+| 2026-11-28 | Décision du propriétaire : AR-15 PASS (option A), B1-R1 GO FINAL, Design System R1 gelé | e45ba7d | décision humaine consignée sans réécriture des preuves |
+| 2026-11-28 | ARCH-UI-04-R2-B2-00 : audit préalable et contractualisation (dossier pour contre-expertise) | e45ba7d | documentaire ; aucune intégration de production ; `git diff d2d08ac -- source/` vide |
+| 2026-11-28 | ARCH-UI-04-R2-B2-00 GO : addendum (DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, GS définitifs, PL-06 amendé) | (ce commit) | documentaire, `[skip ci]` ; R2-B2 exécution autorisée |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
 documentaire. ARCH-UI-04-R2-B1 : GO technique (preuves finales `786c6ad`). ARCH-UI-04-R2-B1-R1 : **GO FINAL** (AR-15 PASS,
 décision du propriétaire du 2026-11-28 ; Design System R1 gelé). ARCH-UI-04-R2-B2 autorisé : **R2-B2-00** (audit et
 contractualisation) publié dans `docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/`. En attente : contre-expertise de
-ChatGPT sur R2-B2-00, puis GO, et décisions DB2-01 à DB2-07 du propriétaire. Aucune intégration de production avant ce GO.
+ChatGPT sur R2-B2-00 : **obtenue** ; R2-B2-00 **GO**, DB2-01 à DB2-07 et CE-B2-01 à CE-B2-05 validés
+(`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`). R2-B2 en exécution : B2-01 (reproductions PB-01 / PB-02) puis B2-02.
 R2-C, R2-D, R2-E, ARCH-UI-05 et ARCH-UI-06 non autorisés.
 Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 

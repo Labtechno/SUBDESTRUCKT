@@ -51,3 +51,9 @@ INT-19 à INT-21 complètent la liste proposée par la mission (§9).
 - **Marge d'alerte** : moins de 8 px (`OK_MARGE<8` de PT-02). Une marge sous ce seuil est une réserve documentée, pas un
   PASS sans commentaire.
 - **Budget inconnu** : une occurrence sans budget connu dans la disposition finale reste INDÉTERMINÉE, rattachée à son lot.
+
+## Addendum B2-00 (2026-11-28, après GO)
+
+Critères amendés (INT-02, INT-04 à INT-07, INT-10, INT-12, INT-18) et nouveau critère PLAS-G : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.
+
+Les seuils SC du protocole GC-01 sont désormais **définitifs** (GS-01 à GS-07, addendum §4).

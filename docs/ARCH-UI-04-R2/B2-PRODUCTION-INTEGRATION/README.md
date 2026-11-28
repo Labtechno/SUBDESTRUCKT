@@ -4,11 +4,12 @@ Transfert du Design System R1 (gelé par la décision AR-15 PASS du 2026-11-28) 
 production. C'est une mission d'intégration, de robustesse, de conformité et de non-régression. Ce n'est ni une mission
 artistique ni une réorganisation spatiale.
 
-**État : R2-B2-00 (audit préalable et contractualisation) publié pour contre-expertise. Aucune intégration de production
-n'est engagée.** Les étapes R2-B2-01 à 08 attendent le GO du dossier.
+**État : R2-B2-00 GO (addendum [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md)) ; exécution de R2-B2 autorisée.** Arbitrages
+DB2-01 à DB2-07 et amendements CE-B2-01 à CE-B2-05 consignés.
 
 | Document | Contenu |
 |---|---|
+| [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md) | **Addendum normatif** : GO, DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, seuils GS définitifs, PL-06 amendé (prime sur le dossier) |
 | [B2-00-DOSSIER.md](B2-00-DOSSIER.md) | Dossier d'exécution : état du dépôt, stratégie, dépendances, risques, PB-01 et PB-02, performances, fichiers, décisions, verdict |
 | [B2-00-COMPONENT-MAP.md](B2-00-COMPONENT-MAP.md) | Cartographie de la production, du laboratoire et des données disponibles |
 | [B2-CONFORMITY-MATRIX.md](B2-CONFORMITY-MATRIX.md) / [.csv](B2-CONFORMITY-MATRIX.csv) | Composant actuel → composant R1 → contrat → dépendances → risques → tests |

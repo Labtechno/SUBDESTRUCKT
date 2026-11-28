@@ -96,6 +96,21 @@ précisées par LAB-A08 ; la variante PANIC et le gabarit PLASMA vertical, soumi
 Trace : `B1-R1-FINAL-ARTISTIC-REFINEMENT/OWNER-DECISION-AR15.md`. Décisions ouvertes par R2-B2-00 : DB2-01 à DB2-07
 (`B2-PRODUCTION-INTEGRATION/B2-00-DOSSIER.md` §12).
 
+## 3 quinquies. Arbitrages R2-B2 (DB2) et amendements de contre-expertise (CE-B2)
+
+| ID | Option | Décision | Date |
+|---|---|---|---|
+| DB2-01 | C | M3 de base minimum officiel ; M1 et M2 hors support ; mesures M1 complémentaires autorisées sans extension du support | 2026-11-28 |
+| DB2-02 | A | Gestes PLASMA 0.4.1 conservés ; PL-06 amendé | 2026-11-28 |
+| DB2-03 | B | P2, P3 et microcopie validés par lots groupés en B2-04 ; interface finale entièrement en anglais ; NAM-01 à la clôture | 2026-11-28 |
+| DB2-04 | A | 0.4.1 pendant l'intégration ; 0.5.0 préparée à la clôture, sur autorisation finale | 2026-11-28 |
+| DB2-05 | A | Monture HUD R1 seule pour les afficheurs sans variante validée | 2026-11-28 |
+| DB2-06 | A | Habillage R1 des widgets JUCE génériques par le LookAndFeel | 2026-11-28 |
+| DB2-07 | B | Seuils GS-01 à GS-07 définitifs (amendés) | 2026-11-28 |
+| CE-B2-01 à 05 | — | Tests de reproduction permanents ; géométrie PLASMA par surface utile ; indépendance des preuves visuelles ; robustesse de GC-01 ; corrections EC-01 à EC-03 autorisées | 2026-11-28 |
+
+Texte normatif : `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`. R2-B2-00 : GO ; R2-B2 : exécution autorisée.
+
 ## 4. Orientation rejetée
 
 | ID | Orientation | Motif |

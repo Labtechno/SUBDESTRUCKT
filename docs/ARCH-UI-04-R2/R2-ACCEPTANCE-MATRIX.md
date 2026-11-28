@@ -290,4 +290,4 @@ SUCCESS ; recette physique ciblée NC-05 / NC-07 / NC-03 ; validation subjective
   DB2-02.
 - Les critères de R2-B2 (INT-01 à INT-21) regroupent les critères de cette matrice sans les remplacer
   (`B2-PRODUCTION-INTEGRATION/B2-ACCEPTANCE-CRITERIA.md`).
-
+- **PL-06 amendé** (DB2-02, 2026-11-28) : règles communes avec NEXUS (clavier, molette, saisie, défaut, une paire begin/end) ; gestes spécifiques PLASMA de 0.4.1 (clic en position absolue, glisser rapporté à la longueur utile du canal, aucun saut à la prise en main). Texte : `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md` §5. EC-05 résolu.
