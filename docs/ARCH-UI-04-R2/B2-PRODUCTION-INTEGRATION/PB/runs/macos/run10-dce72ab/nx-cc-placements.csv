@@ -1,0 +1,25 @@
+gabarit,libelle,emplacement,x,y,w,h,pixels_recouverts_actif,pixels_recouverts_inactive
+XL,X,bouton-haut-gauche,2.0,19.0,26.6,11.0,139,441
+XL,X,bouton-haut-droite,103.4,19.0,26.6,11.0,216,647
+XL,X,bouton-bas-gauche,2.0,116.0,26.6,11.0,140,455
+XL,X,bouton-bas-droite,103.4,116.0,26.6,11.0,140,441
+XL,X,serigraphie-gauche,2.0,0.0,26.6,19.0,0,0
+XL,X,serigraphie-droite,103.4,0.0,26.6,19.0,0,0
+XL,FM INDEX,bouton-haut-gauche,2.0,19.0,26.6,11.0,139,441
+XL,FM INDEX,bouton-haut-droite,103.4,19.0,26.6,11.0,216,647
+XL,FM INDEX,bouton-bas-gauche,2.0,116.0,26.6,11.0,140,455
+XL,FM INDEX,bouton-bas-droite,103.4,116.0,26.6,11.0,140,441
+XL,FM INDEX,serigraphie-gauche,2.0,0.0,26.6,19.0,0,0
+XL,FM INDEX,serigraphie-droite,103.4,0.0,26.6,19.0,0,0
+S,AMOUNT,bouton-haut-gauche,2.0,17.0,26.6,11.0,327,575
+S,AMOUNT,bouton-haut-droite,55.4,17.0,26.6,11.0,404,747
+S,AMOUNT,bouton-bas-gauche,2.0,65.0,26.6,11.0,266,538
+S,AMOUNT,bouton-bas-droite,55.4,65.0,26.6,11.0,266,551
+S,AMOUNT,serigraphie-gauche,2.0,0.0,26.6,17.0,100,100
+S,AMOUNT,serigraphie-droite,55.4,0.0,26.6,17.0,88,88
+S,RATIO,bouton-haut-gauche,2.0,17.0,26.6,11.0,327,575
+S,RATIO,bouton-haut-droite,55.4,17.0,26.6,11.0,404,747
+S,RATIO,bouton-bas-gauche,2.0,65.0,26.6,11.0,266,538
+S,RATIO,bouton-bas-droite,55.4,65.0,26.6,11.0,266,551
+S,RATIO,serigraphie-gauche,2.0,0.0,26.6,17.0,14,14
+S,RATIO,serigraphie-droite,55.4,0.0,26.6,17.0,12,12

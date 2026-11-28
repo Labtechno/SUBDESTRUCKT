@@ -1,0 +1,3 @@
+echec connu (documente) : wrapper:AUT-02
+wrapper : 87 criteres (1 FAIL), synthese 'wrapper_tests : 73 controles, 2 echecs, 87 criteres rapportes', code 1
+BARRIERE : PASS
