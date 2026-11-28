@@ -1,0 +1,1762 @@
+Zoom,Emplacement,StableID,Indice,Choix actuel,Caractères,Largeur px logiques,Budget utile minimum px logiques,Mode
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,0,Both,4,20.4,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,1,Forward,7,36.62,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,2,Reverse,7,34.93,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,0,Ratio,5,22.99,76,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,1,Fixed,5,24.52,76,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,2,Saw,3,17.38,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,3,Pulse,5,23.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,4,Folded Sine,11,52.09,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,5,Asymmetric,10,53.53,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,6,Phase Distorted,15,71.12,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,7,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,8,Wavetable,9,45.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,0,PM,2,13.21,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,1,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,2,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,3,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,0,DC,2,13.46,76,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,1,AC,2,12.91,76,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,0,Free,4,19.24,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,1,Retrigger,9,41.8,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,2,Random,6,37.2,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,1,WT,2,13.9,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,0,Clean,5,25.32,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,1,Raw,3,18.26,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,1,Cubic,5,25.62,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,0,Clamp,5,28.92,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,1,Wrap,4,22.85,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,2,Mirror,6,27.95,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,0,Linear,6,27.66,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,1,Stepped,7,36.57,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,2,Spectral,8,36.07,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,0,Clamp,5,28.92,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,1,Wrap,4,22.85,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,2,Mirror,6,27.95,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,0,Linear,6,27.66,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,1,Stepped,7,36.57,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,2,Spectral,8,36.07,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,0,Ratio,5,22.99,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,1,Fixed,5,24.52,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,2,Saw,3,17.38,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,3,Pulse,5,23.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,4,Folded Sine,11,52.09,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,5,Asymmetric,10,53.53,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,6,Phase Distorted,15,71.12,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,7,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,8,Wavetable,9,45.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,0,PM,2,13.21,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,1,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,2,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,3,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,0,DC,2,13.46,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,1,AC,2,12.91,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,0,Free,4,19.24,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,1,Retrigger,9,41.8,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,2,Random,6,37.2,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,1,WT,2,13.9,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,0,Free,4,19.24,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,1,Retrigger,9,41.8,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,2,Fixed,5,24.52,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,3,Random,6,37.2,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,0,Off,3,13.84,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,1,Hard,4,21.72,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,2,Soft,4,17.69,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,0,Ratio,5,22.99,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,1,Fixed,5,24.52,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,2,Saw,3,17.38,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,3,Pulse,5,23.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,4,Folded Sine,11,52.09,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,5,Asymmetric,10,53.53,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,6,Phase Distorted,15,71.12,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,7,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,8,Wavetable,9,45.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,0,PM,2,13.21,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,1,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,2,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,3,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,0,DC,2,13.46,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,1,AC,2,12.91,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,0,Free,4,19.24,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,1,Retrigger,9,41.8,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,2,Random,6,37.2,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,1,WT,2,13.9,76,segments
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,0,Internal,8,34.66,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,1,OP1,3,18.32,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,2,OP2,3,18.32,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,3,OP3,3,18.32,136,liste
+75,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,4,OP4,3,18.32,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,1,Harmonic Fold,13,65.86,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,2,Phase Warp,10,51.89,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,3,Spectral Mutation,17,79.24,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,4,Harmonic Tilt,13,61.33,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,5,Harmonic Mask,13,69.96,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,6,Harmonic Focus,14,72.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,7,Harmonic Shift,14,66.99,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,8,Phase Scatter,13,60.02,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,1,Harmonic Fold,13,65.86,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,2,Phase Warp,10,51.89,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,3,Spectral Mutation,17,79.24,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,4,Harmonic Tilt,13,61.33,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,5,Harmonic Mask,13,69.96,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,6,Harmonic Focus,14,72.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,7,Harmonic Shift,14,66.99,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,8,Phase Scatter,13,60.02,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,0,A>B,3,19.24,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,1,B>A,3,19.24,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,1,Normalized,10,52.17,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,0,Mix,3,16.47,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,2,Ring,4,20.23,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,3,AM,2,14.49,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,0,Ratio,5,22.99,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,1,Fixed,5,24.52,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,2,Saw,3,17.38,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,3,Pulse,5,23.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,4,Folded Sine,11,52.09,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,5,Asymmetric,10,53.53,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,6,Phase Distorted,15,71.12,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,7,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,8,Wavetable,9,45.62,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,0,PM,2,13.21,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,1,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,2,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,3,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,0,DC,2,13.46,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,1,AC,2,12.91,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,0,Free,4,19.24,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,1,Retrigger,9,41.8,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,2,Random,6,37.2,48.67,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,1,WT,2,13.9,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,0,Linear,6,27.66,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,1,Exponential,11,53.25,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,2,Logarithmic,11,53.71,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,3,S-Curve,7,36.55,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,0,Linear,6,27.66,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,1,Exponential,11,53.25,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,2,Logarithmic,11,53.71,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,3,S-Curve,7,36.55,136,liste
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+75,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,1,Normalized,10,52.17,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,0,Mix,3,16.47,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,2,Ring,4,20.23,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,3,AM,2,14.49,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,1,Normalized,10,52.17,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,0,Mix,3,16.47,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,2,Ring,4,20.23,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,3,AM,2,14.49,136,liste
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,0,Continuous,10,52.08,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,1,Note Reset,10,48.86,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+75,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.type,1,F1 Multimode,12,62.14,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.type,2,F2 Comb,7,40.67,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.type,3,F3 Nonlinear,12,57.68,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.type,4,F4 Modal,8,41.39,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.type,1,F1 Multimode,12,62.14,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.type,2,F2 Comb,7,40.67,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.type,3,F3 Nonlinear,12,57.68,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.type,4,F4 Modal,8,41.39,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.type,1,F1 Multimode,12,62.14,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.type,2,F2 Comb,7,40.67,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.type,3,F3 Nonlinear,12,57.68,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.type,4,F4 Modal,8,41.39,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,0,Off,3,13.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,0,LP12,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,1,LP24,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,2,BP12,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,3,BP24,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,4,HP12,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,5,HP24,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,6,Notch,5,26.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,0,Pre,3,14.19,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,1,Post,4,19.15,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,0,Linked,6,30.02,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,1,Dual Mono,9,48.92,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,0,Off,3,13.84,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,2,Manual,6,32.65,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,0,LP,2,10.14,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,1,BP,2,10.53,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,2,HP,2,12.03,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,0,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,1,Metal,5,24.6,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,2,Membrane,8,47.83,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,3,Inharmonic,10,51,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,0,LP12,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,1,LP24,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,2,BP12,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,3,BP24,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,4,HP12,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,5,HP24,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,6,Notch,5,26.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,0,Pre,3,14.19,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,1,Post,4,19.15,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,0,Linked,6,30.02,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,1,Dual Mono,9,48.92,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,0,Off,3,13.84,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,2,Manual,6,32.65,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,0,LP,2,10.14,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,1,BP,2,10.53,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,2,HP,2,12.03,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,0,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,1,Metal,5,24.6,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,2,Membrane,8,47.83,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,3,Inharmonic,10,51,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,0,LP12,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,1,LP24,4,21.95,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,2,BP12,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,3,BP24,4,22.35,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,4,HP12,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,5,HP24,4,23.84,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,6,Notch,5,26.71,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,0,Pre,3,14.19,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,1,Post,4,19.15,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,0,Linked,6,30.02,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,1,Dual Mono,9,48.92,76,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,0,Off,3,13.84,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,2,Manual,6,32.65,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,0,LP,2,10.14,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,1,BP,2,10.53,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,2,HP,2,12.03,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,0,Harmonic,8,43.58,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,1,Metal,5,24.6,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,2,Membrane,8,47.83,136,liste
+75,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,3,Inharmonic,10,51,136,liste
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,0,Raw,3,18.26,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,1,Controlled,10,47.53,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,0,Step,4,19.61,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,1,Smooth,6,34.51,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,0,Ring,4,20.23,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,1,Shift,5,20.45,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,0,Sine,4,18.73,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,2,Square,6,30.89,48.67,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,0,Peak,4,20.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,1,RMS,3,18.98,76,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,0,512,3,17.72,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,1,1024,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,2,2048,4,23.62,35,segments
+75,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,3,4096,4,23.62,35,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,1,Exponential,11,53.25,76,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,0,Voice,5,24.53,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,2,Gate,4,20.6,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,2,Saw Up,6,32.69,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,3,Saw Down,8,46.07,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,4,Square,6,30.89,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,5,Random Hold,11,61.33,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,6,Random Smooth,13,74.66,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,7,Custom,6,34.97,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,0,Free,4,19.24,76,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,1,Note,4,21.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,0,8/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,1,4/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,2,2/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,3,1/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,4,1/2,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,5,1/4,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,6,1/8,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,7,1/16,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,8,1/32,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,9,1/4T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,10,1/8T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,11,1/16T,5,28.52,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,12,1/4D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,13,1/8D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,14,1/16D,5,29.61,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,1,Exponential,11,53.25,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,1,Loop,4,22.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,0,Voice,5,24.53,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,2,Gate,4,20.6,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,2,Saw Up,6,32.69,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,3,Saw Down,8,46.07,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,4,Square,6,30.89,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,5,Random Hold,11,61.33,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,6,Random Smooth,13,74.66,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,7,Custom,6,34.97,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,0,Free,4,19.24,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,1,Note,4,21.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,0,8/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,1,4/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,2,2/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,3,1/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,4,1/2,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,5,1/4,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,6,1/8,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,7,1/16,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,8,1/32,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,9,1/4T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,10,1/8T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,11,1/16T,5,28.52,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,12,1/4D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,13,1/8D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,14,1/16D,5,29.61,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,1,Exponential,11,53.25,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,1,Loop,4,22.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,0,Voice,5,24.53,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,2,Gate,4,20.6,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,2,Saw Up,6,32.69,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,3,Saw Down,8,46.07,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,4,Square,6,30.89,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,5,Random Hold,11,61.33,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,6,Random Smooth,13,74.66,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,7,Custom,6,34.97,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,0,Free,4,19.24,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,1,Note,4,21.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,0,8/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,1,4/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,2,2/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,3,1/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,4,1/2,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,5,1/4,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,6,1/8,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,7,1/16,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,8,1/32,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,9,1/4T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,10,1/8T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,11,1/16T,5,28.52,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,12,1/4D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,13,1/8D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,14,1/16D,5,29.61,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,1,Exponential,11,53.25,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,1,Loop,4,22.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,0,Voice,5,24.53,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,2,Gate,4,20.6,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,0,Linear,6,27.66,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,1,Exponential,11,53.25,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,0,Off,3,13.84,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,1,Loop,4,22.33,76,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,0,Voice,5,24.53,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,1,Note,4,21.33,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,2,Gate,4,20.6,48.67,segments
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+75,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+75,ENGINEERING / VOICE / TUNING,voice.mode,0,Mono,4,25.32,76,segments
+75,ENGINEERING / VOICE / TUNING,voice.mode,1,Legato,6,30.4,76,segments
+75,ENGINEERING / VOICE / TUNING,voice.priority,0,Last,4,18.39,48.67,segments
+75,ENGINEERING / VOICE / TUNING,voice.priority,1,Low,3,17.91,48.67,segments
+75,ENGINEERING / VOICE / TUNING,voice.priority,2,High,4,21.18,48.67,segments
+75,ENGINEERING / VOICE / TUNING,tune.scale,0,Equal,5,24.59,76,segments
+75,ENGINEERING / VOICE / TUNING,tune.scale,1,Custom,6,34.97,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,0,Both,4,20.4,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,1,Forward,7,36.62,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,2,Reverse,7,34.93,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,0,Ratio,5,22.99,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,1,Fixed,5,24.52,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,2,Saw,3,17.38,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,3,Pulse,5,23.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,4,Folded Sine,11,52.09,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,5,Asymmetric,10,53.53,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,6,Phase Distorted,15,71.12,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,7,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,8,Wavetable,9,45.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,0,PM,2,13.21,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,1,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,2,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,3,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,0,DC,2,13.46,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,1,AC,2,12.91,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,0,Free,4,19.24,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,1,Retrigger,9,41.8,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,2,Random,6,37.2,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,1,WT,2,13.9,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,0,Clean,5,25.32,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,1,Raw,3,18.26,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,1,Cubic,5,25.62,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,0,Clamp,5,28.92,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,1,Wrap,4,22.85,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,2,Mirror,6,27.95,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,0,Linear,6,27.66,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,1,Stepped,7,36.57,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,2,Spectral,8,36.07,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,0,Clamp,5,28.92,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,1,Wrap,4,22.85,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,2,Mirror,6,27.95,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,0,Linear,6,27.66,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,1,Stepped,7,36.57,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,2,Spectral,8,36.07,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,0,Ratio,5,22.99,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,1,Fixed,5,24.52,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,2,Saw,3,17.38,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,3,Pulse,5,23.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,4,Folded Sine,11,52.09,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,5,Asymmetric,10,53.53,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,6,Phase Distorted,15,71.12,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,7,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,8,Wavetable,9,45.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,0,PM,2,13.21,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,1,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,2,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,3,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,0,DC,2,13.46,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,1,AC,2,12.91,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,0,Free,4,19.24,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,1,Retrigger,9,41.8,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,2,Random,6,37.2,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,1,WT,2,13.9,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,0,Free,4,19.24,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,1,Retrigger,9,41.8,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,2,Fixed,5,24.52,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,3,Random,6,37.2,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,0,Off,3,13.84,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,1,Hard,4,21.72,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,2,Soft,4,17.69,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,0,Ratio,5,22.99,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,1,Fixed,5,24.52,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,2,Saw,3,17.38,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,3,Pulse,5,23.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,4,Folded Sine,11,52.09,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,5,Asymmetric,10,53.53,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,6,Phase Distorted,15,71.12,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,7,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,8,Wavetable,9,45.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,0,PM,2,13.21,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,1,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,2,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,3,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,0,DC,2,13.46,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,1,AC,2,12.91,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,0,Free,4,19.24,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,1,Retrigger,9,41.8,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,2,Random,6,37.2,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,1,WT,2,13.9,76,segments
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,0,Internal,8,34.66,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,1,OP1,3,18.32,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,2,OP2,3,18.32,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,3,OP3,3,18.32,136,liste
+100,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,4,OP4,3,18.32,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,1,Harmonic Fold,13,65.86,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,2,Phase Warp,10,51.89,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,3,Spectral Mutation,17,79.24,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,4,Harmonic Tilt,13,61.33,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,5,Harmonic Mask,13,69.96,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,6,Harmonic Focus,14,72.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,7,Harmonic Shift,14,66.99,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,8,Phase Scatter,13,60.02,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,1,Harmonic Fold,13,65.86,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,2,Phase Warp,10,51.89,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,3,Spectral Mutation,17,79.24,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,4,Harmonic Tilt,13,61.33,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,5,Harmonic Mask,13,69.96,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,6,Harmonic Focus,14,72.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,7,Harmonic Shift,14,66.99,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,8,Phase Scatter,13,60.02,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,0,A>B,3,19.24,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,1,B>A,3,19.24,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,0,Ratio,5,22.99,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,1,Fixed,5,24.52,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,2,Saw,3,17.38,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,3,Pulse,5,23.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,4,Folded Sine,11,52.09,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,5,Asymmetric,10,53.53,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,6,Phase Distorted,15,71.12,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,7,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,8,Wavetable,9,45.62,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,0,PM,2,13.21,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,1,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,2,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,3,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,0,DC,2,13.46,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,1,AC,2,12.91,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,0,Free,4,19.24,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,1,Retrigger,9,41.8,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,2,Random,6,37.2,48.67,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,1,WT,2,13.9,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,1,Normalized,10,52.17,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,0,Mix,3,16.47,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,2,Ring,4,20.23,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,3,AM,2,14.49,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,0,Linear,6,27.66,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,1,Exponential,11,53.25,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,2,Logarithmic,11,53.71,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,3,S-Curve,7,36.55,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,0,Linear,6,27.66,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,1,Exponential,11,53.25,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,2,Logarithmic,11,53.71,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,3,S-Curve,7,36.55,136,liste
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+100,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,1,Normalized,10,52.17,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,0,Mix,3,16.47,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,2,Ring,4,20.23,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,3,AM,2,14.49,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,0,Continuous,10,52.08,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,1,Note Reset,10,48.86,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,1,Normalized,10,52.17,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,0,Mix,3,16.47,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,2,Ring,4,20.23,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,3,AM,2,14.49,136,liste
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+100,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.type,1,F1 Multimode,12,62.14,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.type,2,F2 Comb,7,40.67,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.type,3,F3 Nonlinear,12,57.68,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.type,4,F4 Modal,8,41.39,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.type,1,F1 Multimode,12,62.14,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.type,2,F2 Comb,7,40.67,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.type,3,F3 Nonlinear,12,57.68,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.type,4,F4 Modal,8,41.39,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.type,1,F1 Multimode,12,62.14,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.type,2,F2 Comb,7,40.67,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.type,3,F3 Nonlinear,12,57.68,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.type,4,F4 Modal,8,41.39,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,0,Off,3,13.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,0,LP12,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,1,LP24,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,2,BP12,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,3,BP24,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,4,HP12,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,5,HP24,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,6,Notch,5,26.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,0,Pre,3,14.19,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,1,Post,4,19.15,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,0,Linked,6,30.02,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,1,Dual Mono,9,48.92,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,0,Off,3,13.84,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,2,Manual,6,32.65,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,0,LP,2,10.14,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,1,BP,2,10.53,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,2,HP,2,12.03,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,0,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,1,Metal,5,24.6,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,2,Membrane,8,47.83,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,3,Inharmonic,10,51,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,0,LP12,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,1,LP24,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,2,BP12,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,3,BP24,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,4,HP12,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,5,HP24,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,6,Notch,5,26.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,0,Pre,3,14.19,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,1,Post,4,19.15,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,0,Linked,6,30.02,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,1,Dual Mono,9,48.92,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,0,Off,3,13.84,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,2,Manual,6,32.65,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,0,LP,2,10.14,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,1,BP,2,10.53,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,2,HP,2,12.03,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,0,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,1,Metal,5,24.6,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,2,Membrane,8,47.83,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,3,Inharmonic,10,51,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,0,LP12,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,1,LP24,4,21.95,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,2,BP12,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,3,BP24,4,22.35,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,4,HP12,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,5,HP24,4,23.84,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,6,Notch,5,26.71,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,0,Pre,3,14.19,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,1,Post,4,19.15,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,0,Linked,6,30.02,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,1,Dual Mono,9,48.92,76,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,0,Off,3,13.84,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,2,Manual,6,32.65,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,0,LP,2,10.14,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,1,BP,2,10.53,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,2,HP,2,12.03,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,0,Harmonic,8,43.58,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,1,Metal,5,24.6,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,2,Membrane,8,47.83,136,liste
+100,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,3,Inharmonic,10,51,136,liste
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,0,Raw,3,18.26,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,1,Controlled,10,47.53,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,0,Step,4,19.61,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,1,Smooth,6,34.51,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,0,Ring,4,20.23,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,1,Shift,5,20.45,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,0,Sine,4,18.73,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,2,Square,6,30.89,48.67,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,0,Peak,4,20.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,1,RMS,3,18.98,76,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,0,512,3,17.72,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,1,1024,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,2,2048,4,23.62,35,segments
+100,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,3,4096,4,23.62,35,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,1,Exponential,11,53.25,76,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,0,Voice,5,24.53,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,2,Gate,4,20.6,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,2,Saw Up,6,32.69,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,3,Saw Down,8,46.07,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,4,Square,6,30.89,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,5,Random Hold,11,61.33,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,6,Random Smooth,13,74.66,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,7,Custom,6,34.97,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,0,Free,4,19.24,76,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,1,Note,4,21.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,0,8/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,1,4/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,2,2/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,3,1/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,4,1/2,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,5,1/4,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,6,1/8,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,7,1/16,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,8,1/32,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,9,1/4T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,10,1/8T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,11,1/16T,5,28.52,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,12,1/4D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,13,1/8D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,14,1/16D,5,29.61,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,1,Exponential,11,53.25,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,1,Loop,4,22.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,0,Voice,5,24.53,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,2,Gate,4,20.6,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,2,Saw Up,6,32.69,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,3,Saw Down,8,46.07,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,4,Square,6,30.89,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,5,Random Hold,11,61.33,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,6,Random Smooth,13,74.66,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,7,Custom,6,34.97,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,0,Free,4,19.24,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,1,Note,4,21.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,0,8/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,1,4/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,2,2/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,3,1/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,4,1/2,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,5,1/4,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,6,1/8,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,7,1/16,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,8,1/32,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,9,1/4T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,10,1/8T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,11,1/16T,5,28.52,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,12,1/4D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,13,1/8D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,14,1/16D,5,29.61,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,1,Exponential,11,53.25,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,1,Loop,4,22.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,0,Voice,5,24.53,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,2,Gate,4,20.6,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,2,Saw Up,6,32.69,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,3,Saw Down,8,46.07,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,4,Square,6,30.89,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,5,Random Hold,11,61.33,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,6,Random Smooth,13,74.66,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,7,Custom,6,34.97,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,0,Free,4,19.24,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,1,Note,4,21.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,0,8/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,1,4/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,2,2/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,3,1/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,4,1/2,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,5,1/4,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,6,1/8,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,7,1/16,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,8,1/32,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,9,1/4T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,10,1/8T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,11,1/16T,5,28.52,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,12,1/4D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,13,1/8D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,14,1/16D,5,29.61,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,1,Exponential,11,53.25,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,1,Loop,4,22.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,0,Voice,5,24.53,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,2,Gate,4,20.6,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,0,Linear,6,27.66,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,1,Exponential,11,53.25,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,0,Off,3,13.84,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,1,Loop,4,22.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,0,Voice,5,24.53,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,1,Note,4,21.33,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,2,Gate,4,20.6,48.67,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+100,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+100,ENGINEERING / VOICE / TUNING,voice.mode,0,Mono,4,25.32,76,segments
+100,ENGINEERING / VOICE / TUNING,voice.mode,1,Legato,6,30.4,76,segments
+100,ENGINEERING / VOICE / TUNING,voice.priority,0,Last,4,18.39,48.67,segments
+100,ENGINEERING / VOICE / TUNING,voice.priority,1,Low,3,17.91,48.67,segments
+100,ENGINEERING / VOICE / TUNING,voice.priority,2,High,4,21.18,48.67,segments
+100,ENGINEERING / VOICE / TUNING,tune.scale,0,Equal,5,24.59,76,segments
+100,ENGINEERING / VOICE / TUNING,tune.scale,1,Custom,6,34.97,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,0,Both,4,20.4,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,1,Forward,7,36.62,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,cross.dir,2,Reverse,7,34.93,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,0,Ratio,5,22.99,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.tune,1,Fixed,5,24.52,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,2,Saw,3,17.38,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,3,Pulse,5,23.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,4,Folded Sine,11,52.09,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,5,Asymmetric,10,53.53,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,6,Phase Distorted,15,71.12,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,7,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.wave,8,Wavetable,9,45.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,0,PM,2,13.21,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,1,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,2,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.mode,3,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,0,DC,2,13.46,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.ac,1,AC,2,12.91,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,0,Free,4,19.24,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,1,Retrigger,9,41.8,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.phase_mode,2,Random,6,37.2,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MOTEURS / WT XYZ | CROSS DIRECT | FM OP1,op1.sync,1,WT,2,13.9,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,0,Clean,5,25.32,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.render,1,Raw,3,18.26,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.interp,1,Cubic,5,25.62,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,0,Clamp,5,28.92,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,1,Wrap,4,22.85,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_bound,2,Mirror,6,27.95,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,0,Linear,6,27.66,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,1,Stepped,7,36.57,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.x_morph,2,Spectral,8,36.07,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,0,Clamp,5,28.92,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,1,Wrap,4,22.85,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_bound,2,Mirror,6,27.95,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,0,Linear,6,27.66,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,1,Stepped,7,36.57,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,wt.y_morph,2,Spectral,8,36.07,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,0,Ratio,5,22.99,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.tune,1,Fixed,5,24.52,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,2,Saw,3,17.38,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,3,Pulse,5,23.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,4,Folded Sine,11,52.09,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,5,Asymmetric,10,53.53,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,6,Phase Distorted,15,71.12,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,7,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.wave,8,Wavetable,9,45.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,0,PM,2,13.21,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,1,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,2,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.mode,3,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,0,DC,2,13.46,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.ac,1,AC,2,12.91,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,0,Free,4,19.24,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,1,Retrigger,9,41.8,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.phase_mode,2,Random,6,37.2,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MOTEURS / WT LECTURE | CROSS WT › FM | FM OP2,op2.sync,1,WT,2,13.9,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,0,Free,4,19.24,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,1,Retrigger,9,41.8,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,2,Fixed,5,24.52,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.phase_mode,3,Random,6,37.2,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,0,Off,3,13.84,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,1,Hard,4,21.72,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync,2,Soft,4,17.69,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,0,Ratio,5,22.99,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.tune,1,Fixed,5,24.52,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,2,Saw,3,17.38,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,3,Pulse,5,23.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,4,Folded Sine,11,52.09,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,5,Asymmetric,10,53.53,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,6,Phase Distorted,15,71.12,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,7,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.wave,8,Wavetable,9,45.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,0,PM,2,13.21,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,1,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,2,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.mode,3,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,0,DC,2,13.46,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.ac,1,AC,2,12.91,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,0,Free,4,19.24,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,1,Retrigger,9,41.8,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.phase_mode,2,Random,6,37.2,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,op3.sync,1,WT,2,13.9,76,segments
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,0,Internal,8,34.66,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,1,OP1,3,18.32,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,2,OP2,3,18.32,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,3,OP3,3,18.32,136,liste
+150,SOUND DESIGN / MOTEURS / WT PHASE / SYNC | CROSS FM › WT | FM OP3,wt.sync_src,4,OP4,3,18.32,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,1,Harmonic Fold,13,65.86,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,2,Phase Warp,10,51.89,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,3,Spectral Mutation,17,79.24,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,4,Harmonic Tilt,13,61.33,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,5,Harmonic Mask,13,69.96,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,6,Harmonic Focus,14,72.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,7,Harmonic Shift,14,66.99,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.type,8,Phase Scatter,13,60.02,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,1,Harmonic Fold,13,65.86,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,2,Phase Warp,10,51.89,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,3,Spectral Mutation,17,79.24,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,4,Harmonic Tilt,13,61.33,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,5,Harmonic Mask,13,69.96,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,6,Harmonic Focus,14,72.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,7,Harmonic Shift,14,66.99,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.type,8,Phase Scatter,13,60.02,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,0,A>B,3,19.24,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.z_order,1,B>A,3,19.24,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,0,Ratio,5,22.99,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.tune,1,Fixed,5,24.52,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,2,Saw,3,17.38,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,3,Pulse,5,23.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,4,Folded Sine,11,52.09,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,5,Asymmetric,10,53.53,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,6,Phase Distorted,15,71.12,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,7,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.wave,8,Wavetable,9,45.62,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,0,PM,2,13.21,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,1,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,2,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.mode,3,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,0,DC,2,13.46,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.ac,1,AC,2,12.91,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,0,Free,4,19.24,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,1,Retrigger,9,41.8,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.phase_mode,2,Random,6,37.2,48.67,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,op4.sync,1,WT,2,13.9,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.bus.mode,1,Normalized,10,52.17,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,0,Mix,3,16.47,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,2,Ring,4,20.23,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.mode,3,AM,2,14.49,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,0,Linear,6,27.66,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,1,Exponential,11,53.25,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,2,Logarithmic,11,53.71,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.za.curve,3,S-Curve,7,36.55,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,0,Linear,6,27.66,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,1,Exponential,11,53.25,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,2,Logarithmic,11,53.71,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,wt.zb.curve,3,S-Curve,7,36.55,136,liste
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+150,SOUND DESIGN / MOTEURS / WT Z | CROSS BUS / AUDIO | FM OP4,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.bus.mode,1,Normalized,10,52.17,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,0,Mix,3,16.47,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,2,Ring,4,20.23,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.mode,3,AM,2,14.49,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM MATRICE,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,0,Phase Quantize,14,69.79,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,1,Bit Reduce,10,47.29,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,wt.char_mode,2,Sample Hold,11,56.82,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,0,Continuous,10,52.08,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,fm.fb_mode,1,Note Reset,10,48.86,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.bus.mode,1,Normalized,10,52.17,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,0,Linear FM,9,43.67,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,1,Through-Zero FM,15,80.5,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.wt_fmode,2,Exponential FM,14,69.26,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,0,Mix,3,16.47,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,1,Crossfade,9,45.22,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,2,Ring,4,20.23,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.mode,3,AM,2,14.49,136,liste
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,0,WT>FM,5,34.37,76,segments
+150,SOUND DESIGN / MOTEURS / WT CARACTÈRE | CROSS BUS / AUDIO | FM COMMUN,cross.audio.am_dir,1,FM>WT,5,34.37,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.type,1,F1 Multimode,12,62.14,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.type,2,F2 Comb,7,40.67,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.type,3,F3 Nonlinear,12,57.68,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.type,4,F4 Modal,8,41.39,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.type,1,F1 Multimode,12,62.14,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.type,2,F2 Comb,7,40.67,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.type,3,F3 Nonlinear,12,57.68,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.type,4,F4 Modal,8,41.39,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.type,1,F1 Multimode,12,62.14,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.type,2,F2 Comb,7,40.67,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.type,3,F3 Nonlinear,12,57.68,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.type,4,F4 Modal,8,41.39,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,0,Off,3,13.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,1,N1 Asymmetric Wavefolder,24,122.2,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,2,D1 Variable Rate Crusher,24,113.92,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,3,Y1 Transient Destroyer,22,104.19,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,4,S1 Ring/Frequency Shifter,25,117.82,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,5,N2 Feedback Waveshaper,22,115.09,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,6,D2 Glitch Buffer,16,71.81,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,7,Y2 Envelope Shaper,18,88.94,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.type,8,S2 Spectral Freeze,18,82.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,0,LP12,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,1,LP24,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,2,BP12,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,3,BP24,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,4,HP12,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,5,HP24,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f1_mode,6,Notch,5,26.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,0,Pre,3,14.19,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.pos,1,Post,4,19.15,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,0,Linked,6,30.02,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.stereo,1,Dual Mono,9,48.92,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,0,Off,3,13.84,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.exc,2,Manual,6,32.65,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,0,LP,2,10.14,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,1,BP,2,10.53,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.f3_mode,2,HP,2,12.03,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,0,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,1,Metal,5,24.6,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,2,Membrane,8,47.83,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.wt.modal,3,Inharmonic,10,51,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,0,LP12,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,1,LP24,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,2,BP12,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,3,BP24,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,4,HP12,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,5,HP24,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f1_mode,6,Notch,5,26.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,0,Pre,3,14.19,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.pos,1,Post,4,19.15,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,0,Linked,6,30.02,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.stereo,1,Dual Mono,9,48.92,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,0,Off,3,13.84,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.exc,2,Manual,6,32.65,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,0,LP,2,10.14,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,1,BP,2,10.53,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.f3_mode,2,HP,2,12.03,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,0,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,1,Metal,5,24.6,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,2,Membrane,8,47.83,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.fm.modal,3,Inharmonic,10,51,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,0,LP12,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,1,LP24,4,21.95,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,2,BP12,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,3,BP24,4,22.35,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,4,HP12,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,5,HP24,4,23.84,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f1_mode,6,Notch,5,26.71,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,0,Pre,3,14.19,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.pos,1,Post,4,19.15,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,0,Linked,6,30.02,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.stereo,1,Dual Mono,9,48.92,76,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,0,Off,3,13.84,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.exc,2,Manual,6,32.65,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,0,LP,2,10.14,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,1,BP,2,10.53,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.f3_mode,2,HP,2,12.03,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,0,Harmonic,8,43.58,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,1,Metal,5,24.6,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,2,Membrane,8,47.83,136,liste
+150,SOUND DESIGN / TRAITEMENTS,flt.gl.modal,3,Inharmonic,10,51,136,liste
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt1.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.wt2.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm1.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.fm2.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl1.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,0,Raw,3,18.26,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.mode,1,Controlled,10,47.53,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,0,Step,4,19.61,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d1.hold,1,Smooth,6,34.51,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,0,Ring,4,20.23,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.mode,1,Shift,5,20.45,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,0,Sine,4,18.73,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,1,Triangle,8,37.11,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s1.carrier,2,Square,6,30.89,48.67,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,0,Legacy,6,30.83,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.d2.fb_mode,1,Regenerative,12,58.35,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,0,Peak,4,20.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.y2.detect,1,RMS,3,18.98,76,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,0,512,3,17.72,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,1,1024,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,2,2048,4,23.62,35,segments
+150,SOUND DESIGN / TRAITEMENTS,dst.gl2.s2.fft,3,4096,4,23.62,35,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.curve,1,Exponential,11,53.25,76,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,0,Voice,5,24.53,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,amp.trigger,2,Gate,4,20.6,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,2,Saw Up,6,32.69,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,3,Saw Down,8,46.07,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,4,Square,6,30.89,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,5,Random Hold,11,61.33,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,6,Random Smooth,13,74.66,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.shape,7,Custom,6,34.97,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,0,Free,4,19.24,76,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.retrig,1,Note,4,21.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,0,8/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,1,4/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,2,2/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,3,1/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,4,1/2,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,5,1/4,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,6,1/8,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,7,1/16,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,8,1/32,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,9,1/4T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,10,1/8T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,11,1/16T,5,28.52,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,12,1/4D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,13,1/8D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AMP | LFO1,lfo1.div,14,1/16D,5,29.61,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.curve,1,Exponential,11,53.25,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.loop,1,Loop,4,22.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,0,Voice,5,24.53,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,env.wt.trigger,2,Gate,4,20.6,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,2,Saw Up,6,32.69,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,3,Saw Down,8,46.07,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,4,Square,6,30.89,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,5,Random Hold,11,61.33,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,6,Random Smooth,13,74.66,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.shape,7,Custom,6,34.97,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,0,Free,4,19.24,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.retrig,1,Note,4,21.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,0,8/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,1,4/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,2,2/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,3,1/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,4,1/2,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,5,1/4,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,6,1/8,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,7,1/16,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,8,1/32,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,9,1/4T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,10,1/8T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,11,1/16T,5,28.52,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,12,1/4D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,13,1/8D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV WT | LFO2,lfo2.div,14,1/16D,5,29.61,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.curve,1,Exponential,11,53.25,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.loop,1,Loop,4,22.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,0,Voice,5,24.53,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,env.fm.trigger,2,Gate,4,20.6,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,2,Saw Up,6,32.69,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,3,Saw Down,8,46.07,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,4,Square,6,30.89,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,5,Random Hold,11,61.33,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,6,Random Smooth,13,74.66,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.shape,7,Custom,6,34.97,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,0,Free,4,19.24,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.retrig,1,Note,4,21.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,0,8/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,1,4/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,2,2/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,3,1/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,4,1/2,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,5,1/4,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,6,1/8,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,7,1/16,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,8,1/32,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,9,1/4T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,10,1/8T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,11,1/16T,5,28.52,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,12,1/4D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,13,1/8D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV FM | LFO3,lfo3.div,14,1/16D,5,29.61,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.curve,1,Exponential,11,53.25,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.loop,1,Loop,4,22.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,0,Voice,5,24.53,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,env.aux1.trigger,2,Gate,4,20.6,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX1 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,0,Linear,6,27.66,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.curve,1,Exponential,11,53.25,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,0,Off,3,13.84,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.loop,1,Loop,4,22.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,0,Voice,5,24.53,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,1,Note,4,21.33,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,env.aux2.trigger,2,Gate,4,20.6,48.67,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,0,Sine,4,18.73,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,1,Triangle,8,37.11,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,2,Saw Up,6,32.69,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,3,Saw Down,8,46.07,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,4,Square,6,30.89,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,5,Random Hold,11,61.33,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,6,Random Smooth,13,74.66,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.shape,7,Custom,6,34.97,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,0,Free,4,19.24,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.retrig,1,Note,4,21.33,76,segments
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,0,8/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,1,4/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,2,2/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,3,1/1,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,4,1/2,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,5,1/4,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,6,1/8,3,16.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,7,1/16,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,8,1/32,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,9,1/4T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,10,1/8T,4,22.62,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,11,1/16T,5,28.52,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,12,1/4D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,13,1/8D,4,23.71,136,liste
+150,SOUND DESIGN / MODULATION / ENV AUX2 | LFO4,lfo4.div,14,1/16D,5,29.61,136,liste
+150,ENGINEERING / VOICE / TUNING,voice.mode,0,Mono,4,25.32,76,segments
+150,ENGINEERING / VOICE / TUNING,voice.mode,1,Legato,6,30.4,76,segments
+150,ENGINEERING / VOICE / TUNING,voice.priority,0,Last,4,18.39,48.67,segments
+150,ENGINEERING / VOICE / TUNING,voice.priority,1,Low,3,17.91,48.67,segments
+150,ENGINEERING / VOICE / TUNING,voice.priority,2,High,4,21.18,48.67,segments
+150,ENGINEERING / VOICE / TUNING,tune.scale,0,Equal,5,24.59,76,segments
+150,ENGINEERING / VOICE / TUNING,tune.scale,1,Custom,6,34.97,76,segments
