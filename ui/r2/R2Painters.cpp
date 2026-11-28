@@ -40,11 +40,26 @@ juce::Rectangle<float> nexusValueArea(juce::Rectangle<int> lb, NexusSize size) {
 juce::Rectangle<float> nexusKnobArea(juce::Rectangle<int> lb, NexusSize size, const juce::String& label, float labelPx) {
   const auto G = nexusGeo(size);
   const float lp = labelPx > 0.0f ? labelPx : G.labelPx;
+  const bool two = draw::textWidth(labelFont(lp, size == NexusSize::XL), label) > static_cast<float>(lb.getWidth()) - 4.0f;
+  return nexusKnobAreaLines(lb, size, two, labelPx);
+}
+
+juce::Rectangle<float> nexusKnobAreaLines(juce::Rectangle<int> lb, NexusSize size, bool two, float labelPx) {
+  const auto G = nexusGeo(size);
+  const float lp = labelPx > 0.0f ? labelPx : G.labelPx;
   auto r = lb.toFloat();
   r.removeFromBottom(G.valuePx + 9.0f);
-  const bool two = draw::textWidth(labelFont(lp, size == NexusSize::XL), label) > r.getWidth() - 4.0f;
   r.removeFromTop((two ? 2.0f : 1.0f) * std::round(lp * 1.2f) + 4.0f);
   return r;
+}
+
+void nexusLabelLayout(juce::Rectangle<int> lb, NexusSize size, const juce::String& label, float labelPx, int& lines, int& split) {
+  const auto G = nexusGeo(size);
+  const float lp = labelPx > 0.0f ? labelPx : G.labelPx;
+  const auto lf = labelFont(lp, size == NexusSize::XL);
+  const float w = static_cast<float>(lb.getWidth()) - 4.0f;
+  lines = draw::textWidth(lf, label) > w ? 2 : 1;
+  split = draw::fittedSplit(lf, label, w, true);
 }
 
 void paintNexus(juce::Graphics& g, juce::Rectangle<int> lb, const NexusView& v) {
@@ -56,13 +71,14 @@ void paintNexus(juce::Graphics& g, juce::Rectangle<int> lb, const NexusView& v) 
   // sérigraphie
   auto all = lb.toFloat();
   const auto lf = labelFont(lp, v.size == NexusSize::XL);
-  const bool two = draw::textWidth(lf, v.label) > all.getWidth() - 4.0f;
+  const bool two = v.labelLines != 0 ? v.labelLines == 2 : draw::textWidth(lf, v.label) > all.getWidth() - 4.0f;
   auto labelR = all.withHeight((two ? 2.0f : 1.0f) * std::round(lp * 1.2f) + 4.0f);
-  draw::fittedText(g, v.label, labelR.reduced(2.0f, 0.0f), lf, disabled ? t::textMute : (v.inactive ? tok2::inactive : t::text),
-                   juce::Justification::centred, true);
+  const auto labelCol = disabled ? t::textMute : (v.inactive ? tok2::inactive : t::text);
+  if (v.labelLines != 0) draw::fittedTextSplit(g, v.label, labelR.reduced(2.0f, 0.0f), lf, labelCol, juce::Justification::centred, v.labelSplit);
+  else draw::fittedText(g, v.label, labelR.reduced(2.0f, 0.0f), lf, labelCol, juce::Justification::centred, true);
 
   // géométrie du bouton
-  const auto ka = nexusKnobArea(lb, v.size, v.label, v.labelPx);
+  const auto ka = nexusKnobAreaLines(lb, v.size, two, v.labelPx);
   const auto c = ka.getCentre();
   const float arcR = std::min(ka.getWidth(), ka.getHeight()) * 0.5f - G.ring;
   const float knobR = arcR - G.knobInset;

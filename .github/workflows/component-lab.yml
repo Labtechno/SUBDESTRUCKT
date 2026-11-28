@@ -95,15 +95,19 @@ jobs:
 
       - name: VIS-01 (CE-B2-03, étape 2) — composants de production / références R1 historiques
         run: |
+          # le shell des étapes s'exécute avec -e : désactivé ici pour que les résultats soient TOUJOURS versés ; le verdict
+          # est appliqué après le versement (étape « Verdict VIS-01 »)
+          set +e
           set -uo pipefail
           T=./build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare
           V=out/vis01
           # la planche 12 historique ne porte pas de SHA ; les autres portent celui de la référence ; une planche par processus
           $T --vis01 "$V" --only 12 | tee out/vis01-render.txt
-          for s in 01 11 09; do $T --vis01 "$V" --sha "$R1_REF_SHA" --only "$s" --b1 "$B1/CAPTURES/macos" | tee -a out/vis01-render.txt; done
+          for s in 01 06a 11 09; do $T --vis01 "$V" --sha "$R1_REF_SHA" --only "$s" --b1 "$B1/CAPTURES/macos" | tee -a out/vis01-render.txt; done
           python lab/tools/vis01_compare.py "$V" macos "$V/cmp" --outil="$T" --sha="$R1_REF_SHA" --b1="$B1/CAPTURES/macos" | tee out/vis01.txt
           echo "${PIPESTATUS[0]}" > out/vis01-rc.txt
           cat out/vis01-rc.txt
+          exit 0
 
       - name: Versement des résultats macOS (commit [skip ci])
         run: |
@@ -113,8 +117,10 @@ jobs:
           cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/panic-contrast.csv out/lab-run.log out/machine.txt "$DEST/"
           mkdir -p "$DEST_VIS"
           rm -rf "$DEST_VIS/ecarts"
-          cp -r out/vis01/cmp/. "$DEST_VIS/"
-          cp out/vis01/vis01-cases.csv out/vis01-render.txt out/machine.txt "$DEST_VIS/"
+          if [ -d out/vis01/cmp ]; then cp -r out/vis01/cmp/. "$DEST_VIS/"; fi
+          for f in out/vis01/vis01-cases.csv out/vis01-render.txt out/vis01.txt out/vis01-rc.txt out/machine.txt; do
+            if [ -f "$f" ]; then cp "$f" "$DEST_VIS/"; fi
+          done
           git add "$DEST_VIS"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -115,7 +115,16 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
   }
   float shownBase() const override { return shown_; }
   juce::Rectangle<float> valueBox() const { return valueArea(); }  // fenêtre de valeur (preuves VIS-01)
-  juce::Rectangle<float> knobBox() const { return knobArea(); }    // zone de manipulation (tests NX-*)
+  juce::Rectangle<float> knobBox() const { return knobArea(); }    // zone de manipulation (tests NX-*, PLAS-*)
+  juce::Rectangle<float> labelBox() const { return labelArea(); }  // sérigraphie (tests PLAS-*)
+  juce::Rectangle<float> channelBox() const { return channelArea(); }  // canal : correspondance valeur <-> position (PLASMA)
+  juce::Rectangle<float> manipulationBox() const { return manipulationArea(); }  // zone active des gestes (DB2-08)
+  // PLASMA R1 (B2-03.2, CE-B2-02) : gabarit choisi par la surface utile ; false si aucun gabarit R1 ne tient réellement
+  // (géométrie, libellé ou valeur) : rendu 0.4.1 conservé, contrat d'interaction DB2-08 / DB2-09 appliqué quand même
+  bool plasmaR1() const { return plasma_.r1; }
+  bool plasmaCompact() const { return plasma_.compact; }
+  juce::Rectangle<int> plasmaTemplate() const { return plasma_.tpl; }
+  juce::String plasmaBlockReason() const { return plasma_.why; }
   // CE-B2-08 : zone de l'indicateur MIDI Learn dans la sérigraphie (vide si aucun CC appris, en Micro, ou si la place
   // n'est pas libre à côté du libellé : l'indicateur ne recouvre jamais un élément du composant R1)
   juce::Rectangle<float> ccTagBox() const;
@@ -140,6 +149,7 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
   bool keyPressed(const juce::KeyPress&) override;
   void focusGained(FocusChangeType) override { repaint(); }
   void focusLost(FocusChangeType) override { repaint(); }
+  void resized() override;
   std::unique_ptr<juce::AccessibilityHandler> createAccessibilityHandler() override;
   void beginNumericEntry();     // saisie numérique (Entrée, double-clic sur la valeur, menu)
   void resetToDefault();        // reset explicite (double-clic, Alt-clic, Suppr, menu)
@@ -149,12 +159,31 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
   void timerCallback() override;  // fin de geste molette
   void closeWheelGesture();       // ferme un geste molette ouvert (avant tout geste incompatible : PB-01e)
   float nexusLabelPx() const;     // corps de sérigraphie R1 tenant sur deux lignes (famille, puis réduction jusqu'au plancher)
+  struct NexusLayout {             // mise en page R1 du NEXUS (B2-03.1), recalculée au redimensionnement et au changement de libellé
+    float px = 0.0f;
+    int lines = 1, split = -1;
+    juce::Rectangle<float> knob;
+    juce::Rectangle<int> bounds;
+    juce::String caption;
+  };
+  NexusLayout nexus_;
+  void layoutNexus();
   void refreshRouteDepths();      // décalages des routes globales vers ce paramètre (configuration publiée)
   void showMenu();
   void stepNorm(double delta);
   juce::Rectangle<float> knobArea() const;
   juce::Rectangle<float> valueArea() const;
   juce::Rectangle<float> labelArea() const;
+  juce::Rectangle<float> channelArea() const;
+  juce::Rectangle<float> manipulationArea() const;
+  struct PlasmaGeo {
+    bool r1 = false, compact = false;
+    juce::Rectangle<int> tpl;  // gabarit R1 dans la cellule (STANDARD 64 x 180, COMPACT 48 x 150, horizontal : hauteur 44)
+    juce::String why;          // raison du blocage CE-B2-02 (vide si R1)
+  };
+  PlasmaGeo plasma_;
+  void layoutPlasma();
+  juce::StringArray plasmaGraduations() const;
   void paintRotary(juce::Graphics&, juce::Rectangle<float>);
   void paintLinear(juce::Graphics&, juce::Rectangle<float>);
   float labelSize() const;

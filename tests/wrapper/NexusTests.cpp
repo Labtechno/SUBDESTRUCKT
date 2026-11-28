@@ -340,7 +340,7 @@ void measureCcPlacements() {
                   for (int x = 0; x < W; ++x)
                     if (img.getPixelAt(x, y) != bg) m[static_cast<size_t>(y * W + x)] = 1;
               }
-    const auto ka = sbd::r2::nexusKnobArea(cf.b, cf.size, cf.label, 0.0f);
+    const auto ka = sbd::r2::nexusKnobArea(cf.b, cf.size, juce::String(cf.label), 0.0f);
     const float lh = ka.getY();
     const struct {
       const char* name;

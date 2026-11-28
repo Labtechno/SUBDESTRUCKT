@@ -23,7 +23,7 @@ namespace {
 using ui::Density;
 
 struct NexusCase {
-  const char* sheet;           // "01", "09", "11", "12"
+  const char* sheet;           // "01", "06a", "09", "11", "12"
   juce::Rectangle<int> r;      // bornes logiques dans la planche
   ParamId id;
   Density d;
@@ -31,6 +31,8 @@ struct NexusCase {
   float norm;                  // valeur normalisée de la référence ; < 0 : valeur déjà fixée par la scène (planche 12)
   float eff;                   // Effective normalisée de la référence ; < 0 : aucune
   std::vector<float> routes;   // décalages normalisés des routes de la référence
+  ui::Form form = ui::Form::Rotary;  // Rotary : NEXUS ; LinearV : PLASMA vertical
+  bool disabled = false;
 };
 
 const char* kArrow = "\xe2\x86\x92";
@@ -74,6 +76,14 @@ std::vector<NexusCase> nexusCases() {
   v.push_back({"09", {244, 30, 64, 74}, ParamId::DepthOp1WtX, Density::Micro, "DEPTH", 0.35f, -1, {}});
   // planche 11 : matériaux
   v.push_back({"11", {48, 366, 132, 150}, ParamId::WtX, Density::XL, "X", 0.62f, 0.42f, {}});
+  // ---- PLASMA (B2-03.2) : CROSS LVL = cross.master, seul paramètre des planches dont les données sont équivalentes en
+  // STANDARD (graduations 0 / .5 / 1 exactes pour la plage réelle). Exclus : OUT GAIN (graduations de démonstration
+  // −48 / −24 / 0 / +6 inexactes pour la plage linéaire réelle), BALANCE vertical et tout COMPACT (gabarit bloqué en
+  // production : la valeur ne tient pas, CE-B2-02), M2 et LVL (graduations de démonstration 0 / 1).
+  v.push_back({"12", {652, 418, 64, 180}, ParamId::CrossMaster, Density::S, "CROSS LVL", -1, -1, {}, ui::Form::LinearV});
+  v.push_back({"01", {676, 182, 64, 180}, ParamId::CrossMaster, Density::S, "CROSS LVL", 0.64f, 0.78f, {}, ui::Form::LinearV});
+  v.push_back({"06a", {296, 112, 64, 180}, ParamId::CrossMaster, Density::S, "CROSS LVL", 0.64f, 0.78f, {}, ui::Form::LinearV});
+  v.push_back({"09", {318, 10, 64, 180}, ParamId::CrossMaster, Density::S, "CROSS LVL", 0.64f, 0.78f, {}, ui::Form::LinearV});
   return v;
 }
 
@@ -105,18 +115,26 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
   for (const auto& k : cases) {
     if (keep.isNotEmpty() && keep == paramSpec(k.id).stableId) continue;
     Substituted s{k};
-    r2::Nexus* lab = nullptr;
+    juce::Component* lab = nullptr;
     for (auto* ch : sheet.getChildren())
-      if (ch->getBounds() == k.r)
-        if (auto* n = dynamic_cast<r2::Nexus*>(ch)) lab = n;
+      if (ch->getBounds() == k.r) {
+        if (auto* n = dynamic_cast<r2::Nexus*>(ch); n != nullptr && k.form == ui::Form::Rotary) {
+          lab = n;
+          s.refText = n->shownText();
+          s.refNorm = n->shownNorm();
+        }
+        if (auto* pl = dynamic_cast<r2::PlasmaChannel*>(ch); pl != nullptr && k.form != ui::Form::Rotary) {
+          lab = pl;
+          s.refText = pl->shownText();
+          s.refNorm = pl->shownNorm();
+        }
+      }
     auto* prm = paramOf(proc, k.id);
     if (lab == nullptr || prm == nullptr) {
-      s.error = lab == nullptr ? "NEXUS du laboratoire introuvable aux bornes indiquees" : "parametre introuvable";
+      s.error = lab == nullptr ? "composant du laboratoire introuvable aux bornes indiquees" : "parametre introuvable";
       out.push_back(s);
       continue;
     }
-    s.refText = lab->shownText();
-    s.refNorm = lab->shownNorm();
     lab->setVisible(false);
     if (k.norm >= 0.0f) prm->setValueNotifyingHost(k.norm);
     const auto i = static_cast<size_t>(idx(k.id));
@@ -136,8 +154,9 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
       const auto res = proc.modAdd(r);
       if (!res.ok) s.error = "route refusee : " + juce::String(res.error);
     }
-    auto c = std::make_unique<ui::ContinuousControl>(ctx, k.id, ui::Form::Rotary, k.d);
+    auto c = std::make_unique<ui::ContinuousControl>(ctx, k.id, k.form, k.d);
     c->setCaption(juce::String::fromUTF8(k.label));
+    c->setEnabled(!k.disabled);
     // même rang de dessin que le composant remplacé : l'ordre des tracés est celui de la référence (sous Windows,
     // Direct2D met en cache la géométrie des tracés répétés, ce qui modifie l'anticrénelage des occurrences suivantes)
     sheet.addAndMakeVisible(*c, sheet.getIndexOfChildComponent(lab));
@@ -159,6 +178,7 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
     }
     s.prodNorm = c->shownNorm();
     c->setBounds(k.r);
+    if (k.form != ui::Form::Rotary && !c->plasmaR1()) s.error = "PLASMA de production bloque a ces bornes : " + c->plasmaBlockReason();
     s.c = c.get();
     owned.push_back(std::move(c));
     out.push_back(s);
@@ -179,14 +199,14 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
   const auto wanted = [&](const char* id) { return onlySheet.isEmpty() || onlySheet == id; };
   const auto cases = nexusCases();
   juce::StringArray rows;
-  rows.add("famille,planche,image,origine_x,origine_y,echelle,cas,parametre,gabarit,x,y,w,h,valeur_x,valeur_y,valeur_w,valeur_h,"
+  rows.add("famille,feuille,planche,image,origine_x,origine_y,echelle,cas,parametre,gabarit,x,y,w,h,valeur_x,valeur_y,valeur_w,valeur_h,"
            "texte_reference,texte_production,norme_reference,norme_production,ajustement_ulps,erreur");
   bool ok = true;
   const auto emit = [&](const juce::String& sheetId, const juce::String& png, int ox, int oy, float scale, const std::vector<Substituted>& subs) {
     for (const auto& s : subs) {
       const auto va = s.c != nullptr ? s.c->valueBox() : juce::Rectangle<float>();
       const juce::String prodText = s.c != nullptr ? s.c->valueText() : juce::String();
-      rows.add("NEXUS," + sheetId + "," + png + "," + juce::String(ox) + "," + juce::String(oy) + "," + juce::String(scale, 2) + "," +
+      rows.add(juce::String(s.k.form == ui::Form::Rotary ? "NEXUS," : "PLASMA,") + s.k.sheet + "," + sheetId + "," + png + "," + juce::String(ox) + "," + juce::String(oy) + "," + juce::String(scale, 2) + "," +
                csvField(juce::String::fromUTF8(s.k.label)) + "," + paramSpec(s.k.id).stableId + "," + densityName(s.k.d) + "," + juce::String(s.k.r.getX()) +
                "," + juce::String(s.k.r.getY()) + "," + juce::String(s.k.r.getWidth()) + "," + juce::String(s.k.r.getHeight()) + "," +
                juce::String(va.getX(), 2) + "," + juce::String(va.getY(), 2) + "," + juce::String(va.getWidth(), 2) + "," + juce::String(va.getHeight(), 2) + "," +
@@ -216,17 +236,18 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     emit("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, subs);
     owned.clear();
   }
-  for (const char* id : {"01", "11"}) {
+  for (const char* id : {"01", "06a", "11"}) {
     if (!wanted(id)) continue;
     SubdestrucktProcessor proc;
     ui::UiContext ctx{proc, nullptr, RandomOptions{}, {}, {}, {}, {}, ParamId::WtX, {}};
     ctx.learnCc.fill(-1);
-    if (juce::String(id) == "11") {
-      // la référence 11 a été rendue après les planches 01 à 10 du même processus : même historique du moteur graphique
+    const juce::String refName = juce::String(id) == "01" ? "01-final-board.png" : (juce::String(id) == "06a" ? "06a-plasma-standard-compact.png" : "11-materials-palette.png");
+    if (juce::String(id) != "01") {
+      // la référence a été rendue après les planches précédentes du même processus : même historique du moteur graphique
       juce::StringArray lg;
       const auto tmp = juce::File::createTempFile("vis01-historique");
       tmp.createDirectory();
-      renderSheets(tmp, 2.0f, lg, b1Dir);
+      renderSheets(tmp, 2.0f, lg, b1Dir, refName);
       tmp.deleteRecursively();
     }
     auto sheet = makeR1Sheet(id);
@@ -234,7 +255,7 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     const auto subs = substitute(*sheet, ctx, only(id), owned);
     const juce::String png = juce::String("vis01-") + id + ".png";
     save(sheet->createComponentSnapshot(sheet->getLocalBounds(), true, 2.0f), png);
-    emit(juce::String(id) == "01" ? "01-final-board.png" : "11-materials-palette.png", png, 0, 0, 2.0f, subs);
+    emit(refName, png, 0, 0, 2.0f, subs);
     owned.clear();
   }
   if (wanted("09")) {  // planche 09 : chaque zoom est une image à part, incrustée dans la référence à x = 40 + ..., y = 126 (composeZoom)

@@ -128,3 +128,16 @@ binaire au plancher de bruit (CE-B2-04). GS-04 et GS-07 sont NON CONCLUANTS sur 
 Verdicts du run 7 : [`macos/run7-42a605e/gc01-verdicts.txt`](macos/run7-42a605e/gc01-verdicts.txt) ; détail par série :
 `gc01-compare.csv`.
 
+## 6. B2-03.1 NEXUS (run 8, `f22bf8c`)
+
+Verdicts : [`macos/run8-f22bf8c/gc01-verdicts.txt`](macos/run8-f22bf8c/gc01-verdicts.txt).
+
+| Seuil | Verdict |
+|---|---|
+| **GS-01** | **ÉCHEC**, ×1,62 sur ENG-1 à 75 % |
+| GS-02, GS-03, GS-05, GS-06 | PASS |
+| GS-04, GS-07 | NON CONCLUANT |
+
+GS-01 : les exécutions du courant et de la référence ne se recouvrent pas, la régression est réelle. Cause : mesures de
+texte de la sérigraphie refaites à chaque peinture. Correction sans dérive : 270 → 99 µs par NEXUS (B2-03-REPORT §1.6).
+GS-01 est remesuré avec B2-03.2. Les seuils ne sont pas modifiés.

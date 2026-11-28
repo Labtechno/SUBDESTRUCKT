@@ -1,7 +1,8 @@
 image,planche,controle,pixels_differents_hors_substitution,pixels_controles
-vis01-12.png,12-compare-041-r2.png,IDENTIQUE,0,2553280
-vis01-01.png,01-final-board.png,IDENTIQUE,0,7439616
+vis01-12.png,12-compare-041-r2.png,IDENTIQUE,0,2507200
+vis01-01.png,01-final-board.png,IDENTIQUE,0,7393536
+vis01-06a.png,06a-plasma-standard-compact.png,IDENTIQUE,0,3384320
 vis01-11.png,11-materials-palette.png,IDENTIQUE,0,3994400
-vis01-09-75.png,09-zoom-75-100-150.png,IDENTIQUE,0,103804
-vis01-09-100.png,09-zoom-75-100-150.png,IDENTIQUE,0,185000
-vis01-09-150.png,09-zoom-75-100-150.png,IDENTIQUE,0,416250
+vis01-09-75.png,09-zoom-75-100-150.png,IDENTIQUE,0,97140
+vis01-09-100.png,09-zoom-75-100-150.png,IDENTIQUE,0,173480
+vis01-09-150.png,09-zoom-75-100-150.png,IDENTIQUE,0,390330

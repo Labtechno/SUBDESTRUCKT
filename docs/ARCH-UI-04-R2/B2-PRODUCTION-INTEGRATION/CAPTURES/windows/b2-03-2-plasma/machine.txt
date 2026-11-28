@@ -1,0 +1,2 @@
+plateforme : Windows 11 (poste de developpement), rendu Direct2D
+code : arbre de travail sur 199edde (B2-03.2 PLASMA)

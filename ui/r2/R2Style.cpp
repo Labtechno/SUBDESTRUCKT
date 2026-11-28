@@ -141,14 +141,8 @@ bool fitsText(const juce::Font& f, const juce::String& s, float width, bool allo
   return bestW <= width;
 }
 
-void fittedText(juce::Graphics& g, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
-                juce::Justification j, bool allowTwoLines) {
-  g.setFont(f);
-  g.setColour(col);
-  if (textWidth(f, s) <= r.getWidth() || !allowTwoLines || !s.containsChar(' ')) {
-    g.drawText(s, r, j, false);
-    return;
-  }
+int fittedSplit(const juce::Font& f, const juce::String& s, float width, bool allowTwoLines) {
+  if (textWidth(f, s) <= width || !allowTwoLines || !s.containsChar(' ')) return -1;
   // coupure à l'espace qui minimise la ligne la plus longue
   int best = -1;
   float bestW = 1.0e9f;
@@ -158,6 +152,22 @@ void fittedText(juce::Graphics& g, const juce::String& s, juce::Rectangle<float>
       bestW = w;
       best = k;
     }
+  }
+  return best;
+}
+
+void fittedText(juce::Graphics& g, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
+                juce::Justification j, bool allowTwoLines) {
+  fittedTextSplit(g, s, r, f, col, j, fittedSplit(f, s, r.getWidth(), allowTwoLines));
+}
+
+void fittedTextSplit(juce::Graphics& g, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
+                     juce::Justification j, int best) {
+  g.setFont(f);
+  g.setColour(col);
+  if (best < 0) {
+    g.drawText(s, r, j, false);
+    return;
   }
   const float lh = f.getHeight();
   auto top = r.withHeight(lh).withCentre({r.getCentreX(), r.getCentreY() - lh * 0.5f});

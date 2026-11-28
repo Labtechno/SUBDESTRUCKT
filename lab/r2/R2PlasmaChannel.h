@@ -19,6 +19,8 @@ class PlasmaChannel : public juce::Component, public juce::SettableTooltipClient
     repaint();
   }
   bool gestureOpen() const { return guard_.isOpen(); }
+  juce::String shownText() const { return src_.text(src_.norm()); }  // texte de valeur affiché (VIS-01)
+  float shownNorm() const { return src_.norm(); }                    // valeur normalisée affichée (VIS-01)
   // LAB-A07.2 : gabarit vertical STANDARD 64 x 180 ou COMPACT 48 x 150, choisi par la largeur (même composant, même contrat)
   bool compact() const { return o_ == Orientation::Vertical && getWidth() < 56; }
 

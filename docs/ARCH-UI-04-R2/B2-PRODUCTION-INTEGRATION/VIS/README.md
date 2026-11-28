@@ -85,3 +85,21 @@ pas anticipés. Les cas ajustés à l'ulp ou à norme légèrement différente (
 
 Données non équivalentes exclues : `dst.wt1.d2.speed`. Le paramètre réel est bipolaire (−4..+4) alors que la
 démonstration est unipolaire.
+
+## Étape 2 : résultats PLASMA (B2-03.2)
+
+Cas équivalents : `cross.master` en STANDARD 64 × 180 (CROSS LVL, graduations R1 0 / .5 / 1, exactes pour la plage
+réelle), sur les planches 12 (valeur réelle), 01 et 06a (Effective 0,78) et 09 (75, 100 et 150 %).
+
+| | Windows |
+|---|---|
+| Cas PLASMA | 6 : **TEXTE DE VALEUR** (structure R1 identique au pixel près : canal, graduations, Effective, curseur, sérigraphie) |
+| Bilan total (NEXUS + PLASMA) | 48 cas ; IDENTIQUE 3, TEXTE DE VALEUR 44, ETAT DU RENDU 1, **DIFFÉRENTE 0** ; contrôles **7/7** |
+
+Exclus et justifiés :
+
+- OUT GAIN : graduations de démonstration −48 / −24 / 0 / +6, inexactes pour la plage linéaire réelle ;
+- BALANCE vertical et tout COMPACT : gabarit R1 bloqué en production, CE-B2-02 (la valeur 0.4.1 ne tient pas) ;
+- M2 et LVL : graduations de démonstration.
+
+Planche 06a : l'historique de rendu de la référence (planches 01 à 05b du même processus) est rejoué avant la planche.

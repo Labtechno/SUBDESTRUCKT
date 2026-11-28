@@ -29,6 +29,9 @@ struct NexusView {
   std::vector<float> routeDepths;  // profondeurs signées des routes vers la destination (au plus quatre marques, puis +n)
   juce::String valueText;      // valeur Base formatée avec unité
   bool inactive = false, entry = false, disabled = false, hover = false, focus = false, pressed = false;
+  // mise en page du libellé déjà calculée par le consommateur (même règle : nexusLabelLayout) ; 0 : calculée par le peintre
+  int labelLines = 0;   // 1 ou 2
+  int labelSplit = -1;  // fittedSplit (si labelLines != 0)
 };
 
 float nexusAngle(float norm);
@@ -36,6 +39,9 @@ float nexusFamilyLabelPx(NexusSize size);  // corps de sérigraphie de la famill
 float nexusValuePx(NexusSize size);        // corps de la valeur (XL 14, S 11, Micro 10)
 juce::Rectangle<float> nexusValueArea(juce::Rectangle<int> localBounds, NexusSize size);
 juce::Rectangle<float> nexusKnobArea(juce::Rectangle<int> localBounds, NexusSize size, const juce::String& label, float labelPx);
+juce::Rectangle<float> nexusKnobAreaLines(juce::Rectangle<int> localBounds, NexusSize size, bool twoLabelLines, float labelPx);
+// mise en page du libellé selon la règle du peintre : lines = 1 ou 2 (hauteur de la sérigraphie), split = fittedSplit
+void nexusLabelLayout(juce::Rectangle<int> localBounds, NexusSize size, const juce::String& label, float labelPx, int& lines, int& split);
 void paintNexus(juce::Graphics& g, juce::Rectangle<int> localBounds, const NexusView& v);
 
 // ---------------------------------------------------------------- PLASMA CHANNEL (LAB-A05, LAB-A07.2)

@@ -124,13 +124,13 @@ struct Rig {
   MainEditor* m = nullptr;
   juce::ComponentPeer* peer = nullptr;
   juce::int64 t = 0;
-  explicit Rig(int x = 40) {
+  explicit Rig(int x = 40, int w = 1440, int h = 900) {
     p->prepareToPlay(48000.0, 256);
     ed.reset(p->createEditorIfNeeded());
     m = dynamic_cast<MainEditor*>(ed.get());
     if (m == nullptr) return;
-    host->setBounds(x, 40, 1440, 900);
-    m->setBounds(0, 0, 1440, 900);
+    host->setBounds(x, 40, w, h);
+    m->setBounds(0, 0, w, h);
     host->addAndMakeVisible(*m);
     host->setVisible(true);
     host->addToDesktop(0);
@@ -261,6 +261,19 @@ bool near(double a, double b, double span) { return std::abs(a - b) <= 1e-4 * st
 
 // ---------------------------------------------------------------- PB-01 : double-clic hors zone de valeur
 // PB-01a NEXUS rotatif wt.x ; PB-01b PLASMA vertical out.gain. Départ hors défaut (sinon le retour au défaut ne fait rien).
+// valeurs écrites pour un paramètre pendant un scénario (journal de la sonde)
+std::vector<double> writesOf(const std::string& scen, const std::string& param) {
+  std::vector<double> v;
+  for (auto& e : gJournal.events)
+    if (e.rfind(scen + ";", 0) == 0 && e.find(";host;write;" + param + ";") != std::string::npos) {
+      // scenario;seq;host;write;param;value;depth : 6e champ
+      size_t pos = 0;
+      for (int k = 0; k < 5; ++k) pos = e.find(';', pos) + 1;
+      v.push_back(std::atof(e.substr(pos, e.find(';', pos) - pos).c_str()));
+    }
+  return v;
+}
+
 void runDoubleClick(const char* id, ParamId pid, float start) {
   gJournal.scenario = id;
   Rig r;
@@ -280,6 +293,7 @@ void runDoubleClick(const char* id, ParamId pid, float start) {
   const double v = r.base(pid);
   const bool atDefault = near(v, s.defaultValue, s.maxValue - s.minValue);
   const int ui = gJournal.uiEvents(id), maxd = pr.maxD(), open = pr.open();
+  const auto w = writesOf(id, s.stableId);  // écritures de la phase utilisateur (avant les Undo du comptage)
   r.destroyEditor();
   const int undo = r.countUndo();
   if (ui == 0) return blocked(id, "aucun evenement recu par le composant");
@@ -289,11 +303,24 @@ void runDoubleClick(const char* id, ParamId pid, float start) {
                              (atDefault ? "= defaut" : "!= defaut");
   summarize(id, &pr, status, detail, undo, v, s.defaultValue);
   const bool be = !nested && open == 0 && Probe::total(pr.outside) == 0 && Probe::total(pr.begins) == Probe::total(pr.ends);
-  tk::result(id, be && atDefault,
-             "[REPRODUCTION, dispatch JUCE reel] %s ; double-clic hors valeur sur %s (depart %.3f) : %d evenements ui, begin %d / end %d, "
-             "profondeur max %d, residuel %d, hors geste %d, transactions Undo %d, valeur finale = defaut : %d",
-             status.c_str(), s.stableId, start, ui, Probe::total(pr.begins), Probe::total(pr.ends), maxd, open, Probe::total(pr.outside), undo,
-             atDefault);
+  if (c->form() == Form::Rotary) {  // NEXUS : double-clic = défaut (contrat inchangé)
+    tk::result(id, be && atDefault,
+               "[PERMANENT, dispatch JUCE reel] %s ; double-clic hors valeur sur %s (depart %.3f) : %d evenements ui, begin %d / end %d, "
+               "profondeur max %d, residuel %d, hors geste %d, transactions Undo %d, valeur finale = defaut : %d",
+               status.c_str(), s.stableId, start, ui, Probe::total(pr.begins), Probe::total(pr.ends), maxd, open, Probe::total(pr.outside), undo,
+               atDefault);
+    return;
+  }
+  // PLASMA, DB2-09 (B) : scénario historique conservé, assertion corrigée : position absolue au premier clic, aucun retour
+  // au défaut, aucune valeur intermédiaire, une seule écriture, une seule transaction Undo (preuve avant : PB/*/pb-summary.csv)
+  bool defWritten = false;
+  for (double x : w) defWritten = defWritten || near(x * (s.maxValue - s.minValue) + s.minValue, s.defaultValue, s.maxValue - s.minValue);
+  const bool ok = be && !atDefault && w.size() == 1 && !defWritten && undo == 1;
+  tk::result(id, ok,
+             "[PERMANENT DB2-09, dispatch JUCE reel] %s ; double-clic dans le canal de %s (depart %.3f) : %d evenements ui, begin %d / end %d, "
+             "profondeur max %d, residuel %d, hors geste %d, ecritures %zu, defaut ecrit %d, transactions Undo %d (attendu : 1 ecriture, 0, 1)",
+             status.c_str(), s.stableId, start, ui, Probe::total(pr.begins), Probe::total(pr.ends), maxd, open, Probe::total(pr.outside), w.size(),
+             defWritten, undo);
 }
 
 // Séquence HYPOTHÉTIQUE de l'audit statique H-04 (down, up, down, mouseDoubleClick, up) par appel direct des gestionnaires :
@@ -360,10 +387,12 @@ void runLinearHValueDoubleClick() {
   summarize(id, &pr, status, std::string(jumped ? "valeur modifiee par les clics avant la saisie (saut)" : "valeur inchangee") +
                                  (entry ? " ; saisie ouverte" : " ; saisie absente"),
             undo, v, v0);
-  tk::result(id, true,
-             "[REPRODUCTION, dispatch JUCE reel] %s ; double-clic sur la valeur de perf.balance : %.4f -> %.4f, %d evenements ui, profondeur max %d, "
-             "residuel %d, saisie ouverte %d, transactions Undo %d",
-             status.c_str(), v0, v, ui, maxd, open, entry, undo);
+  // DB2-08 : assertion corrigée (saut reproduit avant correction : PB/*/pb-summary.csv)
+  const bool ok = !jumped && entry && Probe::total(pr.begins) == 0 && Probe::total(pr.writes) == 0 && open == 0 && undo == 0;
+  tk::result(id, ok,
+             "[PERMANENT DB2-08, dispatch JUCE reel] %s ; double-clic sur la valeur de perf.balance : %.4f -> %.4f, %d evenements ui, gestes %d, ecritures %d, "
+             "residuel %d, saisie ouverte %d, transactions Undo %d (attendu : aucun saut, saisie, 0 geste, 0 ecriture)",
+             status.c_str(), v0, v, ui, Probe::total(pr.begins), Probe::total(pr.writes), open, entry, undo);
 }
 
 // PB-01d : autres retours au défaut et saisie numérique (NEXUS wt.x)
@@ -803,8 +832,343 @@ void runJump(const char* id, ParamId pid, float start, const char* where, juce::
   std::snprintf(d, sizeof d, "%s : %.4f -> %.4f (2e prise %.4f) ; %s", where, v0, v1, v2,
                 outsideManipulation ? "aucun changement attendu (hors zone de manipulation)" : "position absolue attendue au 1er clic, stable au 2e");
   summarize(id, &pr, status, d, undo, v1, outsideManipulation ? v0 : v1);
-  tk::result(id, true, "[REPRODUCTION, dispatch JUCE reel] %s ; %s %s ; profondeur max %d, residuel %d, transactions Undo %d", status.c_str(), s.stableId, d,
-             pr.maxD(), pr.open(), undo);
+  // DB2-08 : assertions corrigées (sauts reproduits avant correction : PB/*/pb-summary.csv). Hors zone : aucun changement,
+  // aucun geste, aucune écriture, aucune transaction ; dans le canal : stable à la reprise, gestes appariés.
+  const bool ok = outsideManipulation ? (!defect && Probe::total(pr.begins) == 0 && Probe::total(pr.writes) == 0 && undo == 0)
+                                      : (!defect && pr.open() == 0 && Probe::total(pr.begins) == Probe::total(pr.ends) && pr.maxD() <= 1);
+  tk::result(id, ok, "[PERMANENT DB2-08, dispatch JUCE reel] %s ; %s %s ; gestes %d, ecritures %d, profondeur max %d, residuel %d, transactions Undo %d", status.c_str(),
+             s.stableId, d, Probe::total(pr.begins), Probe::total(pr.writes), pr.maxD(), pr.open(), undo);
+}
+
+
+// ================================================================ B2-03.2 : contrat PLASMA (DB2-02, DB2-08, DB2-09)
+// Critères enregistrés avant mesure : PLAS-Z (B2-ACCEPTANCE-CRITERIA.md) et EC19-FIX (B2-00-ADDENDUM-B2-03.md §4).
+// Les trois PLASMA de production : out.gain (vertical, rendu 0.4.1 : gabarit R1 bloqué, CE-B2-02), cross.master (Z du Core,
+// vertical, R1 STANDARD), perf.balance (horizontal, rendu 0.4.1 : bloqué). Le contrat d'interaction est le même pour tous.
+
+ContinuousControl* findPlasma(MainEditor& m, ParamId id) {
+  for (auto* b : m.visibleControls())
+    if (b->boundId() == id)
+      if (auto* cc = dynamic_cast<ContinuousControl*>(&b->asComponent()); cc != nullptr && cc->form() != Form::Rotary) return cc;
+  return nullptr;
+}
+
+// fenêtre du banc : 1440 x 900 à 75 et 100 % (configurations UI04 : surface logique 1920 x 1200 et 1440 x 900) ;
+// à 150 %, fenêtre agrandie pour garder une surface logique de 1440 x 900 (la vue PERFORMANCE entière, sans défilement)
+int winW(int z) { return z > 100 ? 1440 * z / 100 : 1440; }
+int winH(int z) { return z > 100 ? 900 * z / 100 : 900; }
+
+struct PlCase {
+  ParamId id;
+  float start;  // valeur de départ posée par l'hôte (différente du défaut)
+};
+const PlCase kPl[3] = {{ParamId::OutGain, 0.0f}, {ParamId::CrossMaster, 0.4f}, {ParamId::PerfBalance, 0.5f}};
+
+// point de la zone de manipulation à la position normalisée n (le long du canal)
+juce::Point<float> chanAt(ContinuousControl& c, float n) {
+  const auto ch = c.channelBox();
+  if (c.form() == Form::LinearV) return {ch.getCentreX(), ch.getBottom() - n * ch.getHeight()};
+  return {ch.getX() + n * ch.getWidth(), ch.getCentreY()};
+}
+float normOf(Rig& r, ParamId id) {
+  auto* rp = dynamic_cast<juce::RangedAudioParameter*>(r.p->getParameters()[idx(id)]);
+  return rp != nullptr ? rp->getValue() : -1.0f;
+}
+
+// PLAS-Z : zones (libellé, valeur, hors canal, frontières), glisser commencé hors canal et dans le canal, clic absolu
+// aux extrémités, prise en main sans saut, focus ; trois PLASMA ; zooms 75, 100 et 150 %
+void runPlasmaZones() {
+  const char* id = "PLAS-Z";
+  gJournal.scenario = id;
+  int checks = 0, fails = 0;
+  std::string first;
+  const auto fail = [&](bool ok, const std::string& what) {
+    ++checks;
+    if (!ok) {
+      ++fails;
+      if (fails <= 14) first += (first.empty() ? "" : " | ") + what;
+    }
+  };
+  for (int z : {75, 100, 150})
+    for (const auto& pc : kPl) {
+      Rig r(40, winW(z), winH(z));
+      if (!r.ok()) return blocked(id, "pair de test indisponible");
+      r.m->setZoomPercent(z);
+      r.m->showSpace(0);
+      r.m->refreshLayout();
+      auto* c = findPlasma(*r.m, pc.id);
+      const std::string tag = std::string(paramSpec(pc.id).stableId) + " @" + std::to_string(z) + "%";
+      if (c == nullptr) return blocked(id, "PLASMA introuvable : " + tag);
+      const bool V = c->form() == Form::LinearV;
+      r.hostSet(pc.id, pc.start);
+      const float n0 = normOf(r, pc.id);
+      Probe pr(*r.p);
+      const auto noEffect = [&](juce::Point<float> pt, const std::string& what) {
+        const int b0 = Probe::total(pr.begins), w0 = Probe::total(pr.writes);
+        r.move(*c, pt);
+        r.down(*c, pt);
+        r.up(*c, pt);
+        r.pause();
+        fail(Probe::total(pr.begins) == b0 && Probe::total(pr.writes) == w0 && std::abs(normOf(r, pc.id) - n0) < 1e-6f, tag + " " + what);
+      };
+      // libellé, valeur, hors canal (côté graduations ou loin du rail), juste hors de la zone de manipulation
+      noEffect(c->labelBox().getCentre(), "clic libelle");
+      noEffect(c->valueBox().getCentre(), "clic valeur");
+      const auto mz = c->manipulationBox();
+      const auto lb = c->getLocalBounds().toFloat();
+      if (V) {
+        if (mz.getRight() + 3.0f < lb.getRight()) noEffect({mz.getRight() + 2.0f, mz.getCentreY()}, "clic hors canal (droite)");
+        if (mz.getX() - 3.0f > lb.getX()) noEffect({mz.getX() - 2.0f, mz.getCentreY()}, "clic hors canal (gauche)");
+      } else {
+        if (mz.getY() - 3.0f > lb.getY()) noEffect({mz.getCentreX(), mz.getY() - 2.0f}, "clic hors canal (haut)");
+        if (mz.getBottom() + 3.0f < lb.getBottom()) noEffect({mz.getCentreX(), mz.getBottom() + 2.0f}, "clic hors canal (bas)");
+      }
+      // focus et sélection au clic sur le libellé (aucune écriture : vérifié ci-dessus)
+      fail(c->hasKeyboardFocus(false), tag + " focus apres clic libelle");
+      // glisser commencé hors canal (libellé) puis amené dans le canal : jamais un geste de modification
+      {
+        const int b0 = Probe::total(pr.begins), w0 = Probe::total(pr.writes);
+        const auto from = c->labelBox().getCentre(), to = chanAt(*c, 0.9f);
+        r.move(*c, from);
+        r.down(*c, from);
+        for (int k = 1; k <= 6; ++k) r.drag(*c, from + (to - from) * (static_cast<float>(k) / 6.0f));
+        r.up(*c, to);
+        r.pause();
+        fail(Probe::total(pr.begins) == b0 && Probe::total(pr.writes) == w0 && std::abs(normOf(r, pc.id) - n0) < 1e-6f, tag + " glisser depuis le libelle");
+      }
+      // frontière : juste à l'intérieur de la zone de manipulation -> geste et position absolue
+      {
+        const int b0 = Probe::total(pr.begins);
+        const auto in = V ? juce::Point<float>(mz.getX() + 1.0f, chanAt(*c, 0.25f).y) : juce::Point<float>(chanAt(*c, 0.25f).x, mz.getY() + 1.0f);
+        r.move(*c, in);
+        r.down(*c, in);
+        const float after = normOf(r, pc.id);
+        r.up(*c, in);
+        r.pause();
+        fail(Probe::total(pr.begins) == b0 + 1 && std::abs(after - 0.25f) < 0.02f, tag + " clic en bordure interieure");
+      }
+      // extrémités : clic au bord extrême de la zone de manipulation -> borne (correspondance bornée ; en R1 la zone
+      // dépasse le canal de la demi-hauteur du curseur, donc la borne est exacte ; en 0.4.1, à une ligne près)
+      for (float target : {1.0f, 0.0f}) {
+        const auto zz = c->manipulationBox();
+        const auto pt = V ? juce::Point<float>(zz.getCentreX(), target > 0.5f ? zz.getY() + 0.5f : zz.getBottom() - 0.5f)
+                          : juce::Point<float>(target > 0.5f ? zz.getRight() - 0.5f : zz.getX() + 0.5f, zz.getCentreY());
+        r.move(*c, pt);
+        r.down(*c, pt);
+        r.up(*c, pt);
+        r.pause();
+        fail(std::abs(normOf(r, pc.id) - target) < (c->plasmaR1() ? 1e-4f : 0.02f), tag + (target > 0.5f ? " extremite haute" : " extremite basse"));
+      }
+      // glisser dans le canal : prise en main sans saut, puis suivi rapporté à la longueur utile (DB2-02)
+      {
+        const auto p0 = chanAt(*c, 0.5f);
+        r.move(*c, p0);
+        r.down(*c, p0);
+        const float a = normOf(r, pc.id);
+        r.drag(*c, p0);  // premier déplacement nul : aucun saut
+        const float b = normOf(r, pc.id);
+        const auto p1 = chanAt(*c, 0.75f);
+        for (int k = 1; k <= 5; ++k) r.drag(*c, p0 + (p1 - p0) * (static_cast<float>(k) / 5.0f));
+        const float d = normOf(r, pc.id);
+        r.up(*c, p1);
+        r.pause();
+        fail(std::abs(a - 0.5f) < 0.02f && std::abs(b - a) < 1e-6f && std::abs(d - 0.75f) < 0.02f, tag + " glisser dans le canal");
+      }
+      pr.userPhase = false;
+      fail(pr.open() == 0 && pr.maxD() <= 1 && Probe::total(pr.begins) == Probe::total(pr.ends) && Probe::total(pr.outside) == 0, tag + " gestes apparies");
+    }
+  tk::result(id, fails == 0, "DB2-08 : out.gain (0.4.1, bloque), cross.master (R1 STANDARD), perf.balance (0.4.1, bloque) x zooms 75/100/150 : %d verifications "
+             "(libelle, valeur, hors canal, glisser depuis le libelle, bordure, extremites, prise en main, suivi, focus, appariement) ; echecs %d%s%s",
+             checks, fails, first.empty() ? "" : " : ", first.c_str());
+}
+
+// EC19-FIX : DB2-09 (B), liste de B2-00-ADDENDUM-B2-03.md §4
+void runPlasmaDoubleClickContract() {
+  const char* id = "EC19-FIX";
+  gJournal.scenario = id;
+  int checks = 0, fails = 0;
+  std::string first;
+  const auto fail = [&](bool ok, const std::string& what) {
+    ++checks;
+    if (!ok) {
+      ++fails;
+      if (fails <= 14) first += (first.empty() ? "" : " | ") + what;
+    }
+  };
+  for (int z : {75, 100, 150})
+    for (const auto& pc : kPl) {
+      const std::string tag = std::string(paramSpec(pc.id).stableId) + " @" + std::to_string(z) + "%";
+      const auto& spec = paramSpec(pc.id);
+      int sub = 0;
+      auto defNorm = [&](Rig& r) {
+        auto* rp = dynamic_cast<juce::RangedAudioParameter*>(r.p->getParameters()[idx(pc.id)]);
+        return rp->convertTo0to1(spec.defaultValue);
+      };
+      auto setup = [&](Rig& r) -> ContinuousControl* {
+        gJournal.scenario = std::string(id) + "/" + tag + "/" + std::to_string(++sub);  // journal propre à chaque sous-scénario
+        r.m->setZoomPercent(z);
+        r.m->showSpace(0);
+        r.m->refreshLayout();
+        auto* c = findPlasma(*r.m, pc.id);
+        if (c != nullptr) r.hostSet(pc.id, pc.start);
+        return c;
+      };
+      // (1) double-clic dans le canal : réponse immédiate, aucun retour au défaut, aucune valeur intermédiaire, une écriture,
+      //     une transaction, gestes appariés, aucun geste résiduel
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = r.ok() ? setup(r) : nullptr;
+        if (c == nullptr) return blocked(id, "PLASMA introuvable : " + tag);
+        Probe pr(*r.p);
+        const auto pt = chanAt(*c, 0.3f);
+        r.move(*c, pt);
+        r.down(*c, pt);
+        const float firstResp = normOf(r, pc.id);
+        r.up(*c, pt);
+        r.down(*c, pt);
+        r.up(*c, pt);
+        r.pause();
+        pr.userPhase = false;
+        const auto w = writesOf(gJournal.scenario, spec.stableId);
+        const float dn = defNorm(r);
+        bool def = false;
+        for (double x : w) def = def || std::abs(x - dn) < 1e-4;
+        const float fin = normOf(r, pc.id);
+        const int maxd = pr.maxD(), open = pr.open(), beg = Probe::total(pr.begins), end = Probe::total(pr.ends);
+        gJournal.scenario += "-undo";  // les Undo du comptage ne sont pas comptés comme écritures du scénario
+        r.destroyEditor();
+        const int undo = r.countUndo();
+        fail(std::abs(firstResp - 0.3f) < 0.02f, tag + " reponse immediate au 1er clic");
+        fail(std::abs(fin - firstResp) < 1e-6f && !def, tag + " aucun retour au defaut / valeur intermediaire");
+        fail(w.size() == 1, tag + " une seule ecriture (" + std::to_string(w.size()) + ")");
+        fail(undo == 1, tag + " une transaction Undo (" + std::to_string(undo) + ")");
+        fail(maxd <= 1 && open == 0 && beg == end, tag + " gestes apparies, aucun residuel");
+      }
+      // (2) deux clics successifs à des positions différentes (dans le délai du double-clic)
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        Probe pr(*r.p);
+        const auto a = chanAt(*c, 0.2f), b = chanAt(*c, 0.8f);
+        r.move(*c, a);
+        r.down(*c, a);
+        r.up(*c, a);
+        r.move(*c, b);
+        r.down(*c, b);
+        r.up(*c, b);
+        r.pause();
+        const float fin = normOf(r, pc.id);
+        pr.userPhase = false;
+        r.destroyEditor();
+        fail(std::abs(fin - 0.8f) < 0.02f && pr.open() == 0 && std::abs(fin - defNorm(r)) > 1e-3f, tag + " deux clics a deux positions");
+      }
+      // (3) double-clic suivi d'un glisser : le glisser part de la position cliquée, aucun retour au défaut
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        Probe pr(*r.p);
+        const auto a = chanAt(*c, 0.4f), b = chanAt(*c, 0.6f);
+        r.move(*c, a);
+        r.down(*c, a);
+        r.up(*c, a);
+        r.down(*c, a);
+        for (int k = 1; k <= 4; ++k) r.drag(*c, a + (b - a) * (static_cast<float>(k) / 4.0f));
+        r.up(*c, b);
+        r.pause();
+        const float fin = normOf(r, pc.id);
+        pr.userPhase = false;
+        fail(std::abs(fin - 0.6f) < 0.02f && pr.open() == 0 && pr.maxD() <= 1, tag + " double-clic puis glisser");
+      }
+      // (4) double-clic aux extrémités du canal : bornes, aucun retour au défaut
+      for (float target : {0.0f, 1.0f}) {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        const auto pt = chanAt(*c, target);
+        r.doubleClick(*c, pt);
+        fail(std::abs(normOf(r, pc.id) - target) < 1e-3f, tag + " double-clic extremite " + std::to_string(static_cast<int>(target)));
+      }
+      // (5) automation active : l'hôte écrit entre les clics ; gestes appariés, valeur finale = position cliquée
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        Probe pr(*r.p);
+        const auto pt = chanAt(*c, 0.7f);
+        r.move(*c, pt);
+        r.down(*c, pt);
+        r.up(*c, pt);
+        pr.userPhase = false;
+        r.hostSet(pc.id, spec.minValue + 0.1f * (spec.maxValue - spec.minValue));  // lecture d'automation hôte
+        pr.userPhase = true;
+        r.down(*c, pt);
+        r.up(*c, pt);
+        r.pause();
+        const float fin = normOf(r, pc.id);
+        pr.userPhase = false;
+        fail(std::abs(fin - 0.7f) < 0.02f && pr.open() == 0 && Probe::total(pr.begins) == Probe::total(pr.ends) && pr.maxD() <= 1,
+             tag + " automation active");
+      }
+      // (6) retours au défaut autorisés : Alt+clic dans le canal, Suppr, menu ; saisie numérique sans écriture préalable
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        const float dn = defNorm(r);
+        const auto pt = chanAt(*c, 0.5f);
+        r.move(*c, pt);
+        r.down(*c, pt, juce::ModifierKeys::altModifier);
+        r.up(*c, pt, juce::ModifierKeys::altModifier);
+        r.pause();
+        const bool alt = std::abs(normOf(r, pc.id) - dn) < 1e-4f;
+        r.hostSet(pc.id, pc.start);
+        c->keyPressed(juce::KeyPress(juce::KeyPress::deleteKey));
+        const bool del = std::abs(normOf(r, pc.id) - dn) < 1e-4f;
+        r.hostSet(pc.id, pc.start);
+        c->resetToDefault();
+        const bool menu = std::abs(normOf(r, pc.id) - dn) < 1e-4f;
+        r.hostSet(pc.id, pc.start);
+        const float before = normOf(r, pc.id);
+        Probe pr(*r.p);
+        r.doubleClick(*c, c->valueBox().getCentre());
+        bool entry = false;
+        for (auto* ch : c->getChildren()) entry = entry || dynamic_cast<juce::TextEditor*>(ch) != nullptr;
+        fail(alt && del && menu, tag + " defaut par Alt+clic, Suppr, menu");
+        fail(entry && Probe::total(pr.writes) == 0 && Probe::total(pr.begins) == 0 && std::abs(normOf(r, pc.id) - before) < 1e-6f,
+             tag + " saisie sans ecriture prealable (saisie " + std::to_string(entry) + ", ecritures " + std::to_string(Probe::total(pr.writes)) + ", gestes " +
+                 std::to_string(Probe::total(pr.begins)) + ", " + std::to_string(before) + " -> " + std::to_string(normOf(r, pc.id)) + ", valeur " +
+                 c->valueBox().toString().toStdString() + ", zone " + c->manipulationBox().toString().toStdString() + ")");
+      }
+      // infobulle : interactions réellement disponibles (DB2-09)
+      {
+        Rig r(40, winW(z), winH(z));
+        auto* c = setup(r);
+        const auto t = c->getTooltip();
+        fail(t.contains(juce::String::fromUTF8("Alt+clic, Suppr ou menu : défaut")) && !t.contains(juce::String::fromUTF8("double-clic : défaut")), tag + " infobulle");
+      }
+    }
+  // (7) instances multiples : un double-clic dans chaque instance, sondes indépendantes, aucune interférence
+  {
+    Rig a(40), b(1520);
+    if (!a.ok() || !b.ok()) return blocked(id, "instances multiples indisponibles");
+    for (auto* rg : {&a, &b}) {
+      rg->m->showSpace(0);
+      rg->m->refreshLayout();
+      rg->hostSet(ParamId::OutGain, 0.0f);
+    }
+    Probe pa(*a.p), pb(*b.p);
+    auto* ca = findPlasma(*a.m, ParamId::OutGain);
+    auto* cb = findPlasma(*b.m, ParamId::OutGain);
+    a.doubleClick(*ca, chanAt(*ca, 0.3f));
+    const float bUntouched = normOf(b, ParamId::OutGain);
+    b.doubleClick(*cb, chanAt(*cb, 0.6f));
+    pa.userPhase = pb.userPhase = false;
+    fail(std::abs(normOf(a, ParamId::OutGain) - 0.3f) < 0.02f && std::abs(normOf(b, ParamId::OutGain) - 0.6f) < 0.02f && pa.open() == 0 && pb.open() == 0 &&
+             std::abs(bUntouched - normOf(b, ParamId::OutGain)) > 0.1f,
+         "instances multiples");
+  }
+  tk::result(id, fails == 0,
+             "DB2-09 (B) : 3 PLASMA x zooms 75/100/150 + instances multiples : %d verifications (reponse immediate, aucun retour au defaut, aucune valeur "
+             "intermediaire, une ecriture, une transaction, gestes apparies, deux positions, double-clic puis glisser, extremites, automation active, "
+             "Alt+clic / Suppr / menu, saisie sans ecriture, infobulle) ; echecs %d%s%s",
+             checks, fails, first.empty() ? "" : " : ", first.c_str());
 }
 
 juce::Point<float> labelTop(juce::Component& c) { return {c.getWidth() * 0.5f, 4.0f}; }
@@ -853,6 +1217,8 @@ void testGestureReproduction() {
   runJump("PB-J2", ParamId::PerfBalance, 0.5f, "clic sur le libelle du PLASMA horizontal", labelLeft, true);
   runJump("PB-J3", ParamId::PerfBalance, 0.5f, "clic sur la valeur du PLASMA horizontal", valueRight, true);
   runJump("PB-J4", ParamId::OutGain, 0.0f, "clic dans le canal puis reprise au meme point", channelCentre, false);
+  runPlasmaZones();
+  runPlasmaDoubleClickContract();
   juce::ModifierKeys::currentModifiers = juce::ModifierKeys();  // aucun état clavier simulé laissé aux tests suivants
   writeJournal();
 }

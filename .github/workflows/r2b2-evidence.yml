@@ -32,7 +32,8 @@ concurrency:
 env:
   JUCE_TAG: "9.0.6"
   JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
-  DEST_PB: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos
+  # un dossier par run : les preuves historiques (PB/macos = B2-01, run 1) ne sont jamais réécrites
+  DEST_PB: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/runs/macos
   DEST_GC: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/GC01/macos
   DEST_CAP: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/CAPTURES/macos
   # référence GC-01 : commit de la ligne de base 0.4.1 (banc présent, aucune modification ui/). Vide = ligne de base.
@@ -108,8 +109,9 @@ jobs:
       - name: Versement des résultats macOS (commit [skip ci])
         run: |
           set -euo pipefail
-          mkdir -p "$DEST_PB" "$DEST_GC"
-          cp out/pb/* "$DEST_PB/"
+          run_tag="run${{ github.run_number }}-${GITHUB_SHA::7}"
+          mkdir -p "$DEST_PB/$run_tag" "$DEST_GC"
+          cp out/pb/* "$DEST_PB/$run_tag/"
           cp -R out/gc01/* "$DEST_GC/"
           # captures de production (MainEditor reel, rendu hors ecran) : seulement sur les jalons marques [captures]
           if git log -1 --format=%B | grep -qF '[captures]'; then

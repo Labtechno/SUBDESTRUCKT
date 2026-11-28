@@ -60,8 +60,10 @@ std::unique_ptr<Sheet> sheetNexusB1();   // planche NEXUS de B1, code inchangé 
 std::unique_ptr<Sheet> sheetPlasmaB1();  // planche PLASMA de B1, code inchangé (non-régression LAB-A05)
 // Rend les planches R2-B1-R1 dans `dir` (PNG). scale = facteur des planches de revue (2 = équivalent Retina).
 // b1Dir : captures B1 publiées de la MÊME plateforme, pour les comparaisons pixel à pixel de non-régression.
-bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir);
-// Planche R1 historique reconstruite par son code (VIS-01, B2-03) : "01" tableau final, "09" groupe des zooms, "11" matériaux.
+// stopBefore : arrêt avant la planche nommée (VIS-01 : rejouer l'historique de rendu d'une référence) ; vide : toutes.
+bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir, const juce::String& stopBefore = {});
+// Planche R1 historique reconstruite par son code (VIS-01, B2-03) : "01" tableau final, "06a" PLASMA STANDARD / COMPACT,
+// "09" groupe des zooms, "11" matériaux.
 std::unique_ptr<Sheet> makeR1Sheet(const juce::String& id);
 bool writePng(const juce::Image& img, const juce::File& f);
 

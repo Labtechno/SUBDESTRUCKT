@@ -133,6 +133,11 @@ void focusRing(juce::Graphics&, juce::Rectangle<float> r, float radius);
 // texte ajusté : une ligne, sinon deux lignes coupées à l'espace le plus équilibré (jamais sous le corps indiqué)
 void fittedText(juce::Graphics&, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
                 juce::Justification j, bool allowTwoLines);
+// mise en page de fittedText calculée à part : -1 = une ligne ; k >= 0 = deux lignes coupées à l'espace d'indice k
+int fittedSplit(const juce::Font& f, const juce::String& s, float width, bool allowTwoLines);
+// fittedText avec une mise en page déjà calculée (fittedSplit) : mêmes appels de dessin, sans mesure du texte
+void fittedTextSplit(juce::Graphics&, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
+                     juce::Justification j, int split);
 float textWidth(const juce::Font& f, const juce::String& s);
 // le texte tient-il dans la largeur, selon la règle de fittedText (une ligne, sinon deux lignes coupées à l'espace équilibré) ?
 bool fitsText(const juce::Font& f, const juce::String& s, float width, bool allowTwoLines);

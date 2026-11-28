@@ -250,6 +250,8 @@ wrapper PB-01d
 wrapper PB-01e
 wrapper PB-01f
 wrapper PB-01m
+wrapper PLAS-Z
+wrapper EC19-FIX
 wrapper PB-02a
 wrapper PB-02b
 wrapper PB-02c
@@ -269,3 +271,4 @@ wrapper NX-CC
 wrapper NX-ROUTES
 wrapper NX-GEOM
 wrapper NX-CC-PLACE
+wrapper PLAS-G

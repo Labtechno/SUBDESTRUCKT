@@ -201,7 +201,11 @@ ContinuousControl::ContinuousControl(UiContext& ctx, ParamId id, Form form, Dens
   setDescription(juce::String(s.name) + " (" + s.stableId + ")");
   setWantsKeyboardFocus(true);
   setRepaintsOnMouseActivity(true);
-  baseTooltip_ = juce::String(s.name) + "\n" + s.stableId + juce::String::fromUTF8("  |  glisser : réglage, Maj : fin, double-clic : défaut, Entrée : saisie");
+  baseTooltip_ = juce::String(s.name) + "\n" + s.stableId +
+                 (form == Form::Rotary ? juce::String::fromUTF8("  |  glisser : réglage, Maj : fin, double-clic : défaut, Entrée : saisie")
+                                       // PLASMA (DB2-08, DB2-09) : interactions réellement disponibles
+                                       : juce::String::fromUTF8("  |  clic ou glisser dans le canal : réglage, Maj : fin, Alt+clic, Suppr ou menu : défaut, "
+                                                                "double-clic sur la valeur ou Entrée : saisie"));
   setTooltip(baseTooltip_);
 }
 
@@ -246,14 +250,138 @@ juce::Rectangle<float> ContinuousControl::ccTagBox() const {
 
 void ContinuousControl::setCaption(const juce::String& c) {
   caption_ = c;
+  if (form_ != Form::Rotary) layoutPlasma();
+  else layoutNexus();
   repaint();
 }
 
 int ContinuousControl::labelLines() const { return form_ == Form::LinearH ? 1 : 2; }
+
+// ---------------------------------------------------------------- PLASMA R1 (B2-03.2)
+juce::Rectangle<float> ContinuousControl::channelArea() const {
+  if (plasma_.r1)
+    return sbd::r2::plasmaSlot(plasma_.tpl, form_ == Form::LinearV ? sbd::r2::PlasmaOrientation::Vertical : sbd::r2::PlasmaOrientation::Horizontal,
+                               plasma_.compact);
+  return knobArea();  // rendu 0.4.1 : correspondance historique sur la zone du rail
+}
+
+juce::Rectangle<float> ContinuousControl::manipulationArea() const {
+  // DB2-08 : la zone active des gestes est la zone de manipulation du rendu
+  if (form_ == Form::Rotary || plasma_.r1) return knobArea();  // R1 : canal élargi à l'empreinte du curseur
+  // rendu 0.4.1 (gabarit R1 bloqué, CE-B2-02) : rail et empreinte de la poignée (28 x 8 vertical, 8 x 20 horizontal)
+  // ... bornée par la sérigraphie et la fenêtre de valeur (DB2-08 : aucun recouvrement de ces zones)
+  const auto a = knobArea();
+  if (form_ == Form::LinearV) {
+    auto z = a.withSizeKeepingCentre(std::min(28.0f, a.getWidth()), a.getHeight() + 8.0f);
+    return z.withTop(std::max(z.getY(), labelArea().getBottom())).withBottom(std::min(z.getBottom(), valueArea().getY()));
+  }
+  auto z = a.withSizeKeepingCentre(a.getWidth() + 8.0f, std::min(20.0f, a.getHeight()));
+  return z.withLeft(std::max(z.getX(), labelArea().getRight())).withRight(std::min(z.getRight(), valueArea().getX()));
+}
+
+void ContinuousControl::resized() {
+  if (form_ != Form::Rotary) layoutPlasma();
+  else layoutNexus();
+}
+
+void ContinuousControl::layoutNexus() {
+  // mise en page du libellé et zone du bouton : mesures de texte faites ici, une fois, et non à chaque peinture (GC-01)
+  nexus_.bounds = getLocalBounds();
+  nexus_.caption = caption_;
+  const auto size = nexusSize(density_);
+  const float family = sbd::r2::nexusFamilyLabelPx(size);
+  const float w = static_cast<float>(getWidth()) - 4.0f;
+  nexus_.px = tok::fontMicro;
+  for (float px = family; px >= tok::fontMicro - 1.0e-3f; px -= 0.5f)
+    if (sbd::r2::draw::fitsText(sbd::r2::labelFont(px, size == sbd::r2::NexusSize::XL), caption_, w, true)) {
+      nexus_.px = px;
+      break;
+    }
+  sbd::r2::nexusLabelLayout(nexus_.bounds, size, caption_, nexus_.px, nexus_.lines, nexus_.split);
+  nexus_.knob = sbd::r2::nexusKnobAreaLines(nexus_.bounds, size, nexus_.lines == 2, nexus_.px);
+}
+
+void ContinuousControl::layoutPlasma() {
+  // CE-B2-02 : gabarit choisi par la surface utile réelle (la cellule de production), aux dimensions normatives R1, sans
+  // déformation ; STANDARD si 64 x 180 tient, sinon COMPACT si 48 x 150 tient ; horizontal : hauteur 44, largeur de la
+  // cellule. Le libellé et TOUTES les valeurs représentables doivent tenir dans les zones du gabarit, au même corps.
+  plasma_ = {};
+  const auto lb = getLocalBounds();
+  if (form_ == Form::LinearV) {
+    const bool standard = lb.getWidth() >= 64 && lb.getHeight() >= 180;
+    const bool compact = !standard && lb.getWidth() >= 48 && lb.getHeight() >= 150;
+    if (!standard && !compact) {
+      plasma_.why = "cellule " + juce::String(lb.getWidth()) + " x " + juce::String(lb.getHeight()) + " : ni STANDARD 64 x 180 ni COMPACT 48 x 150";
+      return;
+    }
+    plasma_.compact = compact;
+    plasma_.tpl = lb.withSizeKeepingCentre(compact ? 48 : 64, compact ? 150 : 180);
+  } else {
+    if (lb.getHeight() < 44) {
+      plasma_.why = "cellule de hauteur " + juce::String(lb.getHeight()) + " < 44";
+      return;
+    }
+    plasma_.tpl = lb.withSizeKeepingCentre(lb.getWidth(), 44);
+  }
+  const auto vf = sbd::r2::valueFont(10.0f);
+  const float vw = valueArea().getWidth();
+  const auto& s = paramSpec(id_);
+  float worst = 0.0f;
+  juce::String worstText;
+  for (int k = -3; k <= 400; ++k) {  // bornes, défaut, puis 401 valeurs régulières : toutes les formes d'affichage
+    const float v = k == -3 ? s.minValue : (k == -2 ? s.maxValue : (k == -1 ? s.defaultValue : link_.fromNorm(static_cast<float>(k) / 400.0f)));
+    const juce::String t(formatValue(id_, v));
+    const float w = sbd::r2::draw::textWidth(vf, t);
+    if (w > worst) {
+      worst = w;
+      worstText = t;
+    }
+  }
+  const auto lf = sbd::r2::labelFont(tok::fontLabel);
+  const float lw = form_ == Form::LinearV ? static_cast<float>(plasma_.tpl.getWidth()) - 2.0f : std::round(static_cast<float>(plasma_.tpl.getWidth()) * 0.30f) - 6.0f;
+  const juce::String tplName = plasma_.compact ? "COMPACT 48 x 150" : (form_ == Form::LinearV ? "STANDARD 64 x 180" : "horizontal h44");
+  if (worst > vw) {
+    plasma_.tpl = {};
+    plasma_.compact = false;
+    plasma_.why = tplName + juce::String::fromUTF8(" : valeur « ") + worstText + juce::String::fromUTF8(" » (") + juce::String(worst, 1) +
+                  juce::String::fromUTF8(" px) > fenêtre de valeur (") + juce::String(vw, 1) + " px)";
+    return;
+  }
+  if (!sbd::r2::draw::fitsText(lf, caption_, lw, true)) {
+    plasma_.tpl = {};
+    plasma_.compact = false;
+    plasma_.why = tplName + juce::String::fromUTF8(" : libellé « ") + caption_ + juce::String::fromUTF8(" » > sérigraphie du gabarit");
+    return;
+  }
+  plasma_.r1 = true;
+}
+
+juce::StringArray ContinuousControl::plasmaGraduations() const {
+  // Graduations réparties régulièrement de la borne basse à la borne haute (contrat du peintre) : leur texte doit être la
+  // valeur réelle à cette position. Contenu R1 des planches gelées quand il est exact pour la plage réelle (BALANCE :
+  // WT / 0 / FM ; plages 0..1 : 0 / .5 / 1) ; sinon bornes et milieu réels, format compact.
+  const juce::String sid(paramSpec(id_).stableId);
+  if (sid == "perf.balance") return {"WT", "0", "FM"};
+  juce::StringArray g;
+  for (float n : {0.0f, 0.5f, 1.0f}) {
+    const float v = link_.fromNorm(n);
+    juce::String t = std::abs(v - std::round(v)) < 1.0e-4f ? juce::String(static_cast<int>(std::lround(v))) : juce::String(v, 2).trimCharactersAtEnd("0");
+    if (t.startsWith("0.")) t = t.substring(1);
+    if (t.startsWith("-0.")) t = "-" + t.substring(2);
+    if (t.startsWith("-")) t = juce::String::fromUTF8("\xe2\x88\x92") + t.substring(1);
+    else if (bipolar(id_) && v > 0.0f) t = "+" + t;
+    g.add(t);
+  }
+  return g;
+}
 float ContinuousControl::labelSize() const { return density_ == Density::XL ? tok::fontTitle : (density_ == Density::Micro ? 10.0f : tok::fontLabel); }
 
 juce::Rectangle<float> ContinuousControl::labelArea() const {
   if (form_ == Form::Rotary) return getLocalBounds().toFloat().withBottom(knobArea().getY());
+  if (plasma_.r1) {  // sérigraphie du gabarit R1 (peintre : 30 px en vertical, 30 % de la largeur en horizontal)
+    const auto t = plasma_.tpl.toFloat();
+    return form_ == Form::LinearV ? t.withHeight(30.0f) : t.withWidth(std::round(t.getWidth() * 0.30f));
+  }
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   if (form_ == Form::LinearH) return r.removeFromLeft(r.getWidth() * 0.34f);
   const float lh = labelSize() * 1.18f * static_cast<float>(labelLines());
@@ -261,6 +389,11 @@ juce::Rectangle<float> ContinuousControl::labelArea() const {
 }
 juce::Rectangle<float> ContinuousControl::valueArea() const {
   if (form_ == Form::Rotary) return sbd::r2::nexusValueArea(getLocalBounds(), nexusSize(density_));
+  if (!plasma_.tpl.isEmpty()) {  // fenêtre de valeur du peintre PLASMA R1 (aussi pour vérifier si la valeur y tient)
+    const auto t = plasma_.tpl.toFloat();
+    if (form_ == Form::LinearV) return t.withTop(t.getBottom() - 17.0f).reduced(2.0f, 1.0f);
+    return t.withLeft(t.getRight() - 52.0f).reduced(1.0f, 10.0f);
+  }
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   const float vh = valueFont(density_) + 5.0f;
   if (form_ == Form::LinearH) {
@@ -270,7 +403,14 @@ juce::Rectangle<float> ContinuousControl::valueArea() const {
   return r.removeFromBottom(vh);
 }
 juce::Rectangle<float> ContinuousControl::knobArea() const {
-  if (form_ == Form::Rotary) return sbd::r2::nexusKnobArea(getLocalBounds(), nexusSize(density_), caption_, nexusLabelPx());
+  if (form_ == Form::Rotary) {
+    (void)nexusLabelPx();  // mise en page à jour
+    return nexus_.knob;
+  }
+  if (plasma_.r1) {  // zone de manipulation (DB2-08) : le canal élargi à l'empreinte du curseur R1 (24 x 10)
+    const auto s = channelArea();
+    return form_ == Form::LinearV ? s.withSizeKeepingCentre(24.0f, s.getHeight() + 10.0f) : s.withSizeKeepingCentre(s.getWidth() + 10.0f, 24.0f);
+  }
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   if (form_ == Form::LinearH) {
     r.removeFromLeft(r.getWidth() * 0.34f);
@@ -283,15 +423,14 @@ juce::Rectangle<float> ContinuousControl::knobArea() const {
 }
 
 float ContinuousControl::nexusLabelPx() const {
-  const auto size = nexusSize(density_);
-  const float family = sbd::r2::nexusFamilyLabelPx(size);
-  const float w = static_cast<float>(getWidth()) - 4.0f;
-  for (float px = family; px >= tok::fontMicro - 1.0e-3f; px -= 0.5f)
-    if (sbd::r2::draw::fitsText(sbd::r2::labelFont(px, size == sbd::r2::NexusSize::XL), caption_, w, true)) return px;
-  return tok::fontMicro;
+  if (nexus_.bounds != getLocalBounds() || nexus_.caption != caption_) const_cast<ContinuousControl*>(this)->layoutNexus();  // sûreté
+  return nexus_.px;
 }
 
 bool ContinuousControl::textFits() const {
+  if (plasma_.r1) {  // PLASMA R1 : libellé et valeurs vérifiés au choix du gabarit ; valeur courante revérifiée
+    return sbd::r2::draw::textWidth(sbd::r2::valueFont(10.0f), juce::String(formatValue(id_, shown_))) <= valueArea().getWidth();
+  }
   if (form_ == Form::Rotary) {  // NEXUS R1 : sérigraphie sur deux lignes au plus, au-dessus du plancher ; valeurs extrêmes dans la fenêtre
     const auto size = nexusSize(density_);
     const float px = nexusLabelPx();
@@ -317,12 +456,33 @@ bool ContinuousControl::textFits() const {
 }
 
 void ContinuousControl::paint(juce::Graphics& g) {
+  if (plasma_.r1) {  // PLASMA R1 (B2-03.2) : peintre partagé, gabarit normatif dans la cellule, données publiées seulement
+    sbd::r2::PlasmaView v;
+    v.orientation = form_ == Form::LinearV ? sbd::r2::PlasmaOrientation::Vertical : sbd::r2::PlasmaOrientation::Horizontal;
+    v.domain = r2Domain(domainOf(id_));
+    v.label = caption_;
+    v.graduations = plasmaGraduations();
+    v.compact = plasma_.compact;
+    v.norm = link_.toNorm(shown_);
+    if (effNorm_ >= 0.0f) v.effective = effNorm_;
+    v.bipolar = bipolar(id_);
+    v.zeroNorm = v.bipolar ? link_.toNorm(0.0f) : 0.0f;
+    v.valueText = juce::String(formatValue(id_, shown_));
+    v.disabled = !isEnabled();
+    v.hover = isMouseOverOrDragging();
+    v.focus = hasKeyboardFocus(false);
+    v.pressed = dragging_ || wheelGesture_;
+    sbd::r2::paintPlasma(g, plasma_.tpl, v);
+    return;
+  }
   if (form_ == Form::Rotary) {
     sbd::r2::NexusView v;  // vue du peintre partagé : données publiées seulement (Base, Effective, routes configurées)
     v.size = nexusSize(density_);
     v.domain = r2Domain(domainOf(id_));
     v.label = caption_;
     v.labelPx = nexusLabelPx();
+    v.labelLines = nexus_.lines;  // mise en page calculée au redimensionnement (même règle que le peintre)
+    v.labelSplit = nexus_.split;
     v.norm = link_.toNorm(shown_);
     if (effNorm_ >= 0.0f) v.effective = effNorm_;
     v.bipolar = bipolar(id_);
@@ -528,17 +688,25 @@ void ContinuousControl::mouseDown(const juce::MouseEvent& e) {
     resetToDefault();
     return;
   }
-  if (valueArea().contains(e.position) && form_ != Form::LinearH) return;  // double-clic sur la valeur = saisie
+  if (form_ != Form::Rotary) {
+    // PLASMA (DB2-08) : seul un clic dans la zone de manipulation (canal et empreinte du curseur) devient un geste ;
+    // libellé, valeur et hors canal : sélection et focus seulement, aucune écriture, aucun geste hôte
+    if (!manipulationArea().contains(e.position)) return;
+    dragging_ = true;
+    dragStart_ = e.position;
+    link_.begin();
+    // clic = position absolue (DB2-02), rapportée au canal ; aucune écriture si la valeur ne change pas
+    const auto a = channelArea();
+    const float n = form_ == Form::LinearV ? (a.getBottom() - e.position.y) / a.getHeight() : (e.position.x - a.getX()) / a.getWidth();
+    dragStartNorm_ = juce::jlimit(0.0f, 1.0f, n);
+    if (std::abs(link_.norm() - dragStartNorm_) > 1.0e-6f) link_.during(link_.fromNorm(dragStartNorm_));
+    return;
+  }
+  if (valueArea().contains(e.position)) return;  // double-clic sur la valeur = saisie
   dragging_ = true;
   dragStart_ = e.position;
   dragStartNorm_ = link_.norm();
   link_.begin();
-  if (form_ != Form::Rotary) {  // linéaire : clic = position absolue
-    const auto a = knobArea();
-    const float n = form_ == Form::LinearV ? (a.getBottom() - e.position.y) / a.getHeight() : (e.position.x - a.getX()) / a.getWidth();
-    dragStartNorm_ = juce::jlimit(0.0f, 1.0f, n);
-    link_.during(link_.fromNorm(dragStartNorm_));
-  }
 }
 
 void ContinuousControl::mouseDrag(const juce::MouseEvent& e) {
@@ -547,8 +715,8 @@ void ContinuousControl::mouseDrag(const juce::MouseEvent& e) {
   const auto d = e.position - dragStart_;
   double delta = 0.0;
   if (form_ == Form::Rotary) delta = (-d.y + d.x * 0.5) / tok::dragPixelsFull;
-  else if (form_ == Form::LinearV) delta = -d.y / std::max(20.0, static_cast<double>(knobArea().getHeight()));
-  else delta = d.x / std::max(20.0, static_cast<double>(knobArea().getWidth()));
+  else if (form_ == Form::LinearV) delta = -d.y / std::max(20.0, static_cast<double>(channelArea().getHeight()));  // longueur utile du canal
+  else delta = d.x / std::max(20.0, static_cast<double>(channelArea().getWidth()));
   const float n = juce::jlimit(0.0f, 1.0f, static_cast<float>(dragStartNorm_ + delta * fine));
   link_.during(link_.fromNorm(n));
   if (e.mods.isShiftDown() != (fine < 1.0)) {  // changement de mode fin en cours de geste : repartir de la position
@@ -565,7 +733,9 @@ void ContinuousControl::mouseUp(const juce::MouseEvent&) {
 
 void ContinuousControl::mouseDoubleClick(const juce::MouseEvent& e) {
   if (valueArea().contains(e.position)) beginNumericEntry();
-  else resetToDefault();
+  else if (form_ == Form::Rotary) resetToDefault();
+  // PLASMA (DB2-09) : aucun retour au défaut par double-clic ; dans le canal, les deux clics ont déjà posé la position
+  // absolue (une seule transaction) ; sur le libellé ou hors canal : rien. Défaut : Alt+clic, Suppr, menu.
 }
 
 void ContinuousControl::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& w) {
@@ -626,13 +796,14 @@ void ContinuousControl::beginNumericEntry() {
   entry_ = std::make_unique<juce::TextEditor>();
   auto* ed = entry_.get();
   // NEXUS R1 : le champ prend la typographie de la fenêtre de valeur R1 qu'il recouvre
-  ed->setFont(form_ == Form::Rotary ? sbd::r2::valueFont(sbd::r2::nexusValuePx(nexusSize(density_))) : numFont(valueFont(density_)));
+  ed->setFont(form_ == Form::Rotary ? sbd::r2::valueFont(sbd::r2::nexusValuePx(nexusSize(density_)))
+                                    : (plasma_.r1 ? sbd::r2::valueFont(10.0f) : numFont(valueFont(density_))));
   ed->setJustification(juce::Justification::centred);
   ed->setText(juce::String(formatValue(id_, shown_)).upToFirstOccurrenceOf(" ", false, false), false);
   ed->setTitle(juce::String("Saisie : ") + paramSpec(id_).name);
   addAndMakeVisible(*ed);
   auto va = valueArea().toNearestInt();
-  if (form_ == Form::LinearH) va = va.withLeft(static_cast<int>(knobArea().getX()));
+  if (form_ == Form::LinearH && !plasma_.r1) va = va.withLeft(static_cast<int>(knobArea().getX()));
   ed->setBounds(va.expanded(0, 1));
   ed->selectAll();
   ed->grabKeyboardFocus();

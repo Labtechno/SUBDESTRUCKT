@@ -72,3 +72,13 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 | EC-21 | **Implanté sans recouvrement** : sérigraphie quand la place est libre (XL 457/501, S 68/501), infobulle toujours présente, Micro masqué comme en 0.4.1. NX-CC PASS. **Cas S soumis à DB2-10.** |
 | Observation VIS-01 | La fenêtre de valeur des NEXUS de production garde le format 0.4.1 (unités `lin`, `pos`, `bip`, trois décimales). Les formats R1 relèvent de NAM-11 et de P3-01 (revue groupée B2-04). Ce n'est pas un écart d'intégration : la donnée n'est pas encore arbitrée. |
 | PB-01e | **Corrigé** (B2-03.1) : profondeur 1, aucun geste résiduel, transactions cohérentes ; PB-01f ajouté |
+
+## Mise à jour B2-03.2 PLASMA (2026-11-28)
+
+| Écart | État |
+|---|---|
+| EC-17 | **Corrigé** (DB2-08) : zone active = zone de manipulation du rendu ; PB-J1 à J3 et PB-01c en assertions PASS ; PLAS-Z PASS |
+| EC-19 | **Corrigé** (DB2-09 = B) : aucun retour au défaut par double-clic dans le canal ; PB-01b et EC19-FIX PASS |
+| EC-03 | Inchangé jusqu'à B2-03.5 : OUT GAIN reste en rendu 0.4.1 (EC-22). La crête est déjà affichée à part, en texte, dans la plaque. |
+| **EC-22** | **Nouveau (CE-B2-02, blocage documenté)** : OUT GAIN et BALANCE gardent le rendu 0.4.1, faute de place pour la valeur de production dans la fenêtre du gabarit R1 (COMPACT 44 px, horizontal 50 px). Levée : formats R1 des valeurs (B2-04, P3-01) ; pour OUT GAIN, éventuellement R2-C (cellule ≥ 180). Contrat d'interaction R1 déjà appliqué. |
+| GC-01 | GS-01 en ÉCHEC sur le jalon NEXUS (run 8). Cause corrigée en B2-03.2 (mise en page précalculée), remesure en cours. |

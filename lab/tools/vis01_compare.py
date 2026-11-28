@@ -73,7 +73,7 @@ def case_diff(ref, cur, c):
 
 def differential(c):
     """re-rend la planche en gardant le composant du laboratoire pour ce cas ; renvoie son écart hors fenêtre de valeur"""
-    sheet = c['planche'][:2]
+    sheet = c['feuille']
     with tempfile.TemporaryDirectory() as tmp:
         cmd = [opts['outil'], '--vis01', tmp, '--only', sheet]
         if sheet != '12' and 'sha' in opts:  # la planche 12 historique ne porte pas de SHA dans son bandeau

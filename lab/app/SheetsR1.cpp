@@ -763,13 +763,15 @@ std::unique_ptr<Sheet> sheetMaterials() {
 
 std::unique_ptr<Sheet> makeR1Sheet(const juce::String& id) {
   if (id == "01") return buildBoard();
+  if (id == "06a") return sheetPlasmaSC();
   if (id == "09") return zoomCluster();
   if (id == "11") return sheetMaterials();
   return nullptr;
 }
 
-bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir) {
+bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir, const juce::String& stopBefore) {
   bool ok = true;
+  const auto stop = [&](const char* name) { return stopBefore.isNotEmpty() && stopBefore == name; };
   const auto save = [&](const juce::Image& img, const juce::String& name) {
     const bool w = writePng(img, dir.getChildFile(name));
     log.add(name + "  " + juce::String(img.getWidth()) + "x" + juce::String(img.getHeight()) + (w ? "" : "  WRITE FAILED"));
@@ -792,22 +794,33 @@ bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, co
     save(composeBeforeAfter(before, now, n.title, d), n.outName);
     ok = ok && d.loaded && d.sameSize && d.differing == 0;
   }
+  if (stop("03-neural-cell-before-after.png")) return ok;
   { auto s = sheetNeuralBA(); snap(*s, "03-neural-cell-before-after.png", scale); }
+  if (stop("04-synaptic-track-before-after.png")) return ok;
   { auto s = sheetTrackBA(); snap(*s, "04-synaptic-track-before-after.png", scale); }
+  if (stop("05a-cybernetic-hud.png")) return ok;
   { auto s = sheetHud(); snap(*s, "05a-cybernetic-hud.png", scale); }
+  if (stop("05b-cybernetic-hud-before-after.png")) return ok;
   { auto s = sheetHudBA(); snap(*s, "05b-cybernetic-hud-before-after.png", scale); }
+  if (stop("06a-plasma-standard-compact.png")) return ok;
   { auto s = sheetPlasmaSC(); snap(*s, "06a-plasma-standard-compact.png", scale); }
+  if (stop("06b-plasma-zoom-75-100-150.png")) return ok;
   save(composeZoom(u8("PLASMA STANDARD / COMPACT  —  75 / 100 / 150 %"),
                    u8("Pixels écran réels (densité x1, cas le plus défavorable) · STD = 64 x 180, CMP = 48 x 150 · même composant"),
                    [] { return plasmaZoomCluster(); }),
        "06b-plasma-zoom-75-100-150.png");
+  if (stop("07-panic-final.png")) return ok;
   { auto s = sheetPanic(); snap(*s, "07-panic-final.png", scale); }
+  if (stop("08-assembly-wt-cross-fm.png")) return ok;
   { auto s = sheetAssembly(); snap(*s, "08-assembly-wt-cross-fm.png", scale); }
+  if (stop("09-zoom-75-100-150.png")) return ok;
   save(composeZoom(u8("Comparatif 75 / 100 / 150 %  (R1)"),
                    u8("Pixels écran réels (densité x1) · repères critiques au corps logique 12 (XL 12,5) : 9 px écran à 75 % · PLASMA STANDARD et COMPACT"),
                    [] { return zoomCluster(); }),
        "09-zoom-75-100-150.png");
+  if (stop("10-critical-nomenclature.png")) return ok;
   { auto s = sheetTypo(); snap(*s, "10-critical-nomenclature.png", scale); }
+  if (stop("11-materials-palette.png")) return ok;
   { auto s = sheetMaterials(); snap(*s, "11-materials-palette.png", scale); }
   return ok;
 }

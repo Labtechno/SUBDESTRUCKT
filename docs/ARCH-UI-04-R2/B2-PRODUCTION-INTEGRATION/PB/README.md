@@ -97,3 +97,20 @@ Journaux : [`b2-03-1/windows/`](b2-03-1/windows). Les preuves historiques ci-des
 | PB-01e molette puis clic | REPRODUIT, profondeur 2 | **NON REPRODUIT** : profondeur 1, 0 ouvert, 2 transactions. Assertion permanente : **PASS** |
 | PB-01f molette puis touche (nouveau) | — | profondeur 1, 0 ouvert, 2 transactions : **PASS** |
 | Autres scénarios | — | Statuts inchangés ; PB-01c et PB-J1 à J3 restent REPRODUITS jusqu'à B2-03.2 (DB2-08) |
+
+## 7. Après B2-03.2 (PLASMA, DB2-08 et DB2-09)
+
+Journaux Windows : [`b2-03-2/windows/`](b2-03-2/windows). Les scénarios historiques sont conservés et deviennent des
+assertions corrigées :
+
+| Scénario | Avant | Après |
+|---|---|---|
+| PB-J1, PB-J2, PB-J3 | REPRODUIT (saut jusqu'à une borne) | **PASS** : aucun changement, 0 geste, 0 écriture, 0 transaction |
+| PB-01c | REPRODUIT (saut avant la saisie) | **PASS** : saisie ouverte, aucune écriture |
+| PB-01b | Retour au défaut, 2 transactions | **PASS** : position absolue, 1 écriture, 1 transaction (DB2-09) |
+
+Nouveaux tests permanents : PLAS-Z (99 vérifications), EC19-FIX (118), PLAS-G.
+
+**Preuves macOS** : `macos/` contient de nouveau le run 1 de B2-01 (référence historique). Le workflow de preuves l'avait
+réécrit à chaque run (runs 2 à 8, conservés dans l'historique git). Le run 8 (B2-03.1) est dans `b2-03-1/macos/`. Les
+runs suivants sont versés dans `runs/macos/<run>/`.
