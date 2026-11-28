@@ -2,8 +2,10 @@
 
 Statut : **implémenté et validé en automatique** (TA-01..25, TA-xxw, AUT-01..08, R2-01..05 ; ARCH-UI-04-R1 : TA-R01..R16,
 TA-R01w, R13w, R14, R15w). Recette physique : R-26 Reason 14 GO (0.3.3) ; R-27 Ableton Live retiré (non certifié) ;
-**R-28 (exports) : anomalie reproduite physiquement par Codex sur 0.3.3 et 0.4.0, corrigée en 0.4.1, validation physique
-de la correction à faire par Codex** — elle n'est PAS déclarée PASS ici. Critères : `docs/V1-ARCH-G4.3-SPEC.md` §3, §6.
+**R-28 (exports) : anomalie reproduite physiquement par Codex sur 0.3.3 et 0.4.0, corrigée en 0.4.1 ; PASS physique dans
+le périmètre Reason 14.1d100 exécuté (contre-audit Codex, build 263320802, SHA `d2d08ac`)** ; PANIC pendant un export et
+sauvegarde pendant un export : non exécutés physiquement (dialogue modal de Reason), couverts automatiquement (TA-R06,
+TA-R14). Critères : `docs/V1-ARCH-G4.3-SPEC.md` §3, §6.
 Code : `source/engine/AutonomyGate.{h,cpp}`, `source/engine/Engine.cpp` (frontière de bloc, Panic, captures),
 `plugin/PluginProcessor.cpp` (transport, restauration, journal).
 

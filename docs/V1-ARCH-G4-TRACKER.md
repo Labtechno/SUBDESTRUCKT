@@ -157,6 +157,10 @@ non-régressions PASS. Correction 0.4.1 : toutes PASS ; TA-15 clause (e) = crit�
 Contrat : `docs/V1-AUTONOMY-CONTRACT.md` §2 bis ; dérogation au DSP FINAL LOCK : `docs/V1-DSP-FINAL-LOCK.md` §6 ; rapport :
 `docs/V1-ARCH-UI-04-R1-REPORT.md`. H-04 : cause établie par Codex (⌘Q déclenché par le raccourci Computer Use sur AZERTY,
 fermeture normale, 0 crash) ; plus un blocage ; aucun correctif UI.
+**Clôture (2026-11-28)** : contre-audit physique Codex sur 0.4.1 (build 263320802, Reason 14.1d100) — R-28 PASS dans le
+périmètre exécuté ; PANIC pendant un export et sauvegarde pendant un export NON EXÉCUTÉS physiquement (dialogue modal),
+couverts par TA-R06/TA-R14 ; ARCH-UI-04-R1 : GO technique avec réserves ; DSP FINAL LOCK révisé en 0.4.1. Rapport
+indépendant et archive de preuves conservés localement par le propriétaire.
 
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
@@ -171,7 +175,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | R07 | Accordage A4, microtuning 12 classes | F | PASS (G4.1 : MT-01) | run 33 |
 | R08 | 5 enveloppes DAHDSR lin/exp, loop | F | PASS (G4.1 : ENV-01/02/03 (Trigger Voice/Note/Gate, Sync tempo)) | run 33 |
 | R09 | 4 LFO (8 formes dont Custom), libre/tempo/phase ppq, retrigger | F | PASS (CI run 9) | — |
-| R10 | Tail/Drone/Panic | F | PASS (G4.3 : Panic révoque systématiquement, purge des lignes d'alignement ; TA-09..12, TA-21/22 ; ARCH-UI-04-R1 : autorisation de rendu temporaire, état d'exécution remis à zéro au retour temps réel, TA-R01..R16 ; R-28 physique à valider par Codex) | UI-04-R1 |
+| R10 | Tail/Drone/Panic | F | PASS (G4.3 : Panic révoque systématiquement, purge des lignes d'alignement ; TA-09..12, TA-21/22 ; ARCH-UI-04-R1 : autorisation de rendu temporaire, état d'exécution remis à zéro au retour temps réel, TA-R01..R16 ; R-28 PASS physique dans le périmètre Reason 14 exécuté, Panic et sauvegarde pendant un export non exécutés physiquement) | UI-04-R1 |
 | R11 | WT banques immuables XY 64×16, Clamp/Wrap/Mirror, Linear/Stepped | WT | PASS (CI run 9) | — |
 | R12 | WT morph Spectral | WT | PASS (G4.1 : WT-SM-01) | run 33 |
 | R13 | WT interpolation Linear/Cubic, Clean/Raw | WT | PASS (CI run 9) | — |
@@ -256,11 +260,25 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R1 : tests de reproduction R-28 avant correction | 7d57d94 | Local : 15 reproductions FAIL sur 0.4.0, non-régressions PASS ; CI : échec attendu de la barrière |
 | 2026-11-28 | ARCH-UI-04-R1 : correction TRANSPORT AUTHORIZATION, 0.4.1, contrat, rapport | d2d08ac | Local : cœur 184 critères (9 FAIL documentés dont TA-15 remplacé), wrapper 57 (AUT-02 seul), barrière PASS, ASan 0 erreur |
 | 2026-11-28 | ARCH-UI-04-R1 : CI | 7d57d94, d2d08ac | run 49 ÉCHEC attendu (reproductions sur macOS) ; **run 50 (46105804592) SUCCESS complet, SHA livré d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af, 0.4.1-b50** (pluginval 10 avec UI, RTSan 0 violation, paquets, LB, manuel) |
+| 2026-11-28 | ARCH-UI-04-R1 : clôture documentaire (contre-audit physique Codex) | (ce commit) | R-28 PASS physique (périmètre Reason 14 exécuté) ; GO technique avec réserves ; aucun changement de code ni de version |
 
 ## 6. Prochaine action
-ARCH-UI-04-R1 : correction livrée en 0.4.1 (`docs/V1-ARCH-UI-04-R1-REPORT.md`). Codex : validation physique de R-28
-(protocole du rapport §9) sur le SHA livré `d2d08ac`, compilé par `build_local_macos.sh` ; R-28 n'est PAS déclaré PASS avant ce
-retour. La recette courte ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`) reste applicable. ARCH-UI-05 : non lancé.
+ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). En attente : validation artistique et recette
+humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) ; décision du propriétaire sur ARCH-UI-05 (non autorisé).
+
+### Indicateurs d'avancement (2026-11-28)
+- Exigences P0/P1 (pondération §4, automatique) : 47 PASS, 3 IMPLEMENTED (R19, R45, R50), 0 FAIL/BLOCKED → **97 %**
+  (48,5/50). Ce taux mesure la couverture automatique, pas la recette physique.
+- Couverture physique (Mac Studio M4 Max, Reason 14) : R-26 GO (0.3.3) ; R-28 PASS dans le périmètre exécuté (0.4.1) ;
+  contrôles physiques d'interface partiels (automation WT X, isolation de deux instances, éditeur pendant
+  l'enregistrement, PANIC en lecture). Non exécutés : R-29, R-30, PANIC et sauvegarde pendant un export, recette
+  humaine et validation artistique ARCH-UI-04. Ableton Live : non certifié. M3 : non certifié.
+
+### Backlog pré-BETA
+| ID | Observation | Origine | État |
+|---|---|---|---|
+| PB-01 | Double-clic sur un NEXUS : deux gestes hôte imbriqués possibles (début, début, fin, fin) | audit statique H-04 (ARCH-UI-04-R1 §8) | sans impact démontré ; non corrigé |
+| PB-02 | SYMBIOTIC CORE et éditeur d'enveloppe : geste non refermé si l'éditeur est détruit pendant un glisser | audit statique H-04 ; non démontré physiquement | sans impact démontré ; non corrigé |
 
 ## 7. Blocages et arbitrages à grouper
 | ID | Décision manquante | Effet |

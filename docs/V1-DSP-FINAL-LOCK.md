@@ -81,3 +81,23 @@ Coût mesuré de la machine d'autorisation (Windows MSVC, TA-20) : 5,8 → 7,8 n
 256 échantillons). Aucune allocation, aucun verrou, aucun accès disque ajoutés sur le thread audio (TA-R15, TA-R15w,
 TA-20 ; RTSan en CI). Tous les verdicts historiques sont inchangés, sauf TA-15 clause (e), critère remplacé
 (`tests/known_failures.txt`).
+
+## 7. Révision du DSP FINAL LOCK : 0.4.1 (2026-11-28)
+
+La référence verrouillée devient **0.4.1**, SHA `d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af` (CI run 50 SUCCESS ; build
+physique 263320802, Reason 14.1d100, Mac Studio M4 Max). Synthèse, transformations Z, chaînes, 703 StableID et format
+d'état 4 identiques à 0.3.3 ; seule différence : TRANSPORT AUTHORIZATION (§6). Contre-audit physique indépendant de Codex (Mac Studio M4 Max, Reason 14.1d100, build physique 263320802, SHA
+`d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af`, CI run 50 SUCCESS). Rapport
+indépendant et archive de preuves conservés localement par le propriétaire.
+
+| Point | État |
+|---|---|
+| R-26 Reason 14 | GO (0.3.3) |
+| R-27 Ableton Live | retiré ; compatibilité non certifiée |
+| R-28 exports | **PASS physique dans le périmètre Reason 14 exécuté (0.4.1)** ; PANIC pendant un export et sauvegarde pendant un export NON EXÉCUTÉS physiquement (dialogue modal), couverts automatiquement (TA-R06, TA-R14) |
+| R-29, R-30 | non exécutés, risques acceptés (réserves maintenues) |
+| Échecs historiques | neuf, documentés (`tests/known_failures.txt`), dont TA-15 clause (e) critère remplacé |
+| Limites d'API VST3 | `docs/V1-AUTONOMY-CONTRACT.md` §5 |
+
+Contrôle de non-modification pour les missions suivantes : `git diff d2d08ac -- source/` vide (remplace la référence
+`0469c4d` du §5).

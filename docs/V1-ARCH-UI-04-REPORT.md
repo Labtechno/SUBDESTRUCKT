@@ -139,3 +139,14 @@ paquets comme artefacts internes, non publiés.
 3. Réutiliser `CorePad` (geste = une transaction) et les tokens ; aucune commande accessible uniquement en 3D.
 4. Produire l'édition 0.4.x du manuel à partir des captures réelles macOS.
 5. Ajouter une mesure de temps de rendu de l'éditeur (P95) au harnais local avant d'introduire l'animation.
+
+## 13. Suite (ARCH-UI-04-R1, 0.4.1) — 2026-11-28
+
+L'audit physique de Codex sur 0.4.0 a conclu NO GO à cause de l'anomalie R-28 (exports), indépendante de l'interface ;
+correction livrée en 0.4.1 (`docs/V1-ARCH-UI-04-R1-REPORT.md`, SHA `d2d08ac`), contre-audit physique : R-28 PASS dans le
+périmètre Reason 14 exécuté. Constats physiques relatifs à l'interface (0.4.0 et 0.4.1) : automation WT X enregistrée et
+relue, isolation de deux instances, fermeture/réouverture de l'éditeur pendant l'enregistrement, PANIC en lecture : PASS ;
+UI04 20/20 réexécutés. H-04 : fermeture normale de Reason par `⌘Q` (raccourci Computer Use, clavier AZERTY), aucun crash,
+non bloquant. **Validation artistique (H-09) et recette humaine ARCH-UI-04 : toujours en attente.** Backlog pré-BETA :
+gestes d'automation imbriqués (double-clic sur un NEXUS) et gestes non refermés si l'éditeur est détruit pendant un
+glisser (SYMBIOTIC CORE, éditeur d'enveloppe) — observations d'audit statique sans impact démontré, non corrigées.

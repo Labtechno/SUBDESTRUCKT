@@ -5,10 +5,11 @@ M4 Max, Reason 14.1d100) concluant NO GO sur 0.4.0-b263320407 (SHA `8a61b12`) à
 
 ## 1. Verdict
 
-**Automatique : GO CONDITIONNEL. Physique : R-28 NON déclaré PASS.** L'anomalie est reproduite par des tests
-automatiques sur la baseline 0.4.0, analysée, corrigée, et tous les tests de reproduction passent après correction,
-sans régression d'un autre verdict historique. Condition de levée : validation physique de la correction par Codex sur
-le Mac du propriétaire (protocole §9) et CI macOS arm64 complète sur le SHA livré (§2).
+**Clôture (2026-11-28, décision du propriétaire) : GO technique avec réserves documentées.** R-28 : défaut clôturé dans
+le périmètre Reason 14 physiquement testé (§11). L'anomalie avait été reproduite automatiquement sur 0.4.0, analysée et
+corrigée sans régression d'un autre verdict historique. Réserves maintenues : §11 (contrôles physiquement non exécutés),
+§10, R-29/R-30, limites d'API VST3, observations sur les gestes d'automation (backlog pré-BETA), neuf échecs historiques
+documentés, TA-15 critère historique remplacé.
 
 ## 2. Version, commits, CI
 
@@ -131,3 +132,29 @@ Reason 14.1 :
 - Après un export, il faut un véritable ARRÊT → LECTURE (ou Autoriser) pour réactiver les états autonomes : une LECTURE
   observée la première n'autorise pas (choix de sûreté).
 - Validation physique R-28 en attente (Codex) ; R-27 (Ableton Live) retiré, R-29/R-30 non exécutés (risques acceptés).
+
+## 11. Contre-audit physique et clôture (2026-11-28)
+
+Contre-audit physique indépendant de Codex (Mac Studio M4 Max, Reason 14.1d100, build physique 263320802, SHA
+`d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af`, CI run 50 SUCCESS). Rapport indépendant et archive de preuves conservés
+localement par le propriétaire (non versionnés dans le dépôt).
+
+| Contrôle physique (0.4.1) | Résultat |
+|---|---|
+| R-28 (export sans PLAY puis annulation, export complet) | **PASS** dans le périmètre exécuté |
+| D2 Legacy après annulation d'export | −11,8 dBFS en 0.4.0 → −∞ dBFS affiché en 0.4.1 |
+| D2 Regenerative et S2 après annulation | suspension maintenue |
+| Autorisation temporaire de rendu au retour en temps réel | révoquée |
+| Autorisation normale | acquise au premier véritable PLAY |
+| Deux exports complets et un export après réouverture | identiques bit à bit (PCM) |
+| Sauvegarde après export | PASS |
+| PANIC en lecture | PASS |
+| Automation WT X (enregistrement, relecture) | PASS |
+| Isolation de deux instances | PASS |
+| TA-R (19/19), UI04 (20/20), pluginval rigueur 10 | PASS (exécutés par Codex) |
+| **PANIC pendant un export** | **NON EXÉCUTÉ physiquement** (dialogue modal de Reason) ; couverture automatique : TA-R06 |
+| **Sauvegarde pendant un export** | **NON EXÉCUTÉ physiquement** (dialogue modal de Reason) ; couverture automatique : TA-R14 |
+
+Ces deux contrôles ne sont pas des PASS physiques. Décisions : R-28 clôturé dans le périmètre Reason 14 testé ;
+ARCH-UI-04-R1 GO technique avec réserves ; DSP FINAL LOCK révisé en 0.4.1 ; H-04 non bloquant ; validation artistique
+ARCH-UI-04 toujours en attente ; ARCH-UI-05 non autorisé. Compatibilité Ableton Live : non certifiée.
