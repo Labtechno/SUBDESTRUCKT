@@ -1,12 +1,12 @@
 01-final-board.png                         IDENTIQUE  pixels differents         0 /   7978240  ecart max 0
-02-nexus-nonregression.png                 DIFFERENTE pixels differents       372 /   2317184  ecart max 42
+02-nexus-nonregression.png                 DIFFERENTE pixels differents       352 /   2317184  ecart max 38
 03-neural-cell-before-after.png            IDENTIQUE  pixels differents         0 /   5484000  ecart max 0
 04-synaptic-track-before-after.png         IDENTIQUE  pixels differents         0 /   3804000  ecart max 0
 05a-cybernetic-hud.png                     IDENTIQUE  pixels differents         0 /   4095040  ecart max 0
 05b-cybernetic-hud-before-after.png        IDENTIQUE  pixels differents         0 /   9067520  ecart max 0
 06a-plasma-standard-compact.png            IDENTIQUE  pixels differents         0 /   3076640  ecart max 0
 06b-plasma-zoom-75-100-150.png             IDENTIQUE  pixels differents         0 /    486180  ecart max 0
-06c-plasma-nonregression.png               DIFFERENTE pixels differents       370 /   1794304  ecart max 41
+06c-plasma-nonregression.png               DIFFERENTE pixels differents       352 /   1794304  ecart max 37
 07-panic-final.png                         IDENTIQUE  pixels differents         0 /   2862240  ecart max 0
 08-assembly-wt-cross-fm.png                IDENTIQUE  pixels differents         0 /   2430400  ecart max 0
 09-zoom-75-100-150.png                     IDENTIQUE  pixels differents         0 /   1182720  ecart max 0
