@@ -132,6 +132,15 @@ void focusRing(juce::Graphics& g, juce::Rectangle<float> r, float radius) {
 
 float textWidth(const juce::Font& f, const juce::String& s) { return juce::GlyphArrangement::getStringWidth(f, s); }
 
+bool fitsText(const juce::Font& f, const juce::String& s, float width, bool allowTwoLines) {
+  if (textWidth(f, s) <= width) return true;
+  if (!allowTwoLines || !s.containsChar(' ')) return false;
+  float bestW = 1.0e9f;
+  for (int k = s.indexOfChar(' '); k >= 0; k = s.indexOfChar(k + 1, ' '))
+    bestW = std::min(bestW, std::max(textWidth(f, s.substring(0, k)), textWidth(f, s.substring(k + 1))));
+  return bestW <= width;
+}
+
 void fittedText(juce::Graphics& g, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
                 juce::Justification j, bool allowTwoLines) {
   g.setFont(f);

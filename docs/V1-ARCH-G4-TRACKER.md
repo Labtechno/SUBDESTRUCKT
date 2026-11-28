@@ -334,7 +334,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 (a) : module partagé `ui/r2/` (R2Style, R2Painters, R2Hud), laboratoire recâblé sur les peintres partagés, comparaison aux références R1 historiques (Windows 15/15 identiques, images entières), `component-lab.yml` ne réécrit plus les références | (ce commit) | `ui/` de production inchangé hors `ui/r2/` (compilé, non encore utilisé) ; `source/`, `plugin/` intacts |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 (b) : registre d'identifiants (OD-01, ID-UNIQ), table des libellés générée (LBL-TABLE), habillage R1 des widgets JUCE génériques (DB2-06), captures de production | 25702f5 | barrière PASS (77 critères, AUT-02 connu) ; CI de production 63 SUCCESS |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : versement des preuves robuste ; GC-01 après fondation (run 7) ; **verdict B2-02 : GO technique** (GS-04 / GS-07 non concluants sur VM, physique M3) | 42a605e, 3a61d56 | CI de production 64 SUCCESS |
-| 2026-11-28 | DB2-09 = B, CE-B2-06 à 08 validés ; B2-02 GO technique avec réserves GC-01 ; **GO B2-03** | (ce commit) | `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM-B2-03.md` |
+| 2026-11-28 | DB2-09 = B, CE-B2-06 à 08 validés ; B2-02 GO technique avec réserves GC-01 ; **GO B2-03** | dd5b086 | `B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM-B2-03.md` |
+| 2026-11-28 | ARCH-UI-04-R2-B2-03.1 : **NEXUS R1 intégrés** en production (peintre et géométrie partagés), correction PB-01e (+ PB-01f), indicateur MIDI Learn sans recouvrement (CE-B2-08, DB2-10 soumis), VIS-01 étape 2 (Windows : 0 DIFFÉRENTE / 42, contrôles 6/6), captures de production | (ce commit) | barrière PASS (82 critères, AUT-02 connu) ; `B2-PRODUCTION-INTEGRATION/B2-03-REPORT.md` |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan

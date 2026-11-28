@@ -31,6 +31,8 @@ class Nexus : public juce::Component, public juce::SettableTooltipClient, privat
     repaint();
   }
   bool gestureOpen() const { return guard_.isOpen(); }
+  juce::String shownText() const { return src_.text(src_.norm()); }  // texte de valeur affiché (VIS-01)
+  float shownNorm() const { return src_.norm(); }                    // valeur normalisée affichée (VIS-01)
   void cancelGesture() { guard_.close(); }  // perte de capture signalée par l'hôte de la vue
 
   void paint(juce::Graphics&) override;

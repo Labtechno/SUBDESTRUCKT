@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "core/StateCodec.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::ui {
 
@@ -150,6 +151,21 @@ float ParamLink::base() const { return proc_.parameters().base(idx(id_)); }
 
 // ================================================================ NEXUS / PLASMA
 namespace {
+// correspondances vers le Design System R1 partagé (ui/r2)
+sbd::r2::Domain r2Domain(Domain3 d) {
+  switch (d) {
+    case Domain3::Wt: return sbd::r2::Domain::Wt;
+    case Domain3::Fm: return sbd::r2::Domain::Fm;
+    case Domain3::Cross: return sbd::r2::Domain::Cross;
+    case Domain3::Mod: return sbd::r2::Domain::Mod;
+    case Domain3::Alert: return sbd::r2::Domain::Alert;
+    case Domain3::Neutral: break;
+  }
+  return sbd::r2::Domain::Neutral;
+}
+sbd::r2::NexusSize nexusSize(Density d) {
+  return d == Density::XL ? sbd::r2::NexusSize::XL : (d == Density::Micro ? sbd::r2::NexusSize::Micro : sbd::r2::NexusSize::S);
+}
 bool bipolar(ParamId id) {
   const auto& s = paramSpec(id);
   return s.minValue < 0.0f && s.maxValue > 0.0f;
@@ -185,7 +201,8 @@ ContinuousControl::ContinuousControl(UiContext& ctx, ParamId id, Form form, Dens
   setDescription(juce::String(s.name) + " (" + s.stableId + ")");
   setWantsKeyboardFocus(true);
   setRepaintsOnMouseActivity(true);
-  setTooltip(juce::String(s.name) + "\n" + s.stableId + juce::String::fromUTF8("  |  glisser : réglage, Maj : fin, double-clic : défaut, Entrée : saisie"));
+  baseTooltip_ = juce::String(s.name) + "\n" + s.stableId + juce::String::fromUTF8("  |  glisser : réglage, Maj : fin, double-clic : défaut, Entrée : saisie");
+  setTooltip(baseTooltip_);
 }
 
 ContinuousControl::~ContinuousControl() {
@@ -197,8 +214,34 @@ void ContinuousControl::setInactive(bool inactive, const juce::String& why) {
   inactive_ = inactive;
   const auto& s = paramSpec(id_);
   const juce::String nl = juce::newLine;
-  setTooltip(juce::String(s.name) + nl + s.stableId + (inactive ? nl + "INACTIF : " + why : juce::String()));
+  baseTooltip_ = juce::String(s.name) + nl + s.stableId + (inactive ? nl + "INACTIF : " + why : juce::String());
+  refreshTooltip();
   repaint();
+}
+
+void ContinuousControl::refreshTooltip() {
+  // CE-B2-08 : le CC appris (donnée MIDI Learn de 0.4.1) est toujours lisible dans l'infobulle, quel que soit le gabarit
+  setTooltip(learnShown_ >= 0 ? baseTooltip_ + juce::newLine + "MIDI Learn : CC" + juce::String(learnShown_) : baseTooltip_);
+}
+
+juce::Rectangle<float> ContinuousControl::ccTagBox() const {
+  const auto cc = ctx_.learnCc[static_cast<size_t>(idx(id_))];
+  if (form_ != Form::Rotary || cc < 0 || density_ == Density::Micro) return {};
+  // place libre à gauche du libellé, mesurée selon la mise en page du peintre (une ligne, sinon deux lignes équilibrées)
+  const auto size = nexusSize(density_);
+  const auto lf = sbd::r2::labelFont(nexusLabelPx(), size == sbd::r2::NexusSize::XL);
+  const float W = static_cast<float>(getWidth());
+  float wl = sbd::r2::draw::textWidth(lf, caption_);
+  if (wl > W - 4.0f && caption_.containsChar(' ')) {
+    float best = 1.0e9f;
+    for (int k = caption_.indexOfChar(' '); k >= 0; k = caption_.indexOfChar(k + 1, ' '))
+      best = std::min(best, std::max(sbd::r2::draw::textWidth(lf, caption_.substring(0, k)), sbd::r2::draw::textWidth(lf, caption_.substring(k + 1))));
+    wl = best;
+  }
+  const float tw = sbd::r2::draw::textWidth(sbd::r2::labelFont(8.5f, true), "CC" + juce::String(static_cast<int>(cc))) + 2.0f;
+  const float freeLeft = (W - wl) * 0.5f - 3.0f;  // marge de 3 px avant le libellé centré
+  if (2.0f + tw > freeLeft) return {};
+  return {2.0f, 0.0f, tw, knobArea().getY()};
 }
 
 void ContinuousControl::setCaption(const juce::String& c) {
@@ -210,12 +253,14 @@ int ContinuousControl::labelLines() const { return form_ == Form::LinearH ? 1 : 
 float ContinuousControl::labelSize() const { return density_ == Density::XL ? tok::fontTitle : (density_ == Density::Micro ? 10.0f : tok::fontLabel); }
 
 juce::Rectangle<float> ContinuousControl::labelArea() const {
+  if (form_ == Form::Rotary) return getLocalBounds().toFloat().withBottom(knobArea().getY());
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   if (form_ == Form::LinearH) return r.removeFromLeft(r.getWidth() * 0.34f);
   const float lh = labelSize() * 1.18f * static_cast<float>(labelLines());
   return r.removeFromTop(lh);
 }
 juce::Rectangle<float> ContinuousControl::valueArea() const {
+  if (form_ == Form::Rotary) return sbd::r2::nexusValueArea(getLocalBounds(), nexusSize(density_));
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   const float vh = valueFont(density_) + 5.0f;
   if (form_ == Form::LinearH) {
@@ -225,6 +270,7 @@ juce::Rectangle<float> ContinuousControl::valueArea() const {
   return r.removeFromBottom(vh);
 }
 juce::Rectangle<float> ContinuousControl::knobArea() const {
+  if (form_ == Form::Rotary) return sbd::r2::nexusKnobArea(getLocalBounds(), nexusSize(density_), caption_, nexusLabelPx());
   auto r = getLocalBounds().toFloat().reduced(2.0f);
   if (form_ == Form::LinearH) {
     r.removeFromLeft(r.getWidth() * 0.34f);
@@ -236,7 +282,28 @@ juce::Rectangle<float> ContinuousControl::knobArea() const {
   return r;
 }
 
+float ContinuousControl::nexusLabelPx() const {
+  const auto size = nexusSize(density_);
+  const float family = sbd::r2::nexusFamilyLabelPx(size);
+  const float w = static_cast<float>(getWidth()) - 4.0f;
+  for (float px = family; px >= tok::fontMicro - 1.0e-3f; px -= 0.5f)
+    if (sbd::r2::draw::fitsText(sbd::r2::labelFont(px, size == sbd::r2::NexusSize::XL), caption_, w, true)) return px;
+  return tok::fontMicro;
+}
+
 bool ContinuousControl::textFits() const {
+  if (form_ == Form::Rotary) {  // NEXUS R1 : sérigraphie sur deux lignes au plus, au-dessus du plancher ; valeurs extrêmes dans la fenêtre
+    const auto size = nexusSize(density_);
+    const float px = nexusLabelPx();
+    if (!sbd::r2::draw::fitsText(sbd::r2::labelFont(px, size == sbd::r2::NexusSize::XL), caption_, static_cast<float>(getWidth()) - 4.0f, true))
+      return false;
+    const auto& s = paramSpec(id_);
+    const auto f = sbd::r2::valueFont(sbd::r2::nexusValuePx(size));
+    const float vw = valueArea().getWidth();
+    for (float v : {s.minValue, s.maxValue, s.defaultValue, shown_})
+      if (sbd::r2::draw::textWidth(f, juce::String(formatValue(id_, v))) > vw) return false;
+    return true;
+  }
   juce::StringArray lines;
   float sz = 0.0f;
   const auto la = labelArea();
@@ -250,6 +317,37 @@ bool ContinuousControl::textFits() const {
 }
 
 void ContinuousControl::paint(juce::Graphics& g) {
+  if (form_ == Form::Rotary) {
+    sbd::r2::NexusView v;  // vue du peintre partagé : données publiées seulement (Base, Effective, routes configurées)
+    v.size = nexusSize(density_);
+    v.domain = r2Domain(domainOf(id_));
+    v.label = caption_;
+    v.labelPx = nexusLabelPx();
+    v.norm = link_.toNorm(shown_);
+    if (effNorm_ >= 0.0f) v.effective = effNorm_;
+    v.bipolar = bipolar(id_);
+    v.zeroNorm = v.bipolar ? link_.toNorm(0.0f) : 0.0f;
+    const auto& spec = paramSpec(id_);
+    for (float off : routeOffsets_) v.routeDepths.push_back(link_.toNorm(juce::jlimit(spec.minValue, spec.maxValue, shown_ + off)) - v.norm);
+    v.valueText = juce::String(formatValue(id_, shown_));
+    v.inactive = inactive_;
+    v.entry = false;  // la saisie numérique est un champ de texte posé sur la fenêtre de valeur
+    v.disabled = !isEnabled();
+    v.hover = isMouseOverOrDragging();
+    v.focus = hasKeyboardFocus(false);
+    v.pressed = dragging_ || wheelGesture_;
+    sbd::r2::paintNexus(g, getLocalBounds(), v);
+    // CE-B2-08 : indicateur MIDI Learn conservé (donnée de 0.4.1), corps 8,5 gras des marqueurs R1 (« +n », « INACTIVE »),
+    // dans la sérigraphie à gauche du libellé quand la place est libre ; sinon infobulle seulement (arbitrage DB2-10) ;
+    // masqué en Micro comme en 0.4.1 ; écart d'intégration mineur EC-21
+    const auto tag = ccTagBox();
+    if (!tag.isEmpty()) {
+      g.setFont(sbd::r2::labelFont(8.5f, true));
+      g.setColour(isEnabled() ? tok::textDim : tok::textMute);
+      g.drawText("CC" + juce::String(static_cast<int>(ctx_.learnCc[static_cast<size_t>(idx(id_))])), tag, juce::Justification::centredLeft, false);
+    }
+    return;
+  }
   const auto accent = accentOf(domainOf(id_));
   const bool on = isEnabled() && !inactive_;
   drawLabel(g, caption_, labelArea(), labelLines(), labelSize(), on ? tok::text : tok::textMute,
@@ -376,9 +474,25 @@ void ContinuousControl::paintLinear(juce::Graphics& g, juce::Rectangle<float> a)
   }
 }
 
+void ContinuousControl::refreshRouteDepths() {
+  routeOffsets_.clear();
+  const auto& spec = paramSpec(id_);
+  for (const auto& r : ctx_.mod.routes)
+    if (r.dest == id_ && r.enabled) routeOffsets_.push_back((r.invert ? -r.depth : r.depth) * spec.modScale);
+}
+
 void ContinuousControl::tick() {
   auto& t = ctx_.proc.telemetry();
+  if (form_ == Form::Rotary && ctx_.modRevision != routeRevision_) {  // configuration publiée, fil message (aucune lecture audio)
+    routeRevision_ = ctx_.modRevision;
+    refreshRouteDepths();
+    repaint();
+  }
   const auto i = static_cast<size_t>(idx(id_));
+  if (ctx_.learnCc[i] != learnShown_) {  // CC MIDI Learn publié par l'éditeur (10 Hz) : infobulle
+    learnShown_ = ctx_.learnCc[i];
+    refreshTooltip();
+  }
   float n = -1.0f;
   if (t.modulated[i].load(std::memory_order_relaxed)) n = link_.toNorm(t.effective[i].load(std::memory_order_relaxed));
   bool dirty = std::abs(n - effNorm_) > 1e-4f;
@@ -396,7 +510,15 @@ void ContinuousControl::tick() {
   if (dirty) repaint();
 }
 
+void ContinuousControl::closeWheelGesture() {
+  if (!wheelGesture_) return;
+  stopTimer();
+  wheelGesture_ = false;
+  link_.end();
+}
+
 void ContinuousControl::mouseDown(const juce::MouseEvent& e) {
+  closeWheelGesture();  // PB-01e
   if (ctx_.select) ctx_.select(id_);
   if (e.mods.isPopupMenu()) {
     showMenu();
@@ -480,6 +602,7 @@ void ContinuousControl::stepNorm(double delta) {
 }
 
 bool ContinuousControl::keyPressed(const juce::KeyPress& k) {
+  closeWheelGesture();  // PB-01e
   const double f = k.getModifiers().isShiftDown() ? tok::fineFactor : 1.0;
   const int code = k.getKeyCode();
   if (code == juce::KeyPress::upKey || code == juce::KeyPress::rightKey) return stepNorm(tok::keyStep * f), true;
@@ -502,7 +625,8 @@ void ContinuousControl::resetToDefault() { userSet(paramSpec(id_).defaultValue);
 void ContinuousControl::beginNumericEntry() {
   entry_ = std::make_unique<juce::TextEditor>();
   auto* ed = entry_.get();
-  ed->setFont(numFont(valueFont(density_)));
+  // NEXUS R1 : le champ prend la typographie de la fenêtre de valeur R1 qu'il recouvre
+  ed->setFont(form_ == Form::Rotary ? sbd::r2::valueFont(sbd::r2::nexusValuePx(nexusSize(density_))) : numFont(valueFont(density_)));
   ed->setJustification(juce::Justification::centred);
   ed->setText(juce::String(formatValue(id_, shown_)).upToFirstOccurrenceOf(" ", false, false), false);
   ed->setTitle(juce::String("Saisie : ") + paramSpec(id_).name);

@@ -13,7 +13,7 @@ Aucun outil ni workflow ne les réécrit. Depuis R2-B2, `component-lab.yml` ne v
 | Étape | Comparaison | Outil | Statut |
 |---|---|---|---|
 | 1 | Référence R1 historique → Component Lab rendu avec les **peintres partagés** (`ui/r2/`) | `lab/tools/compare_r1_refs.py` | **VALIDÉE** : Windows 15/15 et macOS 15/15 identiques, 0 pixel différent sur l'image entière (contrôle strict) ; macOS : component-lab run 6 sur `0d576ed` ([`lab/macos/`](lab/macos)) |
-| 2 | Référence R1 historique → composant intégré en production (même taille, même état, mêmes données) | Tests VIS-01 du wrapper (B2-03, par famille) | à venir |
+| 2 | Référence R1 historique → composant intégré en production (même taille, même état, mêmes données) | VIS-01 : `sbd_lab_compare --vis01` et `lab/tools/vis01_compare.py` | **NEXUS : VALIDÉE (Windows)** : 0 DIFFÉRENTE sur 42 cas, contrôles 6/6 ; macOS : [`b2-03/macos/`](b2-03) |
 | 3 | Composant intégré → interface complète (captures de production) | Captures de production (B2-03, B2-08) | à venir |
 
 ## Étape 1 : méthode
@@ -32,3 +32,56 @@ Fichiers : [`lab/windows/compare-r1.txt`](lab/windows/compare-r1.txt), `compare-
 
 Une comparaison entre deux composants qui utilisent le même peintre ne suffit pas (CE-B2-03). L'étape 1 compare donc le
 **laboratoire** à des **références historiques produites avant l'extraction**.
+
+## Étape 2 : méthode (VIS-01, B2-03)
+
+Chaque planche historique (01, 09 à 75, 100 et 150 %, 11, 12) est **reconstruite par son code de laboratoire**, prouvé
+identique aux références à l'étape 1. Le composant R1 du laboratoire visé est masqué. À sa place, avec les mêmes bornes et
+le même rang de dessin, on pose le **composant de production** lié au paramètre réel correspondant :
+
+- même valeur normalisée affichée, à l'ulp près (l'ajustement éventuel est publié) ;
+- même libellé ;
+- même Effective, injectée dans la télémétrie publiée, moteur arrêté : c'est un état représentatif, déclaré comme tel ;
+- mêmes routes, posées par la transaction de production puis recopiées par l'éditeur.
+
+La planche est rendue à l'échelle de la référence, avec la chaîne de SHA de la référence, **une planche par processus**.
+Elle est ensuite comparée à la capture historique.
+
+| Contrôle | Règle |
+|---|---|
+| Hors substitution | L'image doit être identique à la référence (sauf la zone de production déclarée de la planche 12). Sinon la comparaison est **INVALIDE**. |
+| IDENTIQUE | Aucun pixel différent dans les bornes du composant |
+| TEXTE DE VALEUR | Reste du composant identique au pixel près. Seule la fenêtre de valeur diffère, et le texte de production diffère de celui de la référence : donnée non équivalente, la comparaison pixel à pixel de la fenêtre ne s'applique pas. |
+| ETAT DU RENDU | Le reste du composant diffère, mais le **contrôle différentiel** (même planche, ce seul cas laissé au composant du laboratoire) montre au moins les mêmes pixels différents, avec au moins le même écart, sur le composant R1 du laboratoire lui-même |
+| DIFFERENTE | Tout autre cas : jamais déclaré conforme |
+
+**Particularités Windows (Direct2D)** :
+
+- Direct2D met en cache la géométrie des tracés répétés, ce qui change l'anticrénelage des occurrences suivantes.
+- L'ordre de dessin est donc conservé : le composant de production prend le rang du composant remplacé.
+- La planche 11 historique avait été rendue après les planches 01 à 10 du même processus ; VIS-01 rejoue le même
+  historique avant de la rendre. Sans cela, 75 px des coins arrondis de deux autres composants diffèrent (écart maximal
+  12/255). Le contrôle hors substitution l'a détecté.
+
+## Étape 2 : résultats NEXUS (B2-03.1)
+
+Windows : [`b2-03/windows/vis01-bilan.txt`](b2-03/windows/vis01-bilan.txt) (détail : `vis01-results.csv`,
+`vis01-controle.csv`, planches référence | production | écart dans `ecarts/`).
+
+| | Windows |
+|---|---|
+| Cas | 42 : planche 12 (paramètres réels, texte hôte) ×4 ; planche 01 ×28 ; planche 11 ×1 ; planche 09 ×3 à trois zooms ; gabarits XL, S, Micro ; uni et bipolaires ; Effective ; routes |
+| Contrôles hors substitution | **6/6 identiques** |
+| IDENTIQUE | 3 |
+| TEXTE DE VALEUR | 38 : la structure R1 est identique au pixel près, seule la donnée affichée diffère (format 0.4.1 de production : `0.486 pos` au lieu de `0.49`, voir ci-dessous) |
+| ETAT DU RENDU | 1 : `dst.wt1.d2.fb`, 1 pixel, écart 2/255 ; même pixel sur le composant du laboratoire dans les mêmes conditions |
+| DIFFERENTE | **0** |
+
+**Format des valeurs** : la production garde le format 0.4.1 de `formatValue`, avec l'unité `lin`, `pos` ou `bip` et
+trois décimales. Les références R1 masquent l'unité des domaines normalisés (NAM-11) et utilisent les formats proposés au
+§6 de la nomenclature. Ces formats sont des propositions P3-01, à valider dans la revue groupée de B2-04 : ils ne sont
+pas anticipés. Les cas ajustés à l'ulp ou à norme légèrement différente (`op3.ratio`, `op4.ratio`, `lfo1.rate` : écart
+≤ 8·10⁻⁷, plages non linéaires) sont publiés dans `vis01-cases.csv` ; leur structure est identique.
+
+Données non équivalentes exclues : `dst.wt1.d2.speed`. Le paramètre réel est bipolaire (−4..+4) alors que la
+démonstration est unipolaire.

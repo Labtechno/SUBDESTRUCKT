@@ -456,10 +456,46 @@ void runWheelThenClick() {
   summarize(id, &pr, status, "profondeur au clic " + std::to_string(depthAtClick) + ", ouverts apres relachement " + std::to_string(openAfterUp) +
                                  ", apres destruction " + std::to_string(openAfterDestroy) + " (minuteur 450 ms remplace par la destruction)",
             undo, 0, 0);
-  tk::result(id, true,
-             "[REPRODUCTION, dispatch JUCE reel] %s ; molette puis clic avant 450 ms sur wt.x : %d evenements ui, profondeur max %d, ouverts apres "
-             "relachement %d, apres destruction %d, transactions Undo %d",
+  // CE-B2-01 : scénario permanent ; depuis la correction B2-03.1, assertion corrigée (le geste molette est refermé au clic) :
+  // profondeur 1, aucun geste résiduel, deux transactions (molette, glisser). Preuve historique du défaut : PB/*/pb-summary.csv.
+  const bool fixedOk = depthAtClick <= 1 && openAfterUp == 0 && openAfterDestroy == 0 && undo == 2;
+  tk::result(id, fixedOk, "[PERMANENT, dispatch JUCE reel] %s ; molette puis clic avant 450 ms sur wt.x : %d evenements ui, profondeur max %d, ouverts apres "
+             "relachement %d, apres destruction %d, transactions Undo %d (attendu : profondeur 1, 0, 0, 2)",
              status.c_str(), ui, depthAtClick, openAfterUp, openAfterDestroy, undo);
+}
+
+// PB-01f : molette puis touche clavier avant l'échéance (autre geste incompatible couvert par la correction de PB-01e)
+void runWheelThenKey() {
+  const char* id = "PB-01f";
+  gJournal.scenario = id;
+  Rig r;
+  if (!r.ok()) return blocked(id, "pair de test indisponible");
+  r.m->showSpace(0);
+  r.m->refreshLayout();
+  auto* c = findControl(*r.m, ParamId::WtX);
+  if (c == nullptr) return blocked(id, "wt.x introuvable");
+  UiLog log("wt.x");
+  c->addMouseListener(&log, false);
+  Probe pr(*r.p);
+  const auto pt = centre(*c);
+  r.move(*c, pt);
+  r.wheel(*c, pt, 0.2f);
+  c->keyPressed(juce::KeyPress(juce::KeyPress::upKey));  // touche pendant le geste molette (gestionnaire clavier)
+  const int depth = pr.maxD();
+  const int openAfterKey = pr.open();
+  c->removeMouseListener(&log);
+  r.destroyEditor();
+  const int openAfterDestroy = pr.open();
+  pr.userPhase = false;
+  const int ui = gJournal.uiEvents(id);
+  const int undo = r.countUndo();
+  if (ui == 0) return blocked(id, "molette non recue");
+  const bool ok = depth <= 1 && openAfterKey == 0 && openAfterDestroy == 0 && undo == 2;
+  summarize(id, &pr, depth > 1 ? "REPRODUIT" : "NON REPRODUIT", "molette puis fleche haut : profondeur " + std::to_string(depth) + ", ouverts apres touche " +
+                                                                    std::to_string(openAfterKey) + ", apres destruction " + std::to_string(openAfterDestroy),
+            undo, 0, 0);
+  tk::result(id, ok, "[PERMANENT, dispatch JUCE reel] molette puis touche avant 450 ms sur wt.x : profondeur max %d, ouverts apres touche %d, apres destruction %d, "
+             "transactions Undo %d (attendu : 1, 0, 0, 2)", depth, openAfterKey, openAfterDestroy, undo);
 }
 
 // PB-01m : deux instances simultanées (CE-B2-01) : double-clic dans chacune, sondes indépendantes
@@ -803,6 +839,7 @@ void testGestureReproduction() {
   runLinearHValueDoubleClick();
   runDefaultPaths();
   runWheelThenClick();
+  runWheelThenKey();
   runMultiInstance();
   runCore("PB-02a", Cut::Destroy);
   runCore("PB-02b", Cut::HideSpace);

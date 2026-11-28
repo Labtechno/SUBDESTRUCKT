@@ -479,7 +479,12 @@ void MainEditor::timerCallback() {
   refreshBar();
   if (ticks_++ % 3 == 0) {  // marqueurs M/CC des commandes (10 Hz)
     std::array<std::uint8_t, kNumParams> mc{};
-    for (const auto& r : proc_.currentMod().routes)
+    auto mod = proc_.currentMod();
+    if (!(mod == ctx_.mod)) {  // routes des NEXUS (B2-03.1) : révision de la configuration publiée
+      ctx_.mod = mod;
+      ++ctx_.modRevision;
+    }
+    for (const auto& r : mod.routes)
       if (r.dest != ParamId::Count) mc[static_cast<size_t>(idx(r.dest))] = static_cast<std::uint8_t>(std::min(255, mc[static_cast<size_t>(idx(r.dest))] + 1));
     std::array<std::int16_t, kNumParams> lc{};
     lc.fill(-1);

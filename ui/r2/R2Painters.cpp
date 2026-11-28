@@ -28,6 +28,8 @@ Geo nexusGeo(NexusSize s) {
 
 // ================================================================ NEXUS Hybrid (LAB-A01, gelé)
 float nexusAngle(float norm) { return kA0 + (kA1 - kA0) * juce::jlimit(0.0f, 1.0f, norm); }
+float nexusFamilyLabelPx(NexusSize size) { return nexusGeo(size).labelPx; }
+float nexusValuePx(NexusSize size) { return nexusGeo(size).valuePx; }
 
 juce::Rectangle<float> nexusValueArea(juce::Rectangle<int> lb, NexusSize size) {
   const auto G = nexusGeo(size);
@@ -66,12 +68,12 @@ void paintNexus(juce::Graphics& g, juce::Rectangle<int> lb, const NexusView& v) 
   const float knobR = arcR - G.knobInset;
   const float norm = v.norm;
   const float aV = nexusAngle(norm);
-  const float aZero = v.bipolar ? 0.0f : kA0;
+  const float aZero = v.bipolar ? nexusAngle(v.zeroNorm) : kA0;
 
   if (!disabled) {
     // graduations techniques (XL : 11, S : 5, Micro : aucune) ; centre marqué en bipolaire
     if (G.ticks > 0) draw::ticks(g, c, arcR + 3.0f, arcR + (v.size == NexusSize::XL ? 6.5f : 5.0f), kA0, kA1, G.ticks, t::textMute.withAlpha(0.7f), 1.0f);
-    if (v.bipolar) draw::ticks(g, c, arcR + 2.5f, arcR + (v.size == NexusSize::Micro ? 5.0f : 8.0f), 0.0f, 0.0f, 2, t::text, 1.4f);
+    if (v.bipolar) draw::ticks(g, c, arcR + 2.5f, arcR + (v.size == NexusSize::Micro ? 5.0f : 8.0f), aZero, aZero, 2, t::text, 1.4f);
     // piste et arc de Base
     draw::arc(g, c, arcR, kA0, kA1, G.arcW, t::track);
     if (v.size == NexusSize::Micro) draw::arc(g, c, arcR, aZero, aV, G.arcW, accent);
@@ -218,7 +220,7 @@ void paintPlasma(juce::Graphics& g, juce::Rectangle<int> lb, const PlasmaView& v
 
   // canal lumineux de Base (depuis le minimum, ou depuis le centre en bipolaire)
   const float norm = v.norm;
-  const auto p0 = plasmaPosOf(s, v.orientation, v.bipolar ? 0.5f : 0.0f), pv = plasmaPosOf(s, v.orientation, norm);
+  const auto p0 = plasmaPosOf(s, v.orientation, v.bipolar ? v.zeroNorm : 0.0f), pv = plasmaPosOf(s, v.orientation, norm);
   auto fill = V ? juce::Rectangle<float>(s.getX(), std::min(p0.y, pv.y), s.getWidth(), std::abs(p0.y - pv.y))
                 : juce::Rectangle<float>(std::min(p0.x, pv.x), s.getY(), std::abs(p0.x - pv.x), s.getHeight());
   g.setColour(accent.withAlpha(tok2::glowMax * 0.45f));

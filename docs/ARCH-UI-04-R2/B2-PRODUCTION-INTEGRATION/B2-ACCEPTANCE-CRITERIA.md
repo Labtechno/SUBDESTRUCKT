@@ -75,3 +75,13 @@ Les seuils SC du protocole GC-01 sont désormais **définitifs** (GS-01 à GS-07
 | AUDIO-UI | CE-B2-06 : aucun timer d'interface actif éditeur fermé ; aucune croissance après réouvertures répétées ; instances multiples ; destruction de l'éditeur sans geste résiduel | O | AUTO |
 
 EC19-DEC est **satisfait** par DB2-09 = B.
+
+## Addendum B2-03.1 NEXUS (2026-11-28, enregistré avant mesure)
+
+| ID | Critère | Nature | Vérif. |
+|---|---|---|---|
+| PB01E-FIX | PB-01e et PB-01f : profondeur maximale 1, aucun geste ouvert après relâchement ou destruction, 2 transactions Undo | O | AUTO |
+| NX-CC | Indicateur MIDI Learn : aucun pixel modifié hors de sa zone, aucun pixel déjà dessiné recouvert, Micro masqué, infobulle toujours renseignée, contraste ≥ 4,5:1 (MIDI-CC) | O | AUTO |
+| NX-ROUTES | Marques de route issues de la configuration publiée (révision), sans lecture du fil audio | O | AUTO |
+| NX-GEOM | Géométrie du composant = géométrie du peintre ; saisie sur la fenêtre de valeur sans écriture préalable ; double-clic sur le bouton = défaut | O | AUTO |
+| VIS-01 | Étape 2 de CE-B2-03 : contrôles hors substitution identiques ; aucun cas DIFFERENTE (statuts §Étape 2 de `VIS/README.md`) | O | AUTO (Windows, macOS) |

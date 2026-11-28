@@ -25,12 +25,15 @@ struct NexusView {
   float norm = 0.0f;           // valeur Base normalisée
   std::optional<float> effective;  // valeur Effective normalisée, présente seulement si la destination est modulée
   bool bipolar = false;
+  float zeroNorm = 0.5f;  // position normalisée du zéro d'un paramètre bipolaire (0,5 si la plage est symétrique)
   std::vector<float> routeDepths;  // profondeurs signées des routes vers la destination (au plus quatre marques, puis +n)
   juce::String valueText;      // valeur Base formatée avec unité
   bool inactive = false, entry = false, disabled = false, hover = false, focus = false, pressed = false;
 };
 
 float nexusAngle(float norm);
+float nexusFamilyLabelPx(NexusSize size);  // corps de sérigraphie de la famille (XL 12,5 gras, S 11, Micro 10)
+float nexusValuePx(NexusSize size);        // corps de la valeur (XL 14, S 11, Micro 10)
 juce::Rectangle<float> nexusValueArea(juce::Rectangle<int> localBounds, NexusSize size);
 juce::Rectangle<float> nexusKnobArea(juce::Rectangle<int> localBounds, NexusSize size, const juce::String& label, float labelPx);
 void paintNexus(juce::Graphics& g, juce::Rectangle<int> localBounds, const NexusView& v);
@@ -47,6 +50,7 @@ struct PlasmaView {
   float norm = 0.0f;
   std::optional<float> effective;
   bool bipolar = false;
+  float zeroNorm = 0.5f;  // position normalisée du zéro d'un paramètre bipolaire
   juce::String valueText;
   bool disabled = false, hover = false, focus = false, pressed = false;
 };

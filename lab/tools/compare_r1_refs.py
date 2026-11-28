@@ -7,7 +7,12 @@ Usage : py -3.11 lab/tools/compare_r1_refs.py <dossier des planches rendues> <pl
 Contrôle strict : rendre avec --sha <SHA de la référence> et comparer avec --header=0 (images entières). Dans les planches
 composites 02 et 06c, la planche B1 incrustée garde son propre bandeau (SHA) jusqu'à la ligne 178 : avec un SHA différent,
 ces lignes diffèrent légitimement.
-Code de sortie 1 si une planche diffère ou manque.
+Zone de production déclarée : la plaque GAUCHE de la planche 12 (comparatif) montre les composants de PRODUCTION, qui
+portent le rendu R1 intégré famille par famille depuis B2-03 (jusqu'à B2-02, ils étaient en 0.4.1). Elle évolue donc
+légitimement : elle est exclue du verdict de l'étape 1 et ses pixels différents sont rapportés à part (colonne
+zone_production). La plaque droite (R1 du laboratoire) et tout le reste de la planche restent comparés au pixel près.
+La conformité des composants de production est l'objet de l'étape 2 (VIS-01, lab/tools/vis01_compare.py).
+Code de sortie 1 si une planche diffère (hors zone de production déclarée) ou manque.
 """
 import csv, pathlib, sys
 
@@ -16,6 +21,8 @@ from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REF = ROOT / 'docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/CAPTURES'
+# zones de production déclarées (coordonnées logiques, échelle 2 des planches) : voir l'en-tête
+PRODUCTION_ZONES = {'12-compare-041-r2.png': [(16, 76, 596, 880)]}
 HEADER = 132  # bandeau d'en-tête à l'échelle 2 (66 px logiques, comme la non-régression NEXUS / PLASMA du laboratoire)
 
 args = [x for x in sys.argv[1:] if not x.startswith('--header=')]
@@ -37,16 +44,24 @@ for ref in sorted((REF / platform).glob('*.png')):
         rows.append([ref.name, 'TAILLE', f'{a.shape[1]}x{a.shape[0]}', f'{b.shape[1]}x{b.shape[0]}', ''])
         fail += 1
         continue
-    d = np.abs(a[HEADER:] - b[HEADER:]).max(axis=2)
+    d = np.abs(a - b).max(axis=2)
+    d[:HEADER] = 0
+    zone = np.zeros(d.shape, dtype=bool)
+    for (zx, zy, zw, zh) in PRODUCTION_ZONES.get(ref.name, []):
+        zone[zy * 2:(zy + zh) * 2, zx * 2:(zx + zw) * 2] = True
+    nz = int((d[zone] > 0).sum())
+    d[zone] = 0
     n = int((d > 0).sum())
-    rows.append([ref.name, 'IDENTIQUE' if n == 0 else 'DIFFERENTE', str(n), str(d.size), str(int(d.max()))])
+    rows.append([ref.name, 'IDENTIQUE' if n == 0 else 'DIFFERENTE', str(n), str(int((d.size - zone.sum() - HEADER * d.shape[1]) if HEADER else d.size - zone.sum())),
+                 str(int(d.max())), str(nz) if PRODUCTION_ZONES.get(ref.name) else ''])
     fail += n > 0
 for r in rows:
-    print(f'{r[0]:42s} {r[1]:10s} pixels differents {r[2]:>9s} / {r[3]:>9s}  ecart max {r[4]}')
+    print(f'{r[0]:42s} {r[1]:10s} pixels differents {r[2]:>9s} / {r[3]:>9s}  ecart max {r[4]}' +
+          (f'  [zone de production declaree : {r[5]} px differents, hors verdict]' if len(r) > 5 and r[5] else ''))
 print(f'BILAN {platform} : {len(rows) - fail}/{len(rows)} planches identiques aux references R1 historiques ' + ('(images entieres)' if HEADER == 0 else f'(hors bandeau de {HEADER} lignes)'))
 if len(sys.argv) > 3:
     with open(sys.argv[3], 'w', encoding='utf-8', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['planche', 'statut', 'pixels_differents', 'pixels_compares', 'ecart_max'])
+        w.writerow(['planche', 'statut', 'pixels_differents', 'pixels_compares', 'ecart_max', 'zone_production_pixels_differents'])
         w.writerows(rows)
 sys.exit(1 if fail else 0)

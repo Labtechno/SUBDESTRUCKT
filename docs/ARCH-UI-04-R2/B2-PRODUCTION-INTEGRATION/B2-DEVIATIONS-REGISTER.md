@@ -64,3 +64,11 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 |---|---|
 | EC-19 | **DB2-09 validé (B)** : correction autorisée en B2-03 (2), critères amendés (`B2-00-ADDENDUM-B2-03.md` §4) |
 | EC-21 | **Nouveau, mineur (CE-B2-08)** : l'indicateur MIDI Learn (CC) des NEXUS n'a pas de variante R1. Il est conservé en surimpression avec la typographie et les couleurs R1, à partir des données MIDI Learn de 0.4.1. B2-03 (1). |
+
+## Mise à jour B2-03.1 NEXUS (2026-11-28)
+
+| Écart | État |
+|---|---|
+| EC-21 | **Implanté sans recouvrement** : sérigraphie quand la place est libre (XL 457/501, S 68/501), infobulle toujours présente, Micro masqué comme en 0.4.1. NX-CC PASS. **Cas S soumis à DB2-10.** |
+| Observation VIS-01 | La fenêtre de valeur des NEXUS de production garde le format 0.4.1 (unités `lin`, `pos`, `bip`, trois décimales). Les formats R1 relèvent de NAM-11 et de P3-01 (revue groupée B2-04). Ce n'est pas un écart d'intégration : la donnée n'est pas encore arbitrée. |
+| PB-01e | **Corrigé** (B2-03.1) : profondeur 1, aucun geste résiduel, transactions cohérentes ; PB-01f ajouté |

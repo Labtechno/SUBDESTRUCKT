@@ -96,3 +96,40 @@ Options soumises :
 - **(C)** : option A plus un glisser relatif sur le libellé ou la valeur.
 
 Recommandation : (A). Analyse complète dans l'historique de ce fichier (commit `b1502c8`).
+
+## DB2-10 — Indicateur MIDI Learn sur les NEXUS S (CE-B2-08, EC-21) : **À ARBITRER** (ne bloque que l'indicateur)
+
+CE-B2-08 autorise la conservation de l'indicateur CC, sans masquer de valeur ni d'indicateur, et demande un arbitrage
+ciblé si aucune implantation satisfaisante n'est possible sans modifier significativement le composant R1.
+
+**Mesure** (`NX-CC-PLACE`, `VIS/b2-03/windows/nexus-cc/nx-cc-placements.csv`) : union des pixels dessinés par le peintre
+R1 sur 1 056 états, pour l'indicateur « CC127 » au corps des marqueurs R1 (8,5 gras, 27 px) :
+
+| Emplacement | XL | S |
+|---|---|---|
+| Coins de la zone du bouton | 143 à 237 px recouverts (arc, graduations, anneau de focus, Effective) | 268 à 440 px recouverts |
+| Sérigraphie, à gauche ou à droite du libellé | **libre** | recouvre le libellé (28 à 110 px) |
+
+En S, le cadran occupe toute la largeur utile : aucune place n'est libre sans recouvrement.
+
+**Implantation provisoire, en place** :
+
+- dans la sérigraphie, à gauche du libellé, quand la place est libre ;
+- sinon, pas d'indicateur dessiné ;
+- Micro masqué, comme en 0.4.1 ;
+- infobulle « MIDI Learn : CC n » toujours présente ;
+- liste MIDI Learn de l'espace ENGINEERING inchangée.
+
+Couverture : XL 457 et **S 68** sur 501 paramètres continus. NX-CC prouve qu'aucun pixel déjà dessiné n'est recouvert.
+
+| Option | Description | Effet |
+|---|---|---|
+| **(A) Implantation provisoire** | Sérigraphie quand la place est libre ; infobulle et page MIDI Learn sinon | Aucun recouvrement, aucune modification R1. Indicateur absent de la plupart des NEXUS S. |
+| (B) Infobulle et page MIDI Learn seulement | Aucun indicateur sur le composant | Homogène, mais perte de la lecture directe en XL, où la place existe |
+| (C) Indicateur sur la lueur du cadran | Coin haut gauche du bouton | Recouvre l'arc, les graduations ou l'anneau de focus selon l'état : contraire à CE-B2-08 |
+| (D) Emplacement réservé dans la sérigraphie des S | Le libellé se décale ou se réduit quand un CC est appris | Modifie la mise en page R1 du libellé (sérigraphie gelée) |
+| (E) Indicateur dans la fenêtre de valeur | Suffixe dans la fenêtre | Modifie l'affichage numérique R1 ; place insuffisante avec les formats actuels |
+
+**Recommandation : (A)**. C'est la seule option sans recouvrement et sans modification du Design System gelé. Elle garde
+la lecture directe partout où la place existe. L'information reste disponible ailleurs dans tous les cas : infobulle,
+page MIDI Learn, menu contextuel.

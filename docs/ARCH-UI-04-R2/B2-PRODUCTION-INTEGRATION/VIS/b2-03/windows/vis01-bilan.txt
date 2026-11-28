@@ -1,0 +1,55 @@
+VIS-01 windows : 42 cas, 6 images
+  IDENTIQUE        3
+  TEXTE DE VALEUR  38
+  ETAT DU RENDU    1
+  DIFFERENTE       0
+  ERREUR           0
+  controles valides 6/6
+  NEXUS    12-compare-041-r2.png        x2.00 wt.x                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1324  [0.486] -> [0.486 pos]
+  NEXUS    12-compare-041-r2.png        x2.00 wt.fine                    XL    IDENTIQUE        hors valeur      0  fenetre     0  [-32.00 ct] -> [-32.00 ct]
+  NEXUS    12-compare-041-r2.png        x2.00 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   902  [0.500] -> [0.500 lin]
+  NEXUS    12-compare-041-r2.png        x2.00 fm.op2_op1.depth           Micro IDENTIQUE        hors valeur      0  fenetre     0  [3.20 rad] -> [3.20 rad]
+  NEXUS    01-final-board.png           x2.00 wt.x                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1285  [0.49] -> [0.486 pos]
+  NEXUS    01-final-board.png           x2.00 wt.y                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1243  [0.22] -> [0.220 pos]
+  NEXUS    01-final-board.png           x2.00 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1155  [0.35] -> [0.350 lin]
+  NEXUS    01-final-board.png           x2.00 wt.level                   Micro TEXTE DE VALEUR  hors valeur      0  fenetre   694  [0.80] -> [0.800 lin]
+  NEXUS    01-final-board.png           x2.00 cross.fwd                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   854  [0.72] -> [0.720 lin]
+  NEXUS    01-final-board.png           x2.00 cross.rev                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   932  [0.40] -> [0.400 lin]
+  NEXUS    01-final-board.png           x2.00 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   902  [0.50] -> [0.500 lin]
+  NEXUS    01-final-board.png           x2.00 op1.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   919  [1.00 x] -> [0.758 x f0]
+  NEXUS    01-final-board.png           x2.00 op1.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   696  [0.90] -> [0.900 lin]
+  NEXUS    01-final-board.png           x2.00 op2.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   870  [2.00 x] -> [1.77 x f0]
+  NEXUS    01-final-board.png           x2.00 op2.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   665  [0.70] -> [0.700 lin]
+  NEXUS    01-final-board.png           x2.00 op3.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   932  [3.00 x] -> [0.298 x f0]
+  NEXUS    01-final-board.png           x2.00 op3.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   670  [0.50] -> [0.500 lin]
+  NEXUS    01-final-board.png           x2.00 op4.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre  1013  [4.00 x] -> [0.391 x f0]
+  NEXUS    01-final-board.png           x2.00 op4.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   671  [0.30] -> [0.300 lin]
+  NEXUS    01-final-board.png           x2.00 fm.op2_op1.depth           XL    IDENTIQUE        hors valeur      0  fenetre     0  [2.40 rad] -> [2.40 rad]
+  NEXUS    01-final-board.png           x2.00 dst.wt1.d2.repeat          S     TEXTE DE VALEUR  hors valeur      0  fenetre   873  [0.32] -> [0.320 lin]
+  NEXUS    01-final-board.png           x2.00 dst.wt1.d2.pos             S     TEXTE DE VALEUR  hors valeur      0  fenetre   923  [0.44] -> [0.440 lin]
+  NEXUS    01-final-board.png           x2.00 dst.wt1.d2.fb              S     ETAT DU RENDU    hors valeur      1  fenetre   897  [0.56] -> [0.560 lin]  differentiel : composant du laboratoire 1 px (max 2), production 1 px (max 2)
+  NEXUS    01-final-board.png           x2.00 dst.wt1.d2.xfade           S     TEXTE DE VALEUR  hors valeur      0  fenetre   839  [0.68] -> [34.00 ms]
+  NEXUS    01-final-board.png           x2.00 dst.wt1.mix                S     TEXTE DE VALEUR  hors valeur      0  fenetre   941  [0.80] -> [0.800 lin]
+  NEXUS    01-final-board.png           x2.00 dst.wt1.out                S     TEXTE DE VALEUR  hors valeur      0  fenetre   841  [0.0 dB] -> [0.000 dB]
+  NEXUS    01-final-board.png           x2.00 amp.attack                 S     TEXTE DE VALEUR  hors valeur      0  fenetre   743  [0.15 s] -> [0.751 s]
+  NEXUS    01-final-board.png           x2.00 amp.decay                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   253  [0.35 s] -> [1.75 s]
+  NEXUS    01-final-board.png           x2.00 amp.sustain                S     TEXTE DE VALEUR  hors valeur      0  fenetre   855  [0.55] -> [0.550 lin]
+  NEXUS    01-final-board.png           x2.00 amp.release                S     TEXTE DE VALEUR  hors valeur      0  fenetre   363  [0.75 s] -> [7.50 s]
+  NEXUS    01-final-board.png           x2.00 lfo1.rate                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   920  [4.20 Hz] -> [0.010 Hz]
+  NEXUS    01-final-board.png           x2.00 out.ceiling                S     TEXTE DE VALEUR  hors valeur      0  fenetre   965  [−0.3 dB] -> [-0.300 dB]
+  NEXUS    11-materials-palette.png     x2.00 wt.x                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1307  [0.62] -> [0.620 pos]
+  NEXUS    09-zoom-75-100-150.png       x0.75 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   207  [0.35] -> [0.350 lin]
+  NEXUS    09-zoom-75-100-150.png       x0.75 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   141  [0.50] -> [0.500 lin]
+  NEXUS    09-zoom-75-100-150.png       x0.75 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   143  [−0.30] -> [-0.300 pos]
+  NEXUS    09-zoom-75-100-150.png       x1.00 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   330  [0.35] -> [0.350 lin]
+  NEXUS    09-zoom-75-100-150.png       x1.00 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   226  [0.50] -> [0.500 lin]
+  NEXUS    09-zoom-75-100-150.png       x1.00 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   205  [−0.30] -> [-0.300 pos]
+  NEXUS    09-zoom-75-100-150.png       x1.50 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   781  [0.35] -> [0.350 lin]
+  NEXUS    09-zoom-75-100-150.png       x1.50 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   468  [0.50] -> [0.500 lin]
+  NEXUS    09-zoom-75-100-150.png       x1.50 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   364  [−0.30] -> [-0.300 pos]
+  controle vis01-12.png           IDENTIQUE (0 px hors substitution)
+  controle vis01-01.png           IDENTIQUE (0 px hors substitution)
+  controle vis01-11.png           IDENTIQUE (0 px hors substitution)
+  controle vis01-09-75.png        IDENTIQUE (0 px hors substitution)
+  controle vis01-09-100.png       IDENTIQUE (0 px hors substitution)
+  controle vis01-09-150.png       IDENTIQUE (0 px hors substitution)

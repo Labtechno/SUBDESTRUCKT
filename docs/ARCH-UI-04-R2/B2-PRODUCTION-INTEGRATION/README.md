@@ -18,7 +18,8 @@ DB2-01 à DB2-07 et amendements CE-B2-01 à CE-B2-05 consignés.
 | [B2-TEST-PLAN.md](B2-TEST-PLAN.md) | Plan de tests, reproductions PB-01 et PB-02, migrations OD-01 |
 | [B2-GRAPHICS-PERFORMANCE-PROTOCOL.md](B2-GRAPHICS-PERFORMANCE-PROTOCOL.md) | Protocole GC-01 comparatif 0.4.1 / intégré |
 | [B2-DEVIATIONS-REGISTER.md](B2-DEVIATIONS-REGISTER.md) | Registre des écarts (EC-01 à EC-20) |
-| [B2-DECISIONS-PENDING.md](B2-DECISIONS-PENDING.md) | Décisions soumises au propriétaire (STOP ciblés) : DB2-08 |
+| [B2-DECISIONS-PENDING.md](B2-DECISIONS-PENDING.md) | Décisions soumises au propriétaire (STOP ciblés) : DB2-08, DB2-09 (validées), **DB2-10 à arbitrer** |
+| [B2-03-REPORT.md](B2-03-REPORT.md) | **B2-03** : intégration des familles (NEXUS, puis PLASMA, NEURAL CELL, SYNAPTIC, HUD, PANIC) |
 | [PB/](PB/README.md) | **B2-01** : reproductions PB-01, PB-02, PB-N, PB-J (journaux Windows et macOS) |
 | [GC01/](GC01/README.md) | **GC-01** : banc, référence figée `0517426`, mesures comparatives |
 | [VIS/](VIS/README.md) | **Conformité visuelle** (CE-B2-03) : chaîne référence R1 → laboratoire → production |

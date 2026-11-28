@@ -1,0 +1,2 @@
+plateforme : Microsoft Windows [version 10.0.26300.9974]
+code : arbre de travail sur 3a61d56+ (B2-03.1 NEXUS), rendu Windows 11 local, Direct2D

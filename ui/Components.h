@@ -43,6 +43,8 @@ struct UiContext {
   std::function<void(ParamId)> requestLearn;    // MIDI Learn depuis le menu contextuel
   ParamId inspected = ParamId::WtX;             // paramètre affiché par l'Inspector
   std::function<void(int space, int tab)> navigate;  // navigation (Ouvrir/Enregistrer, liens d'aide)
+  ModMatrixState mod;            // configuration publiée de la matrice (copie rafraîchie à 10 Hz par l'éditeur, fil message)
+  std::uint64_t modRevision = 0;  // incrémenté à chaque changement de `mod` (marques de routes des NEXUS)
 };
 
 // ---------------------------------------------------------------- utilitaires du registre
@@ -107,8 +109,18 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
   ~ContinuousControl() override;
   ParamId boundId() const override { return id_; }
   juce::Component& asComponent() override { return *this; }
-  void userSet(float base) override { link_.complete(sanitize(id_, base)); }
+  void userSet(float base) override {
+    closeWheelGesture();  // PB-01e : aucun geste imbriqué dans un geste molette encore ouvert
+    link_.complete(sanitize(id_, base));
+  }
   float shownBase() const override { return shown_; }
+  juce::Rectangle<float> valueBox() const { return valueArea(); }  // fenêtre de valeur (preuves VIS-01)
+  juce::Rectangle<float> knobBox() const { return knobArea(); }    // zone de manipulation (tests NX-*)
+  // CE-B2-08 : zone de l'indicateur MIDI Learn dans la sérigraphie (vide si aucun CC appris, en Micro, ou si la place
+  // n'est pas libre à côté du libellé : l'indicateur ne recouvre jamais un élément du composant R1)
+  juce::Rectangle<float> ccTagBox() const;
+  juce::String valueText() const { return juce::String(formatValue(id_, shown_)); }
+  float shownNorm() const { return link_.toNorm(shown_); }
   void tick() override;
   bool textFits() const override;
   void setCaption(const juce::String& c);  // libellé contextuel imposé (ex. « FM INDEX »)
@@ -135,6 +147,9 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
  private:
   friend class NexusAccessibleValue;
   void timerCallback() override;  // fin de geste molette
+  void closeWheelGesture();       // ferme un geste molette ouvert (avant tout geste incompatible : PB-01e)
+  float nexusLabelPx() const;     // corps de sérigraphie R1 tenant sur deux lignes (famille, puis réduction jusqu'au plancher)
+  void refreshRouteDepths();      // décalages des routes globales vers ce paramètre (configuration publiée)
   void showMenu();
   void stepNorm(double delta);
   juce::Rectangle<float> knobArea() const;
@@ -152,12 +167,17 @@ class ContinuousControl : public juce::Component, public juce::SettableTooltipCl
   juce::String caption_;
   float shown_ = 0.0f;
   float effNorm_ = -1.0f;   // Effective normalisée (-1 : non modulée)
+  juce::String baseTooltip_;  // infobulle 0.4.1 (nom, StableID, aide ou raison d'inactivité)
+  int learnShown_ = -1;       // CC MIDI Learn reflété dans l'infobulle (CE-B2-08)
+  void refreshTooltip();
   float meterDb_ = -120.0f;
   std::function<float()> meter_;
   bool dragging_ = false, wheelGesture_ = false, inactive_ = false;
   float dragStartNorm_ = 0.0f;
   juce::Point<float> dragStart_;
   std::unique_ptr<juce::TextEditor> entry_;
+  std::vector<float> routeOffsets_;          // décalages en unités du domaine (profondeur x modScale), signés
+  std::uint64_t routeRevision_ = ~std::uint64_t(0);
 };
 
 // ---------------------------------------------------------------- SYNAPTIC TRACK

@@ -68,6 +68,9 @@ target_sources(sbd_lab_compare PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/app/DemoData.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/Sheets.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/Compare.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/app/SheetsR1.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/app/Measure.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/app/Vis01.cpp
   ${SBD_ROOT}/plugin/PluginProcessor.cpp
   ${SBD_ROOT}/ui/DiagnosticEditor.cpp
   ${SBD_ROOT}/ui/Components.cpp

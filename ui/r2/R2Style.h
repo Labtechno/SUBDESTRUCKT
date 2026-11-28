@@ -134,6 +134,8 @@ void focusRing(juce::Graphics&, juce::Rectangle<float> r, float radius);
 void fittedText(juce::Graphics&, const juce::String& s, juce::Rectangle<float> r, const juce::Font& f, juce::Colour col,
                 juce::Justification j, bool allowTwoLines);
 float textWidth(const juce::Font& f, const juce::String& s);
+// le texte tient-il dans la largeur, selon la règle de fittedText (une ligne, sinon deux lignes coupées à l'espace équilibré) ?
+bool fitsText(const juce::Font& f, const juce::String& s, float width, bool allowTwoLines);
 }  // namespace draw
 
 }  // namespace sbd::r2

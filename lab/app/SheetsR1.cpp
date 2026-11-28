@@ -761,6 +761,13 @@ std::unique_ptr<Sheet> sheetMaterials() {
 
 }  // namespace
 
+std::unique_ptr<Sheet> makeR1Sheet(const juce::String& id) {
+  if (id == "01") return buildBoard();
+  if (id == "09") return zoomCluster();
+  if (id == "11") return sheetMaterials();
+  return nullptr;
+}
+
 bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir) {
   bool ok = true;
   const auto save = [&](const juce::Image& img, const juce::String& name) {

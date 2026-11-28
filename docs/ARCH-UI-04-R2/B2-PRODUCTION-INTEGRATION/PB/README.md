@@ -88,3 +88,12 @@ bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt 
   plateformes, avec statuts individuels et tests permanents. Seul blocage : **DB2-08**, ciblé sur la correction du saut
   PLASMA. Il n'empêche pas B2-02.
 
+## 6. Après la correction B2-03.1 (PB-01e)
+
+Journaux : [`b2-03-1/windows/`](b2-03-1/windows). Les preuves historiques ci-dessus ne sont pas modifiées.
+
+| Scénario | Avant (B2-01) | Après (B2-03.1) |
+|---|---|---|
+| PB-01e molette puis clic | REPRODUIT, profondeur 2 | **NON REPRODUIT** : profondeur 1, 0 ouvert, 2 transactions. Assertion permanente : **PASS** |
+| PB-01f molette puis touche (nouveau) | — | profondeur 1, 0 ouvert, 2 transactions : **PASS** |
+| Autres scénarios | — | Statuts inchangés ; PB-01c et PB-J1 à J3 restent REPRODUITS jusqu'à B2-03.2 (DB2-08) |
