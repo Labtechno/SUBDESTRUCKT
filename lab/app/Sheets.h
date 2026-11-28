@@ -1,0 +1,63 @@
+// SUBDESTRUCKT — ARCH-UI-04-R2-B1 — Component Lab — planches de captures (rendus JUCE réels, hors écran).
+#pragma once
+#include <memory>
+
+#include "app/DemoData.h"
+#include "r2/R2Nexus.h"
+#include "r2/R2NeuralCell.h"
+#include "r2/R2PlasmaChannel.h"
+#include "r2/R2SynapticTrack.h"
+
+namespace sbd::lab {
+
+// Planche : fond châssis, en-tête (titre, sous-titre, plateforme), plaques, légendes ; possède ses composants et ses
+// sources DEMO DATA.
+class Sheet : public juce::Component {
+ public:
+  Sheet(const juce::String& title, const juce::String& subtitle, int w, int h);
+  DemoValue& val(float lo, float hi, float def, float value, const juce::String& unit, int dec, bool bip = false, int steps = 0);
+  template <class C, class... A>
+  C& add(juce::Rectangle<int> r, A&&... a) {
+    auto c = std::make_unique<C>(std::forward<A>(a)...);
+    auto& ref = *c;
+    addAndMakeVisible(ref);
+    ref.setBounds(r);
+    comps_.push_back(std::move(c));
+    return ref;
+  }
+  void caption(const juce::String& s, juce::Rectangle<float> r, float size = 11.0f, juce::Colour c = juce::Colour(0xff98a5ae),
+               juce::Justification j = juce::Justification::centredLeft, bool bold = false);
+  void plate(juce::Rectangle<float> r, const juce::String& title, r2::Domain d, const juce::String& note = {});
+  void line(juce::Point<float> a, juce::Point<float> b) { lines_.push_back({a, b}); }
+  void paint(juce::Graphics&) override;
+
+ private:
+  void paintHeader(juce::Graphics&);
+  void paintBody(juce::Graphics&);
+  struct Cap {
+    juce::String s;
+    juce::Rectangle<float> r;
+    float size;
+    juce::Colour c;
+    juce::Justification j;
+    bool bold;
+  };
+  struct Pl {
+    juce::Rectangle<float> r;
+    juce::String title, note;
+    r2::Domain d;
+  };
+  juce::String title_, subtitle_;
+  std::vector<std::unique_ptr<DemoValue>> values_;
+  std::vector<std::unique_ptr<juce::Component>> comps_;
+  std::vector<Cap> caps_;
+  std::vector<Pl> plates_;
+  std::vector<std::pair<juce::Point<float>, juce::Point<float>>> lines_;
+};
+
+std::unique_ptr<Sheet> buildBoard();  // planche complète (aussi la fenêtre interactive)
+// Rend toutes les planches dans `dir` (PNG). scale = facteur de rendu des planches de revue (2 = équivalent Retina).
+bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log);
+bool writePng(const juce::Image& img, const juce::File& f);
+
+}  // namespace sbd::lab

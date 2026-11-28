@@ -1,0 +1,2 @@
+machine  : Windows 11 Home 10.0.26300 (poste local du proprietaire), MSVC 2022, Release x64
+commit   : base 04dd7cf + travaux R2-B1 (avant publication)
