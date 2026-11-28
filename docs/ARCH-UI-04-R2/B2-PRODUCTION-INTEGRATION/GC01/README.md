@@ -18,11 +18,25 @@ dans le workflow `r2b2-evidence.yml` sous macOS et localement sous Windows.
 | Alternance | Le workflow exécute référence, courant, référence, courant sur la même VM. La référence est l'arbre de la ligne de base, exporté par `git archive`, avec le même banc. |
 | Limites | Un snapshot mesure un **coût de rendu**, pas la fluidité perçue dans Reason. La VM GitHub n'est pas une machine M3 : GS-02 (partie absolue, 11,1 ms) et GS-06 (16,7 ms) exigent la mesure physique M3 (DB2-01). Windows : plateforme secondaire, mesures publiées à part. |
 
+## 1 bis. Révision du banc avant la référence (v2)
+
+La première ligne de base macOS (run 2, `run2-ad180b9/`, conservée pour traçabilité) a révélé deux **artefacts du
+banc**, corrigés avant que la référence ne soit fixée. Les seuils et le code mesuré n'ont pas changé.
+
+| Mesure | Artefact du banc v1 | Correction (v2) |
+|---|---|---|
+| GP-04 | « Échéances manquées » d'environ 2 780 blocs sur 3 750, que l'éditeur soit actif ou fermé, pour un traitement médian de 0,25 ms : le compteur mesurait le retard de réveil d'un thread sans priorité temps réel sur une VM à 3 cœurs | Dépassement = **temps de traitement d'un bloc > période (5,33 ms)**. Le retard de réveil est publié à part (`-retard-reveil-info`), pour information seulement. |
+| GP-05 | +118 MiB après 100 cycles sous macOS : sans boucle d'événements, les objets CoreGraphics et Objective-C ne sont libérés qu'à la vidange d'un *autorelease pool* | Pool de libération autour de chaque rendu et de chaque cycle (`JUCE_AUTORELEASEPOOL`) |
+
+La référence GC-01 est l'arbre du commit qui contient le banc v2, sans modification de `ui/`. Ce commit est consigné
+dans `r2b2-evidence.yml` (`GC01_REF_SHA`) au début des modifications visuelles.
+
 ## 2. Ligne de base 0.4.1
 
 Le code mesuré est `ui/` de 0.4.1, inchangé, avec le banc ajouté. Voir les dossiers par plateforme :
 
-- [`windows/`](windows) : poste de développement, deux exécutions de la référence ;
+- [`windows/baseline/`](windows/baseline) : poste de développement, deux exécutions de la référence avec le banc v2
+  (`baseline-v1/` : banc v1, remplacé, conservé) ;
 - [`macos/`](macos) : VM GitHub, deux exécutions de la référence par run.
 
 Observations de référence (valables sur les deux plateformes, à confirmer par les fichiers) :

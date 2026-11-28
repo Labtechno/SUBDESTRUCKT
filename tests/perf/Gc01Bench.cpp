@@ -123,17 +123,21 @@ const char* benchImageTypeName() {
 // rendu forcé jusqu'au bout (lecture d'un pixel) d'une zone du composant hôte, à l'échelle donnée
 double renderArea(juce::Component& root, juce::Rectangle<int> area, float scale) {
   if (area.isEmpty()) return 0.0;
-  const auto t0 = Clock::now();
-  juce::Image img(juce::Image::ARGB, juce::roundToInt(area.getWidth() * scale), juce::roundToInt(area.getHeight() * scale), true, benchImageType());
-  {
-    juce::Graphics g(img);
-    g.addTransform(juce::AffineTransform::translation(static_cast<float>(-area.getX()), static_cast<float>(-area.getY())).scaled(scale));
-    g.reduceClipRegion(area);
-    root.paintEntireComponent(g, true);
+  double d = 0.0;
+  JUCE_AUTORELEASEPOOL {  // macOS : sans boucle d'événements, les objets CoreGraphics ne sont libérés qu'à la vidange du pool
+    const auto t0 = Clock::now();
+    juce::Image img(juce::Image::ARGB, juce::roundToInt(area.getWidth() * scale), juce::roundToInt(area.getHeight() * scale), true, benchImageType());
+    {
+      juce::Graphics g(img);
+      g.addTransform(juce::AffineTransform::translation(static_cast<float>(-area.getX()), static_cast<float>(-area.getY())).scaled(scale));
+      g.reduceClipRegion(area);
+      root.paintEntireComponent(g, true);
+    }
+    volatile auto px = img.getPixelAt(0, 0).getARGB();
+    juce::ignoreUnused(px);
+    d = ms(t0, Clock::now());
   }
-  volatile auto px = img.getPixelAt(0, 0).getARGB();
-  juce::ignoreUnused(px);
-  return ms(t0, Clock::now());
+  return d;
 }
 
 double renderDirty(testsupport::TestPeer& peer, juce::Component& root, float scale) {
@@ -430,9 +434,9 @@ int main(int argc, char** argv) {
 
   // ---------------------------------------------------------------- GP-04 / GP-09 : audio au rythme réel
   auto audioRun = [&](const std::string& scen, bool editorActive, double seconds) {
-    std::vector<double> dur;
+    std::vector<double> dur, late;
     std::atomic<bool> stop{false};
-    int misses = 0;
+    int misses = 0;  // blocs dont le TRAITEMENT dépasse la période (256 / 48000 s) : seul critère attribuable au calcul
     const auto period = std::chrono::duration<double>(256.0 / 48000.0);
     std::thread audio([&] {
       juce::AudioBuffer<float> b(2, 256);
@@ -442,14 +446,16 @@ int main(int argc, char** argv) {
       dur.reserve(static_cast<size_t>(blocks));
       for (int k = 0; k < blocks; ++k) {
         next += std::chrono::duration_cast<Clock::duration>(period);
-        std::this_thread::sleep_until(next - std::chrono::duration_cast<Clock::duration>(period));
+        const auto wake = next - std::chrono::duration_cast<Clock::duration>(period);
+        std::this_thread::sleep_until(wake);
         const auto t0 = Clock::now();
+        late.push_back(ms(wake, t0));  // retard de réveil (ordonnanceur, thread sans priorité temps réel) : information
         b.clear();
         mm.clear();
         r.p->processBlock(b, mm);
         const auto t1 = Clock::now();
         dur.push_back(ms(t0, t1));
-        if (t1 > next) ++misses;
+        if (ms(t0, t1) > 256.0 / 48.0) ++misses;
       }
       stop = true;
     });
@@ -463,7 +469,8 @@ int main(int argc, char** argv) {
     audio.join();
     for (size_t k = 0; k < dur.size(); ++k) rec.add("GP-04", scen, static_cast<int>(k), dur[k]);
     rec.stats("GP-04", scen + "-bloc", dur, "ms");
-    rec.stats("GP-04", scen + "-echeances-manquees", {static_cast<double>(misses)}, "blocs");
+    rec.stats("GP-04", scen + "-depassements-traitement", {static_cast<double>(misses)}, "blocs");
+    rec.stats("GP-04", scen + "-retard-reveil-info", late, "ms");
   };
   const double secs = quick ? 4.0 : 20.0;
   audioRun("editeur-actif", true, secs);
@@ -472,10 +479,12 @@ int main(int argc, char** argv) {
 
   // ---------------------------------------------------------------- GP-05 : 100 cycles ouverture / fermeture, stabilisation
   for (int k = 0; k < (quick ? 20 : 100); ++k) {
-    r.openEditor();
-    r.m->refreshNow();
-    renderArea(r.host, r.host.getLocalBounds(), 1.0f);
-    r.closeEditor();
+    JUCE_AUTORELEASEPOOL {
+      r.openEditor();
+      r.m->refreshNow();
+      renderArea(r.host, r.host.getLocalBounds(), 1.0f);
+      r.closeEditor();
+    }
   }
   r.openEditor();
   for (int k = 0; k < 3; ++k) renderArea(r.host, r.host.getLocalBounds(), scale);
