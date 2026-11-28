@@ -1,0 +1,10 @@
+etiquette : ref041-0517426-2
+code : 0517426a7cded57321aeaadd99a6883a64c3142d
+os : Mac OSX 15.8.2
+cpu : Apple M1 (Virtual) (3 coeurs physiques, 3 logiques)
+memoire : 7168 Mio
+juce : JUCE v9.0.6
+audio : 48000 Hz, blocs de 256
+rendu : image natif CoreGraphics, echelle 2, rendu force (lecture d'un pixel)
+repetitions : 30 (+ 5 de chauffe)
+mode : complet
