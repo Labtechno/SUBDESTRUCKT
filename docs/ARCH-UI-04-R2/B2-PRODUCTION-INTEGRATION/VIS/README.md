@@ -103,3 +103,17 @@ Exclus et justifiés :
 - M2 et LVL : graduations de démonstration.
 
 Planche 06a : l'historique de rendu de la référence (planches 01 à 05b du même processus) est rejoué avant la planche.
+
+## Étape 2 : résultats NEURAL CELL (B2-03.3)
+
+12 cas, planches 12, 01 et 11 :
+
+| Statut | Cas |
+|---|---|
+| IDENTIQUE au pixel près | 8 : FREEZE ×2, SYNC (hors registre, WT), CAPTURE, AUTHORIZE, EXCITE, RESET (CROSS), APPLY WAVE |
+| TEXTE D'ÉTAT | 3 : ARM, ACTIF / ARMÉ contre ACTIVE / ARMED (libellés P1, B2-04) |
+
+Bilan total (NEXUS, PLASMA, NEURAL CELL) : **60 cas, 0 DIFFÉRENTE, contrôles 7/7**.
+
+La zone de donnée d'une cellule est celle du texte d'état, à droite de la face (50 px). Les états imposés (ARMÉ sans
+autorisation) sont des états représentatifs, déclarés dans `vis01-cases.csv`.

@@ -85,3 +85,11 @@ EC19-DEC est **satisfait** par DB2-09 = B.
 | NX-ROUTES | Marques de route issues de la configuration publiée (révision), sans lecture du fil audio | O | AUTO |
 | NX-GEOM | Géométrie du composant = géométrie du peintre ; saisie sur la fenêtre de valeur sans écriture préalable ; double-clic sur le bouton = défaut | O | AUTO |
 | VIS-01 | Étape 2 de CE-B2-03 : contrôles hors substitution identiques ; aucun cas DIFFERENTE (statuts §Étape 2 de `VIS/README.md`) | O | AUTO (Windows, macOS) |
+
+## Addendum B2-03.2 et B2-03.3 (2026-11-28, enregistré avant mesure)
+
+| ID | Critère | Nature | Vérif. |
+|---|---|---|---|
+| PLAS-G | Gabarit PLASMA par surface utile, invariants R1 ; blocages avec raison publiée (CE-B2-02) | O | AUTO |
+| NC-G | NEURAL CELL en R1 si le libellé tient sur la ligne du gabarit et la hauteur ≥ 24 ; sinon rendu 0.4.1 avec raison publiée ; aucun libellé tronqué | O | AUTO |
+| NC-STATES | États de production distincts au rendu R1 et portés par le texte | O | AUTO |

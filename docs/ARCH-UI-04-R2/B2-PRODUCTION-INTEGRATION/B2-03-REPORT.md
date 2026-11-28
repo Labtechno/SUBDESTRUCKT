@@ -300,3 +300,83 @@ B2-03.5 (HUD), conformément au registre ; aucune donnée n'est perdue entre-tem
 - `plugin/` inchangé ;
 - aucun identifiant, format, seuil ou référence historique modifié ;
 - `known_failures` inchangé.
+
+## 3. B2-03.3 — NEURAL CELL
+
+### 3.1 Intégration
+
+`ui::NeuralCell` (bascules liées à un paramètre Bool, armements autonomes, états hors registre comme Drone) et
+`ui::ActionCell` (actions momentanées et boutons à bascule) sont rendues par le peintre partagé `paintCell`
+(Machined Titanium, LAB-A02). Correspondance :
+
+| Production | R1 |
+|---|---|
+| Bascule Bool, état hors registre | **Toggle** : témoin encastré, état ON / OFF |
+| Armement autonome | **Arm** : canal ambre, témoin anneau (ARMÉ) ou plein (ACTIF), croix (REFUS) |
+| Action momentanée | **Action** : touche convexe, **icône d'impulsion par défaut** (repère R1 du geste momentané, qui remplace la barrette 0.4.1) ; Capture et Autorisation : icônes dédiées |
+| ActionCell à bascule (Inspector, Épingler, Verrou) | **Toggle** : sans cela, la touche Action masquerait l'état |
+| PANIC (danger) | Inchangé jusqu'à B2-03.6 |
+
+**Inchangé** : comportement, clavier, focus, autorisation explicite par le clic d'armement (TA-07w), automation.
+
+**Textes d'état** : la production garde les siens (OFF, ON, ARMÉ, ACTIF, REFUS, —). ARMED et ACTIVE sont des libellés P1
+validés, appliqués en B2-04 ; le peintre reçoit le texte du consommateur, rien n'est anticipé.
+
+**Correctif NEXUS** : le peintre écrivait en dur « INACTIVE », une proposition **P2 non validée** (state.inactive),
+introduite en production par B2-03.1. Le texte devient un champ de la vue. La production affiche de nouveau « INACTIF »
+(0.4.1) ; le laboratoire reste identique au pixel.
+
+### 3.2 Gabarit et couverture (NC-G)
+
+Le peintre écrit le libellé sur **une ligne** (corps 11 gras), dans une zone fixe de la face. Une cellule n'est rendue en
+R1 que si son libellé y tient et si sa hauteur est d'au moins 24 px (face ≥ une ligne + 2). Sinon elle garde le rendu
+0.4.1, raison publiée. Le composant R1 n'est ni redessiné ni simplifié.
+
+| 12 configurations, tous contextes | Visibles | R1 | Rendu 0.4.1 |
+|---|---|---|---|
+| NeuralCell | 540 | 240 | 300 (libellés : Drone, Z Gain Compensation, Z Keep Fundamental…) |
+| ActionCell (hors PANIC) | 4 128 | 1 000 | 3 128 (hauteur 22 : 660 ; libellés de production trop longs pour la zone à côté de l'icône) |
+
+Raisons : [`PB/b2-03-3/windows/nc-g-blocages.csv`](PB/b2-03-3/windows/nc-g-blocages.csv).
+
+La couverture des actions est limitée par deux facteurs :
+
+- **l'icône d'impulsion**, qui retire 23 px à la zone du libellé : sans elle, 2 456 actions tiendraient ;
+- **les libellés de production**, français et longs ; les libellés P1 de B2-04 sont courts.
+
+Arbitrage **DB2-11** proposé, non bloquant ([B2-DECISIONS-PENDING.md](B2-DECISIONS-PENDING.md)).
+
+### 3.3 Tests
+
+| Test | Résultat (Windows) |
+|---|---|
+| **NC-G** | PASS : aucune cellule bloquée sans raison, aucun libellé tronqué |
+| **NC-STATES** | PASS : 11 paires d'états distinctes au rendu R1 (OFF / ON / REFUS / indisponible, OFF / ARMÉ / ACTIF / REFUS, survol, pression, action pressée, bascule, action indisponible) |
+| UI04-BIND, UI04-KEY, TA-07w et suite complète | Barrière **PASS** (87 critères, AUT-02 connu) ; UI04-CLIP PASS |
+
+### 3.4 Conformité visuelle
+
+**Étape 2 (VIS-01)** : 12 cas NEURAL CELL sur les planches 12, 01 et 11.
+
+| Statut | Cas |
+|---|---|
+| **IDENTIQUE au pixel près** | 8 : FREEZE ×2, SYNC (état hors registre, domaine WT), CAPTURE, AUTHORIZE, EXCITE, RESET (domaine CROSS), APPLY WAVE |
+| TEXTE D'ÉTAT | 3 : ARM (ACTIF / ARMÉ en production, ACTIVE / ARMED en référence : P1 de B2-04) |
+
+Bilan total : 60 cas, **0 DIFFÉRENTE**, contrôles 7/7.
+
+L'outil a été corrigé au passage :
+
+- la clé du contrôle différentiel est désormais la position du cas (elle ignorait les cellules) ;
+- un état hors registre ne consulte plus le registre des paramètres.
+
+Avant correction, EXCITE et RESET étaient classés à tort « ÉTAT DU RENDU ». L'écart réel (icône d'impulsion manquante en
+production) a été corrigé.
+
+**Étape 3** : captures de production Windows [`CAPTURES/windows/b2-03-3-neural-cell/`](CAPTURES/windows/b2-03-3-neural-cell).
+
+### 3.5 Densité visuelle
+
+La matière usinée R1 n'apparaît que sur les cellules dont le libellé tient. Les zones denses (barre globale, listes de
+l'espace ENGINEERING) gardent majoritairement le titane 0.4.1, jusqu'à B2-04 et à DB2-11. Aucune simplification du
+composant n'est faite.

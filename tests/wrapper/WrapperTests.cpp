@@ -1044,6 +1044,7 @@ void testGestureReproduction();
 void testR2B2Foundation();
 void testB2NexusIntegration();
 void testPlasmaGeometry();
+void testNeuralCellIntegration();
 
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
@@ -1082,6 +1083,7 @@ int main(int argc, char** argv) {
   testR2B2Foundation();
   testB2NexusIntegration();
   testPlasmaGeometry();
+  testNeuralCellIntegration();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

@@ -147,7 +147,7 @@ void paintNexus(juce::Graphics& g, juce::Rectangle<int> lb, const NexusView& v) 
     draw::hatch(g, ka.reduced(2.0f), tok2::inactive.withAlpha(0.28f), 4.0f);
     g.setFont(labelFont(8.5f, true));
     g.setColour(tok2::inactive);
-    g.drawText("INACTIVE", ka.withHeight(11.0f).withTrimmedRight(2.0f), juce::Justification::centredRight, false);
+    g.drawText(v.inactiveText, ka.withHeight(11.0f).withTrimmedRight(2.0f), juce::Justification::centredRight, false);
   }
 
   // affichage numérique (Base) dans une fenêtre optique

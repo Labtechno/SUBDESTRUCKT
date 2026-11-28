@@ -491,6 +491,7 @@ void ContinuousControl::paint(juce::Graphics& g) {
     for (float off : routeOffsets_) v.routeDepths.push_back(link_.toNorm(juce::jlimit(spec.minValue, spec.maxValue, shown_ + off)) - v.norm);
     v.valueText = juce::String(formatValue(id_, shown_));
     v.inactive = inactive_;
+    v.inactiveText = "INACTIF";  // texte 0.4.1 : INACTIVE est une proposition P2 non validée (state.inactive, B2-04)
     v.entry = false;  // la saisie numérique est un champ de texte posé sur la fenêtre de valeur
     v.disabled = !isEnabled();
     v.hover = isMouseOverOrDragging();
@@ -1055,12 +1056,76 @@ static juce::Rectangle<float> cellTextArea(juce::Rectangle<int> b) {
 }
 
 bool NeuralCell::textFits() const {
+  if (r1()) return true;  // vérifié par le choix du rendu (une ligne dans la zone R1)
   juce::StringArray lines;
   float sz = 0.0f;
   return layoutLabel(caption_, cellTextArea(getLocalBounds()).getWidth(), 2, tok::fontLabel, lines, sz);
 }
 
+namespace {
+// correspondance d'un accent 0.4.1 vers le domaine R1 (états et actions hors registre)
+sbd::r2::Domain r2DomainOfColour(juce::Colour c) {
+  if (c == tok::wt) return sbd::r2::Domain::Wt;
+  if (c == tok::fm) return sbd::r2::Domain::Fm;
+  if (c == tok::cross) return sbd::r2::Domain::Cross;
+  if (c == tok::mod) return sbd::r2::Domain::Mod;
+  if (c == tok::alert) return sbd::r2::Domain::Alert;
+  return sbd::r2::Domain::Neutral;
+}
+// zones de texte du peintre NEURAL CELL (une ligne au corps 11 gras) : libellé et état
+float r1CellLabelWidth(int w, sbd::r2::CellKind k, bool icon) {
+  const float in = static_cast<float>(w) - 6.0f - 20.0f;  // r = lb.reduced(3, 4) ; in = r.reduced(10, 0)
+  switch (k) {
+    case sbd::r2::CellKind::Toggle: return in - 19.0f - 30.0f;
+    case sbd::r2::CellKind::Arm: return in - 19.0f - 50.0f;
+    case sbd::r2::CellKind::Action: return icon ? in - 23.0f : in;
+    default: return in;
+  }
+}
+juce::String cellStateText(CellState s, bool autonomyArm) {
+  // texte d'état de production (0.4.1) : les termes R1 ARMED / ACTIVE sont des libellés P1 appliqués en B2-04
+  switch (s) {
+    case CellState::Off: return "OFF";
+    case CellState::Armed: return juce::String::fromUTF8("ARMÉ");
+    case CellState::Refused: return "REFUS";
+    case CellState::Disabled: return juce::String::fromUTF8("\xe2\x80\x94");
+    case CellState::Active: break;
+  }
+  return autonomyArm ? "ACTIF" : "ON";
+}
+}  // namespace
+
+juce::String NeuralCell::r1BlockReason() const {
+  const bool arm = id_ != ParamId::Count && isAutonomyArm(id_);
+  const float w = r1CellLabelWidth(getWidth(), arm ? sbd::r2::CellKind::Arm : sbd::r2::CellKind::Toggle, false);
+  const float lw = sbd::r2::draw::textWidth(sbd::r2::labelFont(sbd::r2::tok2::fontLabel, true), caption_);
+  // même règle que les actions ; le témoin encastré (rayon 4) tient dans la face
+  if (getHeight() < 24) return "hauteur " + juce::String(getHeight()) + " < 24";
+  if (lw > w) return juce::String::fromUTF8("libellé « ") + caption_ + juce::String::fromUTF8(" » (") + juce::String(lw, 1) + " px) > zone R1 (" + juce::String(w, 1) + " px)";
+  return {};
+}
+bool NeuralCell::r1() const { return r1BlockReason().isEmpty(); }
+juce::String NeuralCell::stateText() const { return cellStateText(state_, id_ != ParamId::Count && isAutonomyArm(id_)); }
+
 void NeuralCell::paintButton(juce::Graphics& g, bool over, bool down) {
+  if (r1()) {  // NEURAL CELL Machined Titanium (peintre partagé) : Toggle, ou Arm pour les armements autonomes
+    const bool arm = id_ != ParamId::Count && isAutonomyArm(id_);
+    sbd::r2::CellView v;
+    v.kind = arm ? sbd::r2::CellKind::Arm : sbd::r2::CellKind::Toggle;
+    v.domain = id_ != ParamId::Count ? r2Domain(domainOf(id_)) : r2DomainOfColour(accent_);
+    v.label = caption_;
+    v.stateText = stateText();
+    v.on = state_ == CellState::Active || (id_ == ParamId::Count && getToggleState());
+    v.arm = state_ == CellState::Armed ? sbd::r2::CellArm::Armed
+                                       : (state_ == CellState::Active ? sbd::r2::CellArm::Active
+                                                                      : (state_ == CellState::Refused ? sbd::r2::CellArm::Denied : sbd::r2::CellArm::Off));
+    v.disabled = !isEnabled() || state_ == CellState::Disabled;
+    v.hover = over;
+    v.pressed = down;
+    v.focus = hasKeyboardFocus(false);
+    sbd::r2::paintCell(g, getLocalBounds(), v);
+    return;
+  }
   auto r = getLocalBounds().toFloat().reduced(1.5f);
   g.setColour(down ? tok::titanium : tok::carbon);
   g.fillRoundedRectangle(r, tok::radiusSmall);
@@ -1099,7 +1164,44 @@ ActionCell::ActionCell(const juce::String& text, juce::Colour accent, bool dange
   setWantsKeyboardFocus(true);
 }
 
+juce::String ActionCell::r1BlockReason() const {
+  if (danger_) return "PANIC : B2-03.6";
+  const auto kind = getClickingTogglesState() ? sbd::r2::CellKind::Toggle : sbd::r2::CellKind::Action;
+  const float w = r1CellLabelWidth(getWidth(), kind, kind == sbd::r2::CellKind::Action && icon_ != Icon::None);
+  const float lw = sbd::r2::draw::textWidth(sbd::r2::labelFont(sbd::r2::tok2::fontLabel, true), getButtonText());
+  // face du gabarit (hauteur − 8) au moins égale à une ligne du libellé (11 gras × 1,2) + 2 : hauteur >= 24
+  if (getHeight() < 24) return "hauteur " + juce::String(getHeight()) + " < 24";
+  if (lw > w) return juce::String::fromUTF8("libellé « ") + getButtonText() + juce::String::fromUTF8(" » (") + juce::String(lw, 1) + " px) > zone R1 (" + juce::String(w, 1) + " px)";
+  return {};
+}
+bool ActionCell::r1() const { return r1BlockReason().isEmpty(); }
+bool ActionCell::textFits() const {
+  if (r1()) return true;
+  juce::StringArray lines;
+  float sz = 0.0f;
+  return layoutLabel(getButtonText(), getLocalBounds().toFloat().reduced(1.5f).getWidth() - 8.0f, 2, tok::fontLabel + (danger_ ? 1.0f : 0.0f), lines, sz);
+}
+
 void ActionCell::paintButton(juce::Graphics& g, bool over, bool down) {
+  if (r1()) {  // NEURAL CELL R1 : action momentanée = touche Action ; bascule = Toggle (témoin et ON / OFF)
+    sbd::r2::CellView v;
+    const bool toggle = getClickingTogglesState();
+    v.kind = toggle ? sbd::r2::CellKind::Toggle : sbd::r2::CellKind::Action;
+    v.domain = r2DomainOfColour(accent_);
+    v.label = getButtonText();
+    v.on = getToggleState();
+    v.stateText = toggle ? (getToggleState() ? "ON" : "OFF") : juce::String();
+    v.icon = toggle ? sbd::r2::CellIcon::None
+                    : (icon_ == Icon::Capture ? sbd::r2::CellIcon::Capture
+                                              : (icon_ == Icon::Authorize ? sbd::r2::CellIcon::Authorize
+                                                                          : (icon_ == Icon::Pulse ? sbd::r2::CellIcon::Pulse : sbd::r2::CellIcon::None)));
+    v.disabled = !isEnabled();
+    v.hover = over;
+    v.pressed = down;
+    v.focus = hasKeyboardFocus(false);
+    sbd::r2::paintCell(g, getLocalBounds(), v);
+    return;
+  }
   auto r = getLocalBounds().toFloat().reduced(1.5f);
   const juce::Colour c = danger_ ? tok::alert : accent_;
   if (danger_) {

@@ -133,3 +133,18 @@ Couverture : XL 457 et **S 68** sur 501 paramètres continus. NX-CC prouve qu'au
 **Recommandation : (A)**. C'est la seule option sans recouvrement et sans modification du Design System gelé. Elle garde
 la lecture directe partout où la place existe. L'information reste disponible ailleurs dans tous les cas : infobulle,
 page MIDI Learn, menu contextuel.
+
+## DB2-11 — Couverture R1 des actions NEURAL CELL (non bloquant ; proposé le 2026-11-28)
+
+Le peintre R1 place le libellé d'une action sur une ligne, après l'**icône d'impulsion**, repère R1 du geste momentané
+(défaut du laboratoire, LAB-A02). Mesure NC-G, 12 configurations : **1 000 actions sur 4 128** tiennent en R1 ; 2 456
+tiendraient sans l'icône. Les autres gardent le rendu 0.4.1 (titane 0.4.1).
+
+| Option | Effet |
+|---|---|
+| **(A) État actuel** | Icône toujours présente ; R1 seulement si le libellé tient ; couverture élargie par les libellés P1 courts de B2-04 |
+| (B) Icône d'impulsion omise quand la place manque | Couverture ×2,5 ; mais une touche Action sans repère momentané perd la distinction avec une bascule (écart au design LAB-A02) |
+| (C) Report à R2-C | Largeurs revues avec l'organisation spatiale |
+
+**Recommandation : (A)**, réexaminée après B2-04. L'option B affaiblit une distinction de fonction (action ou bascule)
+pour un gain esthétique.

@@ -264,6 +264,7 @@ class PerformanceView : public SpaceView {
     balInfo_.setText(juce::String::fromUTF8("Balance audio post-Amp, avant les chaînes ;\nCross Audio (post-chaînes) : Sound Design."),
                      juce::dontSendNotification);
     authorize_.onClick = [this] { ctx_.proc.authorizeAutonomy(); };
+    authorize_.setIcon(ActionCell::Icon::Authorize);  // icône R1 (LAB-A02)
     authorize_.setTooltip(juce::String::fromUTF8("États autonomes suspendus : autoriser leur exécution dans cette instance (action explicite)"));
     autoPlate_.addChildComponent(authorize_);
     for (auto* p : std::initializer_list<juce::Component*>{&wtPlate_, &fmPlate_, &corePlate_, &monitorPlate_, &autoPlate_, &macroPlate_, &balPlate_, &outPlate_})

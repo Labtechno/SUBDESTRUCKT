@@ -272,3 +272,5 @@ wrapper NX-ROUTES
 wrapper NX-GEOM
 wrapper NX-CC-PLACE
 wrapper PLAS-G
+wrapper NC-G
+wrapper NC-STATES

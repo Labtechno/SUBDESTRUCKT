@@ -385,6 +385,7 @@ class SoundDesignView : public SpaceView {
     excite_.setTooltip(juce::String::fromUTF8("Excitation manuelle des filtres F4 (action momentanée)"));
     excite_.onClick = [this] { ctx_.proc.requestManualExcite(); };
     capture_.setTooltip(juce::String::fromUTF8("Capture le contenu Glitch D2 et le spectre Freeze S2 des emplacements actifs (sauvegarde preset/projet)"));
+    capture_.setIcon(ActionCell::Icon::Capture);  // icône R1 (LAB-A02)
     capture_.onClick = [this] {
       for (int k = 0; k < 6; ++k) ctx_.proc.requestCapture(k);
       capturePending_ = 20;  // collecte aux rafraîchissements suivants (un bloc audio est requis)

@@ -264,6 +264,11 @@ class NeuralCell : public juce::ToggleButton, public BoundControl {
   }
   void paintButton(juce::Graphics&, bool over, bool down) override;
   std::function<void(bool)> onUserToggle;  // état hors registre
+  // NEURAL CELL R1 (B2-03.3) : rendu par le peintre partagé si le libellé tient sur la ligne du gabarit R1, sinon rendu
+  // 0.4.1 conservé (raison publiée) ; le comportement est le même dans les deux cas
+  bool r1() const;
+  juce::String r1BlockReason() const;
+  juce::String stateText() const;  // texte d'état affiché (OFF, ON, ARMÉ, ACTIF, REFUS, —)
 
  private:
   ParamId id_ = ParamId::Count;
@@ -277,8 +282,18 @@ class NeuralCell : public juce::ToggleButton, public BoundControl {
 // Action momentanée (jamais un état persistant) : Panic, Cross Reset, Excitation, captures, Randomize…
 class ActionCell : public juce::TextButton {
  public:
+  // icônes R1 (LAB-A02) : impulsion (toute action momentanée, par défaut), capture, autorisation
+  enum class Icon { None, Pulse, Capture, Authorize };
   ActionCell(const juce::String& text, juce::Colour accent, bool danger = false);
   void paintButton(juce::Graphics&, bool over, bool down) override;
+  void setIcon(Icon i) {
+    icon_ = i;
+    repaint();
+  }
+  // NEURAL CELL R1 (B2-03.3) : action = touche Action, bascule = Toggle ; PANIC (danger) : B2-03.6
+  bool r1() const;
+  juce::String r1BlockReason() const;
+  bool textFits() const;
   void setRefused(bool r) {
     refused_ = r;
     repaint();
@@ -287,6 +302,7 @@ class ActionCell : public juce::TextButton {
  private:
   juce::Colour accent_;
   bool danger_, refused_ = false;
+  Icon icon_ = Icon::Pulse;  // repère R1 du geste momentané (remplace le repère 0.4.1 en bas à gauche)
 };
 
 // Onglets (navigation) : jamais une écriture d'état sonore.

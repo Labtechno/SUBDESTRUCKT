@@ -1,11 +1,11 @@
 vis01 vis01-12.png 2480x1960
-vis01 5 cas, OK
+vis01 9 cas, OK
 vis01 vis01-01.png 3680x2300
-vis01 29 cas, OK
+vis01 34 cas, OK
 vis01 vis01-06a.png 2680x1280
 vis01 1 cas, OK
 vis01 vis01-11.png 2680x1520
-vis01 1 cas, OK
+vis01 4 cas, OK
 vis01 vis01-09-75.png 480x255
 vis01 vis01-09-100.png 640x340
 vis01 vis01-09-150.png 960x510

@@ -641,6 +641,7 @@ class EngineeringView : public SpaceView {
     // diagnostics, captures
     styled(diag_, 10.5f);
     styled(caps_, 10.5f);
+    capNow_.setIcon(ActionCell::Icon::Capture);  // icône R1 (LAB-A02)
     capNow_.onClick = [this] {
       for (int k = 0; k < 6; ++k) ctx_.proc.requestCapture(k);
       capPending_ = 20;

@@ -32,6 +32,7 @@ struct NexusView {
   // mise en page du libellé déjà calculée par le consommateur (même règle : nexusLabelLayout) ; 0 : calculée par le peintre
   int labelLines = 0;   // 1 ou 2
   int labelSplit = -1;  // fittedSplit (si labelLines != 0)
+  juce::String inactiveText = "INACTIVE";  // marqueur d'état inactif (nomenclature : la production garde son texte jusqu'à B2-04)
 };
 
 float nexusAngle(float norm);

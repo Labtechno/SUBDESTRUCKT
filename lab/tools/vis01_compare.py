@@ -80,7 +80,7 @@ def differential(c):
             cmd += ['--sha', opts['sha']]
         if 'b1' in opts:
             cmd += ['--b1', opts['b1']]
-        subprocess.run(cmd, check=True, capture_output=True, env=dict(os.environ, SBD_VIS01_KEEP=c['parametre']))
+        subprocess.run(cmd, check=True, capture_output=True, env=dict(os.environ, SBD_VIS01_KEEP=f"{c['x']}:{c['y']}"))  # cas désigné par sa position
         lab = load(pathlib.Path(tmp) / c['image'])
     ref = ref_view(c['planche'], c, lab.shape)
     dc, vmask, _ = case_diff(ref, lab, c)

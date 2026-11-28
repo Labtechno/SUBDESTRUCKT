@@ -82,3 +82,10 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 | EC-03 | Inchangé jusqu'à B2-03.5 : OUT GAIN reste en rendu 0.4.1 (EC-22). La crête est déjà affichée à part, en texte, dans la plaque. |
 | **EC-22** | **Nouveau (CE-B2-02, blocage documenté)** : OUT GAIN et BALANCE gardent le rendu 0.4.1, faute de place pour la valeur de production dans la fenêtre du gabarit R1 (COMPACT 44 px, horizontal 50 px). Levée : formats R1 des valeurs (B2-04, P3-01) ; pour OUT GAIN, éventuellement R2-C (cellule ≥ 180). Contrat d'interaction R1 déjà appliqué. |
 | GC-01 | GS-01 en ÉCHEC sur le jalon NEXUS (run 8). Cause corrigée en B2-03.2 (mise en page précalculée), remesure en cours. |
+
+## Mise à jour B2-03.3 NEURAL CELL (2026-11-28)
+
+| Écart | État |
+|---|---|
+| **EC-23** | **Nouveau (blocage documenté, comme CE-B2-02)** : les cellules dont le libellé de production ne tient pas sur la ligne du gabarit R1, ou de moins de 24 px de haut, gardent le rendu 0.4.1. Couverture R1 : 240/540 NeuralCell, 1 000/4 128 ActionCell. Levée : libellés P1 (B2-04), DB2-11, R2-C. |
+| Correctif B2-03.1 | Marqueur « INACTIVE » (P2 non validé) retiré de la production : « INACTIF » (0.4.1) jusqu'à B2-04 |

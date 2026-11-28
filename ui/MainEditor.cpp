@@ -271,6 +271,7 @@ MainEditor::MainEditor(SubdestrucktProcessor& p)
                                                "cliquer pour autoriser leur activation dans cette instance"));
   authorize_.setTitle(juce::String::fromUTF8("Autoriser les états autonomes"));
   authorize_.onClick = [this] { proc_.authorizeAutonomy(); };
+  authorize_.setIcon(ActionCell::Icon::Authorize);  // icône R1 (LAB-A02)
   for (auto* c : std::initializer_list<juce::Component*>{&prev_, &preset_, &next_, &open_, &save_, &undo_, &redo_, &spaces_, &status_, &meter_, &quality_, &drone_, &zoom_,
                                                          &inspectorBtn_, &panic_})
     bar_.addAndMakeVisible(*c);

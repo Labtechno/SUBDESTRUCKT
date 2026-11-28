@@ -87,6 +87,40 @@ std::vector<NexusCase> nexusCases() {
   return v;
 }
 
+// ---- NEURAL CELL (B2-03.3) : NeuralCell de production (paramètre Bool ou état hors registre) ou ActionCell
+struct CellCase {
+  const char* sheet;
+  juce::Rectangle<int> r;
+  int type;              // 1 : NeuralCell liée à un paramètre ; 2 : ActionCell ; 3 : NeuralCell hors registre
+  ParamId id;            // type 1
+  const char* label;     // libellé de la référence
+  int state;             // état de production imposé (CellState) après lecture du processeur ; -1 : lu du processeur
+  int icon;              // ActionCell : 0 aucune, 1 capture, 2 autorisation
+  juce::Colour accent;   // ActionCell et état hors registre
+  bool on = false;       // bascule hors registre
+};
+
+std::vector<CellCase> cellCases() {
+  using CS = ui::CellState;
+  std::vector<CellCase> v;
+  // planche 12 : comparatif (paramètres réels : Freeze ON, ARM ON et instance autorisée = ACTIF)
+  v.push_back({"12", {652, 620, 168, 40}, 1, ParamId::DstWt1D2Freeze, "FREEZE", -1, 0, {}});
+  v.push_back({"12", {832, 620, 168, 40}, 1, ParamId::DstWt1Arm, "ARM", -1, 0, {}});
+  v.push_back({"12", {652, 700, 168, 40}, 2, ParamId::Count, "CAPTURE", -1, 1, ui::tok::text});
+  v.push_back({"12", {832, 700, 140, 40}, 2, ParamId::Count, "AUTHORIZE", -1, 2, ui::tok::text});
+  // planche 01 : tableau final (états de la démonstration : Freeze ON ; ARM armé, non autorisé)
+  v.push_back({"01", {30, 868, 180, 42}, 1, ParamId::DstWt1D2Freeze, "FREEZE", static_cast<int>(CS::Active), 0, {}});
+  v.push_back({"01", {220, 868, 180, 42}, 1, ParamId::DstWt1Arm, "ARM", static_cast<int>(CS::Armed), 0, {}});
+  v.push_back({"01", {410, 868, 190, 42}, 2, ParamId::Count, "CAPTURE", -1, 1, ui::tok::text});
+  v.push_back({"01", {410, 918, 190, 42}, 2, ParamId::Count, "EXCITE", -1, 0, ui::tok::text});
+  v.push_back({"01", {830, 186, 88, 42}, 2, ParamId::Count, "RESET", -1, 0, ui::tok::cross});
+  // planche 11 : matériaux (action, bascule du domaine WT, armement)
+  v.push_back({"11", {254, 380, 180, 42}, 2, ParamId::Count, "APPLY WAVE", -1, 0, ui::tok::text});
+  v.push_back({"11", {254, 436, 180, 42}, 3, ParamId::Count, "SYNC", static_cast<int>(CS::Active), 0, ui::tok::wt, true});
+  v.push_back({"11", {254, 492, 180, 42}, 1, ParamId::DstWt1Arm, "ARM", static_cast<int>(CS::Armed), 0, {}});
+  return v;
+}
+
 juce::RangedAudioParameter* paramOf(SubdestrucktProcessor& p, ParamId id) {
   for (auto* prm : p.getParameters())
     if (auto* r = dynamic_cast<juce::RangedAudioParameter*>(prm))
@@ -113,7 +147,7 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
   auto& proc = ctx.proc;
   const auto keep = juce::SystemStats::getEnvironmentVariable("SBD_VIS01_KEEP", {});  // diagnostic : composant du laboratoire conservé
   for (const auto& k : cases) {
-    if (keep.isNotEmpty() && keep == paramSpec(k.id).stableId) continue;
+    if (keep.isNotEmpty() && keep == juce::String(k.r.getX()) + ":" + juce::String(k.r.getY())) continue;
     Substituted s{k};
     juce::Component* lab = nullptr;
     for (auto* ch : sheet.getChildren())
@@ -192,6 +226,60 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
 
 juce::String csvField(const juce::String& s) { return "\"" + s.replace("\"", "\"\"") + "\""; }
 
+struct CellSub {
+  CellCase k;
+  juce::Component* c = nullptr;
+  juce::String refText, prodText, error;
+  juce::Rectangle<float> textZone;  // zone du texte d'état (donnée) : à droite de la face
+};
+
+std::vector<CellSub> substituteCells(juce::Component& sheet, ui::UiContext& ctx, const std::vector<CellCase>& cases,
+                                     std::vector<std::unique_ptr<juce::Component>>& owned) {
+  std::vector<CellSub> out;
+  const auto keep = juce::SystemStats::getEnvironmentVariable("SBD_VIS01_KEEP", {});  // diagnostic : composant du laboratoire conservé
+  for (const auto& k : cases) {
+    if (keep.isNotEmpty() && keep == juce::String(k.r.getX()) + ":" + juce::String(k.r.getY())) continue;
+    CellSub s{k};
+    r2::NeuralCell* lab = nullptr;
+    for (auto* ch : sheet.getChildren())
+      if (ch->getBounds() == k.r)
+        if (auto* n = dynamic_cast<r2::NeuralCell*>(ch)) lab = n;
+    if (lab == nullptr) {
+      s.error = "NEURAL CELL du laboratoire introuvable";
+      out.push_back(s);
+      continue;
+    }
+    s.refText = lab->stateText();
+    lab->setVisible(false);
+    std::unique_ptr<juce::Component> comp;
+    if (k.type == 1 || k.type == 3) {
+      auto n = k.type == 1 ? std::make_unique<ui::NeuralCell>(ctx, k.id) : std::make_unique<ui::NeuralCell>(ctx, juce::String::fromUTF8(k.label), k.accent);
+      n->setCaption(juce::String::fromUTF8(k.label));
+      if (k.type == 3) n->setToggleState(k.on, juce::dontSendNotification);
+      n->tick();
+      if (k.state >= 0) n->setCellState(static_cast<ui::CellState>(k.state));  // état représentatif de la référence
+      n->setBounds(k.r);
+      if (!n->r1()) s.error = "NeuralCell de production bloquee : " + n->r1BlockReason();
+      s.prodText = n->stateText();
+      comp = std::move(n);
+    } else {
+      auto a = std::make_unique<ui::ActionCell>(juce::String::fromUTF8(k.label), k.accent);
+      if (k.icon != 0) a->setIcon(k.icon == 1 ? ui::ActionCell::Icon::Capture : ui::ActionCell::Icon::Authorize);  // sinon : impulsion (défaut)
+      a->setBounds(k.r);
+      if (!a->r1()) s.error = "ActionCell de production bloquee : " + a->r1BlockReason();
+      comp = std::move(a);
+    }
+    // zone du texte d'état du peintre : r = bornes réduites (3, 4), in = r réduite (10, 0), texte aligné à droite
+    const float w = static_cast<float>(k.r.getWidth()), h = static_cast<float>(k.r.getHeight());
+    if (k.type != 2) s.textZone = {w - 13.0f - 50.0f, 4.0f, 50.0f, h - 8.0f};
+    sheet.addAndMakeVisible(*comp, sheet.getIndexOfChildComponent(lab));
+    s.c = comp.get();
+    owned.push_back(std::move(comp));
+    out.push_back(s);
+  }
+  return out;
+}
+
 }  // namespace
 
 int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce::File& b1Dir) {
@@ -202,6 +290,18 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
   rows.add("famille,feuille,planche,image,origine_x,origine_y,echelle,cas,parametre,gabarit,x,y,w,h,valeur_x,valeur_y,valeur_w,valeur_h,"
            "texte_reference,texte_production,norme_reference,norme_production,ajustement_ulps,erreur");
   bool ok = true;
+  const auto emitCells = [&](const juce::String& sheetId, const juce::String& png, int ox, int oy, float scale, const std::vector<CellSub>& subs) {
+    for (const auto& s : subs) {
+      rows.add(juce::String("NEURAL CELL,") + s.k.sheet + "," + sheetId + "," + png + "," + juce::String(ox) + "," + juce::String(oy) + "," + juce::String(scale, 2) +
+               "," + csvField(juce::String::fromUTF8(s.k.label)) + "," +
+               (s.k.type == 1 ? juce::String(paramSpec(s.k.id).stableId) : juce::String(s.k.type == 2 ? "action" : "etat-hors-registre")) + "," +
+               (s.k.type == 2 ? "ActionCell" : "NeuralCell") + "," + juce::String(s.k.r.getX()) + "," + juce::String(s.k.r.getY()) + "," +
+               juce::String(s.k.r.getWidth()) + "," + juce::String(s.k.r.getHeight()) + "," + juce::String(s.textZone.getX(), 2) + "," +
+               juce::String(s.textZone.getY(), 2) + "," + juce::String(s.textZone.getWidth(), 2) + "," + juce::String(s.textZone.getHeight(), 2) + "," +
+               csvField(s.refText) + "," + csvField(s.prodText) + ",,,0," + csvField(s.error));
+      ok = ok && s.error.isEmpty();
+    }
+  };
   const auto emit = [&](const juce::String& sheetId, const juce::String& png, int ox, int oy, float scale, const std::vector<Substituted>& subs) {
     for (const auto& s : subs) {
       const auto va = s.c != nullptr ? s.c->valueBox() : juce::Rectangle<float>();
@@ -220,6 +320,13 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     std::cout << "vis01 " << name << " " << img.getWidth() << "x" << img.getHeight() << (w ? "" : " WRITE FAILED") << std::endl;
     ok = ok && w;
   };
+  const auto cells = cellCases();
+  const auto onlyCells = [&](const char* sheet) {
+    std::vector<CellCase> v;
+    for (const auto& k : cells)
+      if (juce::String(k.sheet) == sheet) v.push_back(k);
+    return v;
+  };
   const auto only = [&](const char* sheet) {
     std::vector<NexusCase> v;
     for (const auto& k : cases)
@@ -232,8 +339,10 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     ctx.learnCc.fill(-1);
     std::vector<std::unique_ptr<juce::Component>> owned;
     const auto subs = substitute(*scene.sheet, ctx, only("12"), owned);
+    const auto csubs = substituteCells(*scene.sheet, ctx, onlyCells("12"), owned);
     save(scene.sheet->createComponentSnapshot(scene.sheet->getLocalBounds(), true, 2.0f), "vis01-12.png");
     emit("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, subs);
+    emitCells("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, csubs);
     owned.clear();
   }
   for (const char* id : {"01", "06a", "11"}) {
@@ -253,9 +362,11 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     auto sheet = makeR1Sheet(id);
     std::vector<std::unique_ptr<juce::Component>> owned;
     const auto subs = substitute(*sheet, ctx, only(id), owned);
+    const auto csubs = substituteCells(*sheet, ctx, onlyCells(id), owned);
     const juce::String png = juce::String("vis01-") + id + ".png";
     save(sheet->createComponentSnapshot(sheet->getLocalBounds(), true, 2.0f), png);
     emit(refName, png, 0, 0, 2.0f, subs);
+    emitCells(refName, png, 0, 0, 2.0f, csubs);
     owned.clear();
   }
   if (wanted("09")) {  // planche 09 : chaque zoom est une image à part, incrustée dans la référence à x = 40 + ..., y = 126 (composeZoom)
