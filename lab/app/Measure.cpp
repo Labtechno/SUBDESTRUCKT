@@ -242,7 +242,8 @@ int runContrast(const juce::File& csvOut, juce::StringArray& log) {
       {"mod", "relief1", "anneau EFFECTIVE sur plaque", t::mod, tok2::relief1, 3.0},
       {"warn", "relief2", "état ARMED", t::warn, tok2::relief2, 4.5},  // utf8-ok
       {"warn", "glass", "étiquettes INDICATIVE / DEMO DATA", t::warn, t::glass, 4.5},  // utf8-ok
-      {"white", "alert", "texte PANIC", juce::Colours::white, t::alert, 3.0},
+      {"white", "alert", "texte PANIC 0.4.1 (13 px gras = texte normal WCAG)", juce::Colours::white, t::alert, 4.5},  // utf8-ok
+      {"carbon", "alert", "texte PANIC, variante proposée", t::carbon, t::alert, 4.5},  // utf8-ok
       {"alert", "glass", "crête > 0 dBFS", t::alert, t::glass, 3.0},  // utf8-ok
       {"focus", "relief1", "anneau de focus", t::focus, tok2::relief1, 3.0},
       {"track", "relief1", "piste d'arc (décor)", t::track, tok2::relief1, 1.0},  // utf8-ok

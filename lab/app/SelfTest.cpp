@@ -183,18 +183,18 @@ int runSelfTest(juce::StringArray& out) {
     int tagged = 0;
     std::function<void(juce::Component&)> tag = [&](juce::Component& c) {
       if (auto* b = dynamic_cast<juce::Button*>(&c)) {
-        if (b->getButtonText() == "PANIC") b->setComponentID("sbd.action.panic"), ++tagged;
-        if (b->getButtonText() == "AUTHORIZE") b->setComponentID("sbd.action.authorize"), ++tagged;
+        if (b->getButtonText() == "PANIC") b->setComponentID("action:bar.panic"), ++tagged;
+        if (b->getButtonText() == "AUTHORIZE") b->setComponentID("action:bar.authorize"), ++tagged;
       }
       for (auto* ch : c.getChildren()) tag(*ch);
     };
     tag(*board);
-    auto* panic = dynamic_cast<juce::Button*>(findById(*board, "sbd.action.panic"));
+    auto* panic = dynamic_cast<juce::Button*>(findById(*board, "action:bar.panic"));
     bool ok = panic != nullptr && tagged == 2;
     if (panic != nullptr) {
       const auto title = panic->getTitle();
       panic->setButtonText(juce::String::fromUTF8("PANIQUE"));  // traduction ou renommage de la sérigraphie
-      ok = ok && findById(*board, "sbd.action.panic") == panic && panic->getTitle() == title;
+      ok = ok && findById(*board, "action:bar.panic") == panic && panic->getTitle() == title;
     }
     R.add("LAB-G11", ok, "component ID finds PANIC after visible text change; accessible title unchanged");
   }

@@ -269,6 +269,10 @@ std::unique_ptr<Sheet> sheetNeural() {
     c.setToggleState(k == 0, juce::dontSendNotification);
   }
   s->caption(u8("SÉLECTION : active · inactive"), RF(780.0f, 662.0f, 340.0f, 14.0f), 9.5f, kMute);
+  s->add<NeuralCell>(R(1150, 526, 112, 40), NK::Safety, Domain::Alert, "PANIC", "Panic");
+  s->caption(u8("PANIC 0.4.1 : blanc, 3,84:1"), RF(1150.0f, 572.0f, 170.0f, 14.0f), 9.5f, kMute);
+  s->add<NeuralCell>(R(1150, 618, 112, 40), NK::Safety, Domain::Alert, "PANIC", "Panic").setSafetyDarkLabel(true);
+  s->caption(u8("variante proposée : carbone, 5,08:1"), RF(1150.0f, 662.0f, 170.0f, 14.0f), 9.5f, kMute);
   return s;
 }
 

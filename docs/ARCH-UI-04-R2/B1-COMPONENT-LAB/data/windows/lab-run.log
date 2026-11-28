@@ -13,7 +13,7 @@ zoom sheet composed
 12-plate-grouping.png  1920x1000
 PT-02 Windows 11 font Verdana: 2213 occurrences; 100%: OK 2099, OK_MARGE<8 2, 2_LIGNES 1, DÉPASSEMENT 0, BUDGET_NON_MESURE 111; critiques 26, plancher 9 px a 75 % 26/26
 PT-05 Windows 11: glyphes natifs 14/16
-Contrastes : 27/27 PASS
+Contrastes : 27/28 PASS
 RESULT LAB-G01 PASS drag 22 px = +0.10 (0.600), begin 1 end 1 nested 0 outside 0
 RESULT LAB-G02 PASS double click -> default 0.25, max depth 1, begin 2 end 2 nested 0 outside 0
 RESULT LAB-G03 PASS 3 wheel notches = 1 gesture (yes), then key; begin 2 end 2 nested 0 outside 0

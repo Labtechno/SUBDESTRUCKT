@@ -29,6 +29,11 @@ class NeuralCell : public juce::Button {
     repaint();
   }
   void setDisabledReason(const juce::String& why);
+  // PANIC : libellé blanc (0.4.1, 3,84:1) ou carbone (variante proposée, 5,08:1) — arbitrage du propriétaire
+  void setSafetyDarkLabel(bool d) {
+    safetyDark_ = d;
+    repaint();
+  }
   juce::String stateText() const;  // texte d'état affiché (OFF, ON, ARMED, ACTIVE, DENIED, —)
 
   void paintButton(juce::Graphics&, bool over, bool down) override;
@@ -41,6 +46,7 @@ class NeuralCell : public juce::Button {
   ArmState arm_ = ArmState::Off;
   Icon icon_ = Icon::None;
   Forced forced_ = Forced::None;
+  bool safetyDark_ = false;
 };
 
 }  // namespace sbd::r2

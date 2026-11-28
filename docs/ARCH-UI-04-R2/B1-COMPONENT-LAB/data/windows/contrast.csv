@@ -19,7 +19,8 @@ cross,relief1,arc BASE CROSS sur plaque,#B095FF,#22282D,6.09,3.00,PASS
 mod,relief1,anneau EFFECTIVE sur plaque,#7FA9E8,#22282D,6.20,3.00,PASS
 warn,relief2,état ARMED,#E6C35A,#2C343A,7.42,4.50,PASS
 warn,glass,étiquettes INDICATIVE / DEMO DATA,#E6C35A,#0D1215,11.05,4.50,PASS
-white,alert,texte PANIC,#FFFFFF,#E0524A,3.84,3.00,PASS
+white,alert,texte PANIC 0.4.1 (13 px gras = texte normal WCAG),#FFFFFF,#E0524A,3.84,4.50,FAIL
+carbon,alert,"texte PANIC, variante proposée",#0A0D10,#E0524A,5.08,4.50,PASS
 alert,glass,crête > 0 dBFS,#E0524A,#0D1215,4.91,3.00,PASS
 focus,relief1,anneau de focus,#DCE4E9,#22282D,11.58,3.00,PASS
 track,relief1,piste d'arc (décor),#10151A,#22282D,1.23,1.00,PASS

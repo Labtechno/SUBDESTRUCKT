@@ -176,7 +176,7 @@ void NeuralCell::paintButton(juce::Graphics& g, bool over, bool down) {
       g.setColour(t::alert.darker(0.6f));
       g.drawRoundedRectangle(r.reduced(2.5f), t::radiusSmall, 1.0f);
       g.setFont(labelFont(tok2::fontCritical + 1.0f, true));
-      g.setColour(juce::Colours::white);
+      g.setColour(safetyDark_ ? t::carbon : juce::Colours::white);
       g.drawText(getButtonText(), r.translated(0.0f, pressed ? 0.8f : 0.0f), juce::Justification::centred, false);
       break;
     }
