@@ -6,6 +6,7 @@
 #include <cmath>
 #include <set>
 
+#include "r2/R2NeuralCell.h"
 #include "r2/R2Style.h"
 
 namespace sbd::lab {
@@ -242,14 +243,24 @@ int runContrast(const juce::File& csvOut, juce::StringArray& log) {
       {"mod", "relief1", "anneau EFFECTIVE sur plaque", t::mod, tok2::relief1, 3.0},
       {"warn", "relief2", "état ARMED", t::warn, tok2::relief2, 4.5},  // utf8-ok
       {"warn", "glass", "étiquettes INDICATIVE / DEMO DATA", t::warn, t::glass, 4.5},  // utf8-ok
-      {"white", "alert", "texte PANIC 0.4.1 (13 px gras = texte normal WCAG)", juce::Colours::white, t::alert, 4.5},  // utf8-ok
-      {"carbon", "alert", "texte PANIC, variante proposée", t::carbon, t::alert, 4.5},  // utf8-ok
+      {"white", "alert", "texte PANIC 0.4.1 et B1 (13 px gras = texte normal WCAG)", juce::Colours::white, t::alert, 4.5},  // utf8-ok
+      {"carbon", "alert", "texte PANIC R1 adopté (LAB-A07.1), rouge nominal ; surface rendue : panic-contrast.csv", t::carbon, t::alert, 4.5},  // utf8-ok
       {"alert", "glass", "crête > 0 dBFS", t::alert, t::glass, 3.0},  // utf8-ok
       {"focus", "relief1", "anneau de focus", t::focus, tok2::relief1, 3.0},
       {"track", "relief1", "piste d'arc (décor)", t::track, tok2::relief1, 1.0},  // utf8-ok
       {"relief1", "relief0", "niveau plaque / châssis", tok2::relief1, tok2::relief0, 1.15},  // utf8-ok
       {"relief2", "relief1", "niveau corps / plaque", tok2::relief2, tok2::relief1, 1.15},
-      {"relief3", "relief2", "niveau action / corps", tok2::relief3, tok2::relief2, 1.15}};
+      {"relief3", "relief2", "niveau action / corps", tok2::relief3, tok2::relief2, 1.15},
+      {"text", "titane R1 haut", "libellé d'action R1, haut du dégradé", t::text, tok2::titaniumFace.brighter(0.20f), 4.5},  // utf8-ok
+      {"text", "titane R1 bas", "libellé d'action R1, bas du dégradé", t::text, tok2::titaniumFace.darker(0.28f), 4.5},  // utf8-ok
+      {"text", "touche plate R1 haut", "libellé de bascule R1", t::text, tok2::relief2.brighter(0.07f), 4.5},  // utf8-ok
+      {"textDim", "touche plate R1 bas", "état OFF R1", t::textDim, tok2::relief2.darker(0.10f), 4.5},  // utf8-ok
+      {"text", "verre HUD cœur", "titre et valeur HUD", t::text, tok2::hudGlassCore, 4.5},  // utf8-ok
+      {"textDim", "verre HUD cœur", "source et clés HUD", t::textDim, tok2::hudGlassCore, 4.5},  // utf8-ok
+      {"textMute", "verre HUD cœur", "graduations HUD", t::textMute, tok2::hudGlassCore, 3.0},  // utf8-ok
+      {"warn", "verre HUD profond", "pastilles INDICATIVE et DEMO DATA", t::warn, tok2::hudGlassDeep, 4.5},  // utf8-ok
+      {"mod", "verre HUD cœur", "repères EFF", t::mod, tok2::hudGlassCore, 3.0},  // utf8-ok
+      {"hudRail", "verre HUD cœur", "rails et graduations d'encadrement (décor)", tok2::hudRail, tok2::hudGlassCore, 1.0}};  // utf8-ok
   std::vector<juce::StringArray> out;
   out.push_back(juce::StringArray{"Avant-plan", "Fond", "Usage", "Avant-plan hex", "Fond hex", "Rapport WCAG", "Seuil", "Verdict"});
   int pass = 0, n = 0;
@@ -264,6 +275,66 @@ int runContrast(const juce::File& csvOut, juce::StringArray& log) {
   const bool ok = writeCsv(csvOut, out);
   log.add("Contrastes : " + juce::String(pass) + "/" + juce::String(n) + " PASS");
   return ok ? 0 : 1;
+}
+
+PanicMeasure panicLabelContrast(int state, float scale, bool carbon, bool r1) {
+  using namespace sbd::r2;
+  NeuralCell c(NeuralCell::Kind::Safety, Domain::Alert, "PANIC", "Panic");
+  c.setRevision(r1 ? Rev::R1 : Rev::B1);
+  if (!r1) c.setSafetyDarkLabel(carbon);
+  c.setBounds(0, 0, 112, 40);
+  const Forced f[4] = {Forced::Normal, Forced::Hover, Forced::Pressed, Forced::Focus};
+  c.setForced(f[juce::jlimit(0, 3, state)]);
+  c.setLabelHidden(true);
+  const auto img = c.createComponentSnapshot(c.getLocalBounds(), true, scale);
+  // zone du libellé (px logiques) : centrée sur la face, au corps réellement utilisé
+  const auto font = labelFont(tok2::fontCritical + 1.0f, true);
+  const float w = draw::textWidth(font, "PANIC") + 2.0f, h = font.getAscent();
+  const bool pressed = state == 2;
+  const auto face = r1 ? c.getLocalBounds().toFloat().reduced(3.0f, 4.0f).translated(0.0f, pressed ? 1.0f : 0.0f)
+                       : c.getLocalBounds().toFloat().reduced(1.5f, 2.0f).translated(0.0f, pressed ? 0.8f : 0.0f);
+  const auto box = juce::Rectangle<float>(0.0f, 0.0f, w, h).withCentre(face.getCentre()) * scale;
+  const juce::Colour txt = carbon ? t::carbon : juce::Colours::white;
+  PanicMeasure m;
+  m.minRatio = 1.0e9;
+  const juce::Image::BitmapData bd(img, juce::Image::BitmapData::readOnly);
+  for (int y = juce::jmax(0, static_cast<int>(box.getY())); y < juce::jmin(img.getHeight(), static_cast<int>(box.getBottom())); ++y)
+    for (int x = juce::jmax(0, static_cast<int>(box.getX())); x < juce::jmin(img.getWidth(), static_cast<int>(box.getRight())); ++x) {
+      const double r = ratio(bd.getPixelColour(x, y), txt);
+      m.minRatio = std::min(m.minRatio, r);
+      m.maxRatio = std::max(m.maxRatio, r);
+      ++m.pixels;
+    }
+  return m;
+}
+
+int runPanicContrast(const juce::File& csvOut, juce::StringArray& log) {
+  const char* states[4] = {"normal", "hover", "pressed", "focus"};
+  std::vector<juce::StringArray> out;
+  out.push_back(juce::StringArray{"Variante", juce::String::fromUTF8("État"), juce::String::fromUTF8("Échelle"), juce::String::fromUTF8("Pixels de fond mesurés"),
+                                  "Contraste minimal", "Contraste maximal", "Seuil", "Verdict", "Plateforme"});
+  double worstR1 = 1.0e9;
+  bool okR1 = true;
+  struct V {
+    const char* name;
+    bool carbon, r1;
+  };
+  const V vs[3] = {{"R1 carbone (adopté, LAB-A07.1)", true, true}, {"B1 blanc (0.4.1, référence)", false, false}, {"B1 carbone (variante B1)", true, false}};  // utf8-ok
+  for (const auto& v : vs)
+    for (int s = 0; s < 4; ++s)
+      for (float sc : {1.0f, 2.0f}) {
+        const auto m = panicLabelContrast(s, sc, v.carbon, v.r1);
+        const bool pass = m.pixels > 0 && m.minRatio + 1.0e-9 >= 4.5;
+        if (v.r1) {
+          worstR1 = std::min(worstR1, m.minRatio);
+          okR1 = okR1 && pass;
+        }
+        out.push_back(juce::StringArray{juce::String::fromUTF8(v.name), states[s], juce::String(sc, 0), juce::String(m.pixels), num(m.minRatio, 2), num(m.maxRatio, 2),
+                                        "4.50", pass ? "PASS" : "FAIL", juce::SystemStats::getOperatingSystemName()});
+      }
+  const bool ok = writeCsv(csvOut, out);
+  log.add("PANIC R1 carbone, surface rendue : contraste minimal " + num(worstR1, 2) + ":1 sur 4 etats x 2 echelles -> " + (okR1 ? "PASS" : "FAIL"));
+  return ok && okR1 ? 0 : 1;
 }
 
 }  // namespace sbd::lab

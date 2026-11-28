@@ -55,9 +55,12 @@ class Sheet : public juce::Component {
   std::vector<std::pair<juce::Point<float>, juce::Point<float>>> lines_;
 };
 
-std::unique_ptr<Sheet> buildBoard();  // planche complète (aussi la fenêtre interactive)
-// Rend toutes les planches dans `dir` (PNG). scale = facteur de rendu des planches de revue (2 = équivalent Retina).
-bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log);
+std::unique_ptr<Sheet> buildBoard();     // planche complète R1 (aussi la fenêtre interactive)
+std::unique_ptr<Sheet> sheetNexusB1();   // planche NEXUS de B1, code inchangé (non-régression LAB-A01)
+std::unique_ptr<Sheet> sheetPlasmaB1();  // planche PLASMA de B1, code inchangé (non-régression LAB-A05)
+// Rend les planches R2-B1-R1 dans `dir` (PNG). scale = facteur des planches de revue (2 = équivalent Retina).
+// b1Dir : captures B1 publiées de la MÊME plateforme, pour les comparaisons pixel à pixel de non-régression.
+bool renderSheets(const juce::File& dir, float scale, juce::StringArray& log, const juce::File& b1Dir);
 bool writePng(const juce::Image& img, const juce::File& f);
 
 }  // namespace sbd::lab

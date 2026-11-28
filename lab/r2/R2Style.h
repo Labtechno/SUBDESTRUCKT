@@ -38,7 +38,16 @@ constexpr float fontLabel = 11.0f;
 constexpr float fontCritical = 12.0f;  // repères critiques : >= 9 px écran à 75 % (OD-06)
 constexpr float fontTitle = 12.5f;
 constexpr float fontValueXL = 14.0f;
+// ---- R2-B1-R1 (LAB-A02 à LAB-A04) : dérivés supplémentaires, palette de référence inchangée
+inline const juce::Colour hudGlassDeep{0xff070b0e};    // fond profond du verre HUD (bords)
+inline const juce::Colour hudGlassCore{0xff0e161b};    // cœur du verre HUD (centre)
+inline const juce::Colour hudRail{0xff22313b};         // rails et graduations d'encadrement
+inline const juce::Colour titaniumFace = t::titanium;  // face de touche d'action (titane noir #343C43)
 }  // namespace tok2
+
+// Révision de rendu : B1 (Component Lab initial, conservée pour les comparatifs avant/après) ou R1 (LAB-A02 à A04).
+// NEXUS et PLASMA n'ont pas de révision : leur apparence est validée (LAB-A01, LAB-A05).
+enum class Rev { B1, R1 };
 
 juce::Font labelFont(float h, bool bold = false);  // police d'interface 0.4.1 (sans-serif système)
 juce::Font valueFont(float h, bool bold = false);  // chiffres tabulaires (monospace système)
@@ -111,6 +120,19 @@ void key(juce::Graphics&, juce::Rectangle<float> r, juce::Colour face, bool conv
 void led(juce::Graphics&, juce::Point<float> c, float r, int mode, juce::Colour col);
 // cadre optique cybernétique : verre, monture, repères d'angle
 void opticalFrame(juce::Graphics&, juce::Rectangle<float> r, juce::Colour accent, bool primary);
+// ---- primitives R1 (n'altèrent pas les primitives partagées par NEXUS et PLASMA)
+// touche en titane noir usiné : alvéole dans la plaque, chanfrein, face, course physique (appui = face enfoncée)
+void titaniumKey(juce::Graphics&, juce::Rectangle<float> r, juce::Colour face, bool convex, bool pressed, bool hover);
+// témoin encastré profond : 0 éteint, 1 anneau, 2 plein
+void recessedLed(juce::Graphics&, juce::Point<float> c, float r, int mode, juce::Colour col);
+// rail mécanique encastré (gorge) et sélecteur en titane (SYNAPTIC Machined Track)
+void machinedGroove(juce::Graphics&, juce::Rectangle<float> r, float radius);
+void trackSelector(juce::Graphics&, juce::Rectangle<float> r, juce::Colour marker, bool enabled);
+// verre optique cybernétique profond, monture usinée, repères d'angle et rails gradués (Cybernetic HUD)
+void hudFrame(juce::Graphics&, juce::Rectangle<float> r, juce::Colour accent, bool primary);
+// pastille de nature de donnée : BASE (carré plein), EFF (losange), MEAS (crochets), INDICATIVE, STATE ; renvoie la largeur
+float hudChip(juce::Graphics&, float x, float y, const juce::String& text, juce::Colour c, int shape);
+juce::Font hudTitleFont(float h);  // capitales techniques espacées
 // étiquette DEMO DATA (obligatoire sur toute donnée de démonstration)
 void demoTag(juce::Graphics&, juce::Rectangle<float> area);
 // motif hachuré (état INACTIVE)

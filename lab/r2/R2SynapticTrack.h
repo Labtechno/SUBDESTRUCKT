@@ -17,6 +17,10 @@ class SynapticTrack : public juce::Component, public juce::SettableTooltipClient
     forcedHover_ = forcedHover;
     repaint();
   }
+  void setRevision(Rev r) {
+    rev_ = r;
+    repaint();
+  }
   std::function<void(int)> onChange;
 
   void paint(juce::Graphics&) override;
@@ -28,6 +32,8 @@ class SynapticTrack : public juce::Component, public juce::SettableTooltipClient
   void focusLost(FocusChangeType) override { repaint(); }
 
  private:
+  void paintB1(juce::Graphics&);
+  void paintR1(juce::Graphics&);
   juce::Rectangle<float> trackArea() const;
   juce::Rectangle<float> segment(int k) const;
   int hitSegment(juce::Point<float> p) const;
@@ -37,6 +43,7 @@ class SynapticTrack : public juce::Component, public juce::SettableTooltipClient
   juce::StringArray options_;
   int index_ = 0, hover_ = -1, forcedHover_ = -1;
   Forced forced_ = Forced::None;
+  Rev rev_ = Rev::R1;
 };
 
 }  // namespace sbd::r2

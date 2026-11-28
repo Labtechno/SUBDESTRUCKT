@@ -1,8 +1,8 @@
-# SUBDESTRUCKT — ARCH-UI-04-R2-B1 — Component Lab (NON PRODUCTION).
+# SUBDESTRUCKT — ARCH-UI-04-R2-B1 / B1-R1 — Component Lab (NON PRODUCTION).
 # Compile le laboratoire isolé (lab/, projet CMake séparé), exécute les mesures typographiques PT-02, la validation des
 # glyphes PT-05, les contrastes, les auto-tests de gestes et les rendus de planches sur macOS 15 arm64 (VM GitHub,
 # rendu logiciel JUCE hors écran : ce n'est PAS une recette physique macOS), puis verse les résultats dans
-# docs/ARCH-UI-04-R2/B1-COMPONENT-LAB/ par un commit [skip ci]. Aucun binaire n'est publié. Le plugin n'est pas construit
+# docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/ par un commit [skip ci] (les preuves B1 restent intactes). Aucun binaire n'est publié. Le plugin n'est pas construit
 # ici (workflow arch-g4.yml inchangé).
 name: R2-B1 Component Lab (macos-15, non-production)
 
@@ -23,7 +23,8 @@ concurrency:
 env:
   JUCE_TAG: "9.0.6"
   JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
-  DEST: docs/ARCH-UI-04-R2/B1-COMPONENT-LAB
+  DEST: docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT
+  B1: docs/ARCH-UI-04-R2/B1-COMPONENT-LAB
 
 jobs:
   lab:
@@ -57,10 +58,12 @@ jobs:
             echo "commit   : ${{ github.sha }}"
             echo "macOS    : $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion)), $(uname -m), VM GitHub"
           } | tee out/machine.txt
-          ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --all out --csv docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-PROPOSALS.csv --scale 2 | tee out/lab-stdout.txt
-          ./build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare out/CAPTURES/11-compare-041-r2.png 2 | tee -a out/lab-stdout.txt
+          ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --all out --csv docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv --scale 2 --b1 "$B1/CAPTURES/macos" --sha "${GITHUB_SHA::7}" | tee out/lab-stdout.txt
+          ./build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare out/CAPTURES/12-compare-041-r2.png 2 | tee -a out/lab-stdout.txt
           ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --contact out/CAPTURES out/contact-sheet-macos.png | tee -a out/lab-stdout.txt
           grep -q "SELFTEST .* 0 FAIL" out/lab-stdout.txt
+          grep -q "NONREG 02-nexus.png .*IDENTIQUE" out/lab-stdout.txt
+          grep -q "NONREG 06-plasma-channel.png .*IDENTIQUE" out/lab-stdout.txt
 
       - name: Versement des résultats macOS (commit [skip ci])
         run: |
@@ -68,12 +71,12 @@ jobs:
           mkdir -p "$DEST/CAPTURES/macos" "$DEST/data/macos" "$DEST/CONTACT-SHEETS"
           cp out/CAPTURES/*.png "$DEST/CAPTURES/macos/"
           cp out/contact-sheet-macos.png "$DEST/CONTACT-SHEETS/"
-          cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/lab-run.log out/machine.txt "$DEST/data/macos/"
+          cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/panic-contrast.csv out/lab-run.log out/machine.txt "$DEST/data/macos/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST/CAPTURES/macos" "$DEST/data/macos" "$DEST/CONTACT-SHEETS/contact-sheet-macos.png"
           if git diff --cached --quiet; then echo "aucun changement"; exit 0; fi
-          git commit -q -m "docs(ARCH-UI-04-R2-B1): rendus et mesures macOS du Component Lab (run ${{ github.run_number }}) [skip ci]"
+          git commit -q -m "docs(ARCH-UI-04-R2-B1): rendus et mesures macOS R1 du Component Lab (run ${{ github.run_number }}) [skip ci]"
           for i in 1 2 3; do
             git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
             sleep 5

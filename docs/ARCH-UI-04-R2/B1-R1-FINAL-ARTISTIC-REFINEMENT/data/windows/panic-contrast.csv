@@ -1,0 +1,25 @@
+﻿Variante,État,Échelle,Pixels de fond mesurés,Contraste minimal,Contraste maximal,Seuil,Verdict,Plateforme
+"R1 carbone (adopté, LAB-A07.1)",normal,1,451,5.17,5.80,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",normal,2,1701,5.14,5.76,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",hover,1,451,5.20,6.03,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",hover,2,1701,5.17,5.98,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",pressed,1,451,5.08,5.23,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",pressed,2,1701,5.08,5.23,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",focus,1,451,5.17,5.80,4.50,PASS,Windows 11
+"R1 carbone (adopté, LAB-A07.1)",focus,2,1701,5.14,5.76,4.50,PASS,Windows 11
+"B1 blanc (0.4.1, référence)",normal,1,451,3.90,4.96,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",normal,2,1701,3.94,5.00,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",hover,1,451,3.65,4.82,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",hover,2,1701,3.69,4.82,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",pressed,1,451,3.90,4.96,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",pressed,2,1782,3.89,5.00,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",focus,1,451,3.90,4.96,4.50,FAIL,Windows 11
+"B1 blanc (0.4.1, référence)",focus,2,1701,3.94,5.00,4.50,FAIL,Windows 11
+B1 carbone (variante B1),normal,1,451,3.92,5.00,4.50,FAIL,Windows 11
+B1 carbone (variante B1),normal,2,1701,3.90,4.94,4.50,FAIL,Windows 11
+B1 carbone (variante B1),hover,1,451,4.05,5.34,4.50,FAIL,Windows 11
+B1 carbone (variante B1),hover,2,1701,4.05,5.27,4.50,FAIL,Windows 11
+B1 carbone (variante B1),pressed,1,451,3.92,5.00,4.50,FAIL,Windows 11
+B1 carbone (variante B1),pressed,2,1782,3.90,5.00,4.50,FAIL,Windows 11
+B1 carbone (variante B1),focus,1,451,3.92,5.00,4.50,FAIL,Windows 11
+B1 carbone (variante B1),focus,2,1701,3.90,4.94,4.50,FAIL,Windows 11

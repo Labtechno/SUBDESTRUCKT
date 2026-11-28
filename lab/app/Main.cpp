@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
   juce::StringArray a;
   for (int i = 1; i < argc; ++i) a.add(juce::String::fromUTF8(argv[i]));
   const float scale = a.contains("--scale") ? a[a.indexOf("--scale") + 1].getFloatValue() : 2.0f;
+  if (a.contains("--sha")) setRenderSha(a[a.indexOf("--sha") + 1]);
+  const juce::File b1Dir = arg(a, "--b1");  // captures B1 de la même plateforme (non-régression NEXUS / PLASMA)
   int rc = 0;
   juce::StringArray log;
 
@@ -74,11 +76,12 @@ int main(int argc, char** argv) {
     dir.createDirectory();
     const auto logFile = dir.getChildFile("lab-run.log");
     logFile.replaceWithText("platform " + platformLine() + "\n");
-    rc |= renderSheets(dir.getChildFile("CAPTURES"), scale, log) ? 0 : 1;
+    rc |= renderSheets(dir.getChildFile("CAPTURES"), scale, log, b1Dir) ? 0 : 1;
     if (csv.existsAsFile()) rc |= runMeasure(csv, dir.getChildFile("typography-measurements.csv"), log);
     else log.add("PT-02 skipped: proposals CSV not found");
     rc |= runGlyphs(dir.getChildFile("glyphs.csv"), log);
     rc |= runContrast(dir.getChildFile("contrast.csv"), log);
+    rc |= runPanicContrast(dir.getChildFile("panic-contrast.csv"), log);
     juce::StringArray st;
     rc |= runSelfTest(st);
     log.addArray(st);
@@ -86,7 +89,7 @@ int main(int argc, char** argv) {
     return rc;
   }
   if (a.contains("--render")) {
-    rc = renderSheets(arg(a, "--render"), scale, log) ? 0 : 1;
+    rc = renderSheets(arg(a, "--render"), scale, log, b1Dir) ? 0 : 1;
     emit(log, {});
     return rc;
   }

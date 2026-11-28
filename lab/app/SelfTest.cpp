@@ -4,6 +4,7 @@
 // production : PB-01 et PB-02 y restent non corrigés (INTERACTION-TEST-PLAN.md).
 #include "app/SelfTest.h"
 
+#include "app/Measure.h"
 #include "app/Sheets.h"
 
 namespace sbd::lab {
@@ -235,6 +236,42 @@ int runSelfTest(juce::StringArray& out) {
     arm.setEnabled(false);
     const bool dis = arm.stateText() == juce::String::fromUTF8("\xe2\x80\x94");
     R.add("LAB-G13", on && excl && armTxt && dis, "toggle ON, exclusive selection, ARMED text, disabled shows dash");
+  }
+  // LAB-G14 PANIC R1 (LAB-A07.1) : libellé carbone >= 4,5:1 sur la surface rendue, 4 états x 2 échelles
+  {
+    double worst = 1.0e9;
+    int pix = 0;
+    for (int st = 0; st < 4; ++st)
+      for (float sc : {1.0f, 2.0f}) {
+        const auto m = panicLabelContrast(st, sc, true, true);
+        worst = std::min(worst, m.minRatio);
+        pix += m.pixels;
+      }
+    R.add("LAB-G14", pix > 0 && worst >= 4.5, "PANIC carbon label, rendered surface, worst " + juce::String(worst, 2) + ":1 over " + juce::String(pix) + " px");
+  }
+  // LAB-G15 PLASMA COMPACT (LAB-A07.2) : même composant, même contrat de geste que STANDARD
+  {
+    DemoValue v(0, 1, 0.3f, 0.7f, "", 2);
+    bool compactFlag = false, stdFlag = true;
+    {
+      auto p = std::make_unique<PlasmaChannel>(PlasmaChannel::Orientation::Vertical, Domain::Cross, "LVL", "CROSS level", v, juce::StringArray{"0", "1"});
+      parent.addAndMakeVisible(*p);
+      p->setBounds(0, 0, 48, 150);
+      compactFlag = p->compact();
+      const juce::Point<float> c(15.0f, 75.0f);
+      p->mouseDown(ev(*p, c, kLeft));
+      p->mouseDrag(ev(*p, c.translated(0.0f, -22.0f), kLeft, 1, true));
+      p->mouseUp(ev(*p, c, juce::ModifierKeys()));
+      p->mouseDown(ev(*p, c, kLeft, 2));
+      p->mouseDoubleClick(ev(*p, c, kLeft, 2));
+      p->mouseUp(ev(*p, c, juce::ModifierKeys(), 2));
+      p->mouseDown(ev(*p, c, kLeft));
+      p->mouseDrag(ev(*p, c.translated(0.0f, -5.0f), kLeft, 1, true));
+      p->setBounds(0, 0, 64, 180);
+      stdFlag = !p->compact();
+    }  // destruction pendant le dernier glisser
+    R.add("LAB-G15", compactFlag && stdFlag && v.balanced() && v.nested == 0 && v.begins == 3,
+          "compact 48x150 / standard 64x180 same component; drag, double click, destroy; " + counts(v));
   }
   out.addArray(R.lines);
   out.add("SELFTEST " + juce::String(R.pass) + " PASS, " + juce::String(R.fail) + " FAIL");

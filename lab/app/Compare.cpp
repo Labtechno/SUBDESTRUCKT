@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     // NEXUS S / Micro
     put(std::make_unique<ui::ContinuousControl>(ctx, ParamId::CrossAudioAmount, Form::Rotary, Density::S), {40, 282, 84, 96});
     put(std::make_unique<ui::ContinuousControl>(ctx, ParamId::DepthOp2Op1, Form::Rotary, Density::Micro), {150, 292, 64, 74});
-    s.add<r2::Nexus>({652, 282, 84, 96}, r2::Nexus::Size::S, r2::Domain::Cross, "XAUDIO AMT", "Cross Audio Amount (post-chain)", src(ParamId::CrossAudioAmount));
+    s.add<r2::Nexus>({652, 282, 84, 96}, r2::Nexus::Size::S, r2::Domain::Cross, "AMOUNT", "Cross Audio Amount (post-chain)", src(ParamId::CrossAudioAmount));
     s.add<r2::Nexus>({762, 292, 64, 74}, r2::Nexus::Size::Micro, r2::Domain::Fm, "DEPTH", "FM OP2>OP1", src(ParamId::DepthOp2Op1));
     // PLASMA
     put(std::make_unique<ui::ContinuousControl>(ctx, ParamId::CrossMaster, Form::LinearV, Density::S), {40, 418, 48, 150});

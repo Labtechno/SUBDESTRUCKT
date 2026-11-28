@@ -39,6 +39,7 @@ set(SBD_R2_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2NeuralCell.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2SynapticTrack.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2CyberDisplay.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2CyberHud.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2PlasmaChannel.cpp)
 
 # Outil 1 : laboratoire (planches, mesures typographiques PT-02, glyphes PT-05, contrastes, auto-tests de gestes,
@@ -48,6 +49,7 @@ target_sources(sbd_component_lab PRIVATE
   ${SBD_R2_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/app/DemoData.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/Sheets.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/app/SheetsR1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/Measure.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/SelfTest.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/app/Main.cpp)

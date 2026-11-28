@@ -59,6 +59,8 @@ std::vector<float> demoSpectrumDb(const std::vector<float>& signal);  // DFT cô
 std::vector<std::vector<float>> demoWavetable(int frames, int points);
 std::vector<juce::Point<float>> demoCurve();
 r2::DisplayData demoDisplay(r2::CyberDisplay::Variant v, float phase);
-juce::String platformLine();  // plateforme, JUCE, polices résolues (affiché sur chaque planche)
+juce::String platformLine();  // plateforme, JUCE, polices résolues, commit de rendu (affiché sur chaque planche)
+void setRenderSha(const juce::String& sha);  // SHA du code qui produit les rendus (CI), ou description locale
+juce::String bannerLine();                   // bandeau DEMO DATA de la révision courante
 
 }  // namespace sbd::lab

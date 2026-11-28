@@ -11,9 +11,11 @@ namespace sbd::r2 {
 
 struct DisplayData {
   bool demo = true;
+  bool measure = false;  // la valeur numérique est une MESURE (ex. crête) et non un paramètre BASE / EFF
   juce::String title, source;  // titre (principal) et source de la donnée (secondaire, obligatoire)
-  // valeur numérique
-  juce::String value, unit, secondary;
+  // valeur numérique (R1 : échelle instrumentale avec repères BASE et EFF)
+  juce::String value, unit, secondary, effText, minText, maxText;
+  float baseNorm = -1.0f, effNorm = -1.0f;
   // oscilloscope (-1..1) et spectre (dB, bins linéaires de 0 à fs/2 du signal décimé)
   std::vector<float> samples, spectrumDb;
   float decimatedRate = 22050.0f;  // fs hôte / 2 (une valeur sur deux)
@@ -42,6 +44,10 @@ class CyberDisplay : public juce::Component {
  public:
   enum class Variant { Numeric, Scope, Spectrum, Wavetable, ModCurve, Envelope, Meter, Autonomy, Diagnostic };
   CyberDisplay(Variant v, Domain d, DisplayData data);
+  void setRevision(Rev r) {
+    rev_ = r;
+    repaint();
+  }
   void setData(DisplayData d) {
     data_ = std::move(d);
     repaint();
@@ -50,6 +56,16 @@ class CyberDisplay : public juce::Component {
   void paint(juce::Graphics&) override;
 
  private:
+  void paintB1(juce::Graphics&);
+  void paintR1(juce::Graphics&);
+  void r1Numeric(juce::Graphics&, juce::Rectangle<float>);
+  void r1Scope(juce::Graphics&, juce::Rectangle<float>);
+  void r1Spectrum(juce::Graphics&, juce::Rectangle<float>);
+  void r1Wavetable(juce::Graphics&, juce::Rectangle<float>);
+  void r1Curve(juce::Graphics&, juce::Rectangle<float>);
+  void r1Envelope(juce::Graphics&, juce::Rectangle<float>);
+  void r1Meter(juce::Graphics&, juce::Rectangle<float>);
+  void r1Rows(juce::Graphics&, juce::Rectangle<float>);
   void paintNumeric(juce::Graphics&, juce::Rectangle<float>);
   void paintScope(juce::Graphics&, juce::Rectangle<float>);
   void paintSpectrum(juce::Graphics&, juce::Rectangle<float>);
@@ -63,6 +79,7 @@ class CyberDisplay : public juce::Component {
   Variant v_;
   Domain d_;
   DisplayData data_;
+  Rev rev_ = Rev::R1;
 };
 
 }  // namespace sbd::r2

@@ -22,7 +22,7 @@ juce::Rectangle<float> PlasmaChannel::slot() const {
   if (o_ == Orientation::Vertical) {
     r.removeFromTop(30.0f);     // sérigraphie (deux lignes au plus)
     r.removeFromBottom(18.0f);  // valeur
-    return juce::Rectangle<float>(r.getX() + 10.0f, r.getY() + 6.0f, 8.0f, r.getHeight() - 12.0f);
+    return juce::Rectangle<float>(r.getX() + (compact() ? 11.0f : 10.0f), r.getY() + 6.0f, 8.0f, r.getHeight() - 12.0f);
   }
   r.removeFromLeft(std::round(r.getWidth() * 0.30f));  // légende
   r.removeFromRight(54.0f);                            // valeur
@@ -77,6 +77,8 @@ void PlasmaChannel::paint(juce::Graphics& g) {
     g.setColour(t::textMute);
     if (V) {
       g.drawLine(s.getRight() + 4.0f, p.y, s.getRight() + 8.0f, p.y, 1.0f);
+      // COMPACT : graduations essentielles seulement (bornes et zéro), même corps de texte
+      if (compact() && k != 0 && k != ng - 1 && grads_[k] != "0") continue;
       g.drawText(grads_[k], juce::Rectangle<float>(s.getRight() + 9.0f, p.y - 5.0f, all.getRight() - s.getRight() - 9.0f, 10.0f),
                  juce::Justification::centredLeft, false);
     } else {

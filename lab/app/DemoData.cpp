@@ -104,6 +104,11 @@ DisplayData demoDisplay(CyberDisplay::Variant v, float phase) {
       d.value = "2.40";
       d.unit = "kHz";
       d.secondary = "BASE 2.40 kHz  /  EFF 3.12 kHz";
+      d.effText = "3.12 kHz";
+      d.minText = "20 Hz";
+      d.maxText = "20 kHz";
+      d.baseNorm = 0.693f;  // log10(2400 / 20) / 3
+      d.effNorm = 0.731f;   // log10(3120 / 20) / 3
       break;
     case V::Scope:
       d.title = "SCOPE";
@@ -112,7 +117,7 @@ DisplayData demoDisplay(CyberDisplay::Variant v, float phase) {
       break;
     case V::Spectrum: {
       d.title = "SPECTRUM";
-      d.source = "computed from SCOPE ring: indicative, aliasing may affect the displayed band";
+      d.source = "computed from SCOPE ring: INDICATIVE across the whole displayed band (decimated without anti-alias filter)";
       // signal de démonstration : 220 Hz et harmoniques décroissantes, au taux décimé (fs hôte / 2 = 22 050 Hz)
       std::vector<float> sig(2048);
       for (size_t k = 0; k < sig.size(); ++k) {
@@ -139,6 +144,7 @@ DisplayData demoDisplay(CyberDisplay::Variant v, float phase) {
       d.title = "MOD CURVE";
       d.source = "route curve (custom, 6 points)";
       d.curve = demoCurve();
+      d.curveInput = 0.55f;  // valeur de la source (publiée, T-09) ; DEMO DATA ici
       break;
     case V::Envelope:
       d.title = "ENV AMP";
@@ -177,12 +183,26 @@ DisplayData demoDisplay(CyberDisplay::Variant v, float phase) {
   return d;
 }
 
+namespace {
+juce::String& renderSha() {
+  static juce::String sha;
+  return sha;
+}
+}  // namespace
+
+void setRenderSha(const juce::String& sha) { renderSha() = sha; }
+
+juce::String bannerLine() {
+  return juce::String::fromUTF8("DEMO DATA  \xc2\xb7  ARCH-UI-04-R2-B1-R1 Component Lab  \xc2\xb7  isolated lab, not the production plugin");
+}
+
 juce::String platformLine() {
   const auto sans = juce::Font(juce::FontOptions(juce::Font::getDefaultSansSerifFontName(), 12.0f, juce::Font::plain));
   const auto mono = juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 12.0f, juce::Font::plain));
   const auto dot = juce::String::fromUTF8("  \xc2\xb7  ");
   return juce::SystemStats::getOperatingSystemName() + dot + juce::SystemStats::getJUCEVersion() + dot + "JUCE software renderer, offscreen" + dot +
-         "fonts: " + sans.getTypefacePtr()->getName() + " / " + mono.getTypefacePtr()->getName();
+         "fonts: " + sans.getTypefacePtr()->getName() + " / " + mono.getTypefacePtr()->getName() +
+         (renderSha().isNotEmpty() ? dot + "code " + renderSha() : juce::String());
 }
 
 }  // namespace sbd::lab

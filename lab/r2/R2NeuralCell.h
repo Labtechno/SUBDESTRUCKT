@@ -35,18 +35,32 @@ class NeuralCell : public juce::Button {
     repaint();
   }
   juce::String stateText() const;  // texte d'état affiché (OFF, ON, ARMED, ACTIVE, DENIED, —)
+  void setRevision(Rev r) {
+    rev_ = r;
+    repaint();
+  }
+  Rev revision() const { return rev_; }
+  // mesure de contraste sur la surface rendue : dessiner la touche sans son libellé (laboratoire uniquement)
+  void setLabelHidden(bool h) {
+    labelHidden_ = h;
+    repaint();
+  }
 
   void paintButton(juce::Graphics&, bool over, bool down) override;
 
  private:
   void paintIcon(juce::Graphics&, juce::Rectangle<float> r, juce::Colour c) const;
+  void paintB1(juce::Graphics&, bool over, bool down);
+  void paintR1(juce::Graphics&, bool over, bool down);
   Kind kind_;
   Domain domain_;
   juce::String full_;
   ArmState arm_ = ArmState::Off;
   Icon icon_ = Icon::None;
   Forced forced_ = Forced::None;
-  bool safetyDark_ = false;
+  bool safetyDark_ = false;  // B1 seulement : en R1, le libellé PANIC est toujours carbone (LAB-A07.1)
+  bool labelHidden_ = false;
+  Rev rev_ = Rev::R1;
 };
 
 }  // namespace sbd::r2

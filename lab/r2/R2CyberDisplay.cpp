@@ -42,6 +42,12 @@ void CyberDisplay::tag(juce::Graphics& g, juce::Rectangle<float> area, const juc
 }
 
 void CyberDisplay::paint(juce::Graphics& g) {
+  if (rev_ == Rev::B1) paintB1(g);
+  else paintR1(g);
+}
+
+// ---------------------------------------------------------------- B1 (Component Lab initial, inchangé)
+void CyberDisplay::paintB1(juce::Graphics& g) {
   const auto accent = domainColour(d_);
   auto r = getLocalBounds().toFloat().reduced(1.0f);
   const bool primary = v_ == Variant::Scope || v_ == Variant::Meter || v_ == Variant::Wavetable || v_ == Variant::Numeric;

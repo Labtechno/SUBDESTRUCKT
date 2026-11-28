@@ -18,6 +18,8 @@ class PlasmaChannel : public juce::Component, public juce::SettableTooltipClient
     repaint();
   }
   bool gestureOpen() const { return guard_.isOpen(); }
+  // LAB-A07.2 : gabarit vertical STANDARD 64 x 180 ou COMPACT 48 x 150, choisi par la largeur (même composant, même contrat)
+  bool compact() const { return o_ == Orientation::Vertical && getWidth() < 56; }
 
   void paint(juce::Graphics&) override;
   void mouseEnter(const juce::MouseEvent&) override { repaint(); }

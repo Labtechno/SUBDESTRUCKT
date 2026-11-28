@@ -48,6 +48,12 @@ int SynapticTrack::hitSegment(juce::Point<float> p) const {
 }
 
 void SynapticTrack::paint(juce::Graphics& g) {
+  if (rev_ == Rev::B1) paintB1(g);
+  else paintR1(g);
+}
+
+// ---------------------------------------------------------------- B1 (Component Lab initial, inchangé)
+void SynapticTrack::paintB1(juce::Graphics& g) {
   const bool disabled = forced_ == Forced::Disabled || !isEnabled();
   const bool focus = forced_ == Forced::Focus || (forced_ == Forced::None && hasKeyboardFocus(false));
   const int hov = forced_ == Forced::Hover ? forcedHover_ : hover_;
@@ -126,6 +132,97 @@ void SynapticTrack::paint(juce::Graphics& g) {
     g.drawText(options_[k], s.reduced(3.0f, 0.0f).translated(0.0f, mode_ == Mode::Segments ? -0.5f : 0.0f), juce::Justification::centred, true);
   }
   if (focus) draw::focusRing(g, (mode_ == Mode::Tabs ? segment(index_) : tr).expanded(1.5f), t::radiusSmall + 1.5f);
+}
+
+// ---------------------------------------------------------------- R1 : Machined Track (LAB-A03), plus sobre que NEURAL CELL
+void SynapticTrack::paintR1(juce::Graphics& g) {
+  const bool disabled = forced_ == Forced::Disabled || !isEnabled();
+  const bool focus = forced_ == Forced::Focus || (forced_ == Forced::None && hasKeyboardFocus(false));
+  const int hov = forced_ == Forced::Hover ? forcedHover_ : hover_;
+  const auto accent = domainColour(domain_);
+  const auto bold = labelFont(tok2::fontLabel, true);
+  const auto plain = labelFont(tok2::fontLabel);
+  if (mode_ != Mode::Tabs && label_.isNotEmpty()) {
+    g.setFont(plain);
+    g.setColour(disabled ? t::textMute : t::text);
+    g.drawText(label_, getLocalBounds().toFloat().reduced(3.0f, 0.0f).withHeight(16.0f), juce::Justification::centredLeft, false);
+  }
+  const auto tr = trackArea();
+  const auto notch = [&g](float x, float y0, float y1) {  // séparation usinée : trait sombre et arête claire
+    g.setColour(juce::Colours::black.withAlpha(0.65f));
+    g.drawLine(x, y0, x, y1, 1.0f);
+    g.setColour(tok2::bevelLight.withAlpha(0.22f));
+    g.drawLine(x + 1.0f, y0, x + 1.0f, y1, 1.0f);
+  };
+
+  if (mode_ == Mode::List) {  // liste : champ encastré, marqueur du domaine, cran usiné avant le chevron
+    draw::machinedGroove(g, tr, 3.0f);
+    g.setColour(disabled ? t::panelEdge : accent);
+    g.fillRoundedRectangle(tr.getX() + 3.0f, tr.getY() + 5.0f, 2.0f, tr.getHeight() - 10.0f, 1.0f);
+    if (hov == 0 && !disabled) {
+      g.setColour(tok2::relief1.withAlpha(0.6f));
+      g.fillRoundedRectangle(tr.reduced(2.0f), 2.0f);
+    }
+    auto in = tr.reduced(10.0f, 0.0f);
+    auto chev = in.removeFromRight(12.0f);
+    notch(chev.getX() - 3.0f, tr.getY() + 5.0f, tr.getBottom() - 5.0f);
+    juce::Path p;
+    const auto c = chev.getCentre().translated(1.0f, 0.0f);
+    p.addTriangle(c.x - 3.5f, c.y - 1.8f, c.x + 3.5f, c.y - 1.8f, c.x, c.y + 2.6f);
+    g.setColour(disabled ? t::textMute : t::textDim);
+    g.fillPath(p);
+    in.removeFromRight(6.0f);
+    g.setFont(valueFont(9.5f));
+    g.drawText(juce::String(index_ + 1) + "/" + juce::String(options_.size()), in.removeFromRight(30.0f), juce::Justification::centredRight, false);
+    g.setFont(plain);
+    g.setColour(disabled ? t::textMute : t::text);
+    g.drawText(options_[index_], in, juce::Justification::centredLeft, true);
+    if (disabled) draw::hatch(g, tr.reduced(2.0f), t::panelEdge.withAlpha(0.5f), 6.0f);
+    if (focus) draw::focusRing(g, tr.expanded(1.5f), t::radiusSmall + 1.5f);
+    return;
+  }
+  if (mode_ == Mode::Segments) {  // segments : rail encastré, sélecteur en titane avec marqueur du domaine
+    draw::machinedGroove(g, tr, 3.0f);
+    for (int k = 0; k < options_.size(); ++k) {
+      const auto s = segment(k);
+      const bool sel = k == index_;
+      if (sel) draw::trackSelector(g, s.reduced(2.5f, 2.5f), accent, !disabled);
+      else if (k == hov && !disabled) {
+        g.setColour(tok2::relief1);
+        g.fillRoundedRectangle(s.reduced(2.5f), 2.5f);
+      }
+      if (k > 0 && !sel && k - 1 != index_) notch(s.getX(), s.getY() + 6.0f, s.getBottom() - 6.0f);
+      g.setFont(sel ? bold : plain);
+      g.setColour(disabled ? t::textMute : (sel ? t::text : (k == hov ? t::text.withAlpha(0.85f) : t::textDim)));
+      g.drawText(options_[k], s.reduced(3.0f, 0.0f).translated(0.0f, sel ? -1.0f : -0.5f), juce::Justification::centred, true);
+    }
+    if (disabled) draw::hatch(g, tr.reduced(2.0f), t::panelEdge.withAlpha(0.45f), 6.0f);
+    if (focus) draw::focusRing(g, tr.expanded(1.5f), t::radiusSmall + 1.5f);
+    return;
+  }
+  // onglets : rail usiné en pied ; onglet actif = texte clair et marqueur du domaine encastré dans le rail
+  const auto rail = tr.withTop(tr.getBottom() - 4.0f);
+  draw::machinedGroove(g, rail, 1.5f);
+  for (int k = 0; k < options_.size(); ++k) {
+    const auto s = segment(k);
+    const bool sel = k == index_;
+    if (sel) {
+      g.setColour(t::carbon.withAlpha(0.45f));
+      g.fillRoundedRectangle(s.withTrimmedBottom(4.0f).reduced(1.0f, 0.0f), 2.0f);
+      const auto m = juce::Rectangle<float>(s.getX() + 5.0f, rail.getY() + 1.0f, s.getWidth() - 10.0f, 2.0f);
+      g.setColour((disabled ? t::textMute : accent).withAlpha(tok2::glowMax * 0.5f));
+      g.fillRoundedRectangle(m.expanded(1.0f), 1.5f);
+      g.setColour(disabled ? t::textMute : accent);
+      g.fillRoundedRectangle(m, 1.0f);
+    } else if (k == hov && !disabled) {
+      g.setColour(t::textMute.withAlpha(0.6f));
+      g.fillRect(s.getX() + 8.0f, rail.getY() + 1.5f, s.getWidth() - 16.0f, 1.0f);
+    }
+    g.setFont(bold);
+    g.setColour(disabled ? t::textMute : (sel ? t::text : (k == hov ? t::text.withAlpha(0.85f) : t::textDim)));
+    g.drawText(options_[k], s.withTrimmedBottom(4.0f).reduced(3.0f, 0.0f), juce::Justification::centred, true);
+  }
+  if (focus) draw::focusRing(g, segment(index_).expanded(1.5f), t::radiusSmall + 1.5f);
 }
 
 void SynapticTrack::mouseMove(const juce::MouseEvent& e) {
