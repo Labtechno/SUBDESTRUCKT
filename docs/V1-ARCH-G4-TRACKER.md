@@ -322,7 +322,9 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | Décision du propriétaire : AR-15 PASS (option A), B1-R1 GO FINAL, Design System R1 gelé | e45ba7d | décision humaine consignée sans réécriture des preuves |
 | 2026-11-28 | ARCH-UI-04-R2-B2-00 : audit préalable et contractualisation (dossier pour contre-expertise) | e45ba7d | documentaire ; aucune intégration de production ; `git diff d2d08ac -- source/` vide |
 | 2026-11-28 | ARCH-UI-04-R2-B2-00 GO : addendum (DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, GS définitifs, PL-06 amendé) | 9e0d5a9 | documentaire, `[skip ci]` ; R2-B2 exécution autorisée |
-| 2026-11-28 | ARCH-UI-04-R2-B2-01 : banc de reproduction (18 scénarios permanents), workflow de preuves macOS, preuves Windows | (ce commit) | aucun fichier `source/`, `plugin/`, `ui/` modifié ; barrière PASS (75 critères, AUT-02 connu) |
+| 2026-11-28 | ARCH-UI-04-R2-B2-01 : banc de reproduction (18 scénarios permanents), workflow de preuves macOS, preuves Windows | b1502c8 | aucun fichier `source/`, `plugin/`, `ui/` modifié ; barrière PASS (75 critères, AUT-02 connu) ; CI de production 56 SUCCESS |
+| 2026-11-28 | ARCH-UI-04-R2-B2-01 : preuves macOS (r2b2-evidence run 1) | 43ed70e | statuts identiques à Windows ; barrière PASS |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01, pair de test commun, ligne de base 0.4.1 (Windows), workflow GC-01 macOS | (ce commit) | aucun fichier `ui/` modifié : arbre de référence GC-01 |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan

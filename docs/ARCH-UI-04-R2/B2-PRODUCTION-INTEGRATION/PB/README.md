@@ -23,12 +23,15 @@ production. Ses tests sont **permanents** (CE-B2-01).
 | Plateforme | Résultats |
 |---|---|
 | Windows 11 (poste de développement) | [`windows/`](windows) |
-| macOS 15 arm64 (VM GitHub, workflow `r2b2-evidence.yml`) | [`macos/`](macos) |
+| macOS 15.8.2 arm64 (VM GitHub, workflow `r2b2-evidence.yml`, run 1 sur `b1502c8`) | [`macos/`](macos) : **statuts identiques à Windows pour les 19 lignes**, barrière PASS (75 critères, AUT-02 connu) |
 
 Fichiers : `pb-summary.csv` (synthèse), `pb-events.csv` (journal complet), `wrapper-results.txt`, `barrier.txt`,
 `machine.txt`, `pb-platform.txt`.
 
-| Scénario | Action | Statut (Windows) | Mesure | Suite |
+Les mesures ci-dessous sont celles de Windows ; macOS donne les mêmes statuts et les mêmes compteurs (profondeur, résidus,
+transactions Undo, conséquence sur l'Undo de la session).
+
+| Scénario | Action | Statut (Windows et macOS) | Mesure | Suite |
 |---|---|---|---|---|
 | **PB-01a** | NEXUS `wt.x` (départ 0,8) : double-clic hors valeur | **NON REPRODUIT** | 3 begin / 3 end, profondeur max **1**, défaut atteint, 1 transaction Undo | Aucune correction (OD-10) ; test permanent BE |
 | **PB-01b** | PLASMA vertical `out.gain` (départ 0 dB) : double-clic dans le canal | **NON REPRODUIT** | profondeur max 1, défaut atteint, **2 transactions Undo** (voir EC-19) | Test permanent BE |
@@ -76,3 +79,12 @@ second clic (`juce_Component.cpp:2667-2676`). Le constat statique était donc co
 SBD_B2_OUT=out/pb build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt
 bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt "wrapper=<journal>:<code>"
 ```
+
+## 5. Vérification
+
+- **CI de production** `arch-g4.yml`, run 56 sur `b1502c8` : **SUCCESS**. Elle comprend les 18 scénarios et la barrière.
+- **Preuves macOS** : `r2b2-evidence.yml` run 1, versées en `43ed70e`.
+- **Verdict B2-01** : critères satisfaits. Toutes les reproductions sont exécutées par le dispatch réel sur les deux
+  plateformes, avec statuts individuels et tests permanents. Seul blocage : **DB2-08**, ciblé sur la correction du saut
+  PLASMA. Il n'empêche pas B2-02.
+

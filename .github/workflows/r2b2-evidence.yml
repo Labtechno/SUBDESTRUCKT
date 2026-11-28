@@ -1,16 +1,21 @@
 # SUBDESTRUCKT — ARCH-UI-04-R2-B2 — preuves macOS de l'intégration en production (TB2-06).
-# Compile la cible de tests du wrapper (code de production réel, JUCE 9.0.6 épinglé) sur macOS 15 arm64 (VM GitHub :
-# comparatif, NON certifiant, ce n'est ni une recette physique ni une recette dans Reason), exécute la suite du wrapper
-# avec les reproductions B2 (tests/wrapper/GestureTests.cpp) et verse les journaux bruts dans
-# docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos/ par un commit [skip ci]. Aucun binaire n'est publié.
-# La CI de production (arch-g4.yml, inchangée) reste le juge du verdict : elle exécute les mêmes tests et la barrière.
-name: R2-B2 preuves macOS (macos-15, wrapper)
+# Compile le code de production réel (JUCE 9.0.6 épinglé) sur macOS 15 arm64 (VM GitHub : comparatif, NON certifiant,
+# ce n'est ni une recette physique M3 ni une recette dans Reason), puis :
+#  1. exécute la suite du wrapper avec les reproductions B2 (tests/wrapper/GestureTests.cpp) et la barrière ;
+#  2. exécute le banc GC-01 (tests/perf/Gc01Bench.cpp) en ALTERNANT la référence 0.4.1 (GC01_REF_SHA, arbre exporté par
+#     git archive, même banc) et l'arbre courant : référence, courant, référence, courant (CE-B2-04). Tant que
+#     GC01_REF_SHA est vide, l'arbre courant EST la référence (ligne de base : deux exécutions pour la dispersion) ;
+#  3. verse les journaux bruts dans docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/{PB,GC01}/macos/ par un commit [skip ci].
+# Aucun binaire n'est publié. La CI de production (arch-g4.yml, inchangée) reste le juge du verdict des tests.
+name: R2-B2 preuves macOS (macos-15, wrapper et GC-01)
 
 on:
   push:
     branches: [feature/arch-g4-full-development]
     paths:
       - "tests/wrapper/**"
+      - "tests/perf/**"
+      - "tests/support/**"
       - "ui/**"
       - ".github/workflows/r2b2-evidence.yml"
   workflow_dispatch:
@@ -25,17 +30,22 @@ concurrency:
 env:
   JUCE_TAG: "9.0.6"
   JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
-  DEST: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos
+  DEST_PB: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos
+  DEST_GC: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/GC01/macos
+  # référence GC-01 : commit de la ligne de base 0.4.1 (banc présent, aucune modification ui/). Vide = ligne de base.
+  GC01_REF_SHA: ""
 
 jobs:
   evidence:
     runs-on: macos-15
-    timeout-minutes: 90
+    timeout-minutes: 150
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: JUCE 9.0.6 (commit épinglé)
         run: |
@@ -43,12 +53,18 @@ jobs:
           git clone --quiet --depth 1 --branch "$JUCE_TAG" https://github.com/juce-framework/JUCE.git "$RUNNER_TEMP/JUCE"
           test "$(git -C "$RUNNER_TEMP/JUCE" rev-parse HEAD)" = "$JUCE_SHA"
 
-      - name: Compilation Release arm64 (tests du wrapper)
+      - name: Compilation Release arm64 (wrapper, banc GC-01 ; référence si définie)
         run: |
           set -euo pipefail
           command -v ninja >/dev/null || brew install ninja
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSUBDESTRUCKT_JUCE_DIR="$RUNNER_TEMP/JUCE" > /dev/null
-          cmake --build build --target subdestruckt_wrapper_tests
+          cmake --build build --target subdestruckt_wrapper_tests subdestruckt_gc01_bench
+          if [ -n "$GC01_REF_SHA" ] && [ "$GC01_REF_SHA" != "$GITHUB_SHA" ]; then
+            mkdir -p "$RUNNER_TEMP/ref"
+            git archive "$GC01_REF_SHA" | tar -x -C "$RUNNER_TEMP/ref"
+            cmake -S "$RUNNER_TEMP/ref" -B build-ref -G Ninja -DCMAKE_BUILD_TYPE=Release -DSUBDESTRUCKT_JUCE_DIR="$RUNNER_TEMP/JUCE" > /dev/null
+            cmake --build build-ref --target subdestruckt_gc01_bench
+          fi
 
       - name: Suite du wrapper avec journaux de reproduction
         run: |
@@ -65,16 +81,36 @@ jobs:
           bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt "wrapper=out/wrapper.log:$code" | tee out/pb/barrier.txt
           test -s out/pb/pb-summary.csv
 
+      - name: Banc GC-01 (alternance référence / courant)
+        run: |
+          set -euo pipefail
+          tag="run${{ github.run_number }}-${GITHUB_SHA::7}"
+          mkdir -p "out/gc01/$tag"
+          cp out/pb/machine.txt "out/gc01/$tag/machine.txt"
+          cur=./build/subdestruckt_gc01_bench_artefacts/Release/subdestruckt_gc01_bench
+          if [ -x build-ref/subdestruckt_gc01_bench_artefacts/Release/subdestruckt_gc01_bench ]; then
+            ref=./build-ref/subdestruckt_gc01_bench_artefacts/Release/subdestruckt_gc01_bench
+            for i in 1 2; do
+              "$ref" "out/gc01/$tag" "ref-${GC01_REF_SHA::7}-$i" "$GC01_REF_SHA" | tee -a "out/gc01/$tag/bench.log"
+              "$cur" "out/gc01/$tag" "cur-${GITHUB_SHA::7}-$i" "$GITHUB_SHA" | tee -a "out/gc01/$tag/bench.log"
+            done
+          else
+            for i in 1 2; do
+              "$cur" "out/gc01/$tag" "ref041-${GITHUB_SHA::7}-$i" "$GITHUB_SHA" | tee -a "out/gc01/$tag/bench.log"
+            done
+          fi
+
       - name: Versement des résultats macOS (commit [skip ci])
         run: |
           set -euo pipefail
-          mkdir -p "$DEST"
-          cp out/pb/* "$DEST/"
+          mkdir -p "$DEST_PB" "$DEST_GC"
+          cp out/pb/* "$DEST_PB/"
+          cp -R out/gc01/* "$DEST_GC/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$DEST"
+          git add "$DEST_PB" "$DEST_GC"
           if git diff --cached --quiet; then echo "aucun changement"; exit 0; fi
-          git commit -q -m "docs(ARCH-UI-04-R2-B2): preuves macOS du wrapper (run ${{ github.run_number }}) [skip ci]"
+          git commit -q -m "docs(ARCH-UI-04-R2-B2): preuves macOS du wrapper et GC-01 (run ${{ github.run_number }}) [skip ci]"
           for i in 1 2 3; do
             git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
             sleep 5

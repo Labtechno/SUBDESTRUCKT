@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "TestKit.h"
+#include "support/HeadlessPeer.h"
 #include "plugin/PluginProcessor.h"
 #include "ui/CurveEditors.h"
 #include "ui/MainEditor.h"
@@ -58,48 +59,7 @@ struct Journal {
   }
 } gJournal;
 
-// ---------------------------------------------------------------- pair de test (couche fenêtre de l'OS remplacée)
-class TestPeer final : public juce::ComponentPeer {
- public:
-  TestPeer(juce::Component& c, int flags) : juce::ComponentPeer(c, flags) {}
-  void* getNativeHandle() const override { return nullptr; }
-  void setVisible(bool v) override { visible_ = v; }
-  void setTitle(const juce::String&) override {}
-  void setBounds(const juce::Rectangle<int>& r, bool) override { bounds_ = r; }
-  juce::Rectangle<int> getBounds() const override { return bounds_; }
-  juce::Point<float> localToGlobal(juce::Point<float> p) override { return p + bounds_.getPosition().toFloat(); }
-  juce::Point<float> globalToLocal(juce::Point<float> p) override { return p - bounds_.getPosition().toFloat(); }
-  using juce::ComponentPeer::globalToLocal;
-  using juce::ComponentPeer::localToGlobal;
-  void setMinimised(bool) override {}
-  bool isMinimised() const override { return false; }
-  bool isShowing() const override { return visible_; }
-  void setFullScreen(bool) override {}
-  bool isFullScreen() const override { return false; }
-  void setIcon(const juce::Image&) override {}
-  bool contains(juce::Point<int> p, bool) const override { return bounds_.withZeroOrigin().contains(p); }
-  OptionalBorderSize getFrameSizeIfPresent() const override { return {}; }
-  juce::BorderSize<int> getFrameSize() const override { return {}; }
-  bool setAlwaysOnTop(bool) override { return true; }
-  void toFront(bool) override {}
-  void toBehind(juce::ComponentPeer*) override {}
-  bool isFocused() const override { return true; }
-  void grabFocus() override {}
-  void repaint(const juce::Rectangle<int>&) override {}
-  void performAnyPendingRepaintsNow() override {}
-  void setAlpha(float) override {}
-  juce::StringArray getAvailableRenderingEngines() override { return {"test"}; }
-  void textInputRequired(juce::Point<int>, juce::TextInputTarget&) override {}
-
- private:
-  juce::Rectangle<int> bounds_;
-  bool visible_ = false;
-};
-
-class TestHost final : public juce::Component {
- protected:
-  juce::ComponentPeer* createNewPeer(const juce::DesktopWindowOptions& o) override { return new TestPeer(*this, o.getStyleFlags()); }
-};
+using sbd::testsupport::TestHost;  // pair de test commun : tests/support/HeadlessPeer.h
 
 // ---------------------------------------------------------------- sonde de geste (thread message)
 struct Probe : juce::AudioProcessorListener {

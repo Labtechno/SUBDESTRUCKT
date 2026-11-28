@@ -57,6 +57,14 @@ if(SUBDESTRUCKT_BUILD_TESTS)
   target_link_libraries(subdestruckt_wrapper_tests PRIVATE subdestruckt_core juce::juce_audio_processors juce::juce_gui_basics
     juce::juce_recommended_config_flags)
 
+  # ARCH-UI-04-R2-B2 : banc de performances graphiques GC-01 (non exécuté par la CI de production ; workflow r2b2-evidence.yml).
+  juce_add_console_app(subdestruckt_gc01_bench PRODUCT_NAME "subdestruckt_gc01_bench")
+  target_sources(subdestruckt_gc01_bench PRIVATE tests/perf/Gc01Bench.cpp ${SUBDESTRUCKT_WRAPPER_SOURCES})
+  target_include_directories(subdestruckt_gc01_bench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} tests)
+  target_compile_definitions(subdestruckt_gc01_bench PRIVATE ${SUBDESTRUCKT_JUCE_DEFINITIONS})
+  target_link_libraries(subdestruckt_gc01_bench PRIVATE subdestruckt_core juce::juce_audio_processors juce::juce_gui_basics
+    juce::juce_recommended_config_flags)
+
   # Tests d'hôte : chargement du .vst3 compilé par l'hébergement VST3 de JUCE (sans interface graphique).
   juce_add_console_app(subdestruckt_host_tests PRODUCT_NAME "subdestruckt_host_tests")
   target_sources(subdestruckt_host_tests PRIVATE tests/host/HostTests.cpp)
