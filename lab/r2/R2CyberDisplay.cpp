@@ -365,4 +365,7 @@ void CyberDisplay::paintRows(juce::Graphics& g, juce::Rectangle<float> r) {
   }
 }
 
+// R1 : peintre HUD partagé (ui/r2/R2Hud.cpp)
+void CyberDisplay::paintR1(juce::Graphics& g) { paintHud(g, HudView{v_, d_, data_, getLocalBounds()}); }
+
 }  // namespace sbd::r2

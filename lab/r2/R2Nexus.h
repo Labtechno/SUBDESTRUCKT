@@ -5,12 +5,13 @@
 // imbrication au double-clic, fermé à la destruction et au masquage (GestureGuard).
 #pragma once
 #include "r2/R2Style.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::r2 {
 
 class Nexus : public juce::Component, public juce::SettableTooltipClient, private juce::Timer {
  public:
-  enum class Size { XL, S, Micro };
+  using Size = NexusSize;
   Nexus(Size size, Domain domain, const juce::String& label, const juce::String& fullName, ValueSource& src);
   ~Nexus() override;
 

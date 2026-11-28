@@ -3,12 +3,13 @@
 // Une mesure audio n'est JAMAIS affichée dans ce composant (afficheur PEAK distinct, CyberDisplay::Meter).
 #pragma once
 #include "r2/R2Style.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::r2 {
 
 class PlasmaChannel : public juce::Component, public juce::SettableTooltipClient {
  public:
-  enum class Orientation { Vertical, Horizontal };
+  using Orientation = PlasmaOrientation;
   PlasmaChannel(Orientation o, Domain d, const juce::String& label, const juce::String& fullName, ValueSource& src,
                 juce::StringArray graduations);
   ~PlasmaChannel() override;

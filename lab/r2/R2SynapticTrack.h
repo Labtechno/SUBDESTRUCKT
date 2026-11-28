@@ -2,12 +2,13 @@
 // Les indices de choix sont ceux du registre (inchangés) ; seul l'affichage compact change (nomenclature R2).
 #pragma once
 #include "r2/R2Style.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::r2 {
 
 class SynapticTrack : public juce::Component, public juce::SettableTooltipClient {
  public:
-  enum class Mode { Segments, List, Tabs };
+  using Mode = TrackMode;
   SynapticTrack(Mode mode, Domain domain, const juce::String& label, const juce::String& fullName, juce::StringArray options);
 
   void setIndex(int k);
@@ -34,6 +35,7 @@ class SynapticTrack : public juce::Component, public juce::SettableTooltipClient
  private:
   void paintB1(juce::Graphics&);
   void paintR1(juce::Graphics&);
+  TrackView geometryView() const;  // vue réduite à la géométrie (segments, zone)
   juce::Rectangle<float> trackArea() const;
   juce::Rectangle<float> segment(int k) const;
   int hitSegment(juce::Point<float> p) const;

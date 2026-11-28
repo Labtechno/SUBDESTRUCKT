@@ -8,7 +8,8 @@ distribution. Il ne traite aucun signal audio. Documentation complète et captur
 
 | Dossier | Rôle | Dépendances |
 |---|---|---|
-| `r2/` | Composants R2 candidats à l'intégration R2-B2 : `R2Style` (tokens dérivés, primitives, `ValueSource`, `GestureGuard`), `R2Nexus`, `R2NeuralCell`, `R2SynapticTrack`, `R2CyberDisplay`, `R2PlasmaChannel` | JUCE `juce_gui_basics` et `ui/DesignTokens.h` (palette 0.4.1, lue sans modification). Ni registre, ni processeur. |
+| `../ui/r2/` | **Design System R1 partagé** (R2-B2, TB2-02) : `R2Style` (tokens dérivés, primitives, `ValueSource`, `GestureGuard`), `R2Painters` (NEXUS, PLASMA, NEURAL CELL, SYNAPTIC), `R2Hud` (neuf variantes HUD). Peintres purs, consommés par le plugin et par le laboratoire. | JUCE `juce_gui_basics`, `ui/DesignTokens.h` |
+| `r2/` | Composants du laboratoire : `R2Nexus`, `R2NeuralCell`, `R2SynapticTrack`, `R2CyberDisplay`, `R2PlasmaChannel`. Rendu R1 délégué aux peintres partagés ; gestionnaires d'événements propres au laboratoire (non intégrés au plugin) ; révision B1 et primitives B1 (`R2StyleB1.cpp`, `R2Style.h`) conservées pour les comparatifs historiques. | `../ui/r2/` |
 | `app/` | Laboratoire : DEMO DATA, planches, mesures (PT-02, PT-05, contrastes), auto-tests de gestes, fenêtre interactive, comparatif 0.4.1 / R2 | `r2/` ; le comparatif compile aussi `ui/*.cpp`, `plugin/PluginProcessor.cpp` et le cœur, **sans les modifier** |
 | `tools/` | `gen_labels.py` (nomenclature R2-A), `gen_labels_r1.py` (révision R1, LAB-A08), `build_review.py` (revue P1 de B1), `build_validation_r1.py` (validation P1 R1 : statut lexical et géométrique), `check_literals.py` (littéraux UTF-8) ; tous avec contrôle de reproductibilité | Python 3.11 |
 
@@ -30,7 +31,8 @@ build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare out/CAPTURES/12-comp
 py -3.11 lab/tools/gen_labels.py --check     # nomenclature R2-A : identique octet pour octet
 py -3.11 lab/tools/gen_labels_r1.py --check  # nomenclature R1 (LAB-A08) : identique octet pour octet
 py -3.11 lab/tools/build_validation_r1.py    # validation P1 R1 à partir des mesures de chaque plateforme
-py -3.11 lab/tools/check_literals.py
+py -3.11 lab/tools/check_literals.py           # littéraux UTF-8 (lab/ et ui/r2/)
+py -3.11 lab/tools/compare_r1_refs.py <planches> <plateforme> [csv] [--header=0]   # CE-B2-03 : comparaison aux références R1 historiques
 ```
 
 Sous macOS, le workflow `.github/workflows/component-lab.yml` exécute la même campagne sur `macos-15` et verse les

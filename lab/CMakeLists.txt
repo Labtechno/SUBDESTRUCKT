@@ -32,14 +32,17 @@ add_subdirectory(${SUBDESTRUCKT_JUCE_DIR} JUCE)
 
 set(SBD_LAB_DEFINITIONS JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0)
 
-# Composants R2 : bibliothèque candidate à l'intégration R2-B2 (dépend de JUCE et des tokens 0.4.1, pas du registre).
+# Composants R2 du laboratoire : rendu par les peintres partagés du Design System R1 (ui/r2/, TB2-02), gestionnaires
+# d'événements propres au laboratoire (non intégrés au plugin), révision B1 conservée pour les comparatifs historiques.
 set(SBD_R2_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2Style.cpp
+  ${SBD_ROOT}/ui/r2/R2Style.cpp
+  ${SBD_ROOT}/ui/r2/R2Painters.cpp
+  ${SBD_ROOT}/ui/r2/R2Hud.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2StyleB1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2Nexus.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2NeuralCell.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2SynapticTrack.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2CyberDisplay.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2CyberHud.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/r2/R2PlasmaChannel.cpp)
 
 # Outil 1 : laboratoire (planches, mesures typographiques PT-02, glyphes PT-05, contrastes, auto-tests de gestes,

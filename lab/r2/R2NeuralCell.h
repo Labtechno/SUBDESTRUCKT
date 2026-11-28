@@ -3,14 +3,15 @@
 // commande désactivée. L'état est porté par la forme, le témoin et le texte, jamais par la seule couleur.
 #pragma once
 #include "r2/R2Style.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::r2 {
 
 class NeuralCell : public juce::Button {
  public:
-  enum class Kind { Action, Toggle, Arm, Select, Safety };
-  enum class ArmState { Off, Armed, Active, Denied };
-  enum class Icon { Pulse, Capture, Authorize, None };
+  using Kind = CellKind;
+  using ArmState = CellArm;
+  using Icon = CellIcon;
 
   NeuralCell(Kind kind, Domain domain, const juce::String& label, const juce::String& fullName);
 

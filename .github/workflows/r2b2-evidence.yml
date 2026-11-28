@@ -33,7 +33,7 @@ env:
   DEST_PB: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos
   DEST_GC: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/GC01/macos
   # référence GC-01 : commit de la ligne de base 0.4.1 (banc présent, aucune modification ui/). Vide = ligne de base.
-  GC01_REF_SHA: ""
+  GC01_REF_SHA: "0517426a7cded57321aeaadd99a6883a64c3142d"
 
 jobs:
   evidence:

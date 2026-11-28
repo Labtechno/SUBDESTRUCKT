@@ -1,9 +1,13 @@
-# SUBDESTRUCKT — ARCH-UI-04-R2-B1 / B1-R1 — Component Lab (NON PRODUCTION).
-# Compile le laboratoire isolé (lab/, projet CMake séparé), exécute les mesures typographiques PT-02, la validation des
-# glyphes PT-05, les contrastes, les auto-tests de gestes et les rendus de planches sur macOS 15 arm64 (VM GitHub,
-# rendu logiciel JUCE hors écran : ce n'est PAS une recette physique macOS), puis verse les résultats dans
-# docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/ par un commit [skip ci] (les preuves B1 restent intactes). Aucun binaire n'est publié. Le plugin n'est pas construit
-# ici (workflow arch-g4.yml inchangé).
+# SUBDESTRUCKT — Component Lab (NON PRODUCTION) — R2-B1 / B1-R1, puis R2-B2 (peintres partagés ui/r2/).
+# Compile le laboratoire isolé (lab/ ; depuis R2-B2, il consomme les peintres partagés du Design System R1 dans ui/r2/),
+# exécute les mesures typographiques PT-02, la validation des glyphes PT-05, les contrastes, les auto-tests de gestes et
+# les rendus de planches sur macOS 15 arm64 (VM GitHub, rendu logiciel JUCE hors écran : ce n'est PAS une recette physique).
+#
+# Depuis R2-B2 (CE-B2-03), les captures R1 historiques de docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT/CAPTURES/macos/
+# sont des références INDÉPENDANTES et IMMUABLES : ce workflow ne les réécrit plus. Il compare les planches rendues avec
+# les peintres partagés à ces références (images entières, rendu avec la chaîne de SHA de la référence) et verse les
+# résultats de comparaison et les mesures dans docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/VIS/lab/macos/ par un commit
+# [skip ci]. Aucun binaire n'est publié ; le plugin n'est pas construit ici (arch-g4.yml inchangé).
 name: R2-B1 Component Lab (macos-15, non-production)
 
 on:
@@ -11,6 +15,7 @@ on:
     branches: [feature/arch-g4-full-development]
     paths:
       - "lab/**"
+      - "ui/r2/**"
       - ".github/workflows/component-lab.yml"
 
 permissions:
@@ -23,8 +28,10 @@ concurrency:
 env:
   JUCE_TAG: "9.0.6"
   JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
-  DEST: docs/ARCH-UI-04-R2/B1-R1-FINAL-ARTISTIC-REFINEMENT
+  DEST: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/VIS/lab/macos
   B1: docs/ARCH-UI-04-R2/B1-COMPONENT-LAB
+  # chaîne de SHA inscrite dans le bandeau des captures R1 historiques macOS (component-lab run 5, commit 7cbfa43)
+  R1_REF_SHA: "7cbfa43"
 
 jobs:
   lab:
@@ -60,30 +67,44 @@ jobs:
           } | tee out/machine.txt
           ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --all out --csv docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv --scale 2 --b1 "$B1/CAPTURES/macos" --sha "${GITHUB_SHA::7}" | tee out/lab-stdout.txt
           ./build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare out/CAPTURES/12-compare-041-r2.png 2 | tee -a out/lab-stdout.txt
-          ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --contact out/CAPTURES out/contact-sheet-macos.png | tee -a out/lab-stdout.txt
           grep -q "SELFTEST .* 0 FAIL" out/lab-stdout.txt
           grep -q "NONREG 02-nexus.png .*IDENTIQUE" out/lab-stdout.txt
           grep -q "NONREG 06-plasma-channel.png .*IDENTIQUE" out/lab-stdout.txt
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Comparaison aux références R1 historiques (CE-B2-03, étape 1)
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet numpy pillow
+          # (a) planches de la campagne (bandeau d'en-tête exclu : il porte le SHA du code de rendu)
+          python lab/tools/compare_r1_refs.py out/CAPTURES macos out/compare-r1-hors-bandeau.csv | tee out/compare-r1.txt || true
+          # (b) contrôle strict : rendu avec la chaîne de SHA de la référence, images entières comparées
+          mkdir -p out-strict
+          ./build-lab/sbd_component_lab_artefacts/Release/sbd_component_lab --all out-strict --csv docs/ARCH-UI-04-R2/R2-CONTROL-LABELS-R1.csv --scale 2 --b1 "$B1/CAPTURES/macos" --sha "$R1_REF_SHA" > out/strict-stdout.txt
+          ./build-lab/sbd_lab_compare_artefacts/Release/sbd_lab_compare out-strict/CAPTURES/12-compare-041-r2.png 2 >> out/strict-stdout.txt
+          python lab/tools/compare_r1_refs.py out-strict/CAPTURES macos out/compare-r1-images-entieres.csv --header=0 | tee -a out/compare-r1.txt
+
       - name: Versement des résultats macOS (commit [skip ci])
         run: |
           set -euo pipefail
-          mkdir -p "$DEST/CAPTURES/macos" "$DEST/data/macos" "$DEST/CONTACT-SHEETS"
-          cp out/CAPTURES/*.png "$DEST/CAPTURES/macos/"
-          cp out/contact-sheet-macos.png "$DEST/CONTACT-SHEETS/"
-          cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/panic-contrast.csv out/lab-run.log out/machine.txt "$DEST/data/macos/"
+          mkdir -p "$DEST"
+          cp out/compare-r1.txt out/compare-r1-hors-bandeau.csv out/compare-r1-images-entieres.csv "$DEST/"
+          cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/panic-contrast.csv out/lab-run.log out/machine.txt "$DEST/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$DEST/CAPTURES/macos" "$DEST/data/macos" "$DEST/CONTACT-SHEETS/contact-sheet-macos.png"
+          git add "$DEST"
           if git diff --cached --quiet; then echo "aucun changement"; exit 0; fi
-          git commit -q -m "docs(ARCH-UI-04-R2-B1): rendus et mesures macOS R1 du Component Lab (run ${{ github.run_number }}) [skip ci]"
+          git commit -q -m "docs(ARCH-UI-04-R2-B2): comparaison du Component Lab aux references R1 macOS (run ${{ github.run_number }}) [skip ci]"
           for i in 1 2 3; do
             git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
             sleep 5
           done
           exit 1
 
-      - name: Artefact (journaux)
+      - name: Artefact (journaux et planches)
         if: always()
         uses: actions/upload-artifact@v6
         with:
