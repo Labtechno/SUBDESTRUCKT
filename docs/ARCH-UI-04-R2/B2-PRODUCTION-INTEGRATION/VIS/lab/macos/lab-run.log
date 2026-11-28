@@ -1,4 +1,4 @@
-platform Mac OSX 15.8.2  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Lucida Grande / Menlo  ·  code 28024df
+platform Mac OSX 15.8.2  ·  JUCE v9.0.6  ·  JUCE software renderer, offscreen  ·  fonts: Lucida Grande / Menlo  ·  code dce72ab
 01-final-board.png  3680x2300
 NONREG 02-nexus.png : 0 pixel(s) différent(s) sur 4095040 (hors bandeau d'en-tête), écart maximal 0/255  ->  IDENTIQUE
 02-nexus-nonregression.png  2752x974
