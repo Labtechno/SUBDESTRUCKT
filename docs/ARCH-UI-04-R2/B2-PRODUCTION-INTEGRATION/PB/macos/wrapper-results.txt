@@ -1,0 +1,75 @@
+RESULT G-18w PASS AudioProcessor::processBlock : 0 allocation(s)/liberation(s) (4 frequences x blocs 32/512, notes, CC120, automation, transactions de topologie)
+RESULT G-06w PASS latence declaree a l'hote (setLatencySamples) : 32 a 44,1 kHz, 0 a 48/88,2/96 kHz
+RESULT G-21w PASS etat du wrapper : blob identique apres rechargement (oui), routes/ids/classes (oui), rendu bit a bit (oui), etat invalide refuse (oui), version future refusee (oui)
+RESULT G-22w PASS 703 parametres : identite hote = StableID ; identifiants VST3 (calcul JUCE) = liste de reference calculee independamment ; tous distincts
+RESULT G-19w PASS deux processeurs entrelaces : sorties identiques aux rendus separes, instances isolees
+RESULT G-16w PASS Panic demande par l'UI : transmis au moteur comme evenement de securite (offset 0)
+RESULT CAP-02w PASS sauvegarde DAW d'un gel D2 arme : capture 1, presente dans l'etat 1, restauree a l'identique 1 ; G4.2 : suspendue et silencieuse avant autorisation 1 (energie 0), gel rejoue sans entree apres Autoriser 1 (energie 784)
+RESULT WT-ED-02w PASS processeur : generation (user:4e3e24fc40abf694), edition d'une forme (user:1c2cb85d09c3960d, contenu exact 1), Undo x2 retour a factory:saw, Redo 1
+RESULT UI-01w PASS 3 espaces x 6 sous-onglets, 3 tailles, 101 selections Inspector : etat inchange 1, tailles respectees 1 ; 4464 controles de parametres, titres accessibles manquants 0 ; 220/703 parametres atteignables par un controle visible
+RESULT UI04-INV PASS registre compile : 703 parametres, 703 StableID uniques ; liste figee : 703, identique (ordre) 1
+RESULT UI04-COV PASS 703/703 StableID atteints par une commande liee visible ; 23 contextes de navigation, 662 etats explores (algorithmes et modes compris) ; manquants : 0
+RESULT UI04-INACT PASS 340 changements de contexte (algorithmes, modes, types) puis retour : autres valeurs conservees bit a bit ; violations 0
+RESULT UI04-BIND PASS 703/703 StableID edites par leur commande (Base hote = cible, aucune autre ecriture, retour) ; echecs 0, ecritures annexes 0, retours 0
+RESULT UI04-ALIAS PASS 51 StableID presentes par plusieurs commandes simultanees : valeurs affichees identiques (echecs 0)
+RESULT UI04-NAV PASS 552 vues (contextes x 3 tailles x 4 zooms x Inspector ouvert/ferme) + 235 selections Inspector : ecritures 0, gestes 0, etat identique 1, pile Undo inchangee 1 ; composants detruits par la navigation 0 / 885
+RESULT UI04-CLIP PASS 12 configurations (1440x900, 960x640, 1920x1200 ; zoom 75-150 %), 4804 commandes visibles verifiees : troncatures 0, hors parent 0, chevauchements 0, onglets tronques 0
+RESULT UI04-PANIC PASS Panic visible et entier dans 12 configurations (echecs 0) ; clic -> Panic compte 1, autorisation revoquee 1
+RESULT UI04-UNDO PASS edition NEXUS = 1 transaction (undo/redo exacts, affichage suivi) ; geste X/Y du SYMBIOTIC CORE = 1 transaction pour cross.fwd + cross.rev : 1
+RESULT UI04-AUTO PASS automation hote (thread non-UI) : 2 commande(s) a jour 1, valeur hote intacte (pas de reecriture) 1, aucune transaction Undo 1
+RESULT UI04-STATE PASS etat (format 4 inchange) : editeur ouvert = editeur ferme = blob sauvegarde 1 ; 26 commandes refletent la restauration 1
+RESULT UI04-KEY PASS clavier NEXUS : fleche = +1 % de plage, Suppr = defaut, Entree = saisie numerique (virgule et unite acceptees) : 1
+RESULT UI04-CORE PASS SYMBIOTIC CORE direct : X=cross.fwd, Y=cross.rev, Z=cross.master, aucun autre parametre ecrit, alternative numerique coherente : 1
+RESULT UI04-CON PASS contrastes des tokens (WCAG) : texte/plaque 12.61 ; texte/chassis 13.60 ; texte/verre 14.64 ; secondaire/plaque 6.44 ; inactif/plaque 4.58 ; WT/carbone 12.24 ; FM/carbone 9.24 ; CROSS/carbone 7.97 ; modulation/carbone 8.11 ; alerte/carbone 5.08 ; ARME/carbone 11.43 ; 
+RESULT UI04-OPEN PASS 100 cycles ouverture/fermeture avec audio entre les cycles : etat identique 1, autorisation inchangee 1, aucun editeur residuel 1
+RESULT UI04-MULTI PASS 4 instances avec editeurs ouverts : edition d'une instance sans effet sur les autres (valeurs et affichage) : 1
+RESULT UI04-RT PASS processBlock avec editeur ouvert (navigation, zoom, telemetrie entre les 300 blocs) : 0 allocation(s)
+RESULT UI04-DSP PASS rendu 300 blocs x 256 (2 canaux) avec et sans editeur : echantillons differents 0 / 153600 (energie 6.21e+03) ; bit a bit 1
+RESULT UI04-DECO PASS 474 boutons visibles (tous contextes) : non relies 0 ; 32 entrees d'etat (cases lues par une action) ; 119 listes (56 parametres d'action lus par leur bouton)
+RESULT UI04-OPS PASS operations hors registre presentes (presets, banques, formes, routes, modulations, courbes, MIDI Learn, Randomize/Evolve, captures, Drone, Panic, Undo, Quality, zoom, Inspector) : manquantes 0
+RESULT AUT-02 FAIL restauration DAW (gel D2 + gel S2 armes, 2 captures) : etat relu identique octet par octet 1 ; avant autorisation : energie 3 s sans note 0 (< 1e-9), suspendu (processeur + telemetrie) 1 ; apres Autoriser : gel rejoue 4.18e+03 (> 1e-3), nouvelles captures identiques aux originales 0 [emplacement 4 D2 : trames 12000/12000, ecart max 0] [emplacement 5 S2 : trames 1025/1025, ecart max 54.5]
+RESULT AUT-02c PASS COMPLEMENTAIRE (defini apres diagnostic d'AUT-02 (c)) : gel S2 sans demi-vie (S2 Decay = 1) : nouvelles captures D2 et S2 identiques aux originales apres restauration suspendue puis Autoriser 1 ; avec le Decay par defaut (0,5), le spectre gele restaure decroit selon son contrat (demi-vie 0,1 + 30 d^2 s)
+RESULT AUT-03 PASS duplication : copie suspendue 1 (energie 0) ; source toujours autorisee 1, rendu identique a son jumeau 1 (energie 3.21e+03)
+RESULT AUT-04 PASS preset arme avec captures : armements remis a zero 1, captures conservees 1, suspendu 1, energie sans note 0 ; changement de preset pendant un gel autorise : 1.53e+03 -> 2.12e-15
+RESULT AUT-05 PASS Panic : autorisation retiree et Drone desarme 1, configuration inchangee 1 (dirty inchange 1), energie apres Panic 0 ; Autoriser : gel restaure depuis la capture 4.1e+03
+RESULT AUT-06 PASS 2 cycles fermeture/reouverture d'une instance suspendue : etat (armements + captures) identique octet par octet et toujours suspendue 1
+RESULT AUT-07 PASS etat v2 arme migre (Etat v2 migre et charge ; etats autonomes suspendus jusqu'a la lecture (ou Autoriser)) : suspendu, armement conserve 1 ; Drone : drone_restore=0 non restaure 1, =1 restaure 1
+RESULT AUT-08 PASS UI : bouton Autoriser visible pour une instance suspendue 1 ; navigation des 3 espaces sans effet sur l'autorisation 1
+RESULT ML-01w PASS CC20 -> wt.x : appris 1 ; 0 -> 0.0000, 127 -> 1.0000, 64 -> 0.5039 (attendu 0.5039 +- 0.0079)
+RESULT ML-02w PASS remplacement CC20 -> wt.y 1 ; wt.y appris sur CC21 retire CC20 1 ; suppression de CC21 sans effet ensuite 1
+RESULT ML-03w PASS profil isole /var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/subdestruckt_wrapper_tests/sbd_test_midi_learn.txt : affectation relue par une nouvelle instance 1 ; lignes invalides, StableID inconnu et CC reservee ignores sans echec
+RESULT ML-04w PASS etat DAW et preset sans affectation 1 ; chargement d'un preset et d'un etat : carte inchangee 1
+RESULT ML-05w PASS A apprend CC22, B apprend CC23 : profil contenant les deux et l'affectation anterieure (aucune perte) 1 ; carte de A actualisee 1
+RESULT ML-06w PASS CC reservees refusees 1 ; armement refuse 1 ; non automatisable refuse 1 ; carte inchangee 1 ; hote -> CC -> hote : derniere ecriture gagnante 1/1/1, aucune boucle
+RESULT ML-07w PASS 512 messages CC appris par bloc x 4 blocs : 0 allocation(s) dans processBlock ; chemin audio : atomiques uniquement (lecture de code)
+RESULT TA-03w PASS processBlock + playhead simule : ARRET 100 blocs energie 0, suspendu 1 ; LECTURE : gel rejoue 4.79e+03, autorise (source transport) 1, sans Autoriser ni thread message
+RESULT TA-13w PASS position absente, playhead nul, contexte VST3 absent (temps non fini) : classes INCONNU (jamais observe, non autorise) ; position valide a l'arret : ARRET 1
+RESULT TA-15w PASS export hors temps reel juste apres l'ouverture (premier bloc en LECTURE, sans lecture prealable, sans Autoriser, sans editeur) : autorise par rendu 1, contenu gele 4.83e+03 ; meme scenario en temps reel : non autorise 1 (energie 0)
+RESULT TA-18w PASS getStateInformation : instance autorisee par le transport et instance suspendue de meme configuration : etats identiques octet par octet (et = etat restaure) 1
+RESULT TA-21w PASS drone_restore=0 : Drone non restaure, aucune suspension ; drone_restore=1 : configuration Drone restauree et suspendue jusqu'a autorisation (RF-03) 1
+RESULT TA-22w PASS MIDI : CC123 (All Notes Off) sans revocation 1 ; CC120 (All Sound Off) = Panic, revocation 1
+RESULT TA-23w PASS ouverture/fermeture de l'editeur x10 (LECTURE maintenue) : autorisation inchangee (suspendue) 1
+RESULT TA-07w PASS editeur : clic Drone -> autorisation explicite 1 ; clic d'armement (dst.gl1.arm) -> autorisation explicite 1 (controle trouve 1, desarmer n'autorise pas)
+RESULT TA-20w PASS processBlock avec playhead (ARRET, LECTURE, INCONNU, hors temps reel, CC120/123) : 0 allocation(s)
+RESULT TA-R01w PASS processeur, scenario R-28 : ouverture (ARRET) energie 0.00e+00, suspendu 1 ; export (setNonRealtime, LECTURE) : contenu 4.79e+03, source rendu hors temps reel (rendu attendu) ; annulation puis ARRET temps reel 2,1 s : energie 0, crete -240.0 dBFS (silence attendu) ; autorise 0 (0 attendu), suspendu 1 (1 attendu)
+RESULT TA-R14 PASS etat persistant : sauvegarde pendant le rendu = etat restaure 1 ; apres l'annulation = etat restaure 1 ; captures du processeur intactes 1 (thread audio concurrent, capture automatique possible)
+RESULT TA-R13w PASS premier ARRET->LECTURE apres l'export : autorise par transport (transport attendu) 1 ; gel restitue 4.81e+03 ; captures persistees intactes 1
+RESULT TA-R15w PASS processBlock sur les sequences TA-R (ouverture, rendu, annulation, lecture) : 0 allocation(s)
+RESULT PB-01a PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; double-clic hors valeur sur wt.x (depart 0.800) : 5 evenements ui, begin 3 / end 3, profondeur max 1, residuel 0, hors geste 0, transactions Undo 1, valeur finale = defaut : 1
+RESULT PB-01b PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; double-clic hors valeur sur out.gain (depart 0.000) : 5 evenements ui, begin 3 / end 3, profondeur max 1, residuel 0, hors geste 0, transactions Undo 2, valeur finale = defaut : 1
+RESULT PB-01c PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; double-clic sur la valeur de perf.balance : 0.5000 -> 1.0000, 5 evenements ui, profondeur max 1, residuel 0, saisie ouverte 1, transactions Undo 1
+RESULT PB-01d PASS [REPRODUCTION] NON REPRODUIT ; wt.x : Alt+clic (dispatch reel) 1, Suppr 1, menu defaut 1, saisie numerique 1 ; begin 4 / end 4, profondeur max 1, residuel 0, hors geste 0, transactions Undo 4 (attendu 4)
+RESULT PB-01e PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; molette puis clic avant 450 ms sur wt.x : 4 evenements ui, profondeur max 2, ouverts apres relachement 1, apres destruction 0, transactions Undo 1
+RESULT PB-01m PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; deux instances : isolement 1, defaut atteint dans les deux 1, A profondeur 1 residuel 0, B profondeur 1 residuel 0
+RESULT PB-02a PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; Core (cross.fwd, cross.rev), destruction de l'editeur sans relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement -1, apres destruction finale 2 ; edition suivante : 0 transaction(s) Undo (1 attendue) (correction : R2-C)
+RESULT PB-02b PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; Core (cross.fwd, cross.rev), changement d'espace (vue masquee), puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante : 1 transaction(s) Undo (1 attendue) (correction : R2-C)
+RESULT PB-02c PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; Core (cross.fwd, cross.rev), composant modal ouvert pendant le glisser, puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante : 1 transaction(s) Undo (1 attendue) (correction : R2-C)
+RESULT PB-02d PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; editeur d'enveloppe : begin 1, gestes ouverts apres destruction 1 ; edition suivante : 0 transaction(s) Undo (1 attendue) (correction : R2-D)
+RESULT PB-02e PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; Core (cross.fwd, cross.rev), redimensionnement et zoom 75 % pendant le glisser, puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante : 1 transaction(s) Undo (1 attendue) (correction : R2-C)
+RESULT PB-N1 PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; wt.x : destruction de l'editeur pendant le glisser : begin 1, ouverts apres coupure 0, apres relachement -1, apres destruction finale 0, profondeur max 1, transactions Undo 1
+RESULT PB-N2 PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; wt.x : changement d'espace pendant le glisser, puis relachement : begin 1, ouverts apres coupure 1, apres relachement 0, apres destruction finale 0, profondeur max 1, transactions Undo 1
+RESULT PB-N3 PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; dst.wt1.d2.speed : type DST WT1 change par l'hote pendant le glisser (panneau contextuel), puis relachement (commande detruite par la reconstruction) : begin 1, ouverts apres coupure 0, apres relachement 0, apres destruction finale 0, profondeur max 1, transactions Undo 1
+RESULT PB-J1 PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; out.gain clic sur le libelle du PLASMA vertical : 0.0000 -> 6.0000 (2e prise 6.0000) ; aucun changement attendu (hors zone de manipulation) ; profondeur max 1, residuel 0, transactions Undo 1
+RESULT PB-J2 PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; perf.balance clic sur le libelle du PLASMA horizontal : 0.5000 -> -1.0000 (2e prise -1.0000) ; aucun changement attendu (hors zone de manipulation) ; profondeur max 1, residuel 0, transactions Undo 1
+RESULT PB-J3 PASS [REPRODUCTION, dispatch JUCE reel] REPRODUIT ; perf.balance clic sur la valeur du PLASMA horizontal : 0.5000 -> 1.0000 (2e prise 1.0000) ; aucun changement attendu (hors zone de manipulation) ; profondeur max 1, residuel 0, transactions Undo 1
+RESULT PB-J4 PASS [REPRODUCTION, dispatch JUCE reel] NON REPRODUIT ; out.gain clic dans le canal puis reprise au meme point : 0.0000 -> -18.5562 (2e prise -18.5562) ; position absolue attendue au 1er clic, stable au 2e ; profondeur max 1, residuel 0, transactions Undo 1
