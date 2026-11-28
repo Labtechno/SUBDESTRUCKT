@@ -80,7 +80,8 @@ if(SUBDESTRUCKT_BUILD_TESTS)
     tests/core/test_g43_ta.cpp
     tests/core/test_g43_d2.cpp
     tests/core/test_g43_z.cpp
-    tests/core/test_g43r1.cpp)
+    tests/core/test_g43r1.cpp
+    tests/core/test_ui04r1_ta.cpp)
   target_include_directories(subdestruckt_core_tests PRIVATE tests)
   target_link_libraries(subdestruckt_core_tests PRIVATE subdestruckt_core subdestruckt_b5_oracle)
   # pile du thread principal alignée sur macOS (8 Mo) : plusieurs tests instancient le moteur sur la pile (Windows : 1 Mo)

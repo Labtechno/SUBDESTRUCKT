@@ -39,6 +39,7 @@ void runG43TaTests();
 void runG43D2Tests();
 void runG43ZTests();
 void runG43R1Tests();
+void runUi04R1Tests();
 int main() {
   std::printf("SUBDESTRUCKT ARCH-G3 — tests natifs du coeur\n");
   // SBD_ONLY=<groupe> : exécution ciblée pendant le développement (la CI exécute toujours la suite complète)
@@ -63,6 +64,7 @@ int main() {
   run("g43d2", runG43D2Tests);
   run("g43z", runG43ZTests);
   run("g43r1", runG43R1Tests);
+  run("ui04r1", runUi04R1Tests);
   run("perf", runPerfTests);
   return tk::finish("core_tests");
 }

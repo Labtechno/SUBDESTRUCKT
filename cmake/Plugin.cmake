@@ -51,7 +51,7 @@ target_link_libraries(SUBDESTRUCKT
 if(SUBDESTRUCKT_BUILD_TESTS)
   # Tests du wrapper : le processeur est instancié directement (sans client VST3) pour instrumenter processBlock.
   juce_add_console_app(subdestruckt_wrapper_tests PRODUCT_NAME "subdestruckt_wrapper_tests")
-  target_sources(subdestruckt_wrapper_tests PRIVATE tests/wrapper/WrapperTests.cpp tests/wrapper/Ui04Tests.cpp ${SUBDESTRUCKT_WRAPPER_SOURCES})
+  target_sources(subdestruckt_wrapper_tests PRIVATE tests/wrapper/WrapperTests.cpp tests/wrapper/Ui04Tests.cpp tests/wrapper/TaR1Tests.cpp ${SUBDESTRUCKT_WRAPPER_SOURCES})
   target_include_directories(subdestruckt_wrapper_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} tests)
   target_compile_definitions(subdestruckt_wrapper_tests PRIVATE ${SUBDESTRUCKT_JUCE_DEFINITIONS})
   target_link_libraries(subdestruckt_wrapper_tests PRIVATE subdestruckt_core juce::juce_audio_processors juce::juce_gui_basics
