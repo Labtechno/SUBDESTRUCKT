@@ -478,23 +478,36 @@ int main(int argc, char** argv) {
   audioRun("editeur-ferme-apres-ouverture", false, secs);  // GP-09
 
   // ---------------------------------------------------------------- GP-05 : 100 cycles ouverture / fermeture, stabilisation
-  for (int k = 0; k < (quick ? 20 : 100); ++k) {
+  // série de 200 cycles, mémoire résidente relevée tous les 10 cycles : la croissance de la SECONDE moitié distingue une
+  // croissance persistante (fuite) d'une montée en charge des caches ou de l'allocateur qui se stabilise (GS-05)
+  const int cycles = quick ? 40 : 200;
+  double memHalf = 0.0;
+  for (int k = 1; k <= cycles; ++k) {
     JUCE_AUTORELEASEPOOL {
       r.openEditor();
       r.m->refreshNow();
       renderArea(r.host, r.host.getLocalBounds(), 1.0f);
       r.closeEditor();
     }
+    if (k % 10 == 0) {
+      const double v = rssMiB();
+      rec.add("GP-05", "rss-par-10-cycles", k, v);
+      if (k == cycles / 2) memHalf = v;
+    }
   }
-  r.openEditor();
-  for (int k = 0; k < 3; ++k) renderArea(r.host, r.host.getLocalBounds(), scale);
-  const double memCycles = rssMiB();
-  r.closeEditor();
+  double memCycles = 0.0;
+  JUCE_AUTORELEASEPOOL {
+    r.openEditor();
+    for (int k = 0; k < 3; ++k) renderArea(r.host, r.host.getLocalBounds(), scale);
+    memCycles = rssMiB();
+    r.closeEditor();
+  }
   rec.stats("GP-05", "rss-avant-editeur", {memBefore}, "MiB");
   rec.stats("GP-05", "rss-editeur-ouvert", {memOpen}, "MiB");
   rec.stats("GP-05", "surcout-editeur", {memOpen - memBefore}, "MiB");
   rec.stats("GP-05", "rss-apres-cycles-stabilise", {memCycles}, "MiB");
-  rec.stats("GP-05", "croissance-apres-cycles", {memCycles - memOpen}, "MiB");
+  rec.stats("GP-05", "croissance-premiere-moitie", {memHalf - memOpen}, "MiB");
+  rec.stats("GP-05", "croissance-seconde-moitie", {memCycles - memHalf}, "MiB");
 
   std::ofstream su(dir.getChildFile("gc01-summary-" + juce::String(label) + ".csv").getFullPathName().toStdString(), std::ios::binary);
   su << "label;metric;scenario;unit;n;median;p95;p99;mad;min;max;outliers_gt_med_plus_5mad\n";

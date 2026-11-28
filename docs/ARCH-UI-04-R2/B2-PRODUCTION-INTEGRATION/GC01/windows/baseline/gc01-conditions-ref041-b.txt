@@ -1,5 +1,5 @@
 etiquette : ref041-b
-code : base f2bb83e + banc GC-01 v2 (aucune modification ui/)
+code : base d97e633 + banc GC-01 v3 (aucune modification ui/)
 os : Windows 11
 cpu : AMD Ryzen 7 5800X 8-Core Processor (8 coeurs physiques, 16 logiques)
 memoire : 32691 Mio

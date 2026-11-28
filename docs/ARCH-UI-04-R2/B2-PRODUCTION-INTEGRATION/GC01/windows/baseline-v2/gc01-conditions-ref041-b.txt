@@ -1,0 +1,10 @@
+etiquette : ref041-b
+code : base f2bb83e + banc GC-01 v2 (aucune modification ui/)
+os : Windows 11
+cpu : AMD Ryzen 7 5800X 8-Core Processor (8 coeurs physiques, 16 logiques)
+memoire : 32691 Mio
+juce : JUCE v9.0.6
+audio : 48000 Hz, blocs de 256
+rendu : image logiciel JUCE (Direct2D ecarte), echelle 2, rendu force (lecture d'un pixel)
+repetitions : 30 (+ 5 de chauffe)
+mode : complet

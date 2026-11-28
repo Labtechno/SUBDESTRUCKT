@@ -28,7 +28,13 @@ banc**, corrigés avant que la référence ne soit fixée. Les seuils et le code
 | GP-04 | « Échéances manquées » d'environ 2 780 blocs sur 3 750, que l'éditeur soit actif ou fermé, pour un traitement médian de 0,25 ms : le compteur mesurait le retard de réveil d'un thread sans priorité temps réel sur une VM à 3 cœurs | Dépassement = **temps de traitement d'un bloc > période (5,33 ms)**. Le retard de réveil est publié à part (`-retard-reveil-info`), pour information seulement. |
 | GP-05 | +118 MiB après 100 cycles sous macOS : sans boucle d'événements, les objets CoreGraphics et Objective-C ne sont libérés qu'à la vidange d'un *autorelease pool* | Pool de libération autour de chaque rendu et de chaque cycle (`JUCE_AUTORELEASEPOOL`) |
 
-La référence GC-01 est l'arbre du commit qui contient le banc v2, sans modification de `ui/`. Ce commit est consigné
+**Banc v3.** La ligne de base macOS v2 (run 3, `run3-44fc225/`) montre encore +119 MiB après 100 cycles, malgré les
+pools de libération. Une mesure unique ne distingue pas une fuite d'une montée en charge des caches ou de l'allocateur.
+Le banc v3 relève donc la mémoire résidente tous les 10 cycles sur 200 cycles, et publie séparément la croissance de la
+**première** et de la **seconde** moitié. GS-05 (« aucune croissance persistante après stabilisation ») se juge sur la
+seconde moitié, comparée à la référence.
+
+La référence GC-01 est l'arbre du commit qui contient le banc v3, sans modification de `ui/`. Ce commit est consigné
 dans `r2b2-evidence.yml` (`GC01_REF_SHA`) au début des modifications visuelles.
 
 ## 2. Ligne de base 0.4.1
@@ -36,7 +42,7 @@ dans `r2b2-evidence.yml` (`GC01_REF_SHA`) au début des modifications visuelles.
 Le code mesuré est `ui/` de 0.4.1, inchangé, avec le banc ajouté. Voir les dossiers par plateforme :
 
 - [`windows/baseline/`](windows/baseline) : poste de développement, deux exécutions de la référence avec le banc v2
-  (`baseline-v1/` : banc v1, remplacé, conservé) ;
+  (`baseline-v1/`, `baseline-v2/` : bancs remplacés, conservés) ;
 - [`macos/`](macos) : VM GitHub, deux exécutions de la référence par run.
 
 Observations de référence (valables sur les deux plateformes, à confirmer par les fichiers) :

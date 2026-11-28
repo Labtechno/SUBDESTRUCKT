@@ -325,7 +325,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B2-01 : banc de reproduction (18 scénarios permanents), workflow de preuves macOS, preuves Windows | b1502c8 | aucun fichier `source/`, `plugin/`, `ui/` modifié ; barrière PASS (75 critères, AUT-02 connu) ; CI de production 56 SUCCESS |
 | 2026-11-28 | ARCH-UI-04-R2-B2-01 : preuves macOS (r2b2-evidence run 1) | 43ed70e | statuts identiques à Windows ; barrière PASS |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01, pair de test commun, ligne de base 0.4.1 (Windows), workflow GC-01 macOS | ad180b9 | aucun fichier `ui/` modifié ; CI de production 57 SUCCESS ; macOS run 2 (banc v1) versé en f2bb83e |
-| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v2 (dépassement de traitement, autorelease pools), ligne de base Windows v2 | (ce commit) | aucun fichier `ui/` modifié : **arbre de référence GC-01** |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v2 (dépassement de traitement, autorelease pools), ligne de base Windows v2 | 44fc225 | aucun fichier `ui/` modifié ; macOS run 3 versé en d97e633 |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v3 (série mémoire sur 200 cycles), ligne de base Windows v3 | (ce commit) | aucun fichier `ui/` modifié : **arbre de référence GC-01** |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
