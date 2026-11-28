@@ -326,7 +326,9 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B2-01 : preuves macOS (r2b2-evidence run 1) | 43ed70e | statuts identiques à Windows ; barrière PASS |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01, pair de test commun, ligne de base 0.4.1 (Windows), workflow GC-01 macOS | ad180b9 | aucun fichier `ui/` modifié ; CI de production 57 SUCCESS ; macOS run 2 (banc v1) versé en f2bb83e |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v2 (dépassement de traitement, autorelease pools), ligne de base Windows v2 | 44fc225 | aucun fichier `ui/` modifié ; macOS run 3 versé en d97e633 |
-| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v3 (série mémoire sur 200 cycles), ligne de base Windows v3 | (ce commit) | aucun fichier `ui/` modifié : **arbre de référence GC-01** |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 : banc GC-01 v3 (série mémoire sur 200 cycles), ligne de base Windows v3 | 0517426 | aucun fichier `ui/` modifié : **arbre de référence GC-01** ; ligne de base macOS run 4 versée en 0ddff52 |
+| 2026-11-28 | CI de production 59 sur 0517426 : FAILURE du seul job manual-playwright (`test_s01_platform_unchanged` : `URLError [Errno 104] Connection reset by peer` en téléchargeant une page externe) ; build, tests, pluginval, RTSan, script local : SUCCESS ; aucun lien avec le commit (manual/ non modifié) | — | incident réseau consigné, non masqué |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 : valeurs de référence GC-01 consignées (GC01/README) | (ce commit) | documentaire, **sans `[skip ci]`** : nouvelle CI de production complète sur le code de référence inchangé |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan

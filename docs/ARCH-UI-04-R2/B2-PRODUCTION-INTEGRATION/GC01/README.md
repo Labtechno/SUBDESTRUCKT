@@ -54,5 +54,37 @@ Observations de référence (valables sur les deux plateformes, à confirmer par
 - **Mémoire (GS-05).** Aucune croissance persistante après 100 cycles d'ouverture et de fermeture.
 - **Audio (GS-04).** Aucune échéance manquée, éditeur actif ou fermé.
 
-Les valeurs chiffrées de référence sont dans `gc01-summary-*.csv`. Le rapport de performances de B2-07 les comparera,
+### Valeurs de référence (banc v3, arbre `0517426`)
+
+macOS : `macos/run4-0517426/`, VM GitHub macOS 15.8.2, « Apple M1 (Virtual) », 3 cœurs, **non certifiant**.
+Windows : `windows/baseline/`, poste de développement.
+
+| Mesure | Série | macOS VM (exécutions 1 / 2) | Windows (exécutions 1 / 2) |
+|---|---|---|---|
+| GP-01 | Rendu complet, médiane des médianes des 42 vues × zooms (ms) | 13.17 / 12.05 | 11.39 / 11.37 |
+| GP-01 | p95 le plus élevé, toutes vues (ms) | 75.28 / 84.80 | 27.45 / 30.16 |
+| GP-02 | Rafraîchissement dynamique, médiane (ms) | 17.71 / 14.28 | 10.45 / 9.33 |
+| GP-02 | Rafraîchissement dynamique, p95 (ms) | 29.45 / 21.62 | 13.95 / 12.84 |
+| GP-03 | Zones invalidées au repos par rafraîchissement | 1.00 / 1.00 | 1.00 / 1.00 |
+| GP-07 | Interaction directe NEXUS, p95 (ms) | 2.57 / 2.30 | 0.76 / 0.81 |
+| GP-08 | HUD oscilloscope, médiane (ms) | 4.22 / 3.53 | 2.00 / 1.98 |
+| GP-08 | HUD spectre, médiane (ms) | 6.66 / 5.92 | 3.50 / 3.46 |
+| GP-06 | Redimensionnement 1440 × 900, médiane (ms) | 41.30 / 37.12 | 27.66 / 27.49 |
+| GP-04 | Bloc audio, éditeur actif, p99 (ms) | 0.53 / 0.57 | 0.24 / 0.24 |
+| GP-04 | Dépassements de traitement, éditeur actif (blocs) | 0.00 / 2.00 | 0.00 / 0.00 |
+| GP-04 | Dépassements de traitement, éditeur fermé (blocs) | 1.00 / 0.00 | 0.00 / 0.00 |
+| GP-05 | Surcoût mémoire de l'éditeur (MiB) | 95.30 / 89.73 | 38.52 / 38.64 |
+| GP-05 | Croissance, 100 premiers cycles (MiB) | 123.08 / 122.89 | 1.88 / 1.91 |
+| GP-05 | Croissance, 100 cycles suivants (MiB) | 0.83 / 0.83 | 2.55 / 2.95 |
+
+**Lecture** :
+
+- La dispersion d'une exécution à l'autre (jusqu'à 25 % sur le rafraîchissement dynamique de la VM) justifie
+  l'alternance et les deux paires de mesures.
+- Mémoire macOS : la croissance des 100 premiers cycles a lieu **entièrement pendant les 10 premiers** (montée en charge
+  des caches). La seconde moitié ne croît que de 0,8 MiB.
+- Les dépassements de traitement de la VM (0 à 2 blocs sur 3 750, éditeur actif comme fermé) relèvent du bruit de la
+  VM. Ils servent de plancher de comparaison et ne sont pas attribués à l'interface.
+
+Les valeurs chiffrées complètes sont dans `gc01-summary-*.csv`. Le rapport de performances de B2-07 les comparera,
 série par série, aux mesures de la version intégrée.
