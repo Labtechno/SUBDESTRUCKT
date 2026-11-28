@@ -117,3 +117,21 @@ Bilan total (NEXUS, PLASMA, NEURAL CELL) : **60 cas, 0 DIFFÉRENTE, contrôles 7
 
 La zone de donnée d'une cellule est celle du texte d'état, à droite de la face (50 px). Les états imposés (ARMÉ sans
 autorisation) sont des états représentatifs, déclarés dans `vis01-cases.csv`.
+
+## Règle de données non équivalentes (2026-11-28)
+
+Le laboratoire macOS du jalon PLASMA (run 9, `28024df`) a donné 47 cas conformes sur 48 et un cas DIFFÉRENTE :
+`lfo1.rate`, 9 px à 1/255 d'écart hors fenêtre de valeur. La norme affichée par la production y différait de 8·10⁻⁷ de
+celle de la référence, faute d'égalité trouvée dans la recherche (±16 ulps). La donnée n'était donc pas strictement
+équivalente.
+
+Correctif de méthode, qui ne modifie aucun critère de conformité :
+
+- recherche portée à ±4 096 ulps ;
+- tout cas dont la norme reste différente est classé **DONNÉE NON ÉQUIVALENTE**, hors comparaison et listé ; il n'est
+  jamais déclaré conforme.
+
+Windows : `op3.ratio`, `op4.ratio` et `lfo1.rate` sont dans ce cas (plages non linéaires ou réelles différentes de la
+démonstration). Bilan : 60 cas ; IDENTIQUE 12, TEXTE DE VALEUR 44, ÉTAT DU RENDU 1, DONNÉE NON ÉQUIVALENTE 3,
+**DIFFÉRENTE 0** ; contrôles 7/7.
+

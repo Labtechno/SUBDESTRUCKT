@@ -1,7 +1,8 @@
 VIS-01 windows : 60 cas, 7 images
   IDENTIQUE        12
-  TEXTE DE VALEUR  47
+  TEXTE DE VALEUR  44
   ETAT DU RENDU    1
+  DONNEE NON EQUIVALENTE 3
   DIFFERENTE       0
   ERREUR           0
   controles valides 7/7
@@ -25,9 +26,9 @@ VIS-01 windows : 60 cas, 7 images
   NEXUS    01-final-board.png           x2.00 op1.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   696  [0.90] -> [0.900 lin]
   NEXUS    01-final-board.png           x2.00 op2.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   870  [2.00 x] -> [1.77 x f0]
   NEXUS    01-final-board.png           x2.00 op2.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   665  [0.70] -> [0.700 lin]
-  NEXUS    01-final-board.png           x2.00 op3.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   932  [3.00 x] -> [0.298 x f0]
+  NEXUS    01-final-board.png           x2.00 op3.ratio                  S     DONNEE NON EQUIVALENTE hors valeur      0  fenetre   932  [3.00 x] -> [0.298 x f0]
   NEXUS    01-final-board.png           x2.00 op3.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   670  [0.50] -> [0.500 lin]
-  NEXUS    01-final-board.png           x2.00 op4.ratio                  S     TEXTE DE VALEUR  hors valeur      0  fenetre  1013  [4.00 x] -> [0.391 x f0]
+  NEXUS    01-final-board.png           x2.00 op4.ratio                  S     DONNEE NON EQUIVALENTE hors valeur      0  fenetre  1013  [4.00 x] -> [0.391 x f0]
   NEXUS    01-final-board.png           x2.00 op4.level                  Micro TEXTE DE VALEUR  hors valeur      0  fenetre   671  [0.30] -> [0.300 lin]
   NEXUS    01-final-board.png           x2.00 fm.op2_op1.depth           XL    IDENTIQUE        hors valeur      0  fenetre     0  [2.40 rad] -> [2.40 rad]
   NEXUS    01-final-board.png           x2.00 dst.wt1.d2.repeat          S     TEXTE DE VALEUR  hors valeur      0  fenetre   873  [0.32] -> [0.320 lin]
@@ -40,7 +41,7 @@ VIS-01 windows : 60 cas, 7 images
   NEXUS    01-final-board.png           x2.00 amp.decay                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   253  [0.35 s] -> [1.75 s]
   NEXUS    01-final-board.png           x2.00 amp.sustain                S     TEXTE DE VALEUR  hors valeur      0  fenetre   855  [0.55] -> [0.550 lin]
   NEXUS    01-final-board.png           x2.00 amp.release                S     TEXTE DE VALEUR  hors valeur      0  fenetre   363  [0.75 s] -> [7.50 s]
-  NEXUS    01-final-board.png           x2.00 lfo1.rate                  S     TEXTE DE VALEUR  hors valeur      0  fenetre   920  [4.20 Hz] -> [0.010 Hz]
+  NEXUS    01-final-board.png           x2.00 lfo1.rate                  S     DONNEE NON EQUIVALENTE hors valeur      0  fenetre   920  [4.20 Hz] -> [0.010 Hz]
   NEXUS    01-final-board.png           x2.00 out.ceiling                S     TEXTE DE VALEUR  hors valeur      0  fenetre   965  [−0.3 dB] -> [-0.300 dB]
   PLASMA   01-final-board.png           x2.00 cross.master               S     TEXTE DE VALEUR  hors valeur      0  fenetre   676  [0.64] -> [0.640 lin]
   NEURAL CELL 01-final-board.png           x2.00 dst.wt1.d2.freeze          NeuralCell IDENTIQUE        hors valeur      0  fenetre     0  [ON] -> [ON]

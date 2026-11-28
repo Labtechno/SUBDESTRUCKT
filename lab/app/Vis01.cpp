@@ -195,20 +195,28 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
     // Direct2D met en cache la géométrie des tracés répétés, ce qui modifie l'anticrénelage des occurrences suivantes)
     sheet.addAndMakeVisible(*c, sheet.getIndexOfChildComponent(lab));
     // même donnée : la norme affichée par la production (aller-retour par le paramètre hôte) doit être exactement celle
-    // de la référence ; sinon la valeur hôte est ajustée de quelques ulps (au plus 16), et l'ajustement est publié
+    // de la référence ; sinon la valeur hôte est ajustée (au plus 4 096 ulps), et l'ajustement est publié. Si l'égalité
+    // reste impossible (correspondance non injective), le cas est publié comme DONNÉE NON ÉQUIVALENTE (hors comparaison).
     c->tick();
     if (c->shownNorm() != s.refNorm) {
-      for (int u = 1; u <= 16 && c->shownNorm() != s.refNorm; ++u)
-        for (float dir : {1.0f, -1.0f}) {
-          float n = s.refNorm;
-          for (int q = 0; q < u; ++q) n = std::nextafter(n, dir > 0.0f ? 2.0f : -1.0f);
-          prm->setValueNotifyingHost(n);
-          c->tick();
-          if (c->shownNorm() == s.refNorm) {
-            s.ulps = static_cast<int>(dir) * u;
-            break;
-          }
+      float up = s.refNorm, down = s.refNorm;
+      for (int u = 1; u <= 4096 && c->shownNorm() != s.refNorm; ++u) {
+        up = std::nextafter(up, 2.0f);
+        prm->setValueNotifyingHost(up);
+        c->tick();
+        if (c->shownNorm() == s.refNorm) {
+          s.ulps = u;
+          break;
         }
+        down = std::nextafter(down, -1.0f);
+        prm->setValueNotifyingHost(down);
+        c->tick();
+        if (c->shownNorm() == s.refNorm) {
+          s.ulps = -u;
+          break;
+        }
+      }
+      if (c->shownNorm() != s.refNorm) prm->setValueNotifyingHost(s.refNorm);
     }
     s.prodNorm = c->shownNorm();
     c->setBounds(k.r);

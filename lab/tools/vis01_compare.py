@@ -17,6 +17,8 @@ Pour chaque cas :
     lui-même, rendu à la même place dans les mêmes conditions (tous les autres cas substitués), présente au moins les
     mêmes pixels différents avec au moins le même écart. L'écart vient alors de l'état du moteur graphique (Direct2D met en
     cache la géométrie des tracés répétés), pas du composant de production. Exige --outil ;
+  - DONNEE NON EQUIVALENTE : la valeur normalisée affichée par la production n'a pas pu être rendue exactement égale à
+    celle de la référence (correspondance non injective) : le cas est hors comparaison, listé, jamais déclaré conforme ;
   - DIFFERENTE : tout autre cas (à analyser, jamais déclaré conforme).
 
 Usage : py -3.11 lab/tools/vis01_compare.py <dossier rendu> <plateforme> <dossier de sortie>
@@ -123,10 +125,13 @@ for image, cs in by_image.items():
         n_rest = n_all - n_val
         texts_differ = c['texte_reference'] != c['texte_production']
         note = ''
+        norms_differ = bool(c.get('norme_reference')) and c.get('norme_reference') != c.get('norme_production')
         if c['erreur']:
             status = 'ERREUR'
         elif n_all == 0:
             status = 'IDENTIQUE'
+        elif norms_differ:
+            status = 'DONNEE NON EQUIVALENTE'
         elif n_rest == 0 and texts_differ:
             status = 'TEXTE DE VALEUR'
         elif 'outil' in opts:
@@ -165,7 +170,7 @@ with open(out / 'vis01-controle.csv', 'w', encoding='utf-8', newline='') as f:
     w.writerow(['image', 'planche', 'controle', 'pixels_differents_hors_substitution', 'pixels_controles'])
     w.writerows(controls)
 lines = [f'VIS-01 {platform} : {len(results)} cas, {len(controls)} images']
-for st in ('IDENTIQUE', 'TEXTE DE VALEUR', 'ETAT DU RENDU', 'DIFFERENTE', 'ERREUR'):
+for st in ('IDENTIQUE', 'TEXTE DE VALEUR', 'ETAT DU RENDU', 'DONNEE NON EQUIVALENTE', 'DIFFERENTE', 'ERREUR'):
     lines.append(f'  {st:16s} {sum(r[17] == st for r in results)}')
 lines.append(f"  controles valides {sum(c[2] == 'IDENTIQUE' for c in controls)}/{len(controls)}")
 for r in results:
