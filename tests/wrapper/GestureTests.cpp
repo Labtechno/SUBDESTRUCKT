@@ -1171,6 +1171,146 @@ void runPlasmaDoubleClickContract() {
              checks, fails, first.empty() ? "" : " : ", first.c_str());
 }
 
+
+// ================================================================ B2-03.4 : SYNAPTIC TRACK (critères enregistrés avant mesure)
+// TRK-G    couverture : chaque SynapticTrack et chaque TabStrip visible (12 configurations, tous contextes) est rendu en R1
+//          dans son mode historique si tous ses textes tiennent sans troncature, sinon garde le rendu 0.4.1 (raison
+//          publiée) ; aucun texte tronqué.
+// TRK-MAP  pour chaque piste R1 en segments visible (zooms 75, 100 et 150 %), un clic (dispatch réel) au centre du segment k
+//          affiché pose l'index k sur l'hôte et à l'écran, pour tous les k (extrémités comprises) ; Origine / Fin
+//          donnent la première et la dernière option ; un geste par clic, aucun geste résiduel.
+// TRK-TABS pour chaque barre d'onglets R1 visible, un clic au centre de l'onglet k active l'onglet k.
+void runTrackContract() {
+  int seenTracks = 0, r1Tracks = 0, seenTabs = 0, r1Tabs = 0, noReason = 0, clipped = 0;
+  std::map<std::string, int> blockedWhy;
+  {
+    auto p = std::make_unique<SubdestrucktProcessor>();
+    p->prepareToPlay(48000.0, 256);
+    std::unique_ptr<juce::AudioProcessorEditor> ed(p->createEditorIfNeeded());
+    auto& m = *dynamic_cast<MainEditor*>(ed.get());
+    for (auto sz : {std::pair<int, int>{1440, 900}, {960, 640}, {1920, 1200}})
+      for (int z : {75, 100, 125, 150}) {
+        m.setSize(sz.first, sz.second);
+        m.setZoomPercent(z);
+        m.setInspectorOpen(sz.first >= 1200);
+        for (int s2 = 0; s2 < 3; ++s2)
+          for (int t = 0; t < m.numTabs(s2); ++t)
+            for (int k = 0; k < m.numSubContexts(s2, t); ++k) {
+              m.showSubContext(s2, t, k);
+              m.refreshLayout();
+              std::vector<juce::Component*> all;
+              collect(m, all);
+              for (auto* c : all) {
+                if (!m.isVisibleInEditor(c)) continue;
+                if (auto* tr = dynamic_cast<SynapticTrack*>(c)) {
+                  ++seenTracks;
+                  if (tr->r1()) ++r1Tracks;
+                  else {
+                    noReason += tr->r1BlockReason().isEmpty() ? 1 : 0;
+                    ++blockedWhy[tr->r1BlockReason().toStdString()];
+                  }
+                  clipped += tr->textFits() ? 0 : 1;
+                } else if (auto* tb = dynamic_cast<TabStrip*>(c)) {
+                  ++seenTabs;
+                  if (tb->r1()) ++r1Tabs;
+                  else ++blockedWhy["onglets : largeur R1 insuffisante"];
+                  clipped += tb->textFits() ? 0 : 1;
+                }
+              }
+            }
+      }
+    p->editorBeingDeleted(ed.get());
+  }
+  juce::String detail;
+  int shown = 0;
+  for (const auto& [why, n] : blockedWhy)
+    if (shown++ < 10) detail << juce::String::fromUTF8(why.c_str()) << " x" << n << " ; ";
+  const bool okG = seenTracks > 0 && r1Tracks > 0 && seenTabs > 0 && noReason == 0 && clipped == 0;
+  tk::result("TRK-G", okG, "SYNAPTIC : %d pistes visibles (12 configurations, tous contextes), R1 %d ; %d barres d'onglets, R1 %d ; sans raison %d, "
+             "textes tronques %d ; raisons : %s", seenTracks, r1Tracks, seenTabs, r1Tabs, noReason, clipped, detail.toRawUTF8());
+
+  // TRK-MAP et TRK-TABS : dispatch réel
+  int segChecks = 0, segFails = 0, keyFails = 0, gestureFails = 0, tabChecks = 0, tabFails = 0, tracksTested = 0;
+  std::string firstFail;
+  for (int z : {75, 100, 150}) {
+    Rig r(40, winW(z), winH(z));
+    if (!r.ok()) return blocked("TRK-MAP", "pair de test indisponible");
+    r.m->setZoomPercent(z);
+    for (int s2 = 0; s2 < 3; ++s2)
+      for (int t = 0; t < r.m->numTabs(s2); ++t)
+        for (int k = 0; k < r.m->numSubContexts(s2, t); ++k) {
+          r.m->showSubContext(s2, t, k);
+          r.m->refreshLayout();
+          std::vector<juce::Component*> all;
+          collect(*r.m, all);
+          std::vector<juce::Component::SafePointer<SynapticTrack>> tracks;
+          std::vector<juce::Component::SafePointer<TabStrip>> tabs;
+          for (auto* c : all) {
+            if (auto* tr = dynamic_cast<SynapticTrack*>(c)) tracks.emplace_back(tr);
+            if (auto* tb = dynamic_cast<TabStrip*>(c)) tabs.emplace_back(tb);
+          }
+          // pistes d'abord : un clic peut reconstruire la vue (types, algorithmes) ; pointeurs sûrs
+          for (auto& sp : tracks) {
+            SynapticTrack* tr = sp.getComponent();
+            if (tr == nullptr || !r.m->isVisibleInEditor(tr) || !tr->isShowing() || !tr->r1() || !tr->segmented() || !tr->isEnabled()) continue;
+            ++tracksTested;
+            const ParamId id = tr->boundId();
+            const int n = tr->count();
+            Probe pr(*r.p);
+            for (int seg = 0; seg < n && sp != nullptr; ++seg) {
+              const auto pt = sp->segmentBox(seg).getCentre();
+              r.move(*sp, pt);
+              r.down(*sp, pt);
+              r.up(*sp, pt);
+              r.pause();
+              ++segChecks;
+              const int host = static_cast<int>(std::lround(r.base(id)));
+              const int shown = sp != nullptr ? static_cast<int>(std::lround(sp->shownBase())) : host;
+              if (host != seg || shown != seg) {
+                ++segFails;
+                if (firstFail.empty()) firstFail = std::string(paramSpec(id).stableId) + " segment " + std::to_string(seg) + " -> " + std::to_string(host);
+              }
+            }
+            if (sp != nullptr) {
+              sp->keyPressed(juce::KeyPress(juce::KeyPress::homeKey));
+              keyFails += static_cast<int>(std::lround(r.base(id))) == 0 ? 0 : 1;
+            }
+            if (sp != nullptr) {
+              sp->keyPressed(juce::KeyPress(juce::KeyPress::endKey));
+              keyFails += static_cast<int>(std::lround(r.base(id))) == n - 1 ? 0 : 1;
+            }
+            pr.userPhase = false;
+            gestureFails += (pr.open() == 0 && pr.maxD() <= 1 && Probe::total(pr.begins) == Probe::total(pr.ends)) ? 0 : 1;
+            r.m->refreshLayout();
+          }
+          // puis une barre d'onglets : seul l'état de l'onglet est vérifié (la navigation peut reconstruire la vue)
+          for (auto& sp : tabs) {
+            TabStrip* tb = sp.getComponent();
+            if (tb == nullptr || !r.m->isVisibleInEditor(tb) || !tb->isShowing() || !tb->r1() || tb->count() < 2 || !tb->isEnabled()) continue;
+            const int before = tb->current();
+            const int target = (before + 1) % tb->count();
+            const auto pt = tb->tabBox(target).getCentre();
+            r.move(*tb, pt);
+            r.down(*tb, pt);
+            r.up(*tb, pt);
+            r.pause();
+            ++tabChecks;
+            if (sp != nullptr && sp->current() != target) ++tabFails;
+            if (sp != nullptr) sp->setCurrent(before);
+            r.m->showSubContext(s2, t, k);
+            r.m->refreshLayout();
+            break;
+          }
+        }
+  }
+  const bool okMap = tracksTested > 0 && segChecks > 0 && segFails == 0 && keyFails == 0 && gestureFails == 0;
+  tk::result("TRK-MAP", okMap, "pistes R1 en segments (zooms 75/100/150) : %d pistes, %d segments cliques, ecarts segment/hote/affichage %d%s%s, "
+             "Origine/Fin en echec %d, gestes non apparies %d", tracksTested, segChecks, segFails, firstFail.empty() ? "" : " : ", firstFail.c_str(),
+             keyFails, gestureFails);
+  const bool okTabs = tabChecks > 0 && tabFails == 0;
+  tk::result("TRK-TABS", okTabs, "barres d'onglets R1 : %d clics, onglet active different de l'onglet clique %d", tabChecks, tabFails);
+}
+
 juce::Point<float> labelTop(juce::Component& c) { return {c.getWidth() * 0.5f, 4.0f}; }
 juce::Point<float> labelLeft(juce::Component& c) { return {c.getWidth() * 0.12f, c.getHeight() * 0.5f}; }
 juce::Point<float> valueRight(juce::Component& c) { return {c.getWidth() * 0.86f, c.getHeight() * 0.5f}; }
@@ -1219,6 +1359,7 @@ void testGestureReproduction() {
   runJump("PB-J4", ParamId::OutGain, 0.0f, "clic dans le canal puis reprise au meme point", channelCentre, false);
   runPlasmaZones();
   runPlasmaDoubleClickContract();
+  runTrackContract();
   juce::ModifierKeys::currentModifiers = juce::ModifierKeys();  // aucun état clavier simulé laissé aux tests suivants
   writeJournal();
 }

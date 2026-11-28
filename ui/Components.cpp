@@ -893,7 +893,71 @@ bool SynapticTrack::segmented() const {
 
 juce::Rectangle<float> SynapticTrack::bodyArea() const { return getLocalBounds().toFloat().reduced(2.0f).withTrimmedTop(tok::fontLabel * 1.25f + 2.0f); }
 
+sbd::r2::TrackView SynapticTrack::r1View() const {
+  sbd::r2::TrackView v;
+  v.mode = segmented() ? sbd::r2::TrackMode::Segments : sbd::r2::TrackMode::List;  // mode historique conservé
+  v.domain = r2Domain(domainOf(id_));
+  v.label = caption_;
+  v.options = labels_;
+  v.index = juce::jlimit(0, count_ - 1, index_);
+  v.hover = v.mode == sbd::r2::TrackMode::Segments ? hover_ : (hover_ >= 0 ? 0 : -1);
+  v.disabled = !isEnabled();
+  v.focus = hasKeyboardFocus(false);
+  return v;
+}
+
+juce::String SynapticTrack::r1BlockReason() const {
+  const auto v = r1View();
+  const auto plain = sbd::r2::labelFont(sbd::r2::tok2::fontLabel), bold = sbd::r2::labelFont(sbd::r2::tok2::fontLabel, true);
+  if (sbd::r2::draw::textWidth(plain, caption_) > static_cast<float>(getWidth()) - 6.0f)
+    return juce::String::fromUTF8("libellé « ") + caption_ + juce::String::fromUTF8(" » > ligne du gabarit");
+  const auto tr = sbd::r2::trackArea(getLocalBounds(), v.mode, caption_.isNotEmpty());
+  if (tr.getHeight() < 18.0f) return "hauteur de piste " + juce::String(tr.getHeight(), 1) + " < 18";
+  if (v.mode == sbd::r2::TrackMode::Segments) {
+    for (int k = 0; k < count_; ++k)  // segment : texte centré, réduit de 3 px de chaque côté ; sélection en gras
+      if (sbd::r2::draw::textWidth(bold, labels_[k]) > sbd::r2::trackSegment(getLocalBounds(), v, k).getWidth() - 6.0f)
+        return juce::String::fromUTF8("segment « ") + labels_[k] + juce::String::fromUTF8(" » > largeur R1");
+  } else {
+    const float w = tr.getWidth() - 20.0f - 12.0f - 6.0f - 30.0f;  // champ : marges, chevron, cran, index k/n
+    for (const auto& l : labels_)
+      if (sbd::r2::draw::textWidth(plain, l) > w) return juce::String::fromUTF8("option « ") + l + juce::String::fromUTF8(" » > champ R1");
+  }
+  return {};
+}
+bool SynapticTrack::r1() const { return r1BlockReason().isEmpty(); }
+
+juce::Rectangle<float> SynapticTrack::segmentBox(int k) const {
+  if (r1()) return sbd::r2::trackSegment(getLocalBounds(), r1View(), k);
+  const auto b = bodyArea();
+  const float w = b.getWidth() / static_cast<float>(count_);
+  return {b.getX() + w * static_cast<float>(k), b.getY(), w, b.getHeight()};
+}
+
+void SynapticTrack::mouseMove(const juce::MouseEvent& e) {
+  int h = -1;
+  if (r1()) {
+    const auto v = r1View();
+    if (v.mode == sbd::r2::TrackMode::Segments) {
+      for (int k = 0; k < count_; ++k)
+        if (sbd::r2::trackSegment(getLocalBounds(), v, k).contains(e.position)) h = k;
+    } else if (sbd::r2::trackArea(getLocalBounds(), v.mode, caption_.isNotEmpty()).contains(e.position)) {
+      h = 0;
+    }
+  }
+  if (h != hover_) {
+    hover_ = h;
+    repaint();
+  }
+}
+void SynapticTrack::mouseExit(const juce::MouseEvent&) {
+  if (hover_ != -1) {
+    hover_ = -1;
+    repaint();
+  }
+}
+
 bool SynapticTrack::textFits() const {
+  if (r1()) return true;  // vérifié au choix du rendu (aucune troncature dans le gabarit R1)
   juce::StringArray lines;
   float sz = 0.0f;
   if (!layoutLabel(caption_, getWidth() - 4.0f, 1, tok::fontLabel, lines, sz)) return false;
@@ -905,6 +969,10 @@ bool SynapticTrack::textFits() const {
 }
 
 void SynapticTrack::paint(juce::Graphics& g) {
+  if (r1()) {  // SYNAPTIC Machined Track (peintre partagé)
+    sbd::r2::paintTrack(g, getLocalBounds(), r1View());
+    return;
+  }
   const auto accent = accentOf(domainOf(id_));
   auto top = getLocalBounds().toFloat().reduced(2.0f).removeFromTop(tok::fontLabel * 1.25f);
   drawLabel(g, caption_, top, 1, tok::fontLabel, isEnabled() ? tok::text : tok::textMute, juce::Justification::centredLeft);
@@ -954,10 +1022,12 @@ void SynapticTrack::mouseDown(const juce::MouseEvent& e) {
     openList();
     return;
   }
-  const auto b = bodyArea();
-  if (!b.contains(e.position)) return;
-  const int k = juce::jlimit(0, count_ - 1, static_cast<int>((e.position.x - b.getX()) / (b.getWidth() / count_)));
-  userSet(static_cast<float>(k));
+  // segment sous le pointeur, selon la géométrie du rendu (R1 ou 0.4.1) : segment affiché = valeur transmise
+  for (int k = 0; k < count_; ++k)
+    if (segmentBox(k).contains(e.position)) {
+      userSet(static_cast<float>(k));
+      return;
+    }
 }
 
 void SynapticTrack::openList() {
@@ -1238,12 +1308,47 @@ void TabStrip::setCurrent(int k) {
   current_ = juce::jlimit(0, std::max(0, names_.size() - 1), k);
   repaint();
 }
+sbd::r2::TrackView TabStrip::r1View() const {
+  sbd::r2::TrackView v;
+  v.mode = sbd::r2::TrackMode::Tabs;
+  v.domain = r2DomainOfColour(accent_);
+  v.options = names_;
+  v.index = juce::jlimit(0, std::max(0, names_.size() - 1), current_);
+  v.hover = hover_;
+  v.disabled = !isEnabled();
+  v.focus = hasKeyboardFocus(false);
+  return v;
+}
+bool TabStrip::r1() const {
+  // onglets R1 : largeur = libellé (11 gras) + 24 ; rendu R1 seulement sans réduction d'échelle (aucune troncature)
+  if (names_.isEmpty() || getHeight() < 16) return false;
+  float total = 0.0f;
+  for (const auto& n : names_) total += sbd::r2::draw::textWidth(sbd::r2::labelFont(sbd::r2::tok2::fontLabel, true), n) + 24.0f;
+  return total <= sbd::r2::trackArea(getLocalBounds(), sbd::r2::TrackMode::Tabs, false).getWidth();
+}
+void TabStrip::mouseMove(const juce::MouseEvent& e) {
+  int h = -1;
+  for (int k = 0; k < names_.size(); ++k)
+    if (tabRect(k).contains(e.position)) h = k;
+  if (h != hover_) {
+    hover_ = h;
+    repaint();
+  }
+}
+void TabStrip::mouseExit(const juce::MouseEvent&) {
+  if (hover_ != -1) {
+    hover_ = -1;
+    repaint();
+  }
+}
+
 int TabStrip::preferredWidth() const {
   float w = 0.0f;
   for (const auto& n : names_) w += juce::GlyphArrangement::getStringWidth(uiFont(tok::fontLabel, true), n) + 22.0f;
   return static_cast<int>(std::ceil(w));
 }
 juce::Rectangle<float> TabStrip::tabRect(int k) const {
+  if (r1()) return sbd::r2::trackSegment(getLocalBounds(), r1View(), k);  // géométrie du rendu R1
   const float total = static_cast<float>(preferredWidth());
   const float scale = total > getWidth() ? getWidth() / total : 1.0f;
   float x = 0.0f;
@@ -1254,8 +1359,12 @@ juce::Rectangle<float> TabStrip::tabRect(int k) const {
   }
   return {};
 }
-bool TabStrip::textFits() const { return preferredWidth() <= getWidth(); }
+bool TabStrip::textFits() const { return r1() || preferredWidth() <= getWidth(); }
 void TabStrip::paint(juce::Graphics& g) {
+  if (r1()) {  // SYNAPTIC Machined Track, onglets (peintre partagé)
+    sbd::r2::paintTrack(g, getLocalBounds(), r1View());
+    return;
+  }
   g.setColour(tok::carbon.withAlpha(0.6f));
   g.fillRoundedRectangle(getLocalBounds().toFloat(), tok::radiusSmall);
   for (int k = 0; k < names_.size(); ++k) {

@@ -1,5 +1,5 @@
-VIS-01 windows : 60 cas, 7 images
-  IDENTIQUE        12
+VIS-01 windows : 69 cas, 7 images
+  IDENTIQUE        21
   TEXTE DE VALEUR  44
   ETAT DU RENDU    1
   DONNEE NON EQUIVALENTE 3
@@ -15,6 +15,8 @@ VIS-01 windows : 60 cas, 7 images
   NEURAL CELL 12-compare-041-r2.png        x2.00 dst.wt1.arm                NeuralCell TEXTE DE VALEUR  hors valeur      0  fenetre   476  [ACTIVE] -> [ACTIF]
   NEURAL CELL 12-compare-041-r2.png        x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEURAL CELL 12-compare-041-r2.png        x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
+  SYNAPTIC 12-compare-041-r2.png        x2.00 dst.wt1.d2.fb_mode         SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
+  SYNAPTIC 12-compare-041-r2.png        x2.00 dst.wt1.type               SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEXUS    01-final-board.png           x2.00 wt.x                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1285  [0.49] -> [0.486 pos]
   NEXUS    01-final-board.png           x2.00 wt.y                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1243  [0.22] -> [0.220 pos]
   NEXUS    01-final-board.png           x2.00 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1155  [0.35] -> [0.350 lin]
@@ -49,23 +51,30 @@ VIS-01 windows : 60 cas, 7 images
   NEURAL CELL 01-final-board.png           x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEURAL CELL 01-final-board.png           x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEURAL CELL 01-final-board.png           x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
+  SYNAPTIC 01-final-board.png           x2.00 dst.wt1.type               SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
+  SYNAPTIC 01-final-board.png           x2.00 dst.wt1.d2.fb_mode         SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
+  SYNAPTIC 01-final-board.png           x2.00 onglets                    TabStrip IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   PLASMA   06a-plasma-standard-compact.png x2.00 cross.master               S     TEXTE DE VALEUR  hors valeur      0  fenetre   676  [0.64] -> [0.640 lin]
   NEXUS    11-materials-palette.png     x2.00 wt.x                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre  1307  [0.62] -> [0.620 pos]
   NEURAL CELL 11-materials-palette.png     x2.00 action                     ActionCell IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEURAL CELL 11-materials-palette.png     x2.00 etat-hors-registre         NeuralCell IDENTIQUE        hors valeur      0  fenetre     0  [ON] -> [ON]
   NEURAL CELL 11-materials-palette.png     x2.00 dst.wt1.arm                NeuralCell TEXTE DE VALEUR  hors valeur      0  fenetre   543  [ARMED] -> [ARMÉ]
+  SYNAPTIC 11-materials-palette.png     x2.00 cross.dir                  SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEXUS    09-zoom-75-100-150.png       x0.75 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   207  [0.35] -> [0.350 lin]
   NEXUS    09-zoom-75-100-150.png       x0.75 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   141  [0.50] -> [0.500 lin]
   NEXUS    09-zoom-75-100-150.png       x0.75 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   143  [−0.30] -> [-0.300 pos]
   PLASMA   09-zoom-75-100-150.png       x0.75 cross.master               S     TEXTE DE VALEUR  hors valeur      0  fenetre   148  [0.64] -> [0.640 lin]
+  SYNAPTIC 09-zoom-75-100-150.png       x0.75 dst.wt1.d2.fb_mode         SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEXUS    09-zoom-75-100-150.png       x1.00 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   330  [0.35] -> [0.350 lin]
   NEXUS    09-zoom-75-100-150.png       x1.00 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   226  [0.50] -> [0.500 lin]
   NEXUS    09-zoom-75-100-150.png       x1.00 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   205  [−0.30] -> [-0.300 pos]
   PLASMA   09-zoom-75-100-150.png       x1.00 cross.master               S     TEXTE DE VALEUR  hors valeur      0  fenetre   205  [0.64] -> [0.640 lin]
+  SYNAPTIC 09-zoom-75-100-150.png       x1.00 dst.wt1.d2.fb_mode         SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   NEXUS    09-zoom-75-100-150.png       x1.50 wt.z                       XL    TEXTE DE VALEUR  hors valeur      0  fenetre   781  [0.35] -> [0.350 lin]
   NEXUS    09-zoom-75-100-150.png       x1.50 cross.audio.amount         S     TEXTE DE VALEUR  hors valeur      0  fenetre   468  [0.50] -> [0.500 lin]
   NEXUS    09-zoom-75-100-150.png       x1.50 cross.op1_wt_x.depth       Micro TEXTE DE VALEUR  hors valeur      0  fenetre   364  [−0.30] -> [-0.300 pos]
   PLASMA   09-zoom-75-100-150.png       x1.50 cross.master               S     TEXTE DE VALEUR  hors valeur      0  fenetre   422  [0.64] -> [0.640 lin]
+  SYNAPTIC 09-zoom-75-100-150.png       x1.50 dst.wt1.d2.fb_mode         SynapticTrack IDENTIQUE        hors valeur      0  fenetre     0  [] -> []
   controle vis01-12.png           IDENTIQUE (0 px hors substitution)
   controle vis01-01.png           IDENTIQUE (0 px hors substitution)
   controle vis01-06a.png          IDENTIQUE (0 px hors substitution)

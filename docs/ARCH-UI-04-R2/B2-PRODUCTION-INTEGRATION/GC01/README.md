@@ -141,3 +141,9 @@ Verdicts : [`macos/run8-f22bf8c/gc01-verdicts.txt`](macos/run8-f22bf8c/gc01-verd
 GS-01 : les exécutions du courant et de la référence ne se recouvrent pas, la régression est réelle. Cause : mesures de
 texte de la sérigraphie refaites à chaque peinture. Correction sans dérive : 270 → 99 µs par NEXUS (B2-03-REPORT §1.6).
 GS-01 est remesuré avec B2-03.2. Les seuils ne sont pas modifiés.
+
+## 7. Après correctif (run 9, `28024df`)
+
+Régression GS-01 du run 8 résorbée : ENG-1 à 75 % ×1,15 (au lieu de ×1,62) ; aucune vue au-dessus de ×1,5. GS-01 reste
+NON CONCLUANT au sens de l'outil, car le bruit interne de ce run (104 % sur le pire cas) dépasse la marge. Les seuils
+GS sont inchangés. GS-03, GS-05 et GS-06 : PASS.

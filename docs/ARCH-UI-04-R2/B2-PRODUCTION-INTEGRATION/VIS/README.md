@@ -135,3 +135,29 @@ Windows : `op3.ratio`, `op4.ratio` et `lfo1.rate` sont dans ce cas (plages non l
 démonstration). Bilan : 60 cas ; IDENTIQUE 12, TEXTE DE VALEUR 44, ÉTAT DU RENDU 1, DONNÉE NON ÉQUIVALENTE 3,
 **DIFFÉRENTE 0** ; contrôles 7/7.
 
+## Étape 2 : résultats SYNAPTIC TRACK (B2-03.4)
+
+9 cas, **tous identiques au pixel près** :
+
+- FB MODE (segments ; planches 12 et 01 ; planche 09 à 75, 100 et 150 %) ;
+- TYPE (liste, ×2) ;
+- DIR (segments, CROSS) ;
+- onglets MOD (AMP / WT / FM / AUX1 / AUX2).
+
+Les libellés d'options de la référence sont posés sur le composant de production par l'alias d'affichage. Le paramètre,
+l'index et le mode sont ceux de la production.
+
+Bilan total : 69 cas.
+
+| Statut | Cas |
+|---|---|
+| IDENTIQUE | 21 |
+| TEXTE | 44 |
+| ÉTAT DU RENDU | 1 |
+| DONNÉE NON ÉQUIVALENTE | 3 |
+| **DIFFÉRENTE** | **0** |
+
+Contrôles 7/7.
+
+Versement macOS : depuis le correctif du workflow, un dossier par run, `b2-03/macos/run<N>-<sha>/`. Le dossier
+`b2-03/macos/` racine garde les runs 9 et 10, antérieurs à la règle « donnée non équivalente ».

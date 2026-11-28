@@ -234,12 +234,93 @@ std::vector<Substituted> substitute(juce::Component& sheet, ui::UiContext& ctx, 
 
 juce::String csvField(const juce::String& s) { return "\"" + s.replace("\"", "\"\"") + "\""; }
 
+// ---- SYNAPTIC TRACK (B2-03.4) : SynapticTrack de production (paramètre Choice, mêmes options et même mode que la
+// référence ; libellés d'options posés par l'alias d'affichage) ou TabStrip (onglets de navigation)
+struct TrackCase {
+  const char* sheet;
+  juce::Rectangle<int> r;
+  int type;  // 1 : SynapticTrack ; 2 : TabStrip
+  ParamId id;
+  const char* label;
+  std::vector<const char*> options;
+  int index;
+  juce::Colour accent;  // onglets
+};
+
+std::vector<TrackCase> trackCases() {
+  std::vector<TrackCase> v;
+  const std::vector<const char*> fb{"LEGACY", "REGEN"};
+  const std::vector<const char*> types{"OFF", "N1 FOLD", "D1 CRUSH", "Y1 TRANSIENT", "S1 RING/SHIFT", "N2 FB SHAPER", "D2 GLITCH", "Y2 ENV SHAPER", "S2 SPECTRAL"};
+  // planche 12 : FB MODE = valeur réelle (défaut 1, REGEN) ; TYPE = valeur réelle (0)
+  v.push_back({"12", {652, 790, 168, 46}, 1, ParamId::DstWt1D2FbMode, "FB MODE", fb, 1, {}});
+  v.push_back({"12", {832, 790, 200, 46}, 1, ParamId::DstWt1Type, "TYPE", types, 0, {}});
+  // planche 01 : TYPE (index 6), FB MODE (index 0), onglets des enveloppes
+  v.push_back({"01", {30, 600, 200, 46}, 1, ParamId::DstWt1Type, "TYPE", types, 6, {}});
+  v.push_back({"01", {30, 770, 220, 46}, 1, ParamId::DstWt1D2FbMode, "FB MODE", fb, 0, {}});
+  v.push_back({"01", {644, 600, 400, 32}, 2, ParamId::Count, "", {"AMP", "WT", "FM", "AUX1", "AUX2"}, 0, ui::tok::mod});
+  // planche 11 : DIR (CROSS, index 1)
+  v.push_back({"11", {468, 380, 190, 46}, 1, ParamId::CrossDir, "DIR", {"FWD", "REV", "BOTH"}, 1, {}});
+  // planche 09 : FB MODE aux trois zooms (index 0)
+  v.push_back({"09", {10, 196, 300, 46}, 1, ParamId::DstWt1D2FbMode, "FB MODE", fb, 0, {}});
+  return v;
+}
+
 struct CellSub {
   CellCase k;
   juce::Component* c = nullptr;
   juce::String refText, prodText, error;
   juce::Rectangle<float> textZone;  // zone du texte d'état (donnée) : à droite de la face
 };
+
+struct TrackSub {
+  TrackCase k;
+  juce::Component* c = nullptr;
+  juce::String error;
+};
+
+std::vector<TrackSub> substituteTracks(juce::Component& sheet, ui::UiContext& ctx, const std::vector<TrackCase>& cases,
+                                       std::vector<std::unique_ptr<juce::Component>>& owned) {
+  std::vector<TrackSub> out;
+  const auto keep = juce::SystemStats::getEnvironmentVariable("SBD_VIS01_KEEP", {});
+  for (const auto& k : cases) {
+    if (keep.isNotEmpty() && keep == juce::String(k.r.getX()) + ":" + juce::String(k.r.getY())) continue;
+    TrackSub s{k};
+    juce::Component* lab = nullptr;
+    for (auto* ch : sheet.getChildren())
+      if (ch->getBounds() == k.r && dynamic_cast<r2::SynapticTrack*>(ch) != nullptr) lab = ch;
+    if (lab == nullptr) {
+      s.error = "SYNAPTIC TRACK du laboratoire introuvable";
+      out.push_back(s);
+      continue;
+    }
+    lab->setVisible(false);
+    juce::StringArray opts;
+    for (auto* o : k.options) opts.add(juce::String::fromUTF8(o));
+    std::unique_ptr<juce::Component> comp;
+    if (k.type == 1) {
+      if (auto* prm = dynamic_cast<juce::RangedAudioParameter*>(ctx.proc.getParameters()[idx(k.id)]))
+        prm->setValueNotifyingHost(prm->convertTo0to1(static_cast<float>(k.index)));
+      auto t = std::make_unique<ui::SynapticTrack>(ctx, k.id);
+      t->setOptionLabels(opts);
+      t->setCaption(juce::String::fromUTF8(k.label));
+      t->setBounds(k.r);
+      if (!t->r1()) s.error = "SynapticTrack de production bloquee : " + t->r1BlockReason();
+      comp = std::move(t);
+    } else {
+      auto t = std::make_unique<ui::TabStrip>(k.accent);
+      t->setTabs(opts);
+      t->setCurrent(k.index);
+      t->setBounds(k.r);
+      if (!t->r1()) s.error = "TabStrip de production bloquee";
+      comp = std::move(t);
+    }
+    sheet.addAndMakeVisible(*comp, sheet.getIndexOfChildComponent(lab));
+    s.c = comp.get();
+    owned.push_back(std::move(comp));
+    out.push_back(s);
+  }
+  return out;
+}
 
 std::vector<CellSub> substituteCells(juce::Component& sheet, ui::UiContext& ctx, const std::vector<CellCase>& cases,
                                      std::vector<std::unique_ptr<juce::Component>>& owned) {
@@ -310,6 +391,15 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
       ok = ok && s.error.isEmpty();
     }
   };
+  const auto emitTracks = [&](const juce::String& sheetId, const juce::String& png, int ox, int oy, float scale, const std::vector<TrackSub>& subs) {
+    for (const auto& s : subs) {
+      rows.add(juce::String("SYNAPTIC,") + s.k.sheet + "," + sheetId + "," + png + "," + juce::String(ox) + "," + juce::String(oy) + "," + juce::String(scale, 2) +
+               "," + csvField(juce::String::fromUTF8(s.k.label)) + "," + (s.k.type == 1 ? juce::String(paramSpec(s.k.id).stableId) : juce::String("onglets")) + "," +
+               (s.k.type == 1 ? "SynapticTrack" : "TabStrip") + "," + juce::String(s.k.r.getX()) + "," + juce::String(s.k.r.getY()) + "," +
+               juce::String(s.k.r.getWidth()) + "," + juce::String(s.k.r.getHeight()) + ",0,0,0,0,,,,,0," + csvField(s.error));
+      ok = ok && s.error.isEmpty();
+    }
+  };
   const auto emit = [&](const juce::String& sheetId, const juce::String& png, int ox, int oy, float scale, const std::vector<Substituted>& subs) {
     for (const auto& s : subs) {
       const auto va = s.c != nullptr ? s.c->valueBox() : juce::Rectangle<float>();
@@ -329,6 +419,13 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     ok = ok && w;
   };
   const auto cells = cellCases();
+  const auto tracks = trackCases();
+  const auto onlyTracks = [&](const char* sheet) {
+    std::vector<TrackCase> v;
+    for (const auto& k : tracks)
+      if (juce::String(k.sheet) == sheet) v.push_back(k);
+    return v;
+  };
   const auto onlyCells = [&](const char* sheet) {
     std::vector<CellCase> v;
     for (const auto& k : cells)
@@ -348,9 +445,11 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     std::vector<std::unique_ptr<juce::Component>> owned;
     const auto subs = substitute(*scene.sheet, ctx, only("12"), owned);
     const auto csubs = substituteCells(*scene.sheet, ctx, onlyCells("12"), owned);
+    const auto tsubs = substituteTracks(*scene.sheet, ctx, onlyTracks("12"), owned);
     save(scene.sheet->createComponentSnapshot(scene.sheet->getLocalBounds(), true, 2.0f), "vis01-12.png");
     emit("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, subs);
     emitCells("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, csubs);
+    emitTracks("12-compare-041-r2.png", "vis01-12.png", 0, 0, 2.0f, tsubs);
     owned.clear();
   }
   for (const char* id : {"01", "06a", "11"}) {
@@ -371,10 +470,12 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
     std::vector<std::unique_ptr<juce::Component>> owned;
     const auto subs = substitute(*sheet, ctx, only(id), owned);
     const auto csubs = substituteCells(*sheet, ctx, onlyCells(id), owned);
+    const auto tsubs = substituteTracks(*sheet, ctx, onlyTracks(id), owned);
     const juce::String png = juce::String("vis01-") + id + ".png";
     save(sheet->createComponentSnapshot(sheet->getLocalBounds(), true, 2.0f), png);
     emit(refName, png, 0, 0, 2.0f, subs);
     emitCells(refName, png, 0, 0, 2.0f, csubs);
+    emitTracks(refName, png, 0, 0, 2.0f, tsubs);
     owned.clear();
   }
   if (wanted("09")) {  // planche 09 : chaque zoom est une image à part, incrustée dans la référence à x = 40 + ..., y = 126 (composeZoom)
@@ -387,10 +488,12 @@ int runVis01(const juce::File& outDir, const juce::String& onlySheet, const juce
       auto sheet = makeR1Sheet("09");
       std::vector<std::unique_ptr<juce::Component>> owned;
       const auto subs = substitute(*sheet, ctx, only("09"), owned);
+      const auto tsubs = substituteTracks(*sheet, ctx, onlyTracks("09"), owned);
       const juce::String png = "vis01-09-" + juce::String(juce::roundToInt(z * 100.0f)) + ".png";
       const auto img = sheet->createComponentSnapshot(sheet->getLocalBounds(), true, z);
       save(img, png);
       emit("09-zoom-75-100-150.png", png, x, 126, z, subs);
+      emitTracks("09-zoom-75-100-150.png", png, x, 126, z, tsubs);
       x += img.getWidth() + 40;
       owned.clear();
     }

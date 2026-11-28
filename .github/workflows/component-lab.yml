@@ -115,11 +115,12 @@ jobs:
           mkdir -p "$DEST"
           cp out/compare-r1.txt out/compare-r1-hors-bandeau.csv out/compare-r1-images-entieres.csv "$DEST/"
           cp out/typography-measurements.csv out/glyphs.csv out/contrast.csv out/panic-contrast.csv out/lab-run.log out/machine.txt "$DEST/"
-          mkdir -p "$DEST_VIS"
-          rm -rf "$DEST_VIS/ecarts"
-          if [ -d out/vis01/cmp ]; then cp -r out/vis01/cmp/. "$DEST_VIS/"; fi
+          # un dossier par run : deux runs concurrents ne réécrivent jamais les mêmes fichiers
+          run_dir="$DEST_VIS/run${{ github.run_number }}-${GITHUB_SHA::7}"
+          mkdir -p "$run_dir"
+          if [ -d out/vis01/cmp ]; then cp -r out/vis01/cmp/. "$run_dir/"; fi
           for f in out/vis01/vis01-cases.csv out/vis01-render.txt out/vis01.txt out/vis01-rc.txt out/machine.txt; do
-            if [ -f "$f" ]; then cp "$f" "$DEST_VIS/"; fi
+            if [ -f "$f" ]; then cp "$f" "$run_dir/"; fi
           done
           git add "$DEST_VIS"
           git config user.name "github-actions[bot]"
@@ -128,7 +129,8 @@ jobs:
           if git diff --cached --quiet; then echo "aucun changement"; exit 0; fi
           git commit -q -m "docs(ARCH-UI-04-R2-B2): comparaison du Component Lab aux references R1 macOS (run ${{ github.run_number }}) [skip ci]"
           for i in 1 2 3; do
-            git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            # conflit sur les résultats de la comparaison d'étape 1 (même dossier pour tous les runs) : version de ce run
+            git pull --rebase -X theirs -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
             sleep 5
           done
           exit 1

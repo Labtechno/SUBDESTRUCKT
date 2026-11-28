@@ -89,3 +89,10 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 |---|---|
 | **EC-23** | **Nouveau (blocage documenté, comme CE-B2-02)** : les cellules dont le libellé de production ne tient pas sur la ligne du gabarit R1, ou de moins de 24 px de haut, gardent le rendu 0.4.1. Couverture R1 : 240/540 NeuralCell, 1 000/4 128 ActionCell. Levée : libellés P1 (B2-04), DB2-11, R2-C. |
 | Correctif B2-03.1 | Marqueur « INACTIVE » (P2 non validé) retiré de la production : « INACTIF » (0.4.1) jusqu'à B2-04 |
+
+## Mise à jour B2-03.4 SYNAPTIC (2026-11-28)
+
+| Écart | État |
+|---|---|
+| **EC-24** | **Nouveau (blocage documenté)** : liste DST dont l'option « N1 Asymmetric Wavefolder » dépasse le champ R1 (72 occurrences sur 12 configurations) : rendu 0.4.1 conservé. Levée : libellés P1 d'options (B2-04 ; LBL-TABLE : « N1 FOLD »). |
+| GC-01 | Régression GS-01 du run 8 résorbée (run 9 : ENG-1 à 75 % ×1,15 ; pire vue ×1,37) |

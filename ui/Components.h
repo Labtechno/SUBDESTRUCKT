@@ -26,6 +26,7 @@
 #include "DesignTokens.h"
 #include "core/Parameters.h"
 #include "plugin/PluginProcessor.h"
+#include "ui/r2/R2Painters.h"
 
 namespace sbd::ui {
 
@@ -223,15 +224,31 @@ class SynapticTrack : public juce::Component, public juce::SettableTooltipClient
     caption_ = c;
     repaint();
   }
+  // libellés d'affichage des options (alias de nomenclature ; B2-04), même nombre d'options que le registre ; la valeur
+  // transmise à l'hôte reste l'index
+  void setOptionLabels(const juce::StringArray& labels) {
+    if (labels.size() == count_) labels_ = labels;
+    repaint();
+  }
   bool segmented() const;
+  // SYNAPTIC TRACK R1 (B2-03.4) : même mode que 0.4.1 (segments ou liste), rendu par le peintre partagé si tous les
+  // textes tiennent sans troncature dans le gabarit R1 ; sinon rendu 0.4.1 conservé (raison publiée)
+  bool r1() const;
+  juce::String r1BlockReason() const;
+  juce::Rectangle<float> segmentBox(int k) const;  // zone de clic du segment k (géométrie du rendu)
+  int count() const { return count_; }
   void paint(juce::Graphics&) override;
   void mouseDown(const juce::MouseEvent&) override;
+  void mouseMove(const juce::MouseEvent&) override;
+  void mouseExit(const juce::MouseEvent&) override;
   bool keyPressed(const juce::KeyPress&) override;
   void focusGained(FocusChangeType) override { repaint(); }
   void focusLost(FocusChangeType) override { repaint(); }
   std::unique_ptr<juce::AccessibilityHandler> createAccessibilityHandler() override;
 
  private:
+  sbd::r2::TrackView r1View() const;
+  int hover_ = -1;
   juce::Rectangle<float> bodyArea() const;
   void openList();
   ParamId id_;
@@ -317,14 +334,20 @@ class TabStrip : public juce::Component {
   std::function<void(int)> onChange;
   void paint(juce::Graphics&) override;
   void mouseDown(const juce::MouseEvent&) override;
+  void mouseMove(const juce::MouseEvent&) override;
+  void mouseExit(const juce::MouseEvent&) override;
   bool keyPressed(const juce::KeyPress&) override;
   int preferredWidth() const;
   bool textFits() const;
+  // SYNAPTIC TRACK R1, onglets (B2-03.4) : si les onglets tiennent à leur largeur R1 (libellé + 24), sinon rendu 0.4.1
+  bool r1() const;
+  juce::Rectangle<float> tabBox(int k) const { return tabRect(k); }
 
  private:
+  sbd::r2::TrackView r1View() const;
   juce::Rectangle<float> tabRect(int k) const;
   juce::StringArray names_;
-  int current_ = 0;
+  int current_ = 0, hover_ = -1;
   juce::Colour accent_;
 };
 

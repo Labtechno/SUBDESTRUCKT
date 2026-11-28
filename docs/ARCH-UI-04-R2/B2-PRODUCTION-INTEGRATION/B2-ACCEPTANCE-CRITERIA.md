@@ -93,3 +93,11 @@ EC19-DEC est **satisfait** par DB2-09 = B.
 | PLAS-G | Gabarit PLASMA par surface utile, invariants R1 ; blocages avec raison publiée (CE-B2-02) | O | AUTO |
 | NC-G | NEURAL CELL en R1 si le libellé tient sur la ligne du gabarit et la hauteur ≥ 24 ; sinon rendu 0.4.1 avec raison publiée ; aucun libellé tronqué | O | AUTO |
 | NC-STATES | États de production distincts au rendu R1 et portés par le texte | O | AUTO |
+
+## Addendum B2-03.4 SYNAPTIC (2026-11-28, enregistré avant mesure)
+
+| ID | Critère | Nature | Vérif. |
+|---|---|---|---|
+| TRK-G | SYNAPTIC TRACK et onglets en R1 dans leur mode historique si aucun texte n'est tronqué ; sinon rendu 0.4.1 avec raison publiée | O | AUTO |
+| TRK-MAP | Segment cliqué (dispatch réel) = index hôte = index affiché, pour tous les segments, extrémités comprises, aux zooms 75, 100 et 150 % ; Origine et Fin ; gestes appariés | O | AUTO |
+| TRK-TABS | Onglet cliqué = onglet activé | O | AUTO |

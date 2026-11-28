@@ -380,3 +380,81 @@ production) a été corrigé.
 La matière usinée R1 n'apparaît que sur les cellules dont le libellé tient. Les zones denses (barre globale, listes de
 l'espace ENGINEERING) gardent majoritairement le titane 0.4.1, jusqu'à B2-04 et à DB2-11. Aucune simplification du
 composant n'est faite.
+
+## 4. B2-03.4 — SYNAPTIC TRACK
+
+### 4.1 Intégration
+
+`ui::SynapticTrack` (paramètres Choice) et `ui::TabStrip` (onglets de navigation) sont rendus par le peintre partagé
+`paintTrack` (Machined Track, LAB-A03).
+
+- **Mode historique conservé** : segments quand 0.4.1 affichait des segments (au plus cinq options qui tiennent), liste
+  sinon. Les interactions restent celles de 0.4.1 : clic sur un segment, liste en menu, clavier (flèches, Origine,
+  Fin, Entrée, Suppr), automation.
+- **Géométrie partagée** : le clic est rapporté au segment affiché par le peintre (`trackSegment`). Le segment affiché
+  est donc la valeur transmise.
+- **Survol R1** : segment ou onglet survolé ; changement visuel seulement.
+- **Alias d'affichage des options** (`setOptionLabels`) : préparation de B2-04 pour les libellés P1 d'options ; ils ne
+  sont pas appliqués ici. La valeur transmise reste l'index.
+
+Rendu R1 seulement si aucun texte n'est tronqué dans le gabarit (libellé, segments en gras, champ de liste, onglets à
+leur largeur R1). Sinon : rendu 0.4.1, raison publiée.
+
+### 4.2 Couverture (TRK-G) et tests
+
+| Test | Résultat (Windows) |
+|---|---|
+| **TRK-G** | PASS. Pistes : 936 en R1 sur 1 008 visibles (12 configurations, tous contextes). Bloquées : l'option « N1 Asymmetric Wavefolder », trop longue pour le champ de liste R1 (72 occurrences). Onglets : 876 en R1 sur 876. Aucun texte tronqué. |
+| **TRK-MAP** | PASS. Zooms 75, 100 et 150 % : 153 pistes en segments, **342 segments cliqués**, 0 écart entre segment affiché, valeur hôte et affichage ; Origine et Fin conformes ; gestes appariés. |
+| **TRK-TABS** | PASS. 69 clics, onglet activé = onglet cliqué. |
+| Suite complète | Barrière **PASS** (90 critères, AUT-02 connu) ; UI04-CLIP, UI04-BIND et UI04-KEY PASS |
+
+### 4.3 Conformité visuelle
+
+**VIS-01** : 9 cas SYNAPTIC (FB MODE en segments à 1× et aux trois zooms, TYPE en liste ×2, DIR en CROSS, onglets MOD),
+**tous identiques au pixel près**. Libellés d'options alignés sur la référence par l'alias d'affichage.
+
+Bilan total : 69 cas.
+
+| Statut | Cas |
+|---|---|
+| IDENTIQUE | 21 |
+| TEXTE DE VALEUR / D'ÉTAT | 44 |
+| ÉTAT DU RENDU | 1 |
+| DONNÉE NON ÉQUIVALENTE | 3 |
+| **DIFFÉRENTE** | **0** |
+
+Contrôles 7/7.
+
+Cas exclus faute d'équivalence :
+
+- PH MODE et SHAPE : nombre d'options différent ;
+- MODE et TOPOLOGY : liste dans le laboratoire, segments en production.
+
+**Étape 3** : [`CAPTURES/windows/b2-03-4-synaptic/`](CAPTURES/windows/b2-03-4-synaptic).
+
+## 5. Preuves macOS et GC-01 des jalons B2-03.2 et B2-03.3
+
+**Run de preuves 9** (`28024df`, PLASMA) : barrière macOS **PASS** (85 critères). PLAS-Z, EC19-FIX, PLAS-G, PB-J1 à J4,
+PB-01b et PB-01c sont PASS.
+
+**GC-01, run 9** (mise en page NEXUS précalculée) :
+
+- la régression GS-01 du run 8 est **résorbée** : ENG-1 à 75 % passe de ×1,62 à ×1,15, et aucune vue ne dépasse ×1,5
+  (pire cas : ENG-7 à 75 %, ×1,37) ;
+- GS-01 est formellement NON CONCLUANT, car la dispersion interne de ce run est de 104 % sur la série du pire cas ;
+- GS-02 : NON CONCLUANT (bruit 0,72), avec un rapport de ×0,76 ;
+- GS-03, GS-05 et GS-06 : PASS ;
+- GS-04 et GS-07 : NON CONCLUANT.
+
+Verdicts : `GC01/macos/run9-28024df/gc01-verdicts.txt`.
+
+**Component Lab macOS** :
+
+- run 9 (`28024df`) : 47 cas conformes sur 48 ;
+- run 10 (`dce72ab`) : 59 cas conformes sur 60.
+
+Dans les deux runs, l'unique cas DIFFÉRENTE est `lfo1.rate` (norme non équivalente, 9 px à 1/255). La règle « donnée non
+équivalente » (`435e6d5`) le classe hors comparaison. Le run 11 l'appliquait, mais son versement a échoué : conflit avec
+le versement concurrent du run 10, dans le même dossier. Le versement est désormais fait par run
+(`VIS/b2-03/macos/run<N>-<sha>/`) ; la première application macOS de la règle est donc attendue au run suivant.
