@@ -1,0 +1,4 @@
+poste       : Windows 11 (developpement, plateforme secondaire)
+source      : MainEditor reel (subdestruckt_wrapper_tests, snapshotEditor + snapshotUi04), rendu hors ecran
+code        : B2-02 (b) : habillage R1 des widgets generiques (LookAndFeel, DB2-06) ; composants lies encore en 0.4.1
+nature      : CAPTURES DE PRODUCTION (pas des planches du Component Lab)

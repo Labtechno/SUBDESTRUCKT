@@ -1,5 +1,7 @@
 #include "SymbioticLook.h"
 
+#include "ui/r2/R2Style.h"
+
 namespace sbd::ui {
 
 SymbioticLook::SymbioticLook() {
@@ -44,91 +46,133 @@ SymbioticLook::SymbioticLook() {
   setColour(juce::DirectoryContentsDisplayComponent::textColourId, tok::text);
 }
 
+// ---------------------------------------------------------------- habillage R1 (DB2-06) : matières et primitives R1 validées
+// (ui/r2/R2Style.h) appliquées aux widgets JUCE génériques ; aucune conception nouvelle, widgets et contrats conservés.
+namespace {
+namespace d = sbd::r2::draw;
+namespace t2 = sbd::r2::tok2;
+}  // namespace
+
 void SymbioticLook::drawButtonBackground(juce::Graphics& g, juce::Button& b, const juce::Colour&, bool over, bool down) {
-  auto r = b.getLocalBounds().toFloat().reduced(1.0f);
-  juce::ColourGradient grad(tok::titanium.brighter(down ? 0.0f : 0.1f), r.getX(), r.getY(), tok::titanium.darker(0.4f), r.getX(), r.getBottom(), false);
-  g.setGradientFill(grad);
-  g.fillRoundedRectangle(r, tok::radiusSmall);
-  const bool on = b.getToggleState();
-  g.setColour(b.hasKeyboardFocus(false) ? tok::focus : (on ? tok::text.withAlpha(0.7f) : (over ? tok::titanium.brighter(0.35f) : tok::panelEdge.brighter(0.2f))));
-  g.drawRoundedRectangle(r.reduced(0.5f), tok::radiusSmall, on || b.hasKeyboardFocus(false) ? 1.4f : 1.0f);
+  auto r = b.getLocalBounds().toFloat().reduced(2.0f, 2.5f);
+  const bool enabled = b.isEnabled();
+  if (b.getToggleState()) {  // bouton basculé (choix d'une vue, d'un mode) : logement encastré, fond carbone (sélection)
+    d::machinedGroove(g, r, 3.0f);
+    g.setColour(tok::carbon);
+    g.fillRoundedRectangle(r.reduced(2.0f), 2.0f);
+    const auto bar = juce::Rectangle<float>(r.getX() + 6.0f, r.getBottom() - 4.0f, r.getWidth() - 12.0f, 1.6f);
+    g.setColour(tok::textDim);
+    g.fillRoundedRectangle(bar, 0.8f);
+  } else if (!enabled) {  // indisponible : touche à plat, matière éteinte
+    d::titaniumKey(g, r, t2::relief1, false, false, false);
+  } else {  // action : touche en titane usiné, course physique à l'appui (NEURAL CELL, LAB-A02)
+    d::titaniumKey(g, r, t2::titaniumFace, true, down, over);
+  }
+  if (b.hasKeyboardFocus(false)) d::focusRing(g, r.expanded(2.0f), tok::radiusSmall + 2.0f);
 }
 
-void SymbioticLook::drawButtonText(juce::Graphics& g, juce::TextButton& b, bool, bool) {
+void SymbioticLook::drawButtonText(juce::Graphics& g, juce::TextButton& b, bool, bool down) {
   g.setFont(getTextButtonFont(b, b.getHeight()));
   g.setColour(b.isEnabled() ? tok::text : tok::textMute);
-  g.drawFittedText(b.getButtonText(), b.getLocalBounds().reduced(4, 1), juce::Justification::centred, 2, 1.0f);
+  const int travel = (down && !b.getToggleState()) ? 1 : 0;
+  g.drawFittedText(b.getButtonText(), b.getLocalBounds().reduced(6, 1).translated(0, travel), juce::Justification::centred, 2, 1.0f);
 }
 
 void SymbioticLook::drawToggleButton(juce::Graphics& g, juce::ToggleButton& b, bool over, bool) {
   auto r = b.getLocalBounds().toFloat().reduced(1.0f);
-  auto box = r.removeFromLeft(std::min(18.0f, r.getHeight())).withSizeKeepingCentre(14.0f, 14.0f);
-  g.setColour(tok::carbon);
-  g.fillRoundedRectangle(box, 2.0f);
-  g.setColour(over ? tok::titanium.brighter(0.4f) : tok::glassEdge);
-  g.drawRoundedRectangle(box, 2.0f, 1.0f);
-  if (b.getToggleState()) {
-    g.setColour(tok::text);
-    g.fillRoundedRectangle(box.reduced(3.5f), 1.0f);
+  auto box = r.removeFromLeft(std::min(18.0f, r.getHeight()));
+  // témoin encastré (NEURAL CELL R1) : éteint ou plein, jamais la couleur seule (le texte du bouton reste)
+  d::recessedLed(g, box.getCentre(), 4.0f, b.getToggleState() ? 2 : 0, b.isEnabled() ? tok::mod : tok::textMute);
+  if (over && b.isEnabled()) {
+    g.setColour(tok::textDim.withAlpha(0.6f));
+    g.drawEllipse(box.withSizeKeepingCentre(15.0f, 15.0f), 1.0f);
   }
   g.setColour(b.isEnabled() ? tok::text : tok::textMute);
   g.setFont(uiFont(tok::fontLabel));
   g.drawFittedText(b.getButtonText(), r.withTrimmedLeft(6.0f).toNearestInt(), juce::Justification::centredLeft, 2, 1.0f);
+  if (b.hasKeyboardFocus(false)) d::focusRing(g, b.getLocalBounds().toFloat().reduced(0.5f), tok::radiusSmall);
 }
 
 void SymbioticLook::drawComboBox(juce::Graphics& g, int w, int h, bool, int, int, int, int, juce::ComboBox& c) {
-  auto r = juce::Rectangle<float>(0, 0, static_cast<float>(w), static_cast<float>(h)).reduced(0.5f);
-  g.setColour(tok::carbon);
-  g.fillRoundedRectangle(r, tok::radiusSmall);
-  g.setColour(c.hasKeyboardFocus(true) ? tok::focus : tok::glassEdge);
-  g.drawRoundedRectangle(r, tok::radiusSmall, 1.0f);
+  // liste SYNAPTIC Machined Track (LAB-A03) : champ encastré, marqueur neutre, cran usiné avant le chevron
+  auto r = juce::Rectangle<float>(0, 0, static_cast<float>(w), static_cast<float>(h)).reduced(1.0f);
+  const bool enabled = c.isEnabled();
+  d::machinedGroove(g, r, 3.0f);
+  g.setColour(enabled ? tok::textDim : tok::panelEdge);
+  g.fillRoundedRectangle(r.getX() + 3.0f, r.getY() + 5.0f, 2.0f, std::max(2.0f, r.getHeight() - 10.0f), 1.0f);
+  const float cx = r.getRight() - 11.0f, cy = r.getCentreY();
+  g.setColour(juce::Colours::black.withAlpha(0.65f));
+  g.drawLine(cx - 9.0f, r.getY() + 5.0f, cx - 9.0f, r.getBottom() - 5.0f, 1.0f);
+  g.setColour(t2::bevelLight.withAlpha(0.22f));
+  g.drawLine(cx - 8.0f, r.getY() + 5.0f, cx - 8.0f, r.getBottom() - 5.0f, 1.0f);
   juce::Path tri;
-  const float cx = static_cast<float>(w) - 10.0f, cy = static_cast<float>(h) * 0.5f;
-  tri.addTriangle(cx - 4.0f, cy - 2.0f, cx + 4.0f, cy - 2.0f, cx, cy + 3.0f);
-  g.setColour(tok::textDim);
+  tri.addTriangle(cx - 3.5f, cy - 1.8f, cx + 3.5f, cy - 1.8f, cx, cy + 2.6f);
+  g.setColour(enabled ? tok::textDim : tok::textMute);
   g.fillPath(tri);
+  if (!enabled) d::hatch(g, r.reduced(2.0f), tok::panelEdge.withAlpha(0.5f), 6.0f);
+  if (c.hasKeyboardFocus(true)) d::focusRing(g, r.expanded(1.5f), tok::radiusSmall + 1.5f);
+}
+
+void SymbioticLook::positionComboBoxText(juce::ComboBox& c, juce::Label& l) {
+  l.setBounds(10, 1, std::max(0, c.getWidth() - 34), std::max(0, c.getHeight() - 2));
+  l.setFont(getComboBoxFont(c));
 }
 
 void SymbioticLook::drawPopupMenuBackground(juce::Graphics& g, int w, int h) {
-  g.fillAll(tok::panel);
+  g.fillAll(t2::relief1);
   g.setColour(tok::glassEdge);
   g.drawRect(0, 0, w, h, 1);
 }
 
 void SymbioticLook::drawScrollbar(juce::Graphics& g, juce::ScrollBar&, int x, int y, int w, int h, bool vertical, int ts, int tsz, bool over, bool down) {
-  g.setColour(tok::carbon.withAlpha(0.6f));
+  // gorge usinée et curseur en titane (matières R1)
+  g.setColour(t2::groove);
   g.fillRect(x, y, w, h);
-  auto t = vertical ? juce::Rectangle<int>(x + 2, ts, w - 4, tsz) : juce::Rectangle<int>(ts, y + 2, tsz, h - 4);
-  g.setColour(down ? tok::textDim : (over ? tok::titanium.brighter(0.3f) : tok::titanium));
-  g.fillRoundedRectangle(t.toFloat(), 3.0f);
+  auto th = (vertical ? juce::Rectangle<int>(x + 2, ts, w - 4, tsz) : juce::Rectangle<int>(ts, y + 2, tsz, h - 4)).toFloat();
+  juce::ColourGradient grad(t2::relief3.brighter(down ? 0.0f : (over ? 0.25f : 0.1f)), th.getX(), th.getY(), t2::relief2.darker(0.2f),
+                            vertical ? th.getRight() : th.getX(), vertical ? th.getY() : th.getBottom(), false);
+  g.setGradientFill(grad);
+  g.fillRoundedRectangle(th, 3.0f);
 }
 
 void SymbioticLook::fillTextEditorBackground(juce::Graphics& g, int w, int h, juce::TextEditor&) {
-  g.setColour(tok::carbon);
-  g.fillRoundedRectangle(0.0f, 0.0f, static_cast<float>(w), static_cast<float>(h), tok::radiusSmall);
+  g.setColour(tok::carbon);  // fenêtre de valeur R1 : carbone
+  g.fillRoundedRectangle(0.0f, 0.0f, static_cast<float>(w), static_cast<float>(h), 2.5f);
 }
 
 void SymbioticLook::drawTextEditorOutline(juce::Graphics& g, int w, int h, juce::TextEditor& e) {
-  g.setColour(e.hasKeyboardFocus(true) ? tok::focus : tok::glassEdge);
-  g.drawRoundedRectangle(0.5f, 0.5f, static_cast<float>(w) - 1.0f, static_cast<float>(h) - 1.0f, tok::radiusSmall, 1.0f);
+  const bool focus = e.hasKeyboardFocus(true);
+  g.setColour(focus ? tok::focus : tok::glassEdge);
+  g.drawRoundedRectangle(0.5f, 0.5f, static_cast<float>(w) - 1.0f, static_cast<float>(h) - 1.0f, 2.5f, focus ? 1.5f : 0.8f);
 }
 
 void SymbioticLook::drawLinearSlider(juce::Graphics& g, int x, int y, int w, int h, float pos, float, float, juce::Slider::SliderStyle st, juce::Slider& s) {
+  // canal PLASMA H (LAB-A05) : gorge usinée, canal lumineux de la valeur, curseur en titane avec index
   const bool vert = st == juce::Slider::LinearVertical;
-  auto r = juce::Rectangle<float>(static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h));
-  auto rail = vert ? r.withSizeKeepingCentre(6.0f, r.getHeight()) : r.withSizeKeepingCentre(r.getWidth(), 6.0f);
-  g.setColour(tok::carbon);
-  g.fillRoundedRectangle(rail, 3.0f);
-  g.setColour(s.findColour(juce::Slider::trackColourId, true) == juce::Colour() ? tok::mod : s.findColour(juce::Slider::trackColourId));
-  auto fill = vert ? rail.withTop(pos) : rail.withRight(pos);
-  g.fillRoundedRectangle(fill, 3.0f);
-  g.setColour(tok::titanium.brighter(0.25f));
-  auto th = vert ? juce::Rectangle<float>(r.getCentreX() - 9.0f, pos - 3.0f, 18.0f, 6.0f) : juce::Rectangle<float>(pos - 3.0f, r.getCentreY() - 9.0f, 6.0f, 18.0f);
-  g.fillRoundedRectangle(th, 2.0f);
-  if (s.hasKeyboardFocus(false)) {
-    g.setColour(tok::focus);
-    g.drawRoundedRectangle(th.expanded(1.5f), 2.0f, 1.0f);
+  const auto r = juce::Rectangle<float>(static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h));
+  const auto slot = vert ? r.withSizeKeepingCentre(8.0f, std::max(0.0f, r.getHeight() - 8.0f)) : r.withSizeKeepingCentre(std::max(0.0f, r.getWidth() - 8.0f), 8.0f);
+  g.setColour(t2::groove);
+  g.fillRoundedRectangle(slot.expanded(2.0f), 3.0f);
+  g.setColour(t2::bevelLight.withAlpha(0.3f));
+  g.drawRoundedRectangle(slot.expanded(2.0f).translated(0.0f, 0.6f), 3.0f, 0.7f);
+  const auto track = s.findColour(juce::Slider::trackColourId, true);
+  const auto accent = track == juce::Colour() ? tok::mod : track;
+  if (s.isEnabled()) {
+    auto fill = vert ? slot.withTop(std::min(pos, slot.getBottom())) : slot.withRight(std::max(pos, slot.getX()));
+    g.setColour(accent.withAlpha(t2::glowMax * 0.45f));
+    g.fillRoundedRectangle(fill.expanded(2.5f), 3.0f);
+    juce::ColourGradient plasma(accent.brighter(0.35f), fill.getX(), fill.getY(), accent.darker(0.25f), vert ? fill.getRight() : fill.getX(),
+                                vert ? fill.getY() : fill.getBottom(), false);
+    g.setGradientFill(plasma);
+    g.fillRoundedRectangle(fill, 2.0f);
   }
+  const auto c = vert ? juce::Point<float>(slot.getCentreX(), pos) : juce::Point<float>(pos, slot.getCentreY());
+  const auto cur = vert ? juce::Rectangle<float>(0.0f, 0.0f, 24.0f, 10.0f).withCentre(c) : juce::Rectangle<float>(0.0f, 0.0f, 10.0f, 22.0f).withCentre(c);
+  d::key(g, cur, t2::relief3, true, s.isMouseButtonDown(), s.isMouseOverOrDragging());
+  g.setColour(s.isEnabled() ? tok::text : tok::textMute);
+  if (vert) g.drawLine(cur.getX() + 2.0f, c.y, cur.getRight() - 2.0f, c.y, 1.4f);
+  else g.drawLine(c.x, cur.getY() + 2.0f, c.x, cur.getBottom() - 2.0f, 1.4f);
+  if (s.hasKeyboardFocus(false)) d::focusRing(g, cur.expanded(2.0f), 3.0f);
 }
 
 juce::Rectangle<int> SymbioticLook::getTooltipBounds(const juce::String& t, juce::Point<int> p, juce::Rectangle<int> area) {

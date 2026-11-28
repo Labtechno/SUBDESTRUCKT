@@ -1,4 +1,5 @@
-// SUBDESTRUCKT — UI — LookAndFeel SYMBIOTIC INDUSTRIAL (ARCH-UI-04) : tous les éléments JUCE génériques résiduels
+// SUBDESTRUCKT — UI — LookAndFeel SYMBIOTIC INDUSTRIAL (ARCH-UI-04 ; habillage R1 en ARCH-UI-04-R2-B2, DB2-06) : tous les éléments
+// JUCE génériques résiduels
 // (menus, listes, champs de saisie, barres de défilement, info-bulles, boutons secondaires) sont redessinés avec les
 // design tokens. Aucune commande musicale principale n'utilise un widget JUCE générique (composants : Components.h).
 #pragma once
@@ -15,6 +16,7 @@ class SymbioticLook : public juce::LookAndFeel_V4 {
   void drawButtonText(juce::Graphics&, juce::TextButton&, bool over, bool down) override;
   void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool over, bool down) override;
   void drawComboBox(juce::Graphics&, int w, int h, bool down, int bx, int by, int bw, int bh, juce::ComboBox&) override;
+  void positionComboBoxText(juce::ComboBox&, juce::Label&) override;
   juce::Font getComboBoxFont(juce::ComboBox&) override { return uiFont(tok::fontLabel); }
   juce::Font getTextButtonFont(juce::TextButton&, int h) override { return uiFont(std::min(tok::fontTitle, h * 0.5f), true); }
   juce::Font getLabelFont(juce::Label&) override { return uiFont(tok::fontLabel); }

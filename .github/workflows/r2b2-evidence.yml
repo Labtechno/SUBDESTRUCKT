@@ -5,7 +5,9 @@
 #  2. exécute le banc GC-01 (tests/perf/Gc01Bench.cpp) en ALTERNANT la référence 0.4.1 (GC01_REF_SHA, arbre exporté par
 #     git archive, même banc) et l'arbre courant : référence, courant, référence, courant (CE-B2-04). Tant que
 #     GC01_REF_SHA est vide, l'arbre courant EST la référence (ligne de base : deux exécutions pour la dispersion) ;
-#  3. verse les journaux bruts dans docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/{PB,GC01}/macos/ par un commit [skip ci].
+#  3. verse les journaux bruts dans docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/{PB,GC01}/macos/ par un commit [skip ci] ;
+#  4. sur les jalons dont le message de commit contient [captures], verse les captures de PRODUCTION (MainEditor réel, rendu
+#     hors écran, distinctes des planches du laboratoire) dans .../CAPTURES/macos/<run>-<sha>/.
 # Aucun binaire n'est publié. La CI de production (arch-g4.yml, inchangée) reste le juge du verdict des tests.
 name: R2-B2 preuves macOS (macos-15, wrapper et GC-01)
 
@@ -32,6 +34,7 @@ env:
   JUCE_SHA: "654bdbc7a9db0dae90849b44abe91f339e9f0768"
   DEST_PB: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/PB/macos
   DEST_GC: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/GC01/macos
+  DEST_CAP: docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/CAPTURES/macos
   # référence GC-01 : commit de la ligne de base 0.4.1 (banc présent, aucune modification ui/). Vide = ligne de base.
   GC01_REF_SHA: "0517426a7cded57321aeaadd99a6883a64c3142d"
 
@@ -75,7 +78,8 @@ jobs:
             echo "commit  : ${{ github.sha }}"
             echo "macOS   : $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion)), $(uname -m), VM GitHub"
           } | tee out/pb/machine.txt
-          SBD_B2_OUT="$PWD/out/pb" ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt 2>&1 | tee out/wrapper.log
+          mkdir -p out/prod
+          SBD_B2_OUT="$PWD/out/pb" ./build/subdestruckt_wrapper_tests_artefacts/Release/subdestruckt_wrapper_tests tests/host/expected_vst3_param_ids.txt out/prod/ui.png 2>&1 | tee out/wrapper.log
           code="${PIPESTATUS[0]}"
           grep -a '^RESULT ' out/wrapper.log > out/pb/wrapper-results.txt
           bash tools/check_results.sh tests/expected_results.txt tests/known_failures.txt "wrapper=out/wrapper.log:$code" | tee out/pb/barrier.txt
@@ -106,6 +110,14 @@ jobs:
           mkdir -p "$DEST_PB" "$DEST_GC"
           cp out/pb/* "$DEST_PB/"
           cp -R out/gc01/* "$DEST_GC/"
+          # captures de production (MainEditor reel, rendu hors ecran) : seulement sur les jalons marques [captures]
+          if git log -1 --format=%B | grep -qF '[captures]'; then
+            tag="run${{ github.run_number }}-${GITHUB_SHA::7}"
+            mkdir -p "$DEST_CAP/$tag"
+            cp out/prod/*.png "$DEST_CAP/$tag/"
+            cp out/pb/machine.txt "$DEST_CAP/$tag/machine.txt"
+            git add "$DEST_CAP"
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST_PB" "$DEST_GC"

@@ -19,6 +19,9 @@ DB2-01 à DB2-07 et amendements CE-B2-01 à CE-B2-05 consignés.
 | [B2-DEVIATIONS-REGISTER.md](B2-DEVIATIONS-REGISTER.md) | Registre des écarts (EC-01 à EC-20) |
 | [B2-DECISIONS-PENDING.md](B2-DECISIONS-PENDING.md) | Décisions soumises au propriétaire (STOP ciblés) : DB2-08 |
 | [PB/](PB/README.md) | **B2-01** : reproductions PB-01, PB-02, PB-N, PB-J (journaux Windows et macOS) |
+| [GC01/](GC01/README.md) | **GC-01** : banc, référence figée `0517426`, mesures comparatives |
+| [VIS/](VIS/README.md) | **Conformité visuelle** (CE-B2-03) : chaîne référence R1 → laboratoire → production |
+| `CAPTURES/` | **Captures de production** (`MainEditor` réel, rendu hors écran), par plateforme et par jalon. Ce ne sont jamais des planches du laboratoire. |
 
 **Livrables à venir** (étapes 01 à 08, après GO) :
 

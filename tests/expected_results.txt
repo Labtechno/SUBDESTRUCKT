@@ -261,3 +261,6 @@ wrapper PB-J1
 wrapper PB-J2
 wrapper PB-J3
 wrapper PB-J4
+# ARCH-UI-04-R2-B2-02 : fondation R1
+wrapper ID-UNIQ
+wrapper LBL-TABLE

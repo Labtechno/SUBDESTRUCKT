@@ -1040,6 +1040,8 @@ void snapshotUi04(const std::string& prefix);
 void testTaR1Wrapper();
 // ARCH-UI-04-R2-B2-01 (tests/wrapper/GestureTests.cpp) : reproductions PB-01 / PB-02, tests permanents (CE-B2-01)
 void testGestureReproduction();
+// ARCH-UI-04-R2-B2-02 (tests/wrapper/R2B2Tests.cpp) : fondation R1 (identifiants, libelles)
+void testR2B2Foundation();
 
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
@@ -1075,6 +1077,7 @@ int main(int argc, char** argv) {
   testTransportWrapper();
   testTaR1Wrapper();
   testGestureReproduction();
+  testR2B2Foundation();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

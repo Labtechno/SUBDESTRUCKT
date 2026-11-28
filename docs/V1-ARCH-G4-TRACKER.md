@@ -332,6 +332,7 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | Relance de la CI de production sur le code de référence inchangé (correction de l'erreur précédente) | c74745d | CI de production 60 **SUCCESS** (4 jobs, manual-playwright compris) : l'échec de la 59 était une défaillance externe |
 | 2026-11-28 | DB2-08 validé (option A) ; PB-02a/d reclassés défauts fonctionnels majeurs (R2-C / R2-D, avant pré-BETA) ; DB2-09 préparé | 1ceb2d1 | documentaire |
 | 2026-11-28 | ARCH-UI-04-R2-B2-02 (a) : module partagé `ui/r2/` (R2Style, R2Painters, R2Hud), laboratoire recâblé sur les peintres partagés, comparaison aux références R1 historiques (Windows 15/15 identiques, images entières), `component-lab.yml` ne réécrit plus les références | (ce commit) | `ui/` de production inchangé hors `ui/r2/` (compilé, non encore utilisé) ; `source/`, `plugin/` intacts |
+| 2026-11-28 | ARCH-UI-04-R2-B2-02 (b) : registre d'identifiants (OD-01, ID-UNIQ), table des libellés générée (LBL-TABLE), habillage R1 des widgets JUCE génériques (DB2-06), captures de production | (ce commit) | barrière PASS (77 critères, AUT-02 connu) ; composants liés encore en 0.4.1 |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
