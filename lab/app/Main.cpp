@@ -125,21 +125,23 @@ int main(int argc, char** argv) {
     }
     const int rows = (static_cast<int>(thumbs.size()) + cols - 1) / cols;
     juce::Image sheet(juce::Image::RGB, pad + cols * (tw + pad), 70 + rows * (rowH + capH + pad), true);
-    juce::Graphics g(sheet);
-    g.fillAll(sbd::ui::tok::chassis);
-    g.setColour(sbd::ui::tok::text);
-    g.setFont(sbd::r2::labelFont(20.0f, true));
-    g.drawText("R2-B1 Component Lab  -  contact sheet  -  " + juce::SystemStats::getOperatingSystemName(), pad, 14, sheet.getWidth() - 2 * pad, 26,
-               juce::Justification::centredLeft);
-    g.setFont(sbd::r2::labelFont(10.0f));
-    g.setColour(sbd::ui::tok::textMute);
-    g.drawText(platformLine(), pad, 42, sheet.getWidth() - 2 * pad, 14, juce::Justification::centredLeft);
-    for (size_t k = 0; k < thumbs.size(); ++k) {
-      const int x = pad + static_cast<int>(k % cols) * (tw + pad), y = 70 + static_cast<int>(k / cols) * (rowH + capH + pad);
-      g.setColour(sbd::ui::tok::textDim);
-      g.setFont(sbd::r2::labelFont(11.0f, true));
-      g.drawText(files[static_cast<int>(k)].getFileName(), x, y, tw, capH - 4, juce::Justification::centredLeft);
-      g.drawImageAt(thumbs[k], x, y + capH);
+    {  // Contexte fermé avant l'écriture : sous Windows (Direct2D), le dessin n'est versé dans l'image qu'à la destruction du contexte.
+      juce::Graphics g(sheet);
+      g.fillAll(sbd::ui::tok::chassis);
+      g.setColour(sbd::ui::tok::text);
+      g.setFont(sbd::r2::labelFont(20.0f, true));
+      g.drawText("R2-B1 Component Lab  -  contact sheet  -  " + juce::SystemStats::getOperatingSystemName(), pad, 14, sheet.getWidth() - 2 * pad, 26,
+                 juce::Justification::centredLeft);
+      g.setFont(sbd::r2::labelFont(10.0f));
+      g.setColour(sbd::ui::tok::textMute);
+      g.drawText(platformLine(), pad, 42, sheet.getWidth() - 2 * pad, 14, juce::Justification::centredLeft);
+      for (size_t k = 0; k < thumbs.size(); ++k) {
+        const int x = pad + static_cast<int>(k % cols) * (tw + pad), y = 70 + static_cast<int>(k / cols) * (rowH + capH + pad);
+        g.setColour(sbd::ui::tok::textDim);
+        g.setFont(sbd::r2::labelFont(11.0f, true));
+        g.drawText(files[static_cast<int>(k)].getFileName(), x, y, tw, capH - 4, juce::Justification::centredLeft);
+        g.drawImageAt(thumbs[k], x, y + capH);
+      }
     }
     rc = writePng(sheet, out) ? 0 : 1;
     std::cout << "contact " << out.getFullPathName().toStdString() << " " << sheet.getWidth() << "x" << sheet.getHeight() << std::endl;

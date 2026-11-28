@@ -97,11 +97,14 @@ void fmPlate(Sheet& s, int x, int y) {
 void barStrip(Sheet& s, int x, int y, int w) {
   s.plate(RF(static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), 64.0f), "", Domain::Neutral);
   s.add<SynapticTrack>(R(x + 14, y + 16, 400, 32), ST::Tabs, Domain::Neutral, "", "Spaces", juce::StringArray{"PERFORMANCE", "SOUND DESIGN", "ENGINEERING"});
-  s.add<NeuralCell>(R(x + 430, y + 11, 116, 42), NK::Action, Domain::Neutral, "PRESETS", "Open preset browser");
-  s.add<NeuralCell>(R(x + 552, y + 11, 100, 42), NK::Action, Domain::Neutral, "SAVE" + kEll, "Save preset");
-  s.add<NeuralCell>(R(x + 658, y + 11, 88, 42), NK::Action, Domain::Neutral, "UNDO", "Undo");
-  s.add<NeuralCell>(R(x + 752, y + 11, 88, 42), NK::Action, Domain::Neutral, "REDO", "Redo").setEnabled(false);
   const int r0 = x + w - 840;
+  // Groupe des préréglages seulement si la largeur le permet (sinon chevauchement avec le groupe de droite).
+  if (r0 >= x + 850) {
+    s.add<NeuralCell>(R(x + 430, y + 11, 116, 42), NK::Action, Domain::Neutral, "PRESETS", "Open preset browser");
+    s.add<NeuralCell>(R(x + 552, y + 11, 100, 42), NK::Action, Domain::Neutral, "SAVE" + kEll, "Save preset");
+    s.add<NeuralCell>(R(x + 658, y + 11, 88, 42), NK::Action, Domain::Neutral, "UNDO", "Undo");
+    s.add<NeuralCell>(R(x + 752, y + 11, 88, 42), NK::Action, Domain::Neutral, "REDO", "Redo").setEnabled(false);
+  }
   s.add<NeuralCell>(R(r0, y + 11, 150, 42), NK::Arm, Domain::Neutral, "DRONE", "Drone").setArmState(NeuralCell::ArmState::Armed);
   auto& au = s.add<NeuralCell>(R(r0 + 156, y + 11, 146, 42), NK::Action, Domain::Neutral, "AUTHORIZE", "Authorize autonomous states (this instance)");
   au.setIcon(NeuralCell::Icon::Authorize);
