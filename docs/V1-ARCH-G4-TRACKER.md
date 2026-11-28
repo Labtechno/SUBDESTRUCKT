@@ -162,6 +162,17 @@ périmètre exécuté ; PANIC pendant un export et sauvegarde pendant un export 
 couverts par TA-R06/TA-R14 ; ARCH-UI-04-R1 : GO technique avec réserves ; DSP FINAL LOCK révisé en 0.4.1. Rapport
 indépendant et archive de preuves conservés localement par le propriétaire.
 
+### 3nonies. ARCH-UI-04-R2-A (référentiel Design & Ergonomics, documentaire, 2026-11-28)
+Entrées : revue artistique et ergonomique Codex (`docs/ARCH-UI-04-DA/`, commit `dbc21c8`, 6,7/10 descriptif) et 15
+arbitrages du propriétaire DA-A01…DA-A15 (non rouverts). Livrable : `docs/ARCH-UI-04-R2/` (14 fichiers). Contenu :
+invariants INV-01…12 ; nomenclature anglaise compacte, 2 213 occurrences, largeurs **estimées** à confirmer par mesure
+JUCE (PT-02) ; contrats NEXUS, NEURAL CELL, Cybernetic Display, Plasma ; espaces adaptatifs avec étude géométrique
+calculée sur le code 0.4.1 (PERFORMANCE sans défilement au nominal, défilement au minimum en 0.4.1) ; réseaux
+NEURAL/TABLE ; enveloppe du Core ; inventaire de télémétrie (30 données, classes A/B/C/D) ; matrice d'acceptation
+enregistrée **avant mesure** (`docs/ARCH-UI-04-R2/R2-ACCEPTANCE-MATRIX.md`) ; 19 décisions ouvertes. Aucun lot de
+développement autorisé : R2-B attend la contre-expertise de l'architecte et la validation du propriétaire.
+`git diff d2d08ac -- source/` vide.
+
 ## 4. Matrice d'exigences P0/P1
 Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED = 0, sur les **50** exigences (BLOCKED compris). L'ancienne pondération ARCH-G4 (sur les lignes non bloquées) est conservée au rapport ARCH-G4.
 | # | Exigence | Lot | Statut | CI |
@@ -260,11 +271,15 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R1 : tests de reproduction R-28 avant correction | 7d57d94 | Local : 15 reproductions FAIL sur 0.4.0, non-régressions PASS ; CI : échec attendu de la barrière |
 | 2026-11-28 | ARCH-UI-04-R1 : correction TRANSPORT AUTHORIZATION, 0.4.1, contrat, rapport | d2d08ac | Local : cœur 184 critères (9 FAIL documentés dont TA-15 remplacé), wrapper 57 (AUT-02 seul), barrière PASS, ASan 0 erreur |
 | 2026-11-28 | ARCH-UI-04-R1 : CI | 7d57d94, d2d08ac | run 49 ÉCHEC attendu (reproductions sur macOS) ; **run 50 (46105804592) SUCCESS complet, SHA livré d2d08ac1bb6ed09ee3ea1b5e5d5d409c41b586af, 0.4.1-b50** (pluginval 10 avec UI, RTSan 0 violation, paquets, LB, manuel) |
-| 2026-11-28 | ARCH-UI-04-R1 : clôture documentaire (contre-audit physique Codex) | (ce commit) | R-28 PASS physique (périmètre Reason 14 exécuté) ; GO technique avec réserves ; aucun changement de code ni de version |
+| 2026-11-28 | ARCH-UI-04-R1 : clôture documentaire (contre-audit physique Codex) | 6286b49 | R-28 PASS physique (périmètre Reason 14 exécuté) ; GO technique avec réserves ; aucun changement de code ni de version |
+| 2026-11-28 | ARCH-UI-04-DA : revue artistique et ergonomique indépendante (Codex) | dbc21c8 | documentaire ; 6,7/10 descriptif ; aucune modification de code |
+| 2026-11-28 | ARCH-UI-04-R2-A : référentiel Design & Ergonomics (`docs/ARCH-UI-04-R2/`) | (ce commit) | documentaire ; `git diff d2d08ac -- source/` vide ; aucun build, aucun test modifié ; GO documentaire, R2-B non autorisé |
 
 ## 6. Prochaine action
-ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). En attente : validation artistique et recette
-humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) ; décision du propriétaire sur ARCH-UI-05 (non autorisé).
+ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A livré (référentiel
+documentaire `docs/ARCH-UI-04-R2/`). En attente : contre-expertise de l'architecte et validation du propriétaire sur
+R2-A ; décisions bloquantes pour R2-B (OD-01, OD-02, OD-06, OD-10, OD-18) ; R2-B, ARCH-UI-05 et ARCH-UI-06 non autorisés.
+Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 
 ### Indicateurs d'avancement (2026-11-28)
 - Exigences P0/P1 (pondération §4, automatique) : 47 PASS, 3 IMPLEMENTED (R19, R45, R50), 0 FAIL/BLOCKED → **97 %**
