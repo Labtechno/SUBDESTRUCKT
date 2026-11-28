@@ -16,7 +16,9 @@ DB2-01 à DB2-07 et amendements CE-B2-01 à CE-B2-05 consignés.
 | [B2-ACCEPTANCE-CRITERIA.md](B2-ACCEPTANCE-CRITERIA.md) | Critères INT-01 à INT-21 (enregistrés avant mesure) |
 | [B2-TEST-PLAN.md](B2-TEST-PLAN.md) | Plan de tests, reproductions PB-01 et PB-02, migrations OD-01 |
 | [B2-GRAPHICS-PERFORMANCE-PROTOCOL.md](B2-GRAPHICS-PERFORMANCE-PROTOCOL.md) | Protocole GC-01 comparatif 0.4.1 / intégré |
-| [B2-DEVIATIONS-REGISTER.md](B2-DEVIATIONS-REGISTER.md) | Registre des écarts (EC-01 à EC-16) |
+| [B2-DEVIATIONS-REGISTER.md](B2-DEVIATIONS-REGISTER.md) | Registre des écarts (EC-01 à EC-20) |
+| [B2-DECISIONS-PENDING.md](B2-DECISIONS-PENDING.md) | Décisions soumises au propriétaire (STOP ciblés) : DB2-08 |
+| [PB/](PB/README.md) | **B2-01** : reproductions PB-01, PB-02, PB-N, PB-J (journaux Windows et macOS) |
 
 **Livrables à venir** (étapes 01 à 08, après GO) :
 

@@ -321,7 +321,8 @@ Pondération ARCH-G4.1 (§14) : PASS = 1, IMPLEMENTED = 0,5, TODO/FAIL/BLOCKED =
 | 2026-11-28 | ARCH-UI-04-R2-B1-R1 : résultats CI consignés | 73b633b | documentaire, `[skip ci]` |
 | 2026-11-28 | Décision du propriétaire : AR-15 PASS (option A), B1-R1 GO FINAL, Design System R1 gelé | e45ba7d | décision humaine consignée sans réécriture des preuves |
 | 2026-11-28 | ARCH-UI-04-R2-B2-00 : audit préalable et contractualisation (dossier pour contre-expertise) | e45ba7d | documentaire ; aucune intégration de production ; `git diff d2d08ac -- source/` vide |
-| 2026-11-28 | ARCH-UI-04-R2-B2-00 GO : addendum (DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, GS définitifs, PL-06 amendé) | (ce commit) | documentaire, `[skip ci]` ; R2-B2 exécution autorisée |
+| 2026-11-28 | ARCH-UI-04-R2-B2-00 GO : addendum (DB2-01 à DB2-07, CE-B2-01 à CE-B2-05, GS définitifs, PL-06 amendé) | 9e0d5a9 | documentaire, `[skip ci]` ; R2-B2 exécution autorisée |
+| 2026-11-28 | ARCH-UI-04-R2-B2-01 : banc de reproduction (18 scénarios permanents), workflow de preuves macOS, preuves Windows | (ce commit) | aucun fichier `source/`, `plugin/`, `ui/` modifié ; barrière PASS (75 critères, AUT-02 connu) |
 
 ## 6. Prochaine action
 ARCH-UI-04-R1 clôturé (GO technique avec réserves, 0.4.1, SHA `d2d08ac`). ARCH-UI-04-R2-A validé sur le plan
@@ -329,7 +330,10 @@ documentaire. ARCH-UI-04-R2-B1 : GO technique (preuves finales `786c6ad`). ARCH-
 décision du propriétaire du 2026-11-28 ; Design System R1 gelé). ARCH-UI-04-R2-B2 autorisé : **R2-B2-00** (audit et
 contractualisation) publié dans `docs/ARCH-UI-04-R2/B2-PRODUCTION-INTEGRATION/`. En attente : contre-expertise de
 ChatGPT sur R2-B2-00 : **obtenue** ; R2-B2-00 **GO**, DB2-01 à DB2-07 et CE-B2-01 à CE-B2-05 validés
-(`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`). R2-B2 en exécution : B2-01 (reproductions PB-01 / PB-02) puis B2-02.
+(`B2-PRODUCTION-INTEGRATION/B2-00-ADDENDUM.md`). R2-B2 en exécution. **B2-01** : PB-01 (double-clic) NON REPRODUIT ;
+PB-01e (molette puis clic) REPRODUIT, correction en B2-03 (1) ; PB-02a/d REPRODUITS (Undo de session bloqué), corrections
+R2-C / R2-D ; nouveau défaut PLASMA (saut au clic hors canal) soumis : **DB2-08** (STOP ciblé, B2-03 (2) seulement).
+Suite : B2-02 (ligne de base GC-01, fondation).
 R2-C, R2-D, R2-E, ARCH-UI-05 et ARCH-UI-06 non autorisés.
 Recette humaine ARCH-UI-04 (`docs/V1-ARCH-UI-04-RECETTE.md`, H-09) toujours ouverte.
 

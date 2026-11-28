@@ -38,3 +38,14 @@ Aucun n'est corrigé en R2-B2-00. Chaque écart a un traitement prévu et, lorsq
 ## Addendum B2-00 (2026-11-28, après GO)
 
 État des écarts après arbitrage (§8 de l'addendum) : voir [B2-00-ADDENDUM.md](B2-00-ADDENDUM.md), qui prime sur ce document pour les points qu'il traite.
+
+## Écarts constatés en B2-01 (2026-11-28, reproduction sur 0.4.1)
+
+| ID | Nature | Constat | Preuve | Traitement | Étape | Décision |
+|---|---|---|---|---|---|---|
+| EC-14 (mise à jour) | PRE | PB-01 (double-clic) **NON REPRODUIT** : JUCE 9.0.6 émet `mouseDoubleClick` après le `mouseUp` du second clic ; l'ordre supposé par H-04 ne se produit pas | `PB/README.md` ; `juce_Component.cpp:2667-2676` | Aucune correction (OD-10) ; tests permanents | — | — |
+| EC-17 | PRE | **Saut de valeur des PLASMA** au clic sur le libellé (PLASMA vertical et horizontal) ou sur la valeur (PLASMA horizontal), jusqu'à une borne (OUT GAIN 0 → +6 dB) | PB-J1, PB-J2, PB-J3, PB-01c | Soumis avant modification (DB2-02) | B2-03 (2) | **DB2-08** |
+| EC-18 | PRE | **PB-02a et PB-02d REPRODUITS** : la destruction de l'éditeur pendant un glisser du Core ou d'une poignée d'enveloppe laisse 2 (Core) ou 1 (enveloppe) gestes hôte ouverts. Conséquence mesurée : **l'Undo de la session est bloqué** (0 transaction pour l'édition suivante), car le compteur de gestes du processeur ne revient jamais à 0. | PB-02a, PB-02d ; `plugin/PluginProcessor.cpp:452-461` | Correction réservée à **R2-C** (Core) et **R2-D** (enveloppe), selon OD-10 et la mission ; gravité transmise à ces lots | R2-C, R2-D | — |
+| EC-19 | PRE | Un double-clic dans le canal d'un PLASMA passe d'abord par la position cliquée (2 transactions Undo, valeur transitoire) ; inhérent au clic absolu (DB2-02) | PB-01b | Information ; aucune modification proposée | — | — |
+| EC-20 | PRE | **PB-01e REPRODUIT** : molette puis clic avant 450 ms : gestes hôte imbriqués (profondeur 2) sur un NEXUS ou un PLASMA | PB-01e | Correction autorisée (famille PB-01, gestes NEXUS et PLASMA) : refermer le geste molette au `mouseDown` ; test permanent en assertion BE | B2-03 (1) | — |
+

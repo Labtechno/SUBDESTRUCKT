@@ -1,0 +1,20 @@
+scenario;status;begins;ends;max_depth;residual;outside_writes;undo_transactions;value;expected;detail
+H04-HYPOTHESE;INFORMATION;3;3;2;0;0;-1;0.000000;0.000000;ordre suppose par H-04 (appel direct des gestionnaires), non emis par JUCE 9.0.6
+PB-01a;NON REPRODUIT;3;3;1;0;0;1;0.000000;0.000000;double-clic dispatche par JUCE ; 5 evenements ui ; valeur finale = defaut
+PB-01b;NON REPRODUIT;3;3;1;0;0;2;-6.000000;-6.000000;double-clic dispatche par JUCE ; 5 evenements ui ; valeur finale = defaut
+PB-01c;REPRODUIT;2;2;1;0;0;1;1.000000;0.500000;valeur modifiee par les clics avant la saisie (saut) ; saisie ouverte
+PB-01d;NON REPRODUIT;4;4;1;0;0;4;0.800000;0.300000;Alt+clic 1, Suppr 1, menu 1, saisie 1, 2 evenements ui
+PB-01e;REPRODUIT;2;2;2;0;0;1;0.000000;0.000000;profondeur au clic 2, ouverts apres relachement 1, apres destruction 0 (minuteur 450 ms remplace par la destruction)
+PB-01m;NON REPRODUIT;3;3;1;0;0;-1;0.000000;0.000000;instances isolees, A profondeur 1, B profondeur 1, defauts 1
+PB-02a;REPRODUIT;3;1;1;2;0;0;0.000000;0.000000;destruction de l'editeur sans relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement -1, apres destruction finale 2 ; edition suivante (nouvel editeur) : 0 transaction(s) Undo (1 attendue) ; correction reservee a R2-C
+PB-02b;NON REPRODUIT;3;3;1;0;0;1;0.000000;0.000000;changement d'espace (vue masquee), puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante (nouvel editeur) : 1 transaction(s) Undo (1 attendue) ; correction reservee a R2-C
+PB-02c;NON REPRODUIT;3;3;1;0;0;1;0.000000;0.000000;composant modal ouvert pendant le glisser, puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante (nouvel editeur) : 1 transaction(s) Undo (1 attendue) ; correction reservee a R2-C
+PB-02d;REPRODUIT;2;1;1;1;0;0;0.000000;0.000000;poignee (14.708333, 11.250000) glissee puis destruction de l'editeur : begin 1, gestes ouverts 1 ; edition suivante (nouvel editeur) : 0 transaction(s) Undo (1 attendue) ; correction reservee a R2-D
+PB-02e;NON REPRODUIT;3;3;1;0;0;1;0.000000;0.000000;redimensionnement et zoom 75 % pendant le glisser, puis relachement : begin au glisser 2, ouverts apres coupure 2, apres relachement 0, apres destruction finale 0 ; edition suivante (nouvel editeur) : 1 transaction(s) Undo (1 attendue) ; correction reservee a R2-C
+PB-N1;NON REPRODUIT;1;1;1;0;0;1;0.000000;0.000000;destruction de l'editeur pendant le glisser : begin 1, ouverts apres coupure 0, apres relachement -1, apres destruction finale 0 ; lot : B2 (gestes NEXUS)
+PB-N2;NON REPRODUIT;1;1;1;0;0;1;0.000000;0.000000;changement d'espace pendant le glisser, puis relachement : begin 1, ouverts apres coupure 1, apres relachement 0, apres destruction finale 0 ; lot : B2 (gestes NEXUS)
+PB-N3;NON REPRODUIT;1;1;1;0;0;1;0.000000;0.000000;type DST WT1 change par l'hote pendant le glisser (panneau contextuel), puis relachement (commande detruite par la reconstruction) : begin 1, ouverts apres coupure 0, apres relachement 0, apres destruction finale 0 ; lot : B2 (gestes NEXUS)
+PB-J1;REPRODUIT;2;2;1;0;0;1;6.000000;0.000000;clic sur le libelle du PLASMA vertical : 0.0000 -> 6.0000 (2e prise 6.0000) ; aucun changement attendu (hors zone de manipulation)
+PB-J2;REPRODUIT;2;2;1;0;0;1;-1.000000;0.500000;clic sur le libelle du PLASMA horizontal : 0.5000 -> -1.0000 (2e prise -1.0000) ; aucun changement attendu (hors zone de manipulation)
+PB-J3;REPRODUIT;2;2;1;0;0;1;1.000000;0.500000;clic sur la valeur du PLASMA horizontal : 0.5000 -> 1.0000 (2e prise 1.0000) ; aucun changement attendu (hors zone de manipulation)
+PB-J4;NON REPRODUIT;2;2;1;0;0;1;-18.556162;-18.556162;clic dans le canal puis reprise au meme point : 0.0000 -> -18.5562 (2e prise -18.5562) ; position absolue attendue au 1er clic, stable au 2e

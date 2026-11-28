@@ -1038,6 +1038,8 @@ void testUi04Operations();
 void snapshotUi04(const std::string& prefix);
 // ARCH-UI-04-R1 (tests/wrapper/TaR1Tests.cpp)
 void testTaR1Wrapper();
+// ARCH-UI-04-R2-B2-01 (tests/wrapper/GestureTests.cpp) : reproductions PB-01 / PB-02, tests permanents (CE-B2-01)
+void testGestureReproduction();
 
 int main(int argc, char** argv) {
   juce::ScopedJuceInitialiser_GUI juceInit;  // MessageManager (timers du processeur)
@@ -1072,6 +1074,7 @@ int main(int argc, char** argv) {
   std::fprintf(stderr, "[ARCH-G4.3 : TRANSPORT AUTHORIZATION]\n");
   testTransportWrapper();
   testTaR1Wrapper();
+  testGestureReproduction();
   if (argc > 2) {
     std::fprintf(stderr, "[capture UI]\n");
     snapshotEditor(argv[2]);

@@ -242,3 +242,22 @@ wrapper TA-R01w
 wrapper TA-R13w
 wrapper TA-R14
 wrapper TA-R15w
+# ARCH-UI-04-R2-B2-01 : reproductions PB-01 / PB-02 / PB-N / PB-J (tests permanents, CE-B2-01)
+wrapper PB-01a
+wrapper PB-01b
+wrapper PB-01c
+wrapper PB-01d
+wrapper PB-01e
+wrapper PB-01m
+wrapper PB-02a
+wrapper PB-02b
+wrapper PB-02c
+wrapper PB-02d
+wrapper PB-02e
+wrapper PB-N1
+wrapper PB-N2
+wrapper PB-N3
+wrapper PB-J1
+wrapper PB-J2
+wrapper PB-J3
+wrapper PB-J4
