@@ -1,0 +1,9 @@
+Plancher de bruit = max(ecart A/A de la meme serie, dispersion interne des executions d'un meme binaire) (CE-B2-04)
+GC-01 run alterne run9-28024df : 2 execution(s) reference, 2 execution(s) courant ; VM : comparatif, NON certifiant ; plancher de bruit A/A : run5-0d576ed
+GS-01                NON CONCLUANT  ref 7.166 cur 9.844 ratio 1.374 bruit A/A 1.037  [GP-01 ENG-7@75 median]  GP-01 mediane rendu complet <= 1,5 x ref (pire vue x zoom)
+GS-02 (comparatif)   NON CONCLUANT  ref 28.424 cur 21.510 ratio 0.757 bruit A/A 0.723  [GP-02 PERF-dynamique-total p95]  GP-02 p95 rafraichissement <= 1,5 x ref ; partie absolue 11,1 ms : M3 physique
+GS-03                PASS           ref 1.000 cur 1.000 ratio 1.000  [GP-03 repos-zones-par-rafraichissement median]  zones invalidees au repos (ref 0.4.1 : 1 = ScopeView) ; ne doit pas augmenter
+GS-04                NON CONCLUANT  ref 0.594 cur 0.692 ratio 1.165 bruit A/A 0.282  [GP-04 editeur-actif-bloc p99]  GP-04 p99 bloc <= 1,05 x ref ; depassements de traitement non superieurs au plancher de la reference
+GS-05                PASS           ref 91.672 cur 91.742 ratio 1.001 bruit A/A 0.032  [GP-05 surcout-editeur median]  surcout memoire editeur <= 1,25 x ref ; croissance seconde moitie non superieure a la ref + 1 MiB
+GS-06 (comparatif)   PASS           ref 2.870 cur 2.140 ratio 0.746 bruit A/A 0.458  [GP-07 NEXUS-glisser-traitement+rendu p95]  GP-07 p95 interaction <= 1,5 x ref ; objectif 16,7 ms : M3 physique
+GS-07                NON CONCLUANT  ref 0.500 cur 2.000 ratio 4.000 bruit A/A 2.000  [GP-04 editeur-ferme-apres-ouverture-depassements-traitement p99]  editeur ferme : p99 bloc <= 1,05 x ref
